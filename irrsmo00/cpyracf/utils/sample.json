@@ -1,0 +1,20 @@
+{
+  "dataset" : {
+    "name": "ESWIFT.TEST.T1136242.P3020470",
+    "generic": "no",
+    "operation": "set",
+    "requestid": "dataSetRequest",
+    "segments": {
+            "base": {
+              "base:universal_access": {
+                "value": "Read",
+                "operation": null
+              },
+              "base:owner": {
+                "value": "eswift",
+                "operation": null
+              }
+            }
+        }
+    }
+}

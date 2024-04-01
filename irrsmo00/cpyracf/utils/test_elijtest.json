@@ -1,0 +1,8 @@
+{
+  "resource" : {
+    "name": "TESTING",
+    "class": "ELIJTEST",
+    "operation": "listdata",
+    "requestid": "ResourceRequest"
+    }
+}
