@@ -35,6 +35,11 @@ char * call_irrsmo00(
         running_userid, 
         running_userid_struct.running_userid_length);
     
+    if (debug && (running_userid_struct.running_userid_length > 0))
+    {
+        printf("Running under a userid!\n");
+    }
+
     IRRSMO64(
         work_area,
         alet,
@@ -96,13 +101,16 @@ char * call_irrsmo00(
 }
 
 char * call_irrsmo00_with_json(
-    char * json_req_string, char * running_userid, unsigned int result_buffer_size, unsigned int irrsmo00_options,
+    char * json_req_string, unsigned int result_buffer_size, unsigned int irrsmo00_options,
     unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
 )
 {
-    char * xml_res_string, * json_res_string;
+    char * running_userid = malloc(9);
+    memset(running_userid, 0, 8);
+    char * xml_res_string, *xml_req_string, * json_res_string;
+    xml_req_string = injson_to_inxml(json_req_string, running_userid, debug);
     xml_res_string = call_irrsmo00(
-        injson_to_inxml(json_req_string, debug),
+        xml_req_string,
         running_userid,
         result_buffer_size,
         irrsmo00_options,
@@ -111,6 +119,7 @@ char * call_irrsmo00_with_json(
         racf_rsn,
         debug
     );
+    free(running_userid);
     json_res_string = outxml_to_outjson(xml_res_string, debug);
     free(xml_res_string);
     return json_res_string;

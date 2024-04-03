@@ -7,9 +7,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-char * injson_to_inxml(char * injson, bool debug){
+char * injson_to_inxml(char * injson, char * userid_buffer, bool debug){
     XmlGen * xml = new XmlGen();
-    return xml->build_xml_string(injson, debug);
+    return xml->build_xml_string(injson, userid_buffer, debug);
 }
 
 char * outxml_to_outjson(char * outxml, bool debug){

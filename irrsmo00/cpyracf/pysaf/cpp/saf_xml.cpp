@@ -42,7 +42,7 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
     }
 }
 
-char * XmlGen::build_xml_string(char * json_req_string, bool debug)
+char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bool debug)
 {
     nlohmann::json request;
     request = nlohmann::json::parse(json_req_string);
@@ -60,6 +60,13 @@ char * XmlGen::build_xml_string(char * json_req_string, bool debug)
     for (const auto& item : request[requestType].items())
     {
         if ( item.key().compare("segments") == 0 ) { break; }
+        if ( item.key().compare("runninguserid") == 0 )
+        { 
+            const int userid_length = item.value().get<string>().length();
+            strncpy(userid_buffer, item.value().get<string>().c_str(), userid_length);
+            convert_to_ebcdic(userid_buffer, userid_length);
+            break; 
+        }
         build_attribute(item.key()+"=\""+item.value().get<string>()+"\"");
     }
     if (request[requestType].contains("segments"))

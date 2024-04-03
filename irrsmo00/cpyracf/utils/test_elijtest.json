@@ -3,6 +3,7 @@
     "name": "TESTING",
     "class": "ELIJTEST",
     "operation": "listdata",
-    "requestid": "ResourceRequest"
+    "requestid": "ResourceRequest",
+    "runninguserid": "TESTUSR"
     }
 }

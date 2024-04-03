@@ -28,7 +28,7 @@ private:
     string make_xml_attribute(string name, string value);
     void convert_to_ebcdic(char * ascii_str, int length);
 public:
-    char * build_xml_string(char * json_req_string, bool debug);
+    char * build_xml_string(char * json_req_string, char * userid_buffer, bool debug);
 };
 
 class XmlParse

@@ -31,7 +31,7 @@ char * call_irrsmo00(
     );
 
 char * call_irrsmo00_with_json(
-    char * json_req_string, char * running_userid, unsigned int result_buffer_size, unsigned int irrsmo00_options,
+    char * json_req_string, unsigned int result_buffer_size, unsigned int irrsmo00_options,
     unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
 );
 
