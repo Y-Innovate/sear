@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
-#include "../nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 
 using namespace std;
 

@@ -23,7 +23,7 @@ UNAME := $(shell uname)
   SMO_LIB = irrsmo64
 
   # Directory Paths
-  PARENT_PATH = openRACFCore/corelib/
+  PARENT_PATH = /
   C_PATH = $(PARENT_PATH)c/
   CPP_PATH = $(PARENT_PATH)cpp/
   LIB_PATH = $(PARENT_PATH)lib/

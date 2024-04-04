@@ -3,7 +3,7 @@ import json
 from ctypes import *
 import os
 
-class TestAdmin:
+class RACFAdmin:
     """Test class for Administration Interfaces"""
 
     def __init__(self, debug=False) -> None:
@@ -11,23 +11,19 @@ class TestAdmin:
         file_path = f"{os.path.dirname(__file__)}/../../"
         cwd = os.getcwd()
         os.chdir(file_path)
-        self.dll = CDLL(file_path+"/cpyracf/pysaf/lib/irrsmo00_conn.dll")
+        self.dll = CDLL(file_path+"/openRACFCore/corelib/lib/irrsmo00_conn.dll")
         os.chdir(cwd)
         
-        self.buffer_size = 1500
     
-    def smo_from_file(self, file_name: str, running_userid: str = "", precheck: bool = False) -> str:
-        file = open(file_name)
-
-        data = json.load(file)
+    def smo_from_dict(self, json_data: dict = {}, result_buffer_size: int = 1500, precheck: bool = False) -> str:
 
         if self.__debug:
-            print(json.dumps(data))
+            print(json.dumps(json_data))
         self.dll.call_irrsmo00_with_json.restype = c_char_p
         self.dll.call_irrsmo00_with_json.argtypes = [c_char_p, c_uint, c_uint, POINTER(c_uint), POINTER(c_uint), POINTER(c_uint), c_bool]
 
-        json_req_string = c_char_p(json.dumps(data).encode("utf-8"))
-        result_buffer_size = c_uint(self.buffer_size)
+        json_req_string = c_char_p(json.dumps(json_data).encode("utf-8"))
+        result_buffer_size = c_uint(result_buffer_size)
         irrsmo00_options = c_uint(15) if precheck else c_uint(13)
         saf_rc = c_uint(0)
         racf_rc = c_uint(0)
