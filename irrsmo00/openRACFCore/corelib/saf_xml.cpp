@@ -63,30 +63,33 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
     //Build the admin object
     for (const auto& item : request[requestType].items())
     {
-        if ( item.key().compare("segments") == 0 ) { break; }
+        if ( item.key().compare("segments") == 0 ) { continue; }
         if ( item.key().compare("runninguserid") == 0 )
         { 
             const int userid_length = item.value().get<std::string>().length();
             strncpy(userid_buffer, item.value().get<std::string>().c_str(), userid_length);
             convert_to_ebcdic(userid_buffer, userid_length);
-            break; 
+            continue; 
         }
-        if ( item.key().compare("irrsmo00_options") == 0 )
+        if ( item.key().compare("irrsmo00options") == 0 )
         { 
             *irrsmo00_options = item.value().get<u_int>();
-            break;
+            continue;
         }
-        if ( item.key().compare("result_buffer_size") == 0 )
+        if ( item.key().compare("resultbuffersize") == 0 )
         { 
             *result_buffer_size = item.value().get<u_int>();
-            break;
+            continue;
         }
-        if ( item.key().compare("debug_mode") == 0 )
+        if ( item.key().compare("debugmode") == 0 )
         { 
             *debug = item.value().get<bool>();
-            break;
+            continue;
         }
+        if ( item.value().is_string() )
+        {
         build_attribute(item.key()+"=\""+item.value().get<std::string>()+"\"");
+        }
     }
     if (request[requestType].contains("segments"))
     {
@@ -121,7 +124,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
     if (*debug)
     {
-        std::cout << "XML Request std::string (Ascii): " << xml_buffer << "\n";
+        std::cout << "XML Request string (Ascii): " << xml_buffer << "\n";
     }
 
     const int length = xml_buffer.length();
@@ -131,7 +134,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
     if (*debug)
     {
-        std::cout << std::hex << "XML Request std::string (Ebcdic): " << std::hex << cast_hex_string(output_buffer) << "\n";
+        std::cout << std::hex << "XML Request string (Ebcdic): " << std::hex << cast_hex_string(output_buffer) << "\n";
     }
 
     return output_buffer;
@@ -243,14 +246,14 @@ char * XmlParse::build_json_string(char * xml_result_string, bool debug)
 
     if (debug)
     {
-        std::cout << "XML Result std::string (Ebcdic): " << std::hex << cast_hex_string( xml_result_string ) << "\n";
+        std::cout << "XML Result string (Ebcdic): " << std::hex << cast_hex_string( xml_result_string ) << "\n";
     }
 
     convert_to_ascii(&xml_buffer);
 
     if (debug)
     {
-        std::cout << "XML Result std::string (Ascii): " << xml_buffer << "\n";
+        std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
     }
 
     std::smatch xml_sub_re_match;
