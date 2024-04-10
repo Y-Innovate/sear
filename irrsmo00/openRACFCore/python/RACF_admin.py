@@ -28,6 +28,6 @@ class RACFAdmin:
         if self.__debug:
             print(json_res_string.decode("utf-8"))
 
-        return {"resultBuffer": json_res_string.decode("utf-8")}
+        return json.loads(json_res_string.decode("utf-8"))
     
         #return cpyracf.call_irrsmo00_py(str(json.dumps()))
