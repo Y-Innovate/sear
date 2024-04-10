@@ -1,14 +1,7 @@
 #ifndef IRRSMO00_CONN_H_
 #define IRRSMO00_CONN_H_
 
-#include <unistd.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
-
-#include "xml_conn.h"
 
 #ifdef __MVS__
 #pragma linkage(IRRSMO64, OS)
@@ -31,8 +24,8 @@ char * call_irrsmo00(
     );
 
 char * call_irrsmo00_with_json(
-    char * json_req_string, unsigned int result_buffer_size, unsigned int irrsmo00_options,
-    unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
+    char * json_req_string,
+    unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn
 );
 
 #endif /* IRRSMO00_CONN_H_ */

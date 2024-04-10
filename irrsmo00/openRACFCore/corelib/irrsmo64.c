@@ -1,4 +1,6 @@
-#include "../h/irrsmo64.h"
+#include "irrsmo64.h"
+
+#include <string.h>
 
 void IRRSMO64(
     char work_area[1024],

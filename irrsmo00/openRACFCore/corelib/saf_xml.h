@@ -3,48 +3,40 @@
 #ifndef XML_LIB_H_
 #define XML_LIB_H_
 
-#include <cstring>
-#include <regex>
-#include <string>
-#include <stdio.h>
-#include <iostream>
-#include <sstream>
 #include "nlohmann/json.hpp"
-
-using namespace std;
 
 
 class XmlGen
 {
 private:
-    string xml_buffer;
-    void build_open_tag(string tag);
-    void build_attribute(string attribute);
-    void build_value(string value);
+    std::string xml_buffer;
+    void build_open_tag(std::string tag);
+    void build_attribute(std::string attribute);
+    void build_value(std::string value);
     void build_end_nested_tag();
-    void build_full_close_tag(string tag);
+    void build_full_close_tag(std::string tag);
     void build_close_tag_no_value();
-    void build_single_trait(string tag, string operation, string value);
-    string make_xml_attribute(string name, string value);
+    void build_single_trait(std::string tag, std::string operation, std::string value);
+    std::string make_xml_attribute(std::string name, std::string value);
     void convert_to_ebcdic(char * ascii_str, int length);
 public:
-    char * build_xml_string(char * json_req_string, char * userid_buffer, bool debug);
+    char * build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
 };
 
 class XmlParse
 {
 private:
-    string xml_buffer;
-    void parse_header_attributes(nlohmann::json * input_json, string header_string);
-    void parse_outer_xml(nlohmann::json * input_json, string body_string);
-    void parse_inner_xml(nlohmann::json * input_json, string inner_data, string outer_tag);
-    void update_json(nlohmann::json * input_json, nlohmann::json inner_data, string outer_tag);
-    void convert_to_ascii(string * ebcdic_str);
+    std::string xml_buffer;
+    void parse_header_attributes(nlohmann::json * input_json, std::string header_string);
+    void parse_outer_xml(nlohmann::json * input_json, std::string body_string);
+    void parse_inner_xml(nlohmann::json * input_json, std::string inner_data, std::string outer_tag);
+    void update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag);
+    void convert_to_ascii(std::string * ebcdic_str);
 public:
     char * build_json_string(char * xml_result_string, bool debug);
 };
 
-string cast_hex_string(char * input);
+std::string cast_hex_string(char * input);
 
 static const unsigned char EbcdicToAscii[256] = {
     0x0, 0x1, 0x2, 0x3, 0x37, 0x2d, 0x2e, 0x2f, 0x16, 0x5, 0x15, 0xb, 0xc, 0xd, 0xe, 0xf,

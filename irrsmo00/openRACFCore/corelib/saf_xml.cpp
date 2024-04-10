@@ -1,25 +1,29 @@
-#include "../h/saf_xml.h"
+#include "saf_xml.h"
+
+#include <regex>
+#include <string>
+#include <iostream>
 
 //Private functions
-void XmlGen::build_open_tag(string tag) {
+void XmlGen::build_open_tag(std::string tag) {
     xml_buffer.append("<"+tag);
 }
-void XmlGen::build_attribute(string attribute) {
+void XmlGen::build_attribute(std::string attribute) {
     xml_buffer.append(" "+attribute);
 }
-void XmlGen::build_value(string value) {
+void XmlGen::build_value(std::string value) {
     xml_buffer.append(">"+value);
 }
 void XmlGen::build_end_nested_tag() {
     xml_buffer.append(">");
 }
-void XmlGen::build_full_close_tag(string tag) {
+void XmlGen::build_full_close_tag(std::string tag) {
     xml_buffer.append("</"+tag+">");
 }
 void XmlGen::build_close_tag_no_value() {
     xml_buffer.append("/>");
 }
-void XmlGen::build_single_trait(string tag, string operation, string value) {
+void XmlGen::build_single_trait(std::string tag, std::string operation, std::string value) {
     build_open_tag(tag);
     if (operation.length() != 0) { build_attribute(make_xml_attribute("operation",operation)); }
     if (value.length() == 0) { build_close_tag_no_value(); }
@@ -28,9 +32,9 @@ void XmlGen::build_single_trait(string tag, string operation, string value) {
         build_full_close_tag(tag);
     }
 }
-string XmlGen::make_xml_attribute(string name, string value)
+std::string XmlGen::make_xml_attribute(std::string name, std::string value)
 {
-    string output = name;
+    std::string output = name;
     output.append("=\""+value+"\"");
     return output;
 }
@@ -42,11 +46,11 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
     }
 }
 
-char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bool debug)
+char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
 {
     nlohmann::json request;
     request = nlohmann::json::parse(json_req_string);
-    string requestType;
+    std::string requestType;
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
     build_attribute(make_xml_attribute("xmlns","http://www.ibm.com/systems/zos/saf"));
@@ -62,12 +66,27 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bo
         if ( item.key().compare("segments") == 0 ) { break; }
         if ( item.key().compare("runninguserid") == 0 )
         { 
-            const int userid_length = item.value().get<string>().length();
-            strncpy(userid_buffer, item.value().get<string>().c_str(), userid_length);
+            const int userid_length = item.value().get<std::string>().length();
+            strncpy(userid_buffer, item.value().get<std::string>().c_str(), userid_length);
             convert_to_ebcdic(userid_buffer, userid_length);
             break; 
         }
-        build_attribute(item.key()+"=\""+item.value().get<string>()+"\"");
+        if ( item.key().compare("irrsmo00_options") == 0 )
+        { 
+            *irrsmo00_options = item.value().get<u_int>();
+            break;
+        }
+        if ( item.key().compare("result_buffer_size") == 0 )
+        { 
+            *result_buffer_size = item.value().get<u_int>();
+            break;
+        }
+        if ( item.key().compare("debug_mode") == 0 )
+        { 
+            *debug = item.value().get<bool>();
+            break;
+        }
+        build_attribute(item.key()+"=\""+item.value().get<std::string>()+"\"");
     }
     if (request[requestType].contains("segments"))
     {
@@ -81,8 +100,8 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bo
             //Build each individual trait
             for (const auto& trait : request[requestType]["segments"][item.key()].items())
             {
-                string operation = (trait.value()["operation"].is_null()) ? "set" : trait.value()["operation"].get<string>();
-                string value = (trait.value()["value"].is_boolean()) ? "" : trait.value()["value"].get<string>();
+                std::string operation = (trait.value()["operation"].is_null()) ? "set" : trait.value()["operation"].get<std::string>();
+                std::string value = (trait.value()["value"].is_boolean()) ? "" : trait.value()["value"].get<std::string>();
                 build_single_trait(trait.key(), operation, value);
             }
             build_full_close_tag(item.key());
@@ -100,9 +119,9 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bo
     //Close the securityrequest tag (Consistent)
     build_full_close_tag("securityrequest");
 
-    if (debug)
+    if (*debug)
     {
-        cout << "XML Request String (Ascii): " << xml_buffer << "\n";
+        std::cout << "XML Request std::string (Ascii): " << xml_buffer << "\n";
     }
 
     const int length = xml_buffer.length();
@@ -110,21 +129,21 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, bo
     strncpy(output_buffer, xml_buffer.c_str(), length);
     convert_to_ebcdic(output_buffer, length);
 
-    if (debug)
+    if (*debug)
     {
-        cout << hex << "XML Request String (Ebcdic): " << hex << cast_hex_string(output_buffer) << "\n";
+        std::cout << std::hex << "XML Request std::string (Ebcdic): " << std::hex << cast_hex_string(output_buffer) << "\n";
     }
 
     return output_buffer;
 }
 
-void XmlParse::parse_header_attributes(nlohmann::json * input_json, string header_string)
+void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string header_string)
 {
-    smatch attr_sub_re_match;
-    regex attr {R"~(([a-z]*)="([^ ]*)")~"};
+    std::smatch attr_sub_re_match;
+    std::regex attr {R"~(([a-z]*)="([^ ]*)")~"};
 
-    string::size_type n = 0, n_old;
-    string sel_str;
+    std::string::size_type n = 0, n_old;
+    std::string sel_str;
     do
     {
         n_old = (n == 0) ? n:n+1;
@@ -132,67 +151,67 @@ void XmlParse::parse_header_attributes(nlohmann::json * input_json, string heade
         sel_str = header_string.substr(n_old,n - n_old);
         if (regex_match(sel_str, attr_sub_re_match, attr))
         {
-            //cout << attr_sub_re_match[0] << '\n'; // Full String
-            //cout << attr_sub_re_match[1] << '\n'; // Attribute Key
-            //cout << attr_sub_re_match[2] << '\n'; // Attribute Value
+            //std::cout << attr_sub_re_match[0] << '\n'; // Full std::string
+            //std::cout << attr_sub_re_match[1] << '\n'; // Attribute Key
+            //std::cout << attr_sub_re_match[2] << '\n'; // Attribute Value
             (*input_json)[attr_sub_re_match[1]] = attr_sub_re_match[2];
         }
     }while(n_old != n + 1);
 };
 
-void XmlParse::parse_outer_xml(nlohmann::json * input_json, string body_string)
+void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_string)
 {
-    regex outer_tag {"<([a-z]*)>.*<\/([a-z]*)>"};
-    smatch body_sub_re_match, body_iter_sub_re_match;
+    std::regex outer_tag {"<([a-z]*)>.*<\/([a-z]*)>"};
+    std::smatch body_sub_re_match, body_iter_sub_re_match;
     
-    string::size_type n = 0, n_old;
-    string sel_str, current_tag, current_end_tag, remaining_str;
+    std::string::size_type n = 0, n_old;
+    std::string sel_str, current_tag, current_end_tag, remaining_str;
 
     if(regex_match(body_string, body_sub_re_match, outer_tag))
     {
         current_tag = body_sub_re_match[1];
-        regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
+        std::regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
         do
         {
             n_old = (n == 0) ? n:n+current_end_tag.length();
             current_end_tag = "<\/"+current_tag+">";
-            regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
+            std::regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
             n = body_string.substr(n_old,body_string.length()-n_old).find(current_end_tag) + n_old;
             sel_str = body_string.substr(n_old,n + current_end_tag.length() - n_old);
-            //cout << "Selection String: " << sel_str << "\n";
+            //std::cout << "Selection std::string: " << sel_str << "\n";
             if (regex_match(sel_str, body_iter_sub_re_match, inner_tag))
             {
-                //cout << "Full String: " << body_iter_sub_re_match[0] << '\n'; // Full String
-                //cout << "Inner Tags: " << body_iter_sub_re_match[1] << '\n'; // Inner Tags
+                //std::cout << "Full std::string: " << body_iter_sub_re_match[0] << '\n'; // Full std::string
+                //std::cout << "Inner Tags: " << body_iter_sub_re_match[1] << '\n'; // Inner Tags
                 parse_inner_xml(input_json, body_iter_sub_re_match[1], current_tag);
 
             }
 
             remaining_str = body_string.substr(n+current_end_tag.length(),body_string.length()-current_end_tag.length()-n);
-            //cout << "Remaining String: " << remaining_str << "\n";
+            //std::cout << "Remaining std::string: " << remaining_str << "\n";
             if (regex_match(remaining_str, body_iter_sub_re_match, outer_tag))
             {
                 current_tag = body_iter_sub_re_match[1];
-                //cout << "Updating Current Tag: " << current_tag << "\n";
+                //std::cout << "Updating Current Tag: " << current_tag << "\n";
             }
         }while(n + current_end_tag.length() < body_string.length());
     }
 };
 
-void XmlParse::parse_inner_xml(nlohmann::json * input_json, string inner_data, string outer_tag)
+void XmlParse::parse_inner_xml(nlohmann::json * input_json, std::string inner_data, std::string outer_tag)
 {
-    if (inner_data.find("<") == string::npos)
+    if (inner_data.find("<") == std::string::npos)
     {
-        //cout << "Updating " << outer_tag << " with value: " << inner_data << "\n";
+        //std::cout << "Updating " << outer_tag << " with value: " << inner_data << "\n";
         update_json(input_json, inner_data, outer_tag);
         return;
     }
-    nlohmann::json temp;
-    parse_outer_xml(&temp, inner_data);
-    update_json(input_json, temp, outer_tag);
+    nlohmann::json _string;
+    parse_outer_xml(&_string, inner_data);
+    update_json(input_json, _string, outer_tag);
 }
 
-void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_data, string outer_tag)
+void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag)
 {
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
     {
@@ -210,7 +229,7 @@ void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_dat
     }
 }
 
-void XmlParse::convert_to_ascii(string * ebcdic_str)
+void XmlParse::convert_to_ascii(std::string * ebcdic_str)
 {
     for(int i = 0; i < (*ebcdic_str).length(); i++)
     {
@@ -224,30 +243,30 @@ char * XmlParse::build_json_string(char * xml_result_string, bool debug)
 
     if (debug)
     {
-        cout << "XML Result String (Ebcdic): " << hex << cast_hex_string( xml_result_string ) << "\n";
+        std::cout << "XML Result std::string (Ebcdic): " << std::hex << cast_hex_string( xml_result_string ) << "\n";
     }
 
     convert_to_ascii(&xml_buffer);
 
     if (debug)
     {
-        cout << "XML Result String (Ascii): " << xml_buffer << "\n";
+        std::cout << "XML Result std::string (Ascii): " << xml_buffer << "\n";
     }
 
-    smatch xml_sub_re_match;
-    regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
+    std::smatch xml_sub_re_match;
+    std::regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
 
     nlohmann::json result;
     nlohmann::json profile;
 
-    string profile_type, profile_close_tag, profile_xml_attrs, profile_xml_body;
+    std::string profile_type, profile_close_tag, profile_xml_attrs, profile_xml_body;
 
     if(regex_match(xml_buffer, xml_sub_re_match, full_xml))
     {
-    //cout << xml_sub_re_match[0] << "\n\n"; // Full String
-    //cout << xml_sub_re_match[1] << '\n'; // Profile Type
-    //cout << xml_sub_re_match[2] << '\n'; // Profile Attrs
-    //cout << xml_sub_re_match[3] << '\n'; // Command Information
+    //std::cout << xml_sub_re_match[0] << "\n\n"; // Full std::string
+    //std::cout << xml_sub_re_match[1] << '\n'; // Profile Type
+    //std::cout << xml_sub_re_match[2] << '\n'; // Profile Attrs
+    //std::cout << xml_sub_re_match[3] << '\n'; // Command Information
 
     profile_type = xml_sub_re_match[1];
     profile_close_tag = "<\/"+profile_type+">";
@@ -266,20 +285,20 @@ char * XmlParse::build_json_string(char * xml_result_string, bool debug)
 
     
     
-    string json_result = result.dump();
+    std::string json_result = result.dump();
     const int length = json_result.length();
     char* output_buffer = new char[length + 1];
     strncpy(output_buffer, json_result.c_str(), length);
     return output_buffer;
 }
 
-string cast_hex_string(char * input)
+std::string cast_hex_string(char * input)
 {
-    string output = "{ ";
+    std::string output = "{ ";
     for(int i = 0; i < strlen(input); i++)
     {
         if (i > 0) { output += ", "; }
-        output += "x" + to_string((unsigned char)*(input+i));
+        output += "x" + std::to_string((unsigned char)*(input+i));
     }
     output += " }";
     return output;

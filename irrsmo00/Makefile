@@ -24,8 +24,8 @@ UNAME := $(shell uname)
 
   # Directory Paths
   PARENT_PATH = openRACFCore/corelib/
-  C_PATH = $(PARENT_PATH)c/
-  CPP_PATH = $(PARENT_PATH)cpp/
+  C_PATH = $(PARENT_PATH)
+  CPP_PATH = $(PARENT_PATH)
   LIB_PATH = $(PARENT_PATH)lib/
 
   all: dll

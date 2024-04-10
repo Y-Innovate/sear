@@ -1,15 +1,15 @@
 #include <cstdlib>
 
-#include "../h/xml_conn.h"
-#include "../h/saf_xml.h"
+#include "xml_conn.h"
+#include "saf_xml.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-char * injson_to_inxml(char * injson, char * userid_buffer, bool debug){
+char * injson_to_inxml(char * injson, char * userid_buffer,unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug){
     XmlGen * xml = new XmlGen();
-    return xml->build_xml_string(injson, userid_buffer, debug);
+    return xml->build_xml_string(injson, userid_buffer, irrsmo00_options, result_buffer_size, debug);
 }
 
 char * outxml_to_outjson(char * outxml, bool debug){

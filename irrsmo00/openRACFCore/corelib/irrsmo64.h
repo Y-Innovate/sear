@@ -1,6 +1,3 @@
-#include <string.h>
-#include <stdio.h>
-
 #ifndef _irrsmo64_test
 #define _irrsmo64_test
 
