@@ -8,7 +8,7 @@ class RACFAdmin:
 
     def __init__(self, debug=False) -> None:
         self.__debug = debug
-        file_path = f"{os.path.dirname(__file__)}/../../"
+        file_path = f"{os.path.dirname(__file__)}/../.."
         cwd = os.getcwd()
         os.chdir(file_path)
         self.dll = CDLL(file_path+"/openRACFCore/corelib/lib/irrsmo00_conn.dll")
