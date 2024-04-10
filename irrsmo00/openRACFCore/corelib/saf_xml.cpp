@@ -240,7 +240,7 @@ void XmlParse::convert_to_ascii(std::string * ebcdic_str)
     }
 }
 
-char * XmlParse::build_json_string(char * xml_result_string, bool debug)
+char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug)
 {
     xml_buffer = xml_result_string;
 
@@ -261,6 +261,7 @@ char * XmlParse::build_json_string(char * xml_result_string, bool debug)
 
     nlohmann::json result;
     nlohmann::json profile;
+    nlohmann::json returnCodes;
 
     std::string profile_type, profile_close_tag, profile_xml_attrs, profile_xml_body;
 
@@ -286,6 +287,11 @@ char * XmlParse::build_json_string(char * xml_result_string, bool debug)
     result["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
     }
 
+    returnCodes["safReturnCode"] = saf_rc;
+    returnCodes["racfReturnCode"] = racf_rc;
+    returnCodes["racfReasonCode"] = racf_rsn;
+
+    result["returnCodes"] = returnCodes;
     
     
     std::string json_result = result.dump();

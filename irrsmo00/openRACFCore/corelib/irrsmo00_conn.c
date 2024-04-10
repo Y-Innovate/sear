@@ -106,19 +106,19 @@ char * call_irrsmo00(
     return full_result;
 }
 
-char * call_irrsmo00_with_json(
-    char * json_req_string,
-    unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn
-)
+char * call_irrsmo00_with_json(char * json_req_string)
 {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
-    unsigned int irrsmo00_options, result_buffer_size;
+    unsigned int irrsmo00_options, result_buffer_size, saf_rc, racf_rc, racf_rsn;
     bool debug_mode;
 
     irrsmo00_options = 13;
     result_buffer_size = 1500;
     debug_mode = false;
+    saf_rc = 0;
+    racf_rc = 0;
+    racf_rsn = 0;
 
     xml_req_string = injson_to_inxml(json_req_string, running_userid, &irrsmo00_options, &result_buffer_size, &debug_mode);
 
@@ -127,12 +127,13 @@ char * call_irrsmo00_with_json(
         running_userid,
         result_buffer_size,
         irrsmo00_options,
-        saf_rc,
-        racf_rc,
-        racf_rsn,
+        &saf_rc,
+        &racf_rc,
+        &racf_rsn,
         debug_mode
     );
-    json_res_string = outxml_to_outjson(xml_res_string, debug_mode);
+    
+    json_res_string = outxml_to_outjson(xml_res_string, saf_rc, racf_rc, racf_rsn, debug_mode);
     free(xml_res_string);
     return json_res_string;
 }

@@ -33,7 +33,7 @@ private:
     void update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag);
     void convert_to_ascii(std::string * ebcdic_str);
 public:
-    char * build_json_string(char * xml_result_string, bool debug);
+    char * build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug);
 };
 
 std::string cast_hex_string(char * input);

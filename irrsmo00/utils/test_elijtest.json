@@ -4,7 +4,6 @@
     "class": "ELIJTEST",
     "operation": "listdata",
     "requestid": "ResourceRequest",
-    "runninguserid": "TESTUSR",
-    "debugmode": true
+    "runninguserid": "TESTUSR"
     }
 }

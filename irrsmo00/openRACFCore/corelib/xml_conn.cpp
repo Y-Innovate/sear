@@ -12,9 +12,9 @@ char * injson_to_inxml(char * injson, char * userid_buffer,unsigned int * irrsmo
     return xml->build_xml_string(injson, userid_buffer, irrsmo00_options, result_buffer_size, debug);
 }
 
-char * outxml_to_outjson(char * outxml, bool debug){
+char * outxml_to_outjson(char * outxml, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug){
     XmlParse * xml = new XmlParse();
-    return xml->build_json_string(outxml, debug);
+    return xml->build_json_string(outxml, saf_rc, racf_rc, racf_rsn, debug);
 }
 
 #ifdef __cplusplus

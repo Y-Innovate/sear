@@ -23,9 +23,6 @@ char * call_irrsmo00(
     unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
     );
 
-char * call_irrsmo00_with_json(
-    char * json_req_string,
-    unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn
-);
+char * call_irrsmo00_with_json(char * json_req_string);
 
 #endif /* IRRSMO00_CONN_H_ */
