@@ -73,12 +73,12 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
         }
         if ( item.key().compare("irrsmo00options") == 0 )
         { 
-            *irrsmo00_options = item.value().get<u_int>();
+            *irrsmo00_options = item.value().get<uint>();
             continue;
         }
         if ( item.key().compare("resultbuffersize") == 0 )
         { 
-            *result_buffer_size = item.value().get<u_int>();
+            *result_buffer_size = item.value().get<uint>();
             continue;
         }
         if ( item.key().compare("debugmode") == 0 )
