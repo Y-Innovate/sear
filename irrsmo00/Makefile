@@ -3,18 +3,19 @@ UNAME := $(shell uname)
   ifeq ($(UNAME), OS/390)
   CC = xlclang
   CXX = xlclang++
+
+  CFLAGS = 
+  CPPFLAGS = -qascii -qlanglvl=extended0x
   else
   # the compiler: gcc for C program, define as g++ for C++
   CC = gcc
   CXX = g++
-  endif
-
-  # compiler flags:
+    # compiler flags:
   #  -g     - this flag adds debugging information to the executable file
   #  -Wall  - this flag is used to turn on most compiler warnings
   CFLAGS  = -g -Wall -std=c++11
   CPPFLAGS = -fpic -shared -std=c++11
-
+  endif
  
   # Library names
   XML_LIB = saf_xml
@@ -42,7 +43,7 @@ UNAME := $(shell uname)
   ifeq ($(UNAME), OS/390)
   dll: $(XML_CONN)
 				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
-				$(CC) -v -shared -Wl $(LIB_PATH)$(SMO_CONN).o  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
+				$(CC) -v -s-Wl,"DLL,LP64,XPLINK" $(LIB_PATH)$(SMO_CONN).o  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
   else
   dll: $(XML_CONN) $(SMO_LIB)
 				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
