@@ -19,6 +19,8 @@ class RACFAdmin:
 
         if self.__debug:
             print(json.dumps(json_data))
+            json_data[list(json_data)[0]]["debugmode"] = True
+
         self.dll.call_irrsmo00_with_json.restype = c_char_p
         self.dll.call_irrsmo00_with_json.argtypes = [c_char_p]
 

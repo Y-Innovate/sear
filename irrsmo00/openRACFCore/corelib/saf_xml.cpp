@@ -129,7 +129,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
     const int length = xml_buffer.length();
     char* output_buffer = new char[length + 1];
-    strncpy(output_buffer, xml_buffer.c_str(), length);
+    strncpy(output_buffer, xml_buffer.c_str(), length+1);
     convert_to_ebcdic(output_buffer, length);
 
     if (*debug)
@@ -293,11 +293,10 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
 
     result["returnCodes"] = returnCodes;
     
-    
     std::string json_result = result.dump();
     const int length = json_result.length();
     char* output_buffer = new char[length + 1];
-    strncpy(output_buffer, json_result.c_str(), length);
+    strncpy(output_buffer, json_result.c_str(), length+1);
     return output_buffer;
 }
 
