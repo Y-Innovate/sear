@@ -43,7 +43,7 @@ UNAME := $(shell uname)
   ifeq ($(UNAME), OS/390)
   dll: $(XML_CONN)
 				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
-				$(CC) -v -s-Wl,"DLL,LP64,XPLINK" $(LIB_PATH)$(SMO_CONN).o  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
+				$(CC) -s -Wl,"DLL,LP64,XPLINK" $(LIB_PATH)$(SMO_CONN).o  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
   else
   dll: $(XML_CONN) $(SMO_LIB)
 				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
