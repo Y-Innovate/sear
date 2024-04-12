@@ -37,7 +37,7 @@ UNAME := $(shell uname)
   
   $(XML_LIB):
 				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_LIB).cpp -o $(LIB_PATH)$(XML_LIB).o
-        $(RM) $(XML_LIB).o
+				$(RM) $(XML_LIB).o
 
   $(SMO_LIB):				
 				$(CC) -c $(C_PATH)$(SMO_LIB).c -o $(LIB_PATH)$(SMO_LIB).o    
@@ -46,7 +46,7 @@ UNAME := $(shell uname)
   dll: $(XML_CONN)
 				$(CC) -c -D_XOPEN_SOURCE_EXTENDED -qlanglvl=extc99 -Wc,lp64,STACKPROTECT\(ALL\) -I../../safCommon -I libIRRSMO64.so $(C_PATH)$(SMO_CONN).c $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
 				$(CC) -Wl,"DLL,LP64,XPLINK" -o  $(LIB_PATH)$(SMO_CONN).dll $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(XML_CONN).so
-        $(RM) $(SMO_CONN).x
+				$(RM) $(SMO_CONN).x
   else
   dll: $(XML_CONN) $(SMO_LIB)
 				$(CC) -c -DBUILD_DLL -shared -Wl $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
