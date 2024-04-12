@@ -18,7 +18,8 @@ typedef struct
 
 void null_byte_fix(char* str, unsigned int str_len);
 
-char * call_irrsmo00(
+
+extern char * call_irrsmo00(
     char * request_xml, char * running_userid, unsigned int result_buffer_size, unsigned int irrsmo00_options,
     unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
     );

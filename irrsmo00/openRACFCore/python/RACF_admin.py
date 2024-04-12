@@ -2,6 +2,7 @@
 import json
 from ctypes import *
 import os
+import platform
 
 class RACFAdmin:
     """Test class for Administration Interfaces"""
@@ -11,7 +12,10 @@ class RACFAdmin:
         file_path = f"{os.path.dirname(__file__)}/../.."
         cwd = os.getcwd()
         os.chdir(file_path)
-        self.dll = CDLL(file_path+"/openRACFCore/corelib/lib/irrsmo00_conn.dll")
+        if platform.system() == "OS/390":
+            self.dll = CDLL(file_path+"/openRACFCore/corelib/lib/irrsmo00_conn.so")
+        else:
+            self.dll = CDLL(file_path+"/openRACFCore/corelib/lib/irrsmo00_conn.dll")
         os.chdir(cwd)
         
     

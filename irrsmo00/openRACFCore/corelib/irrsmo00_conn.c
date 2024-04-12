@@ -106,7 +106,7 @@ char * call_irrsmo00(
     return full_result;
 }
 
-char * call_irrsmo00_with_json(char * json_req_string)
+extern char * call_irrsmo00_with_json(char * json_req_string)
 {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
@@ -132,7 +132,7 @@ char * call_irrsmo00_with_json(char * json_req_string)
         &racf_rsn,
         debug_mode
     );
-    
+
     json_res_string = outxml_to_outjson(xml_res_string, saf_rc, racf_rc, racf_rsn, debug_mode);
     free(xml_res_string);
     return json_res_string;
