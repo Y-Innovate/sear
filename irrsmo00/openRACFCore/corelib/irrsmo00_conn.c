@@ -114,7 +114,7 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
     bool debug_mode;
 
     irrsmo00_options = 13;
-    result_buffer_size = 1500;
+    result_buffer_size = 10000;
     debug_mode = false;
     saf_rc = 0;
     racf_rc = 0;
