@@ -1,7 +1,7 @@
 UNAME := $(shell uname)
 
   ifeq ($(UNAME), OS/390)
-  CC = xlclang
+  CC = xlc
   CXX = xlclang++
 
   CFLAGS = 
@@ -32,21 +32,23 @@ UNAME := $(shell uname)
   all: dll
   
   $(XML_CONN): $(XML_LIB)
-				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_CONN).cpp $(LIB_PATH)$(XML_LIB).so -o $(LIB_PATH)$(XML_CONN).so
+				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_CONN).cpp $(LIB_PATH)$(XML_LIB).o -o $(LIB_PATH)$(XML_CONN).so
+				rm $(XML_CONN).o
   
   $(XML_LIB):
-				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_LIB).cpp -o $(LIB_PATH)$(XML_LIB).so
+				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_LIB).cpp -o $(LIB_PATH)$(XML_LIB).o
 
   $(SMO_LIB):				
 				$(CC) -c $(C_PATH)$(SMO_LIB).c -o $(LIB_PATH)$(SMO_LIB).o    
 
   ifeq ($(UNAME), OS/390)
   dll: $(XML_CONN)
-				$(CC) -c -DBUILD_DLL -s -Wl,"DLL,LP64,XPLINK" $(C_PATH)$(SMO_CONN).c  -I../../safCommon -I libIRRSMO64.so $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).so
+        $(CC) -c -D_XOPEN_SOURCE_EXTENDED -qlanglvl=extc99 -Wc,lp64,STACKPROTECT\(ALL\) -I../../safCommon -I libIRRSMO64.so $(C_PATH)$(SMO_CONN).c $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
+				$(CC) -Wl,"DLL,LP64,XPLINK" -o  $(LIB_PATH)$(SMO_CONN).dll $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(XML_CONN).so
   else
   dll: $(XML_CONN) $(SMO_LIB)
-				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
+				$(CC) -c -DBUILD_DLL -shared -Wl $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
 				$(CC) -v -shared -Wl $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(SMO_LIB).o $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
   endif
   clean:
-				$(RM) $(LIB_PATH)*.o $(LIB_PATH)*.dll $(LIB_PATH)*.so
+				$(RM) $(LIB_PATH)*.o $(LIB_PATH)*.dll $(LIB_PATH)*.so *.o
