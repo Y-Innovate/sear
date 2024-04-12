@@ -33,7 +33,7 @@ UNAME := $(shell uname)
   
   $(XML_CONN): $(XML_LIB)
 				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_CONN).cpp $(LIB_PATH)$(XML_LIB).o -o $(LIB_PATH)$(XML_CONN).so
-				rm $(XML_CONN).o
+				$(RM) $(XML_CONN).o
   
   $(XML_LIB):
 				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_LIB).cpp -o $(LIB_PATH)$(XML_LIB).o
