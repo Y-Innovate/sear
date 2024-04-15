@@ -303,10 +303,12 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
 std::string cast_hex_string(char * input)
 {
     std::string output = "{ ";
+    char buff[4];
     for(int i = 0; i < strlen(input); i++)
     {
         if (i > 0) { output += ", "; }
-        output += "x" + std::to_string((unsigned char)*(input+i));
+        std::snprintf(buff, 4, "x%02x", (unsigned char)*(input+i));
+        output += buff;
     }
     output += " }";
     return output;
