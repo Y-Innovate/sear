@@ -49,7 +49,7 @@ UNAME := $(shell uname)
 				$(RM) $(SMO_CONN).x
   else
   dll: $(XML_CONN) $(SMO_LIB)
-				$(CC) -c -DBUILD_DLL -shared -Wl $(C_PATH)$(SMO_CONN).c  $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).o
+				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c -o $(LIB_PATH)$(SMO_CONN).o
 				$(CC) -v -shared -Wl $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(SMO_LIB).o $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
   endif
   clean:

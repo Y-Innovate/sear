@@ -3,6 +3,7 @@
 #include <regex>
 #include <string>
 #include <iostream>
+#include <unistd.h>
 
 //Private functions
 void XmlGen::build_open_tag(std::string tag) {
@@ -40,10 +41,14 @@ std::string XmlGen::make_xml_attribute(std::string name, std::string value)
 }
 
 void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
+    #ifndef __MVS__
     for(int i = 0; i < length; i++)
     {
-        *(ascii_str+i) = EbcdicToAscii[(unsigned char)*(ascii_str+i)];
+        *(ascii_str+i) = AsciiToEbcdic[(unsigned char)*(ascii_str+i)];
     }
+    #else
+    __a2e_s(ascii_str);
+    #endif //__MVS__
 }
 
 char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
@@ -164,7 +169,7 @@ void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string 
 
 void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_string)
 {
-    std::regex outer_tag {"<([a-z]*)>.*<\/([a-z]*)>"};
+    std::regex outer_tag {R"(<([a-z]*)>.*</([a-z]*)>)"};
     std::smatch body_sub_re_match, body_iter_sub_re_match;
     
     std::string::size_type n = 0, n_old;
@@ -173,12 +178,12 @@ void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_str
     if(regex_match(body_string, body_sub_re_match, outer_tag))
     {
         current_tag = body_sub_re_match[1];
-        std::regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
+        std::regex inner_tag {"<"+current_tag+R"(>(.*?)</)"+current_tag+">"};
         do
         {
             n_old = (n == 0) ? n:n+current_end_tag.length();
-            current_end_tag = "<\/"+current_tag+">";
-            std::regex inner_tag {"<"+current_tag+">(.*?)<\/"+current_tag+">"};
+            current_end_tag = R"(</)"+current_tag+">";
+            std::regex inner_tag {"<"+current_tag+R"(>(.*?)</)"+current_tag+">"};
             n = body_string.substr(n_old,body_string.length()-n_old).find(current_end_tag) + n_old;
             sel_str = body_string.substr(n_old,n + current_end_tag.length() - n_old);
             //std::cout << "Selection std::string: " << sel_str << "\n";
@@ -232,24 +237,28 @@ void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_dat
     }
 }
 
-void XmlParse::convert_to_ascii(std::string * ebcdic_str)
+void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
 {
-    for(int i = 0; i < (*ebcdic_str).length(); i++)
+    #ifndef __MVS__
+    for(int i = 0; i < length; i++)
     {
-        (*ebcdic_str)[i] = AsciiToEbcdic[(unsigned char)(*ebcdic_str)[i]];
+        *(ebcdic_str+i) = EbcdicToAscii[(unsigned char)*(ebcdic_str+i)];
     }
+    #else
+    __e2a_s(ebcdic_str);
+    #endif //__MVS__
 }
 
 char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug)
 {
-    xml_buffer = xml_result_string;
-
     if (debug)
     {
         std::cout << "XML Result string (Ebcdic): " << std::hex << cast_hex_string( xml_result_string ) << "\n";
     }
 
-    convert_to_ascii(&xml_buffer);
+
+    convert_to_ascii(xml_result_string, strlen(xml_result_string));
+    xml_buffer = xml_result_string;
 
     if (debug)
     {
@@ -273,7 +282,7 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
     //std::cout << xml_sub_re_match[3] << '\n'; // Command Information
 
     profile_type = xml_sub_re_match[1];
-    profile_close_tag = "<\/"+profile_type+">";
+    profile_close_tag = R"(</)"+profile_type+">";
     profile_xml_attrs = xml_sub_re_match[2];
     profile_xml_body = xml_sub_re_match[3];
 
