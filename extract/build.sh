@@ -7,4 +7,8 @@ rm -rf extract
 rm -rf *.bin
 
 as -mGOFF -I. -o irrseq00.o irrseq00.s || true
-xlc -qascii -q64 -o extract profile_extract.c irrseq00.o
+xlclang++ -qstrict_induction -qascii -q64 -I ./ -o extract \
+    main.cpp \
+    extract.cpp \
+    post_process.cpp \
+    irrseq00.o
