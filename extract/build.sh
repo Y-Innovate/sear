@@ -7,7 +7,7 @@ rm -rf extract
 rm -rf *.bin
 
 as -mGOFF -I. -o irrseq00.o irrseq00.s || true
-xlclang++ -qstrict_induction -qascii -q64 -I ./ -o extract \
+ibm-clang++ -fzos-le-char-mode=ascii -I ./ -o extract \
     main.cpp \
     extract.cpp \
     post_process.cpp \

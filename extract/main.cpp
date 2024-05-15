@@ -54,21 +54,24 @@ int main(int argc, char **argv) {
     }
 
     int result_buffer_length;
+    json profile;
 
     // Post Process Generic Result
     if (strcmp(argv[1], "setropts") != 0) {
         generic_extract_parms_results_t *generic_result_buffer =
             (generic_extract_parms_results_t *) result_buffer;
         result_buffer_length = generic_result_buffer->result_buffer_length;
-        json profile = post_process_generic(generic_result_buffer);
-        std::cout << profile.dump(4) << std::endl;
+        profile = post_process_generic(generic_result_buffer);
     // Post Process Setropts Result
     } else {
         setropts_extract_results_t *setropts_result_buffer =
             (setropts_extract_results_t *) result_buffer;
         result_buffer_length = setropts_result_buffer->result_buffer_length;
-        // TODO
+        profile = post_process_setropts(setropts_result_buffer);
     }
+
+    // Print profile JSON
+    std::cout << profile.dump(4) << std::endl;
 
     // Temporary raw dump for testing.
     FILE *fp = fopen("extract.bin", "wb");

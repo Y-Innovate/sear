@@ -47,6 +47,14 @@ const uint32_t ALET = 0x00000000;  // primary address space
 const uint32_t ACEE = 0x00000000;
 
 /*************************************************************************/
+/* Setropts Constants                                                    */
+/*************************************************************************/
+const char SETROPTS_FIELD_TYPE_LIST = 0;
+const char SETROPTS_FIELD_TYPE_STRING = 1;
+const char SETROPTS_FIELD_TYPE_NUMBER = 2;
+const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
+
+/*************************************************************************/
 /* Common Structure Data Macros                                          */
 /*************************************************************************/
 #define PROFILE_NAME_MAX_LENGTH 247
@@ -120,7 +128,7 @@ const uint32_t ACEE = 0x00000000;
     *((unsigned int ZOS_PTR_32)&arg_pointers->ppResult_buffer) |= 0x80000000;
 
 
-#pragma pack(packed)    // Don't byte align structure members.
+#pragma pack(push, 1)   // Don't byte align structure members.
 
 /*************************************************************************/
 /* Generic Extract Structures                                            */
@@ -168,6 +176,44 @@ typedef struct {
    generic_extract_arg_pointers_t arg_pointers;
 } generic_extract_underbar_arg_area_t;
 
+/*************************************************************************/
+/* Generic Segment/Field Descriptor Structures                           */
+/*                                                                       */
+/* Used to interpret extracted generic profile data                      */
+/*************************************************************************/
+typedef struct {
+    char     name[8];                   // segment name, upper case, blank padded
+    uint32_t flags;                     //
+    uint32_t field_count;               // number of fields
+    char     reserved_1[4];             // reserved
+    uint32_t field_descriptor_offset;   // offset to first field descriptor
+    char     reserved_2[16];            // reserved
+                                        // start of next segment descriptor
+} generic_segment_descriptor_t;
+
+typedef union {
+    uint32_t field_data_length;          // length of field data or ...
+    uint32_t repeat_group_count;         // number of repeat groups
+} generic_field_data_length_repeat_group_count_t;
+
+typedef union {
+    uint32_t field_data_offset;          // offset to field data or ...
+    uint32_t repeat_group_element_count; // number of elems in repeat field hdrs
+} generic_field_data_offset_repeat_group_element_count_t;
+
+typedef struct {
+    char     name[8];       // field name, upper case, blank padded
+    uint16_t type;
+    char     reserved_1[2];
+    uint32_t flags;
+    generic_field_data_length_repeat_group_count_t 
+        field_data_length_repeat_group_count;
+    char     rserved_2[4];
+    generic_field_data_offset_repeat_group_element_count_t
+        field_data_offset_repeat_group_element_count;
+    char     reserved_3[16];
+                            // start of next field descriptor
+} generic_field_descriptor_t;
 
 /*************************************************************************/
 /* Setropts Extract Structures                                           */
@@ -178,14 +224,6 @@ typedef struct {
     unsigned int    request_flags;
     unsigned char   reserved_1[10];
 } setropts_extract_parms_t;
-
-typedef struct {
-    char            eyecatcher[4];
-    int             result_buffer_length;
-    unsigned char   reserved_2[4];
-    unsigned short  segment_count;
-    // Start of extracted data.
-} setropts_extract_results_t;
 
 typedef struct {
     COMMON_START_ARGS
@@ -206,46 +244,127 @@ typedef struct {
 } setropts_extract_underbar_arg_area_t;
 
 /*************************************************************************/
-/* Segment/Field Descriptor Structures                                   */
+/* Setropts Segment/Field Descriptor Structures                          */
 /*                                                                       */
-/* Used to interpret extracted generic profile data                      */
+/* Used to interpret extracted setropts profile data                     */
 /*************************************************************************/
 typedef struct {
-    char     name[8];                   // segment name, upper case, blank padded
-    uint32_t flags;                     //
-    uint32_t field_count;               // number of fields
-    char     reserved_1[4];             // reserved
-    uint32_t field_descriptor_offset;   // offset to first field descriptor
-    char     reserved_2[16];            // reserved
-                                        // start of next segment descriptor
-} segment_descriptor_t;
-
-typedef union {
-    uint32_t field_data_length;          // length of field data or ...
-    uint32_t repeat_group_count;         // number of repeat groups
-} field_data_length_repeat_group_count_t;
-
-typedef union {
-    uint32_t field_data_offset;          // offset to field data or ...
-    uint32_t repeat_group_element_count; // number of elems in repeat field hdrs
-} field_data_offset_repeat_group_element_count_t;
+    char            eyecatcher[4];
+    int             result_buffer_length;
+    unsigned char   reserved_2[4];
+    unsigned short  segment_count;
+    // Start of first segment descriptor.
+} setropts_extract_results_t;
 
 typedef struct {
-    char     name[8];       // field name, upper case, blank padded
-    uint16_t type;
-    char     reserved_1[2];
-    uint32_t flags;
-    field_data_length_repeat_group_count_t 
-        field_data_length_repeat_group_count;
-    char     rserved_2[4];
-    field_data_offset_repeat_group_element_count_t
-        field_data_offset_repeat_group_element_count;
-    char     reserved_3[16];
-                            // start of next field descriptor
-} field_descriptor_t;
+    char        name[8];
+    uint8_t     flag;
+    uint16_t    field_count;
+    // Start of first field descriptor
+} setropts_segment_descriptor_t;
 
-#pragma pack(reset)     // Restore default structure packing options.
+typedef struct {
+    char        name[8];
+    uint8_t     flag;
+    uint16_t    field_length;
+    // Start of next field descriptor, next segment, or end of data
+} setropts_field_descriptor_t;
 
+typedef struct {
+    char key[8+1];
+    char type;
+} setropts_field_type_t;
+
+#pragma pack(pop)       // Restore default structure packing options.
+
+// Since the setropts field descriptor structure in the extracted
+// setropts data do not describe what kind of data is in each field,
+// we need to use this list to look up the field type for each
+// setropts field.
+const setropts_field_type_t SETROPTS_FIELD_TYPES[] {
+    { "addcreat",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "adsp",       SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "applaudt",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "audit",      SETROPTS_FIELD_TYPE_LIST },
+    { "catdsns",    SETROPTS_FIELD_TYPE_STRING },
+    { "classact",   SETROPTS_FIELD_TYPE_LIST },
+    { "classtat",   SETROPTS_FIELD_TYPE_LIST },
+    { "cmdviol",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "compmode",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "egn",        SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "erase",      SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "eraseall",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "erasesec",   SETROPTS_FIELD_TYPE_STRING },
+    { "gencmd",     SETROPTS_FIELD_TYPE_LIST },
+    { "generic",    SETROPTS_FIELD_TYPE_LIST },
+    { "genlist",    SETROPTS_FIELD_TYPE_LIST },
+    { "genowner",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "global",     SETROPTS_FIELD_TYPE_LIST },
+    { "grplist",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "history",    SETROPTS_FIELD_TYPE_STRING },
+    { "inactive",   SETROPTS_FIELD_TYPE_NUMBER },
+    { "initstat",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "interval",   SETROPTS_FIELD_TYPE_NUMBER },
+    { "jesbatch",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "jesearly",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "jesnje",     SETROPTS_FIELD_TYPE_STRING },
+    { "jesundef",   SETROPTS_FIELD_TYPE_STRING },
+    { "jesxbm",     SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "kerblvl",    SETROPTS_FIELD_TYPE_NUMBER },
+    { "list",       SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "logalwys",   SETROPTS_FIELD_TYPE_LIST },
+    { "logdeflt",   SETROPTS_FIELD_TYPE_LIST },
+    { "logfail",    SETROPTS_FIELD_TYPE_LIST },
+    { "lognever",   SETROPTS_FIELD_TYPE_LIST },
+    { "logsucc",    SETROPTS_FIELD_TYPE_LIST },
+    { "minchang",   SETROPTS_FIELD_TYPE_NUMBER },
+    { "mixdcase",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "mlactive",   SETROPTS_FIELD_TYPE_STRING },
+    { "mlfs",       SETROPTS_FIELD_TYPE_STRING },
+    { "mlipc",      SETROPTS_FIELD_TYPE_STRING },
+    { "mlnames",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "mlquiet",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "mls",        SETROPTS_FIELD_TYPE_STRING },
+    { "mlstable",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "model",      SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "modgdg",     SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "modgroup",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "moduser",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "operaudt",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "phrint",     SETROPTS_FIELD_TYPE_NUMBER },
+    { "prefix",     SETROPTS_FIELD_TYPE_STRING },
+    { "primlang",   SETROPTS_FIELD_TYPE_STRING },
+    { "protall",    SETROPTS_FIELD_TYPE_STRING },
+    { "pwdalg",     SETROPTS_FIELD_TYPE_STRING },
+    { "pwdspec",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "raclist",    SETROPTS_FIELD_TYPE_LIST },
+    { "realdsn",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "retpd",      SETROPTS_FIELD_TYPE_NUMBER },
+    { "revoke",     SETROPTS_FIELD_TYPE_STRING },
+    { "rule1",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule2",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule3",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule4",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule5",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule6",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule7",      SETROPTS_FIELD_TYPE_STRING },
+    { "rule8",      SETROPTS_FIELD_TYPE_STRING },
+    { "rvarstfm",   SETROPTS_FIELD_TYPE_STRING},
+    { "rvarstpw",   SETROPTS_FIELD_TYPE_STRING },
+    { "rvarswfm",   SETROPTS_FIELD_TYPE_STRING },
+    { "rvarswpw",   SETROPTS_FIELD_TYPE_STRING },
+    { "saudit",     SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "seclabct",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "seclang",    SETROPTS_FIELD_TYPE_STRING },
+    { "sessint",    SETROPTS_FIELD_TYPE_NUMBER },
+    { "slabaudt",   SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "slbysys",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "slevaudt",   SETROPTS_FIELD_TYPE_STRING },
+    { "tapedsn",    SETROPTS_FIELD_TYPE_BOOLEAN },
+    { "terminal",   SETROPTS_FIELD_TYPE_STRING },
+    { "warning",    SETROPTS_FIELD_TYPE_NUMBER },
+    { "whenprog",   SETROPTS_FIELD_TYPE_BOOLEAN }
+};
 
 // Glue code to call IRRSEQ00 assembler code.
 extern "C" int callRadmin(char ZOS_PTR_32);

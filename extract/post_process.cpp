@@ -25,12 +25,13 @@ json post_process_generic(
     // Segment Variables
     int first_segment_offset = sizeof(generic_extract_parms_results_t);
     first_segment_offset += generic_result_buffer->profile_name_length;
-    segment_descriptor_t *segment = 
-        (segment_descriptor_t *) (profile_address + first_segment_offset);
+    generic_segment_descriptor_t *segment = 
+        (generic_segment_descriptor_t *) 
+        (profile_address + first_segment_offset);
     char segment_key[8];
 
     // Field Variables
-    field_descriptor_t *field;
+    generic_field_descriptor_t *field;
     char field_key[8];
     char field_data[1025];
     int field_length;
@@ -48,7 +49,7 @@ json post_process_generic(
 
         // Post Process Fields
         field = 
-            (field_descriptor_t *)
+            (generic_field_descriptor_t *)
             (profile_address + segment->field_descriptor_offset);
         for (int j = 1; j <= segment->field_count; j++) {
             post_process_key(field_key, field->name, 8);
@@ -99,8 +100,97 @@ json post_process_generic(
     return profile;
 }
 
+json post_process_setropts(
+    setropts_extract_results_t *setropts_result_buffer
+) {
+    json profile;
+    profile["profile"] = json::object();
+    char *profile_address = (char *)setropts_result_buffer;
+
+    // Set Class Name
+    profile["class"] = "setropts";
+
+    // Segment Variables
+    setropts_segment_descriptor_t *segment = 
+        (setropts_segment_descriptor_t *) 
+        (profile_address + sizeof(setropts_extract_results_t));
+    char segment_key[8];
+
+    // Field Variables
+    setropts_field_descriptor_t *field = 
+        (setropts_field_descriptor_t *)
+        (profile_address 
+            + sizeof(setropts_extract_results_t) 
+            + sizeof(setropts_segment_descriptor_t));
+    char field_key[8];
+    char field_data[10025];
+    std::vector<std::string> list_field_data;
+    char * list_field_data_pointer;
+    char field_type;
+
+    // Post Process Base Segment
+    post_process_key(segment_key, segment->name, 8);
+    profile["profile"][segment_key] = json::object();
+    
+    // Post Process Fields
+    for (int i = 1; i <= segment->field_count; i++) {
+        post_process_key(field_key, field->name, 8);
+        field_type = get_setropts_field_type(field_key);
+        if (field->field_length != 0) {
+            // Post Process List Fields
+            if (field_type == SETROPTS_FIELD_TYPE_LIST) {
+                list_field_data_pointer = 
+                        (char *) field + sizeof(setropts_field_descriptor_t);
+                for (int j = 0; j < field->field_length/9; j++) {
+                    memset(field_data, 0, 8+1);
+                    copy_and_encode_string(
+                        field_data, 
+                        list_field_data_pointer,
+                        8);
+                    trim_trailing_spaces(field_data, 8);
+                    list_field_data.push_back(field_data);
+                    list_field_data_pointer += 9;
+                }
+                profile["profile"][segment_key][field_key] = list_field_data;
+                list_field_data.clear();
+            // Post Process String & Number Fields
+            } else {
+                memset(field_data, 0, field->field_length+1);
+                copy_and_encode_string(
+                    field_data, 
+                    (char *) field + sizeof(setropts_field_descriptor_t),
+                    field->field_length);
+                trim_trailing_spaces(field_data, 8);
+                // Number
+                if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
+                    profile["profile"][segment_key][field_key] = strtol(field_data, NULL, 10);
+                // String
+                } else {
+                    profile["profile"][segment_key][field_key] = field_data;
+                }
+            }
+        // Post Process Boolean Fields
+        } else if (field_type == SETROPTS_FIELD_TYPE_BOOLEAN) {
+            if (field->flag == 0xe8) {
+                profile["profile"][segment_key][field_key] = true;
+            } else {
+                profile["profile"][segment_key][field_key] = false;
+            }
+        // Post Process All Non-Boolean Fields Without a Value
+        } else {
+            profile["profile"][segment_key][field_key] = nullptr;
+        }
+        field = 
+            (setropts_field_descriptor_t *)
+            ((char *) field 
+                + sizeof(setropts_field_descriptor_t) 
+                + field->field_length);
+    }
+    return profile;
+}
+
 bool process_boolean_field(
-        field_descriptor_t *field, 
+        generic_field_descriptor_t *field, 
         char *field_key
 ) {
     if (field->flags & f_boolean_field) {
@@ -111,7 +201,7 @@ bool process_boolean_field(
 }
 
 void process_generic_field(
-        field_descriptor_t *field, 
+        generic_field_descriptor_t *field, 
         char *field_key,
         char *field_data,
         char *profile_address
@@ -124,6 +214,16 @@ void process_generic_field(
         profile_address + field->
             field_data_offset_repeat_group_element_count.field_data_offset,
         field_length);
+}
+
+char get_setropts_field_type(char *field_key) {
+    int list_length = sizeof(SETROPTS_FIELD_TYPES)/sizeof(SETROPTS_FIELD_TYPES[0]);
+    for (int i = 0; i < list_length; i++) {
+        if (strcmp(field_key, SETROPTS_FIELD_TYPES[i].key) == 0) {
+            return SETROPTS_FIELD_TYPES[i].type;
+        }
+    }
+    return SETROPTS_FIELD_TYPE_STRING;
 }
 
 void post_process_key(
