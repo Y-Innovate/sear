@@ -2,10 +2,10 @@ UNAME := $(shell uname)
 
   ifeq ($(UNAME), OS/390)
   CC = xlc
-  CXX = xlclang++
+  CXX = ibm-clang++
 
   CFLAGS = 
-  CPPFLAGS = -qascii -qlanglvl=extended0x
+  CPPFLAGS = -std=c++11 -fzos-le-char-mode=ascii
   else
   # the compiler: gcc for C program, define as g++ for C++
   CC = gcc
