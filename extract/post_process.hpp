@@ -18,7 +18,7 @@ bool process_boolean_field(
     char *field_key);
 
 void process_generic_field(
-    generic_field_descriptor_t *field, 
+    generic_field_descriptor_t *field,
     char *field_key,
     char *field_data,
     char *profile_address);
@@ -26,16 +26,16 @@ void process_generic_field(
 char get_setropts_field_type(char *field_key);
 
 void post_process_key(
-    char *destination_key, 
-    const char *source_key, 
+    char *destination_key,
+    const char *source_key,
     int length);
 
 void copy_and_encode_string(
-    char *destination_string, 
-    const char *source_string, 
+    char *destination_string,
+    const char *source_string,
     int length);
 
-void convert_to_lowercase(char * string, int length);
+void convert_to_lowercase(char *string, int length);
 
 void trim_trailing_spaces(char *string, int length);
 
