@@ -293,7 +293,7 @@ typedef struct
 // setropts data do not describe what kind of data is in each field,
 // we need to use this list to look up the field type for each
 // setropts field.
-const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
+const setropts_field_type_t SETROPTS_FIELD_TYPES[] {
     {"addcreat", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"adsp", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"applaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
