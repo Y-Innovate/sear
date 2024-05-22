@@ -3,6 +3,8 @@
 #include "xml_conn.h"
 #include "saf_xml.h"
 
+// Connects the "XML library" to the C layer with these extern C functions
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

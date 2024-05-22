@@ -5,6 +5,7 @@
 
 #include "nlohmann/json.hpp"
 
+//XmlGen Generates an XML String from a JSON string
 class XmlGen
 {
 private:
@@ -22,6 +23,7 @@ public:
     char * build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
 };
 
+//XmlParse Parses an XML String and forms a JSON String
 class XmlParse
 {
 private:
@@ -38,6 +40,7 @@ public:
 std::string cast_hex_string(char * input);
 
 #ifndef __MVS__
+//Character conversion tables for OSX and Windows Testing
 static const unsigned char AsciiToEbcdic[256] = {
     0x0, 0x1, 0x2, 0x3, 0x37, 0x2d, 0x2e, 0x2f, 0x16, 0x5, 0x15, 0xb, 0xc, 0xd, 0xe, 0xf,
     0x10, 0x11, 0x12, 0x13, 0x3c, 0x3d, 0x32, 0x26, 0x18, 0x19, 0x3f, 0x27, 0x1c, 0x1d, 0x1e, 0x1f,

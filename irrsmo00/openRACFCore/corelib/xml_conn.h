@@ -1,5 +1,7 @@
 /* xml_conn.h */
 
+// Connects the "XML library" to the C layer with these extern C functions
+
 #ifndef XML_C_CONNECTOR_H_
 #define XML_C_CONNECTOR_H_
 

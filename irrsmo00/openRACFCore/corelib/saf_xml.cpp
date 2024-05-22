@@ -7,24 +7,30 @@
 
 //Private functions
 void XmlGen::build_open_tag(std::string tag) {
+    //Ex: "<base:universal_access"
     xml_buffer.append("<"+tag);
 }
 void XmlGen::build_attribute(std::string attribute) {
+    //Ex: " operation=set"
     xml_buffer.append(" "+attribute);
 }
 void XmlGen::build_value(std::string value) {
+    //Ex: ">Read"
     xml_buffer.append(">"+value);
 }
 void XmlGen::build_end_nested_tag() {
     xml_buffer.append(">");
 }
 void XmlGen::build_full_close_tag(std::string tag) {
+    //Ex: "</base:universal_access>"
     xml_buffer.append("</"+tag+">");
 }
 void XmlGen::build_close_tag_no_value() {
     xml_buffer.append("/>");
 }
 void XmlGen::build_single_trait(std::string tag, std::string operation, std::string value) {
+    //Combines above functions to build "trait" tags with added options and values
+    //Ex: "<base:universal_access operation=set>Read</base:universal_access>"
     build_open_tag(tag);
     if (operation.length() != 0) { build_attribute(make_xml_attribute("operation",operation)); }
     if (value.length() == 0) { build_close_tag_no_value(); }
@@ -35,12 +41,15 @@ void XmlGen::build_single_trait(std::string tag, std::string operation, std::str
 }
 std::string XmlGen::make_xml_attribute(std::string name, std::string value)
 {
+    //Builds "attribute" string used by build_attribute
+    //Ex: make_xml_attribute(operation,set) = "operation=set"
     std::string output = name;
     output.append("=\""+value+"\"");
     return output;
 }
 
 void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
+    //Universal function to convert ascii string to EBCDIC-1047 in-place
     #ifndef __MVS__
     for(int i = 0; i < length; i++)
     {
@@ -53,6 +62,7 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
 
 char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
 {
+    //Main body function that builds an xml string
     nlohmann::json request;
     request = nlohmann::json::parse(json_req_string);
     std::string requestType;
@@ -68,9 +78,12 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
     //Build the admin object
     for (const auto& item : request[requestType].items())
     {
+        //Skip the segment-trait data for now
         if ( item.key().compare("segments") == 0 ) { continue; }
+        //Build in optional parameters
         if ( item.key().compare("runninguserid") == 0 )
-        { 
+        {
+            //Run this command as another user id
             const int userid_length = item.value().get<std::string>().length();
             strncpy(userid_buffer, item.value().get<std::string>().c_str(), userid_length);
             convert_to_ebcdic(userid_buffer, userid_length);
@@ -93,6 +106,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
         }
         if ( item.value().is_string() )
         {
+        //All other attribute information is built into the xml at this level
         build_attribute(item.key()+"=\""+item.value().get<std::string>()+"\"");
         }
     }
@@ -129,9 +143,11 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
     if (*debug)
     {
+        //print information in debug mode
         std::cout << "XML Request string (Ascii): " << xml_buffer << "\n";
     }
 
+    //convert our c++ string to a char * buffer
     const int length = xml_buffer.length();
     char* output_buffer = new char[length + 1];
     strncpy(output_buffer, xml_buffer.c_str(), length+1);
@@ -139,6 +155,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
     if (*debug)
     {
+        //print information in debug mode
         std::cout << std::hex << "XML Request string (Ebcdic): " << std::hex << cast_hex_string(output_buffer) << "\n";
     }
 
@@ -147,6 +164,7 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, un
 
 void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string header_string)
 {
+    //Parse the header attributes of the XML for JSON information
     std::smatch attr_sub_re_match;
     std::regex attr {R"~(([a-z]*)="([^ ]*)")~"};
 
@@ -169,6 +187,7 @@ void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string 
 
 void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_string)
 {
+    //Parse the outer layer of the body XML for tags within, then use another function to parse those "inner" tags
     std::regex outer_tag {R"(<([a-z]*)>.*</([a-z]*)>)"};
     std::smatch body_sub_re_match, body_iter_sub_re_match;
     
@@ -239,6 +258,7 @@ void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_dat
 
 void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
 {
+    //Universal function to convert EBCDIC-1047 string to ascii in place
     #ifndef __MVS__
     for(int i = 0; i < length; i++)
     {
@@ -251,8 +271,10 @@ void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
 
 char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug)
 {
+
     if (debug)
     {
+        //print information in debug mode
         std::cout << "XML Result string (Ebcdic): " << std::hex << cast_hex_string( xml_result_string ) << "\n";
     }
 
@@ -262,11 +284,13 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
 
     if (debug)
     {
+        //print information in debug mode
         std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
     }
 
     std::smatch xml_sub_re_match;
     std::regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
+    //Regular expression designed to match the header, generic body, and closing tags of the xml
 
     nlohmann::json result;
     nlohmann::json profile;
@@ -281,27 +305,36 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
     //std::cout << xml_sub_re_match[2] << '\n'; // Profile Attrs
     //std::cout << xml_sub_re_match[3] << '\n'; // Command Information
 
+    //Use sub-matches in the regular expression to pull out useful information from the header of the xml
     profile_type = xml_sub_re_match[1];
     profile_close_tag = R"(</)"+profile_type+">";
     profile_xml_attrs = xml_sub_re_match[2];
     profile_xml_body = xml_sub_re_match[3];
 
+    //Parse out these attributes
     parse_header_attributes(&profile, profile_xml_attrs);
+    //Erase the profile close tag as it messes up later regex parsing
     profile_xml_body.erase(profile_xml_body.find(profile_close_tag),profile_close_tag.length());
+    //Parse the body of the xml here
     parse_outer_xml(&profile, profile_xml_body);
+
+    //Put the built JSON object in the result JSON
     result[xml_sub_re_match[1]] = profile;
     }
     else
     {
+    //If the XML does not match the main regular expression, then return this string to indicate an error
     result["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
     }
 
+    //Build a return codes object in the JSON to return IRRSMO00 return and reason codes
     returnCodes["safReturnCode"] = saf_rc;
     returnCodes["racfReturnCode"] = racf_rc;
     returnCodes["racfReasonCode"] = racf_rsn;
 
     result["returnCodes"] = returnCodes;
     
+    //Convert c++ string into char * c string
     std::string json_result = result.dump();
     const int length = json_result.length();
     char* output_buffer = new char[length + 1];
@@ -311,6 +344,7 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc
 
 std::string cast_hex_string(char * input)
 {
+    //Cast data to hex so that small strings of hex values can be printed to represent EBCDIC data
     std::string output = "{ ";
     char buff[4];
     for(int i = 0; i < strlen(input); i++)
