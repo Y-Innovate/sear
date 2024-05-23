@@ -53,3 +53,7 @@ dkms.conf
 
 # Visual Studio Code
 .vscode
+
+# Deliverables and Build Artifacts
+dist/
+artifacts/
