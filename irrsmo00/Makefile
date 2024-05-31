@@ -5,7 +5,7 @@ UNAME := $(shell uname)
   CXX = ibm-clang++
 
   CFLAGS = 
-  CPPFLAGS = -std=c++11 -fzos-le-char-mode=ascii
+  CPPFLAGS = -std=c++11 -m64 -fzos-le-char-mode=ascii
   else
   # the compiler: gcc for C program, define as g++ for C++
   CC = gcc
@@ -39,7 +39,7 @@ UNAME := $(shell uname)
 				$(CXX) $(CPPFLAGS) $(CPP_PATH)$(XML_LIB).cpp -o $(LIB_PATH)$(XML_LIB).o
 				$(RM) $(XML_LIB).o
 
-  $(SMO_LIB):				
+  UNIT_TEST:				
 				$(CC) -c $(C_PATH)$(SMO_LIB).c -o $(LIB_PATH)$(SMO_LIB).o    
 
   ifeq ($(UNAME), OS/390)
@@ -48,7 +48,7 @@ UNAME := $(shell uname)
 				$(CC) -Wl,"DLL,LP64,XPLINK" -o  $(LIB_PATH)$(SMO_CONN).dll $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(XML_CONN).so
 				$(RM) $(SMO_CONN).x
   else
-  dll: $(XML_CONN) $(SMO_LIB)
+  dll: $(XML_CONN) UNIT_TEST
 				$(CC) -c -DBUILD_DLL $(C_PATH)$(SMO_CONN).c -o $(LIB_PATH)$(SMO_CONN).o
 				$(CC) -v -shared -Wl $(LIB_PATH)$(SMO_CONN).o $(LIB_PATH)$(SMO_LIB).o $(LIB_PATH)$(XML_CONN).so -o $(LIB_PATH)$(SMO_CONN).dll
   endif
