@@ -1,0 +1,8 @@
+{
+  "resource" : {
+    "name": "*",
+    "class": "XFACILIT",
+    "operation": "listdata",
+    "requestid": "ResourceRequest"
+    }
+}

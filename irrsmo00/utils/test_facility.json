@@ -1,0 +1,8 @@
+{
+  "resource" : {
+    "name": "*",
+    "class": "FACILITY",
+    "operation": "listdata",
+    "requestid": "ResourceRequest"
+    }
+}
