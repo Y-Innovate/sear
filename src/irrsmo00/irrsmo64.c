@@ -4,21 +4,18 @@
 
 void IRRSMO64(
     char work_area[1024],
-    unsigned int alet_saf_rc,
-    unsigned int * saf_rc,
-    unsigned int alet_racf_rc,
-    unsigned int * racf_rc,
-    unsigned int alet_racf_rsn,
-    unsigned int * racf_rsn,
-    unsigned int num_parms,
-    unsigned int fn,
-    unsigned int irrsmo00_options,
-    unsigned int request_xml_length,
+    int * alet_saf_rc, int * saf_rc,
+    int * alet_racf_rc, int * racf_rc,
+    int * alet_racf_rsn, int * racf_rsn,
+    int * num_parms,
+    int * fn,
+    int * irrsmo00_options,
+    int * request_xml_length,
     char * request_xml,
-    unsigned char request_handle[64],
-    running_userid_t userid,
-    unsigned int acee,
-    unsigned int * result_len,
+    char * request_handle,
+    char * userid,
+    int * acee,
+    int * result_len,
     char * result_buffer){
         memset(result_buffer, 0, *result_len);
         // RLIST ELIJTEST TESTING (Class: ELIJTEST Resource: TESTING)

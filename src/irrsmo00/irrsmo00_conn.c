@@ -20,21 +20,21 @@ void null_byte_fix(char* str, unsigned int str_len) {
 }
 
 char * call_irrsmo00(
-    char * request_xml, char * running_userid, unsigned int result_buffer_size, unsigned int irrsmo00_options,
-    unsigned int * saf_rc, unsigned int * racf_rc, unsigned int * racf_rsn, bool debug
+    char * request_xml, char * running_userid, unsigned int result_buffer_size, int irrsmo00_options,
+    int * saf_rc, int * racf_rc, int * racf_rsn, bool debug
     )
 {
     char work_area[1024];
-    unsigned char req_handle[64] = {0};
-    running_userid_t running_userid_struct = {strlen(running_userid), {0}};
-    unsigned int alet = 0;
-    unsigned int acee = 0;
-    char  * result_buffer = malloc(result_buffer_size);
+    char req_handle[64] = {0};
+    running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
+    int * alet = 0;
+    int * acee = 0;
+    char  * result_buffer = (char *)malloc(result_buffer_size);
     memset(result_buffer, 0, result_buffer_size);
-    unsigned int request_xml_length = strlen(request_xml);
-    unsigned int result_len = result_buffer_size;
-    unsigned int num_parms = 17;
-    unsigned int fn = 1;
+    int request_xml_length = strlen(request_xml);
+    int result_len = result_buffer_size;
+    int num_parms = 17;
+    int fn = 1;
 
     strncpy(
         running_userid_struct.running_userid, 
@@ -54,13 +54,13 @@ char * call_irrsmo00(
         racf_rc,
         alet,
         racf_rsn,
-        num_parms,
-        fn,
-        irrsmo00_options,
-        request_xml_length,
+        &num_parms,
+        &fn,
+        &irrsmo00_options,
+        &request_xml_length,
         request_xml,
         req_handle,
-        running_userid_struct,
+        (char *) &running_userid_struct,
         acee,
         &result_len,
         result_buffer);
@@ -74,7 +74,7 @@ char * call_irrsmo00(
 
     unsigned int new_result_buffer_size = *racf_rsn + result_len + 1;
     if (debug) { printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size); }
-    char * full_result = malloc(new_result_buffer_size);
+    char * full_result = (char *)malloc(new_result_buffer_size);
     char * result_buffer_ptr;
     memset(full_result, 0, new_result_buffer_size);
     strncpy(full_result, result_buffer, result_len);
@@ -91,13 +91,13 @@ char * call_irrsmo00(
         racf_rc,
         alet,
         racf_rsn,
-        num_parms,
-        fn,
-        irrsmo00_options,
-        request_xml_length,
+        &num_parms,
+        &fn,
+        &irrsmo00_options,
+        &request_xml_length,
         request_xml,
         req_handle,
-        running_userid_struct,
+        (char *) &running_userid_struct,
         acee,
         &result_len,
         result_buffer_ptr);
@@ -110,7 +110,8 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
 {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
-    unsigned int irrsmo00_options, result_buffer_size, saf_rc, racf_rc, racf_rsn;
+    int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
+    unsigned int result_buffer_size;
     bool debug_mode;
 
     irrsmo00_options = 13;

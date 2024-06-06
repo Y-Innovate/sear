@@ -10,7 +10,7 @@ SMO_CONN 		= irrsmo00_conn
 SMO_LIB 		= irrsmo64
 
 # Directory Paths
-IRRSMO00_SRC	= ${PWD}/src/irrsmo00/openRACFCore/corelib
+IRRSMO00_SRC	= ${PWD}/src/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/src/irrseq00
 EXTERNALS		= ${PWD}/externals
 
@@ -36,7 +36,7 @@ endif
 
 RM				= rm -rf
 
-all: clean mkdirs dll
+all: clean mkdirs smo
 
 mkdirs:
 	mkdir $(ARTIFACTS)
@@ -48,7 +48,7 @@ mkdirs:
 					$(ARTIFACTS)/$(XML_LIB).o \
 					-o $(DIST)/$(XML_CONN).so
   
-  $(XML_LIB):
+  $(XML_LIB): clean mkdirs
 				$(CXX) $(CPPFLAGS) \
 					$(IRRSMO00_SRC)/$(XML_LIB).cpp \
 					-o $(ARTIFACTS)/$(XML_LIB).o
@@ -57,7 +57,7 @@ mkdirs:
 				$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
 
   ifeq ($(UNAME), OS/390)
-  dll: $(XML_CONN)
+  smo: $(XML_CONN)
 				$(CC) -c -D_XOPEN_SOURCE_EXTENDED \
 					-qlanglvl=extc99 \
 					-Wc,lp64,STACKPROTECT\(ALL\) \
@@ -71,7 +71,7 @@ mkdirs:
 					$(ARTIFACTS)/$(SMO_CONN).o \
 					$(DIST)/$(XML_CONN).so
   else
-  dll: $(XML_CONN) UNIT_TEST
+  smo: $(XML_CONN) UNIT_TEST
 				$(CC) -c -DBUILD_DLL \
 					$(IRRSMO00_SRC)/$(SMO_CONN).c \
 					-o $(ARTIFACTS)/$(SMO_CONN).o
