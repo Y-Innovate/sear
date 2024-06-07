@@ -5,7 +5,6 @@ DIST			= ${PWD}/dist
  
 # Library names
 XML_LIB 		= saf_xml
-XML_CONN 		= xml_conn
 SMO_CONN 		= irrsmo00_conn
 SMO_LIB 		= irrsmo64
 
@@ -41,38 +40,23 @@ all: clean mkdirs smo
 mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
-  
-  $(XML_LIB): clean mkdirs
-				$(CXX) $(CPPFLAGS) \
-					$(IRRSMO00_SRC)/$(XML_LIB).cpp \
-					-o $(ARTIFACTS)/$(XML_LIB).so
 
-  UNIT_TEST:				
-				$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
+UNIT_TEST:				
+			$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
 
-  ifeq ($(UNAME), OS/390)
-  smo: $(XML_LIB)
-				$(CC) -c -D_XOPEN_SOURCE_EXTENDED \
-					-std=c99 \
-					-m64 \
-					$(IRRSMO00_SRC)/$(SMO_CONN).c \
-					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -Wl,-b,edit=no \
-					-m64 \
-					-o  $(DIST)/$(SMO_CONN).dll \
-					$(ARTIFACTS)/$(SMO_CONN).o \
-					$(ARTIFACTS)/$(XML_LIB).so
-  else
-  smo: $(XML_LIB) UNIT_TEST
-				$(CC) -c -DBUILD_DLL \
-					$(IRRSMO00_SRC)/$(SMO_CONN).c \
-					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -shared -Wl \
-					$(ARTIFACTS)/$(SMO_CONN).o \
-					$(ARTIFACTS)/$(SMO_LIB).o \
-					$(ARTIFACTS)/$(XML_LIB).so \
-					-o $(DIST)/$(SMO_CONN).dll
-  endif
+ifeq ($(UNAME), OS/390)
+smo: clean mkdirs
+	cd $(ARTIFACTS) \
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/$(XML_LIB).cpp -o $(DIST)/$(XML_LIB).so \
+		&& $(CC) -c -D_XOPEN_SOURCE_EXTENDED -std=c99 -m64 $(IRRSMO00_SRC)/$(SMO_CONN).c -o $(SMO_CONN).o \
+		&& $(CC) -Wl,-b,edit=no -m64 $(SMO_CONN).o $(DIST)/$(XML_LIB).so -o $(DIST)/$(SMO_CONN).dll
+else
+smo: clean mkdirs UNIT_TEST
+	cd $(ARTIFACTS) \
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/$(XML_LIB).cpp -o $(DIST)/$(XML_LIB).so \
+		&& $(CC) -c -DBUILD_DLL $(IRRSMO00_SRC)/$(SMO_CONN).c -o $(ARTIFACTS)/$(SMO_CONN).o \
+		&& $(CC) -shared -Wl $(SMO_CONN).o $(SMO_LIB).o $(DIST)/$(XML_LIB).so -o $(DIST)/$(SMO_CONN).dll
+endif
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
