@@ -16,7 +16,7 @@ EXTERNALS		= ${PWD}/externals
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
-	CC 			= xlc
+	CC 			= ibm-clang
 	CXX 		= ibm-clang++
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
@@ -59,14 +59,12 @@ mkdirs:
   ifeq ($(UNAME), OS/390)
   smo: $(XML_CONN)
 				$(CC) -c -D_XOPEN_SOURCE_EXTENDED \
-					-qlanglvl=extc99 \
-					-Wc,lp64,STACKPROTECT\(ALL\) \
-					-I../../safCommon \
-					-I libIRRSMO64.so \
+					-std=c99 \
+					-m64 \
 					$(IRRSMO00_SRC)/$(SMO_CONN).c \
-					$(DIST)/$(XML_CONN).so \
 					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -Wl,"DLL,LP64,XPLINK" \
+				$(CC) -Wl,-b,edit=no \
+					-m64 \
 					-o  $(DIST)/$(SMO_CONN).dll \
 					$(ARTIFACTS)/$(SMO_CONN).o \
 					$(DIST)/$(XML_CONN).so
@@ -75,7 +73,7 @@ mkdirs:
 				$(CC) -c -DBUILD_DLL \
 					$(IRRSMO00_SRC)/$(SMO_CONN).c \
 					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -v -shared -Wl \
+				$(CC) -shared -Wl \
 					$(ARTIFACTS)/$(SMO_CONN).o \
 					$(ARTIFACTS)/$(SMO_LIB).o \
 					$(DIST)/$(XML_CONN).so \
