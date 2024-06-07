@@ -1,4 +1,4 @@
-/* call_irrsmo00.h */
+/* saf_xml.hpp */
 
 #ifndef XML_LIB_H_
 #define XML_LIB_H_

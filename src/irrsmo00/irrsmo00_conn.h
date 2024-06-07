@@ -1,3 +1,5 @@
+/* irrsmo00_conn.h */
+
 #ifndef IRRSMO00_CONN_H_
 #define IRRSMO00_CONN_H_
 
