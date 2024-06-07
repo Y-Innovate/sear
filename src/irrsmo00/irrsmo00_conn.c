@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "xml_conn.h"
-
 void null_byte_fix(char* str, unsigned int str_len) {
    for (int i = 1; i < str_len; i++){
       if (str[i] == 0) {

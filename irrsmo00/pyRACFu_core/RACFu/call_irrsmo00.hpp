@@ -1,9 +1,9 @@
-/* saf_xml.h */
+/* call_irrsmo00.h */
 
 #ifndef XML_LIB_H_
 #define XML_LIB_H_
 
-#include "../../externals/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 
 //XmlGen Generates an XML String from a JSON string
 class XmlGen
@@ -39,7 +39,26 @@ public:
 
 std::string cast_hex_string(char * input);
 
+void null_byte_fix(char* str, unsigned int str_len);
+
+extern char * call_irrsmo00(
+    char * request_xml, char * running_userid, unsigned int result_buffer_size, int irrsmo00_options,
+    int * saf_rc, int * racf_rc, int * racf_rsn, bool debug
+    );
+
+char * injson_to_inxml(char * injson, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
+char * outxml_to_outjson(char * outxml, int saf_rc, int racf_rc, int racf_rsn, bool debug);
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+char * call_irrsmo00_with_json(char * json_req_string);
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #ifndef __MVS__
+#include "irrsmo64.h"
 //Character conversion tables for OSX and Windows Testing
 static const unsigned char AsciiToEbcdic[256] = {
     0x0, 0x1, 0x2, 0x3, 0x37, 0x2d, 0x2e, 0x2f, 0x16, 0x5, 0x15, 0xb, 0xc, 0xd, 0xe, 0xf,
@@ -77,6 +96,34 @@ static const unsigned char EbcdicToAscii[256] = {
     0x5c, 0xf7, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0xb2, 0xd4, 0xd6, 0xd2, 0xd3, 0xd5,
     0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0xb3, 0xdb, 0xdc, 0xd9, 0xda, 0x9f,
 };
+#else
+extern "C" {
+    typedef struct
+    {
+        unsigned char running_userid_length;
+        char running_userid[8];
+    } running_userid_t;
+    
+    /* Prototype for IRRSMO64 */
+    void IRRSMO64(char*,   // Workarea
+        int*, int*, // safrc
+        int*, int*, // racfrc
+        int*, int*, // racfrsn
+        int*,  // Numparms
+        int*,  // Function code
+        int*,  // options
+        int*,  // Request Length
+        char *, // Request
+        char *, // Request Handle
+        char *, // run as user
+        int *,  // ACEE (not used)
+        int *,  // Result buffer
+        char * // Result
+        );
+
+    /* Callable service prototypes */
+    #pragma linkage(IRRSMO64,OS_NOSTACK)
+}
 #endif /* __MVS__*/
 
 #endif /* XML_LIB_H_ */

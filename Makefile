@@ -42,22 +42,16 @@ mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
   
-  $(XML_CONN): $(XML_LIB)
-				$(CXX) $(CPPFLAGS) \
-					$(IRRSMO00_SRC)/$(XML_CONN).cpp \
-					$(ARTIFACTS)/$(XML_LIB).o \
-					-o $(DIST)/$(XML_CONN).so
-  
   $(XML_LIB): clean mkdirs
 				$(CXX) $(CPPFLAGS) \
 					$(IRRSMO00_SRC)/$(XML_LIB).cpp \
-					-o $(ARTIFACTS)/$(XML_LIB).o
+					-o $(ARTIFACTS)/$(XML_LIB).so
 
   UNIT_TEST:				
 				$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
 
   ifeq ($(UNAME), OS/390)
-  smo: $(XML_CONN)
+  smo: $(XML_LIB)
 				$(CC) -c -D_XOPEN_SOURCE_EXTENDED \
 					-std=c99 \
 					-m64 \
@@ -67,16 +61,16 @@ mkdirs:
 					-m64 \
 					-o  $(DIST)/$(SMO_CONN).dll \
 					$(ARTIFACTS)/$(SMO_CONN).o \
-					$(DIST)/$(XML_CONN).so
+					$(ARTIFACTS)/$(XML_LIB).so
   else
-  smo: $(XML_CONN) UNIT_TEST
+  smo: $(XML_LIB) UNIT_TEST
 				$(CC) -c -DBUILD_DLL \
 					$(IRRSMO00_SRC)/$(SMO_CONN).c \
 					-o $(ARTIFACTS)/$(SMO_CONN).o
 				$(CC) -shared -Wl \
 					$(ARTIFACTS)/$(SMO_CONN).o \
 					$(ARTIFACTS)/$(SMO_LIB).o \
-					$(DIST)/$(XML_CONN).so \
+					$(ARTIFACTS)/$(XML_LIB).so \
 					-o $(DIST)/$(SMO_CONN).dll
   endif
 
