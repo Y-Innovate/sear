@@ -11,6 +11,7 @@ SMO_LIB 		= irrsmo64
 # Directory Paths
 IRRSMO00_SRC	= ${PWD}/src/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/src/irrseq00
+IRRSMO64_TST	= ${PWD}/tests/irrsmo64
 EXTERNALS		= ${PWD}/externals
 
 ifeq ($(UNAME), OS/390)
@@ -44,7 +45,7 @@ mkdirs:
 	mkdir $(DIST)
 
 SMO64_TEST:	
-	$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
+	$(CC) -c $(IRRSMO64_TST)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
 
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \

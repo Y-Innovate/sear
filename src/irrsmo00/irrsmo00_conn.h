@@ -5,7 +5,6 @@
 
 #include <stdbool.h>
 
-#ifdef __MVS__
 typedef struct
 {
     unsigned char running_userid_length;
@@ -31,9 +30,6 @@ void IRRSMO64(char*,   // Workarea
 
 /* Callable service prototypes */
 #pragma linkage(IRRSMO64,OS_NOSTACK)
-#else
-#include "irrsmo64.h"
-#endif /* __MVS__*/
 
 #pragma export(call_irrsmo00_with_json)
 
