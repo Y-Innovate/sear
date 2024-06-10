@@ -50,8 +50,8 @@ SMO64_TEST:
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \
 		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/$(XML_LIB).cpp -o $(DIST)/$(XML_LIB).so \
-		&& $(CC) -c -D_XOPEN_SOURCE_EXTENDED -std=c99 -m64 $(IRRSMO00_SRC)/$(SMO_CONN).c -o $(ARTIFACTS)/$(SMO_CONN).o \
-		&& $(CC) $(LDFLAGS) $(SMO_CONN).o $(DIST)/$(XML_LIB).so -o $(DIST)/$(SMO_CONN).dll
+		&& $(CXX) -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64 $(IRRSMO00_SRC)/$(SMO_CONN).cpp -o $(ARTIFACTS)/$(SMO_CONN).o \
+		&& $(CXX) $(LDFLAGS) $(SMO_CONN).o $(DIST)/$(XML_LIB).so -o $(DIST)/$(SMO_CONN).dll
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s

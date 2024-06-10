@@ -17,10 +17,8 @@ typedef struct
     char running_userid[8];
 } running_userid_t;
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-    void IRRSMO64(char*,   // Workarea
+
+extern void IRRSMO64(char*,   // Workarea
         int*, int*, // safrc
         int*, int*, // racfrc
         int*, int*, // racfrsn
@@ -36,8 +34,5 @@ extern "C" {
         char * // Result
         );
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
 
 #endif

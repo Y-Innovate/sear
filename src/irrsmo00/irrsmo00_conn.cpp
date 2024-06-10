@@ -1,4 +1,5 @@
-#include "irrsmo00_conn.h"
+#include "irrsmo00_conn.hpp"
+#include "saf_xml.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>

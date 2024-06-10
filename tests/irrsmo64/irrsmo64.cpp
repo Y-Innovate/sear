@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-void IRRSMO64(
+extern void IRRSMO64(
     char work_area[1024],
     int * alet_saf_rc, int * saf_rc,
     int * alet_racf_rc, int * racf_rc,
