@@ -45,7 +45,7 @@ mkdirs:
 	mkdir $(DIST)
 
 SMO64_TEST:	
-	$(CC) -c $(IRRSMO64_TST)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
+	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \

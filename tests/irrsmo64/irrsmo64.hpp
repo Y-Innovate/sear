@@ -1,4 +1,4 @@
-/* irrsmo64.h */
+/* irrsmo64.hpp */
 
 #ifndef _irrsmo64_test
 #define _irrsmo64_test

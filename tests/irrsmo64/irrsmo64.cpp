@@ -1,4 +1,4 @@
-#include "irrsmo64.h"
+#include "irrsmo64.hpp"
 
 #include <string.h>
 
