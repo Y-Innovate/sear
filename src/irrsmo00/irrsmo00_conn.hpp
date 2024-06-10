@@ -12,21 +12,23 @@ typedef struct
 } running_userid_t;
 
 /* Prototype for IRRSMO64 */
-extern void IRRSMO64(char*,   // Workarea
-    int*, int*, // safrc
-    int*, int*, // racfrc
-    int*, int*, // racfrsn
-    int*,  // Numparms
-    int*,  // Function code
-    int*,  // options
-    int*,  // Request Length
-    char *, // Request
-    char *, // Request Handle
-    char *, // run as user
-    int *,  // ACEE (not used)
-    int *,  // Result buffer
-    char * // Result
-    );
+extern "C" {
+    void IRRSMO64(char*,   // Workarea
+        int*, int*, // safrc
+        int*, int*, // racfrc
+        int*, int*, // racfrsn
+        int*,  // Numparms
+        int*,  // Function code
+        int*,  // options
+        int*,  // Request Length
+        char *, // Request
+        char *, // Request Handle
+        char *, // run as user
+        int *,  // ACEE (not used)
+        int *,  // Result buffer
+        char * // Result
+        );
+}
 
 /* Callable service prototypes */
 #pragma linkage(IRRSMO64,OS_NOSTACK)

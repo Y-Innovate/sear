@@ -18,7 +18,8 @@ typedef struct
 } running_userid_t;
 
 
-extern void IRRSMO64(char*,   // Workarea
+extern "C" {
+    void IRRSMO64(char*,   // Workarea
         int*, int*, // safrc
         int*, int*, // racfrc
         int*, int*, // racfrsn
@@ -33,6 +34,6 @@ extern void IRRSMO64(char*,   // Workarea
         int *,  // Result buffer
         char * // Result
         );
-
+}
 
 #endif
