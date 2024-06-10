@@ -12,7 +12,7 @@ typedef struct
 } running_userid_t;
 
 /* Prototype for IRRSMO64 */
-void IRRSMO64(char*,   // Workarea
+extern void IRRSMO64(char*,   // Workarea
     int*, int*, // safrc
     int*, int*, // racfrc
     int*, int*, // racfrsn

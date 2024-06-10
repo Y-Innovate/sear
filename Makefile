@@ -30,8 +30,8 @@ else
 	CXX 		= g++
 
 	CFLAGS  	= -g -Wall -std=c++11
-	CPPFLAGS 	= -fpic -shared -std=c++11
-	LDFLAGS		= -shared -Wl -m64 $(SMO_LIB).o
+	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
+	LDFLAGS		= -shared -Wl -m64
 
 	REQTEST		= SMO64_TEST
 endif
@@ -49,9 +49,8 @@ SMO64_TEST:
 
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \
-		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/$(XML_LIB).cpp -o $(DIST)/$(XML_LIB).so \
-		&& $(CXX) -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64 $(IRRSMO00_SRC)/$(SMO_CONN).cpp -o $(ARTIFACTS)/$(SMO_CONN).o \
-		&& $(CXX) $(LDFLAGS) $(SMO_CONN).o $(DIST)/$(XML_LIB).so -o $(DIST)/$(SMO_CONN).dll
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp
+	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).dll
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
