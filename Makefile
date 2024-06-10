@@ -4,8 +4,7 @@ ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
  
 # Library names
-XML_LIB 		= saf_xml
-SMO_CONN 		= irrsmo00_conn
+SMO_CONN 		= irrsmo64_conn
 SMO_LIB 		= irrsmo64
 
 # Directory Paths
@@ -24,6 +23,7 @@ ifeq ($(UNAME), OS/390)
   	CPPFLAGS 	= -std=c++11 -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 
+	FORCEOUT	= -o $(SMO_LIB).o
 	REQTEST		=
 else
 	CC 			= gcc
@@ -33,6 +33,7 @@ else
 	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
 	LDFLAGS		= -shared -Wl -m64
 
+	FORCEOUT	=
 	REQTEST		= SMO64_TEST
 endif
 
@@ -49,7 +50,7 @@ SMO64_TEST:
 
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \
-		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp $(FORCEOUT)
 	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).dll
 
 extract: clean mkdirs
