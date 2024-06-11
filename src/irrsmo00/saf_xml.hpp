@@ -1,9 +1,9 @@
-/* saf_xml.h */
+/* saf_xml.hpp */
 
 #ifndef XML_LIB_H_
 #define XML_LIB_H_
 
-#include "nlohmann/json.hpp"
+#include "../../externals/nlohmann/json.hpp"
 
 //XmlGen Generates an XML String from a JSON string
 class XmlGen
@@ -20,7 +20,7 @@ private:
     std::string make_xml_attribute(std::string name, std::string value);
     void convert_to_ebcdic(char * ascii_str, int length);
 public:
-    char * build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
+    char * build_xml_string(char * json_req_string, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
 };
 
 //XmlParse Parses an XML String and forms a JSON String
@@ -34,10 +34,13 @@ private:
     void update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag);
     void convert_to_ascii(char * ebcdic_str, int length);
 public:
-    char * build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug);
+    char * build_json_string(char * xml_result_string, int saf_rc, int racf_rc, int racf_rsn, bool debug);
 };
 
 std::string cast_hex_string(char * input);
+
+extern char * injson_to_inxml(char * injson, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
+extern char * outxml_to_outjson(char * outxml, int saf_rc, int racf_rc, int racf_rsn, bool debug);
 
 #ifndef __MVS__
 //Character conversion tables for OSX and Windows Testing

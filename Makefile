@@ -4,83 +4,52 @@ ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
  
 # Library names
-XML_LIB 		= saf_xml
-XML_CONN 		= xml_conn
-SMO_CONN 		= irrsmo00_conn
+SMO_CONN 		= irrsmo64_conn
 SMO_LIB 		= irrsmo64
 
 # Directory Paths
-IRRSMO00_SRC	= ${PWD}/src/irrsmo00/openRACFCore/corelib
+IRRSMO00_SRC	= ${PWD}/src/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/src/irrseq00
+IRRSMO64_TST	= ${PWD}/tests/irrsmo64
 EXTERNALS		= ${PWD}/externals
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
-	CC 			= xlc
+	CC 			= ibm-clang
 	CXX 		= ibm-clang++
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= -m64 -fzos-le-char-mode=ascii -I $(IRRSEQ00_SRC) -I $(EXTERNALS)
-  	CPPFLAGS 	= -std=c++11 -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
+  	CPPFLAGS 	= -std=c++11 -c -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
+
+	REQTEST		=
 else
-	# the compiler: gcc for C program, define as g++ for C++
-	CC 			= gcc
-	CXX 		= g++
-	# compiler flags:
-	#  -g     - this flag adds debugging information to the executable file
-	#  -Wall  - this flag is used to turn on most compiler warnings
+	CC 			= clang
+	CXX 		= clang++
+
 	CFLAGS  	= -g -Wall -std=c++11
-	CPPFLAGS 	= -fpic -shared -std=c++11
+	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
+	LDFLAGS		= -shared -Wl -m64
+
+	REQTEST		= SMO64_TEST
 endif
 
 RM				= rm -rf
 
-all: clean mkdirs dll
+all: clean mkdirs smo
 
 mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
-  
-  $(XML_CONN): $(XML_LIB)
-				$(CXX) $(CPPFLAGS) \
-					$(IRRSMO00_SRC)/$(XML_CONN).cpp \
-					$(ARTIFACTS)/$(XML_LIB).o \
-					-o $(DIST)/$(XML_CONN).so
-  
-  $(XML_LIB):
-				$(CXX) $(CPPFLAGS) \
-					$(IRRSMO00_SRC)/$(XML_LIB).cpp \
-					-o $(ARTIFACTS)/$(XML_LIB).o
 
-  UNIT_TEST:				
-				$(CC) -c $(IRRSMO00_SRC)/$(SMO_LIB).c -o $(ARTIFACTS)/$(SMO_LIB).o    
+SMO64_TEST:	
+	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 
-  ifeq ($(UNAME), OS/390)
-  dll: $(XML_CONN)
-				$(CC) -c -D_XOPEN_SOURCE_EXTENDED \
-					-qlanglvl=extc99 \
-					-Wc,lp64,STACKPROTECT\(ALL\) \
-					-I../../safCommon \
-					-I libIRRSMO64.so \
-					$(IRRSMO00_SRC)/$(SMO_CONN).c \
-					$(DIST)/$(XML_CONN).so \
-					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -Wl,"DLL,LP64,XPLINK" \
-					-o  $(DIST)/$(SMO_CONN).dll \
-					$(ARTIFACTS)/$(SMO_CONN).o \
-					$(DIST)/$(XML_CONN).so
-  else
-  dll: $(XML_CONN) UNIT_TEST
-				$(CC) -c -DBUILD_DLL \
-					$(IRRSMO00_SRC)/$(SMO_CONN).c \
-					-o $(ARTIFACTS)/$(SMO_CONN).o
-				$(CC) -v -shared -Wl \
-					$(ARTIFACTS)/$(SMO_CONN).o \
-					$(ARTIFACTS)/$(SMO_LIB).o \
-					$(DIST)/$(XML_CONN).so \
-					-o $(DIST)/$(SMO_CONN).dll
-  endif
+smo: clean mkdirs $(REQTEST)
+	cd $(ARTIFACTS) \
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp
+	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).so
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
