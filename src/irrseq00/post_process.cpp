@@ -1,5 +1,7 @@
 #include "post_process.hpp"
 
+#include "key_map.hpp"
+
 #include <iostream>
 
 #include <ctype.h>
@@ -15,12 +17,8 @@ json post_process_generic(
 
   // Set Class Name
   char class_name[8];
-  copy_and_encode_string(
-      class_name,
-      generic_result_buffer->class_name,
-      8);
-  trim_trailing_spaces(class_name, 8);
-  profile["class"] = class_name;
+  post_process_key(class_name, generic_result_buffer->class_name, 8);
+  profile["profile_type"] = class_name;
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -33,6 +31,7 @@ json post_process_generic(
   // Field Variables
   generic_field_descriptor_t *field;
   char field_key[8];
+  std::string racfu_field_key;
   char field_data[1025];
   int field_length;
 
@@ -41,6 +40,7 @@ json post_process_generic(
   int repeat_group_count;
   int repeat_group_element_count;
   char repeat_field_key[8];
+  std::string racfu_repeat_field_key;
 
   // Post Process Segments
   for (int i = 1; i <= generic_result_buffer->segment_count; i++) {
@@ -52,10 +52,11 @@ json post_process_generic(
         (generic_field_descriptor_t *)
             (profile_address + segment->field_descriptor_offset);
     for (int j = 1; j <= segment->field_count; j++) {
-      post_process_key(field_key, field->name, 8);
+      racfu_field_key = post_process_field_key(
+          field_key, class_name, segment_key, field->name);
       // Post Process Boolean Fields
       if (field->type & t_boolean_field) {
-        profile["profile"][segment_key][field_key] =
+        profile["profile"][segment_key][racfu_field_key] =
             process_boolean_field(
                 field,
                 field_key);
@@ -66,7 +67,7 @@ json post_process_generic(
             field_key,
             field_data,
             profile_address);
-        profile["profile"][segment_key][field_key] = field_data;
+        profile["profile"][segment_key][racfu_field_key] = field_data;
         // Post Process Repeat Fields
       } else {
         repeat_group_count = 
@@ -82,17 +83,19 @@ json post_process_generic(
           // Post Process Each Repeat Group Field
           for (int l = 1; l <= repeat_group_element_count; l++) {
             post_process_key(repeat_field_key, field->name, 8);
+            racfu_repeat_field_key = post_process_field_key(
+                repeat_field_key, class_name, segment_key, field->name);
             // Assume that repeat fields just get processed as generic field?
             process_generic_field(
                 field,
                 repeat_field_key,
                 field_data,
                 profile_address);
-            repeat_group[k - 1][repeat_field_key] = field_data;
+            repeat_group[k - 1][racfu_repeat_field_key] = field_data;
             field++;
           }
         }
-        profile["profile"][segment_key][field_key] = repeat_group;
+        profile["profile"][segment_key][racfu_field_key] = repeat_group;
         repeat_group.clear();
       }
       field++;
@@ -110,7 +113,7 @@ json post_process_setropts(
   char *profile_address = (char *)setropts_result_buffer;
 
   // Set Class Name
-  profile["class"] = "setropts";
+  profile["profile_type"] = "setropts";
 
   // Segment Variables
   setropts_segment_descriptor_t *segment =
@@ -125,6 +128,7 @@ json post_process_setropts(
               + sizeof(setropts_extract_results_t) 
               + sizeof(setropts_segment_descriptor_t));
   char field_key[8];
+  std::string racfu_field_key;
   char field_data[10025];
   std::vector<std::string> list_field_data;
   char *list_field_data_pointer;
@@ -136,7 +140,8 @@ json post_process_setropts(
 
   // Post Process Fields
   for (int i = 1; i <= segment->field_count; i++) {
-    post_process_key(field_key, field->name, 8);
+    racfu_field_key = post_process_field_key(
+        field_key, "setropts", segment_key, field->name);
     field_type = get_setropts_field_type(field_key);
     if (field->field_length != 0) {
       // Post Process List Fields
@@ -153,7 +158,7 @@ json post_process_setropts(
           list_field_data.push_back(field_data);
           list_field_data_pointer += 9;
         }
-        profile["profile"][segment_key][field_key] = list_field_data;
+        profile["profile"][segment_key][racfu_field_key] = list_field_data;
         list_field_data.clear();
       // Post Process String & Number Fields
       } else {
@@ -165,22 +170,22 @@ json post_process_setropts(
         trim_trailing_spaces(field_data, 8);
         // Number
         if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
-          profile["profile"][segment_key][field_key] = strtol(field_data, NULL, 10);
+          profile["profile"][segment_key][racfu_field_key] = strtol(field_data, NULL, 10);
         // String
         } else {
-          profile["profile"][segment_key][field_key] = field_data;
+          profile["profile"][segment_key][racfu_field_key] = field_data;
         }
       }
     // Post Process Boolean Fields
     } else if (field_type == SETROPTS_FIELD_TYPE_BOOLEAN) {
       if (field->flag == 0xe8) { // 0xe8 is 'Y' in EBCDIC.
-        profile["profile"][segment_key][field_key] = true;
+        profile["profile"][segment_key][racfu_field_key] = true;
       } else {
-        profile["profile"][segment_key][field_key] = false;
+        profile["profile"][segment_key][racfu_field_key] = false;
       }
       // Post Process All Non-Boolean Fields Without a Value
     } else {
-      profile["profile"][segment_key][field_key] = nullptr;
+      profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
     field =
         (setropts_field_descriptor_t *)
@@ -225,6 +230,21 @@ char get_setropts_field_type(char *field_key)
     }
   }
   return SETROPTS_FIELD_TYPE_STRING;
+}
+
+std::string post_process_field_key(
+    char * field_key,
+    const char * profile_type,
+    const char * segment,
+    const char *raw_field_key
+) {
+    post_process_key(field_key, raw_field_key, 8);
+    const char *racfu_field_key = get_racfu_key(
+      profile_type, segment, field_key);
+    if (racfu_field_key == NULL) {
+      return std::string("experimental:") + std::string(field_key);
+    } 
+    return std::string(racfu_field_key);
 }
 
 void post_process_key(

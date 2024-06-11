@@ -12,6 +12,7 @@ SMO_LIB 		= irrsmo64
 # Directory Paths
 IRRSMO00_SRC	= ${PWD}/src/irrsmo00/openRACFCore/corelib
 IRRSEQ00_SRC	= ${PWD}/src/irrseq00
+KEY_MAP			= ${PWD}/src/key_map
 EXTERNALS		= ${PWD}/externals
 
 ifeq ($(UNAME), OS/390)
@@ -20,7 +21,11 @@ ifeq ($(UNAME), OS/390)
 	CXX 		= ibm-clang++
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
-	CFLAGS		= -m64 -fzos-le-char-mode=ascii -I $(IRRSEQ00_SRC) -I $(EXTERNALS)
+	CFLAGS		= \
+				-m64 -fzos-le-char-mode=ascii \
+				-I $(IRRSEQ00_SRC) \
+				-I $(KEY_MAP) \
+				-I $(EXTERNALS)
   	CPPFLAGS 	= -std=c++11 -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 else
@@ -84,7 +89,7 @@ mkdirs:
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
-	cd $(ARTIFACTS) && $(CXX) -c $(CFLAGS) $(IRRSEQ00_SRC)/*.cpp
+	cd $(ARTIFACTS) && $(CXX) -c $(CFLAGS) $(IRRSEQ00_SRC)/*.cpp $(KEY_MAP)/*.cpp
 	$(CXX) $(LDFLAGS) -o $(DIST)/extract $(ARTIFACTS)/*.o 
 
 clean:

@@ -25,6 +25,12 @@ void process_generic_field(
 
 char get_setropts_field_type(char *field_key);
 
+std::string post_process_field_key(
+    char * field_key,
+    const char * profile_type,
+    const char * segment,
+    const char *raw_field_key);
+
 void post_process_key(
     char *destination_key,
     const char *source_key,
