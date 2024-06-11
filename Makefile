@@ -20,20 +20,18 @@ ifeq ($(UNAME), OS/390)
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= -m64 -fzos-le-char-mode=ascii -I $(IRRSEQ00_SRC) -I $(EXTERNALS)
-  	CPPFLAGS 	= -std=c++11 -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
+  	CPPFLAGS 	= -std=c++11 -c -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 
-	FORCEOUT	= -o $(SMO_LIB).o
 	REQTEST		=
 else
-	CC 			= gcc
-	CXX 		= g++
+	CC 			= clang
+	CXX 		= clang++
 
 	CFLAGS  	= -g -Wall -std=c++11
 	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
 	LDFLAGS		= -shared -Wl -m64
 
-	FORCEOUT	=
 	REQTEST		= SMO64_TEST
 endif
 
@@ -50,8 +48,8 @@ SMO64_TEST:
 
 smo: clean mkdirs $(REQTEST)
 	cd $(ARTIFACTS) \
-		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp $(FORCEOUT)
-	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).dll
+		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp
+	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).so
 
 extract: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s

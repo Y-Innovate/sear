@@ -13,7 +13,7 @@ class RACFAdmin:
         file_path = f"{os.path.dirname(__file__)}/../../../dist/"
         cwd = os.getcwd()
         os.chdir(file_path)
-        self.dll = CDLL(file_path+"irrsmo64_conn.dll")
+        self.dll = CDLL(file_path+"irrsmo64_conn.so")
         os.chdir(cwd)
         
     
