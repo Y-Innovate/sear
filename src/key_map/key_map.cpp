@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static const char *get_key_mapping(
+static const trait_key_mapping_t *get_key_mapping(
     const char *profile_type, // The profile type (i.e., 'user')
     const char *segment,      // The segment      (i.e., 'omvs')
     const char *racf_key,     // The RACF key     (i.e., 'program')
@@ -16,7 +16,10 @@ const char *get_racfu_key(
     const char *segment,
     const char *racf_key
 ) {
-  return get_key_mapping(profile_type, segment, racf_key, NULL, true);
+  const trait_key_mapping_t *key_mapping = 
+    get_key_mapping(profile_type, segment, racf_key, NULL, true);
+  if (key_mapping == NULL) { return NULL; }
+  return key_mapping->racfu_key;
 }
 
 const char *get_racf_key(
@@ -24,10 +27,35 @@ const char *get_racf_key(
     const char *segment,
     const char *racfu_key
 ) {
-  return get_key_mapping(profile_type, segment, NULL, racfu_key, false);
+  const trait_key_mapping_t *key_mapping = 
+    get_key_mapping(profile_type, segment, NULL, racfu_key, false);
+  if (key_mapping == NULL) { return NULL; }
+  return key_mapping->racf_key;
 }
 
-static const char *get_key_mapping(
+const char get_racfu_trait_type(
+    const char *profile_type,
+    const char *segment,
+    const char *racf_key
+) {
+  const trait_key_mapping_t *key_mapping = 
+    get_key_mapping(profile_type, segment, racf_key, NULL, true);
+  if (key_mapping == NULL) { return -1; }
+  return key_mapping->data_type;
+}
+
+const char get_racf_trait_type(
+    const char *profile_type,
+    const char *segment,
+    const char *racfu_key
+) {
+  const trait_key_mapping_t *key_mapping = 
+    get_key_mapping(profile_type, segment, NULL, racfu_key, true);
+  if (key_mapping == NULL) { return -1; }
+  return key_mapping->data_type;
+}
+
+static const trait_key_mapping_t *get_key_mapping(
     const char *profile_type,
     const char *segment,
     const char *racf_key,
@@ -42,16 +70,16 @@ static const char *get_key_mapping(
         if (strcmp(segment, KEY_MAP[i].segments[j].segment) == 0) {
           // Find the trait key mapping.
           for (int k = 0; k < KEY_MAP[i].segments[j].size; k++) {
-            // Get the RACFu key for profile extract
+            // Get the RACFu key mapping for profile extract
             if (extract == true) {
               if (strcmp(racf_key, KEY_MAP[i].segments[j].traits[k].racf_key) == 0) {
-                return KEY_MAP[i].segments[j].traits[k].racfu_key;
+                return &KEY_MAP[i].segments[j].traits[k];
               }
             }
-            // Get the RACF key for add/alter/delete
+            // Get the RACF key mapping for add/alter/delete
             else {
               if (strcmp(racfu_key, KEY_MAP[i].segments[j].traits[k].racfu_key) == 0) {
-                return KEY_MAP[i].segments[j].traits[k].racf_key;
+                return &KEY_MAP[i].segments[j].traits[k];
               }
             }
           }

@@ -13,15 +13,12 @@ json post_process_generic(
 json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer);
 
-bool process_boolean_field(
-    generic_field_descriptor_t *field,
-    char *field_key);
-
 void process_generic_field(
+    json &json_field,
     generic_field_descriptor_t *field,
     char *field_key,
-    char *field_data,
-    char *profile_address);
+    char *profile_address,
+    const char racfu_field_type);
 
 char get_setropts_field_type(char *field_key);
 

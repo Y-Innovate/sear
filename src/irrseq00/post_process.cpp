@@ -32,8 +32,7 @@ json post_process_generic(
   generic_field_descriptor_t *field;
   char field_key[8];
   std::string racfu_field_key;
-  char field_data[1025];
-  int field_length;
+  char racfu_field_type;
 
   // Repeat Group Variables
   std::vector<json> repeat_group;
@@ -41,12 +40,12 @@ json post_process_generic(
   int repeat_group_element_count;
   char repeat_field_key[8];
   std::string racfu_repeat_field_key;
+  char racfu_repeat_field_type;
 
   // Post Process Segments
   for (int i = 1; i <= generic_result_buffer->segment_count; i++) {
     post_process_key(segment_key, segment->name, 8);
     profile["profile"][segment_key] = json::object();
-
     // Post Process Fields
     field =
         (generic_field_descriptor_t *)
@@ -54,21 +53,17 @@ json post_process_generic(
     for (int j = 1; j <= segment->field_count; j++) {
       racfu_field_key = post_process_field_key(
           field_key, class_name, segment_key, field->name);
-      // Post Process Boolean Fields
-      if (field->type & t_boolean_field) {
-        profile["profile"][segment_key][racfu_field_key] =
-            process_boolean_field(
-                field,
-                field_key);
-        // Post Process Generic Fields
-      } else if (!(field->type & t_repeat_field_header)) {
+      racfu_field_type = get_racfu_trait_type(
+          class_name, segment_key, field_key);
+      // Post Process Non-Repeat Fields
+      if (!(field->type & t_repeat_field_header)) {
         process_generic_field(
+            profile["profile"][segment_key][racfu_field_key],
             field,
             field_key,
-            field_data,
-            profile_address);
-        profile["profile"][segment_key][racfu_field_key] = field_data;
-        // Post Process Repeat Fields
+            profile_address,
+            racfu_field_type);
+      // Post Process Repeat Fields
       } else {
         repeat_group_count = 
             field->field_data_length_repeat_group_count.repeat_group_count;
@@ -76,23 +71,22 @@ json post_process_generic(
             field->
                 field_data_offset_repeat_group_element_count.
                     repeat_group_element_count;
-        field++;
         // Post Process Each Repeat Group
         for (int k = 1; k <= repeat_group_count; k++) {
           repeat_group.push_back(json::object());
           // Post Process Each Repeat Group Field
           for (int l = 1; l <= repeat_group_element_count; l++) {
-            post_process_key(repeat_field_key, field->name, 8);
+            field++;
             racfu_repeat_field_key = post_process_field_key(
                 repeat_field_key, class_name, segment_key, field->name);
-            // Assume that repeat fields just get processed as generic field?
+            racfu_repeat_field_type = get_racfu_trait_type(
+                class_name, segment_key, repeat_field_key);
             process_generic_field(
+                repeat_group[k - 1][racfu_repeat_field_key],
                 field,
                 repeat_field_key,
-                field_data,
-                profile_address);
-            repeat_group[k - 1][racfu_repeat_field_key] = field_data;
-            field++;
+                profile_address,
+                racfu_repeat_field_type);
           }
         }
         profile["profile"][segment_key][racfu_field_key] = repeat_group;
@@ -196,29 +190,40 @@ json post_process_setropts(
   return profile;
 }
 
-bool process_boolean_field(
-    generic_field_descriptor_t *field,
-    char *field_key)
-{
-  if (field->flags & f_boolean_field) { return true; }
-  else { return false; }
-}
-
 void process_generic_field(
+    json &json_field,
     generic_field_descriptor_t *field,
     char *field_key,
-    char *field_data,
-    char *profile_address)
-{
-  int field_length = 
-      field->field_data_length_repeat_group_count.field_data_length;
-  memset(field_data, 0, field_length + 1);
-  copy_and_encode_string(
-      field_data,
-      profile_address 
-          + field->
-              field_data_offset_repeat_group_element_count.field_data_offset,
-      field_length);
+    char *profile_address,
+    const char racfu_field_type
+) {
+  char field_data[1025];
+  // Post Process Boolean Fields
+  if (field->type & t_boolean_field) {
+    if (field->flags & f_boolean_field) { json_field = true; }
+    else { json_field = false; }
+  // Post Process Generic Fields
+  } else {
+    int field_length = 
+        field->field_data_length_repeat_group_count.field_data_length;
+    memset(field_data, 0, field_length + 1);
+    copy_and_encode_string(
+        field_data,
+        profile_address 
+            + field->
+                field_data_offset_repeat_group_element_count.field_data_offset,
+        field_length);
+    // Set Empty Fields to 'null'
+    if (strcmp(field_data, "") == 0) { 
+      json_field = nullptr; 
+    // Cast Integer Fields
+    } else if (racfu_field_type == TRAIT_TYPE_INTEGER) {
+      json_field = strtol(field_data, NULL, 10);
+    // Treat All Other Fields as Strings
+    } else { 
+      json_field = field_data; 
+    }
+  }
 }
 
 char get_setropts_field_type(char *field_key)
