@@ -3,10 +3,10 @@
 #ifndef _irrsmo64_test
 #define _irrsmo64_test
 
-#define REQUEST_XML_BASIC_SIZE 219
+#define REQUEST_XML_BASIC_SIZE 226
 #define RESULT_XML_BASIC_SIZE 1252
 
-#define REQUEST_XML_TEST_SIZE 213
+#define REQUEST_XML_TEST_SIZE 196
 #define RESULT_XML_SIZE 2328
 #define PARTIAL_XML_SIZE 201
 

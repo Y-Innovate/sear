@@ -10,6 +10,6 @@ def call_smo_from_file(file_name: str, debug: bool = False, buffer_size: int = 1
 
     return test_admin.smo_from_dict(data)
 
-print(call_smo_from_file("src/irrsmo00/utils/test_elijtest.json",True))
+print(call_smo_from_file("src/irrsmo00/utils/test_elijtest.json", debug = True))
 print(call_smo_from_file("src/irrsmo00/utils/test_xfacilit.json"))
 print(call_smo_from_file("src/irrsmo00/utils/test_facility.json"))

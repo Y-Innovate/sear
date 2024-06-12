@@ -300,6 +300,8 @@ void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
 char * XmlParse::build_json_string(char * xml_result_string, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug)
 {
 
+    //TODO: Pass raw data back as well
+    
     if (debug)
     {
         //print information in debug mode
@@ -392,11 +394,11 @@ std::string cast_hex_string(char * input)
 {
     //Cast data to hex so that small strings of hex values can be printed to represent EBCDIC data
     std::string output = "{ ";
-    char buff[4];
+    char buff[5];
     for(int i = 0; i < strlen(input); i++)
     {
         if (i > 0) { output += ", "; }
-        std::snprintf(buff, 4, "x%02x", (unsigned char)*(input+i));
+        std::snprintf(buff, 5, "0x%02x", (unsigned char)*(input+i));
         output += buff;
     }
     output += " }";
