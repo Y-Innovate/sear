@@ -3,5 +3,6 @@
   "adminType": "resource",
   "profileName": "TESTING",
   "class": "ELIJTEST",
-  "runninguserid": "TESTUSR"
+  "runninguserid": "TESTUSR",
+  "requestData": null
 }

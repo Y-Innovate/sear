@@ -27,7 +27,7 @@ char * call_irrsmo00(
     running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
     int * alet = 0;
     int * acee = 0;
-    char  * result_buffer = (char *)malloc(result_buffer_size);
+    char  * result_buffer = new char[result_buffer_size];
     memset(result_buffer, 0, result_buffer_size);
     int request_xml_length = strlen(request_xml);
     int result_len = result_buffer_size;
@@ -72,7 +72,7 @@ char * call_irrsmo00(
 
     unsigned int new_result_buffer_size = *racf_rsn + result_len + 1;
     if (debug) { printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size); }
-    char * full_result = (char *)malloc(new_result_buffer_size);
+    char * full_result = new char [new_result_buffer_size];
     char * result_buffer_ptr;
     memset(full_result, 0, new_result_buffer_size);
     strncpy(full_result, result_buffer, result_len);
@@ -104,7 +104,7 @@ char * call_irrsmo00(
     return full_result;
 }
 
-extern char * call_irrsmo00_with_json(char * json_req_string)
+void call_irrsmo00_with_json(char * json_req_string, racf_result_t * results)
 {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
@@ -134,6 +134,10 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
     );
 
     json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
-    free(xml_res_string);
-    return json_res_string;
+
+    results->raw_result = xml_res_string;
+    results->result_json = json_res_string;
+
+    //TODO: Make sure this isn't leaking memory?
+    return;
 }

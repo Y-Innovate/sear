@@ -136,9 +136,7 @@ char * XmlGen::build_xml_string(
 
     build_attribute(make_xml_attribute("requestid",adminType+"_request"));
 
-    //TODO: Validate that "requestData" header has values in it
-
-    if (request[requestOperation].contains("requestData"))
+    if ((request[requestOperation].contains("requestData")) && (!request[requestOperation].empty()))
     {
         build_end_nested_tag();
 

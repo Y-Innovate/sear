@@ -4,6 +4,9 @@ from ctypes import *
 import os
 import platform
 
+class racf_result_t(Structure):
+    _fields_ = [('raw_result', c_char_p),('result_json',c_char_p)]
+
 class RACFAdmin:
     """Test class for Administration Interfaces"""
 
@@ -28,11 +31,13 @@ class RACFAdmin:
         if not (self.__buffer_size == 10000):
             json_data["resultBufferSize"] = self.__buffer_size
 
-        self.dll.call_irrsmo00_with_json.restype = c_char_p
-        self.dll.call_irrsmo00_with_json.argtypes = [c_char_p]
+        self.dll.call_irrsmo00_with_json.argtypes = [c_char_p, POINTER(racf_result_t)]
 
         json_req_string = c_char_p(json.dumps(json_data).encode("utf-8"))
-        json_res_string = self.dll.call_irrsmo00_with_json(json_req_string)
+        results = racf_result_t(c_char_p("".encode("utf-8")),c_char_p("".encode("utf-8")))
+        self.dll.call_irrsmo00_with_json(json_req_string, results)
+
+        json_res_string = results.result_json
 
         if self.__debug:
             print(json_res_string.decode("utf-8"))

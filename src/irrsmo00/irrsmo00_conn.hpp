@@ -11,6 +11,11 @@ typedef struct
     char running_userid[8];
 } running_userid_t;
 
+typedef struct {
+  char *raw_result;
+  char *result_json;
+} racf_result_t;
+
 /* Prototype for IRRSMO64 */
 extern "C" {
     void IRRSMO64(char*,   // Workarea
@@ -46,7 +51,7 @@ char * call_irrsmo00(
     );
 
 extern "C" {
-    char * call_irrsmo00_with_json(char * json_req_string);
+    void call_irrsmo00_with_json(char * json_req_string, racf_result_t * results);
 }
 
 #endif /* IRRSMO00_CONN_H_ */
