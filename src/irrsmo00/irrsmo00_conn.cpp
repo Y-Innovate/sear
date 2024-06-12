@@ -111,6 +111,7 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
     int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
     unsigned int result_buffer_size;
     bool debug_mode;
+    unsigned char opcode;
 
     irrsmo00_options = 13;
     result_buffer_size = 10000;
@@ -119,7 +120,7 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
     racf_rc = 0;
     racf_rsn = 0;
 
-    xml_req_string = injson_to_inxml(json_req_string, running_userid, &irrsmo00_options, &result_buffer_size, &debug_mode);
+    xml_req_string = injson_to_inxml(json_req_string, running_userid, &opcode, &irrsmo00_options, &result_buffer_size, &debug_mode);
 
     xml_res_string = call_irrsmo00(
         xml_req_string,
@@ -132,7 +133,7 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
         debug_mode
     );
 
-    json_res_string = outxml_to_outjson(xml_res_string, saf_rc, racf_rc, racf_rsn, debug_mode);
+    json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
     free(xml_res_string);
     return json_res_string;
 }

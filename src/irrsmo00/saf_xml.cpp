@@ -48,6 +48,28 @@ std::string XmlGen::make_xml_attribute(std::string name, std::string value)
     return output;
 }
 
+std::string XmlGen::convert_operation(std::string requestOperation, unsigned char * opcode, int * irrsmo00_options)
+{
+    if (requestOperation.compare("add") == 0)  {
+        *opcode = OP_ADD;
+        return "set";
+    }
+    if (requestOperation.compare("alter") == 0) {
+        *opcode = OP_ALT;
+        *irrsmo00_options = 15;
+        return "set";
+    }
+    if (requestOperation.compare("delete") == 0) {
+        *opcode = OP_DEL;
+        return "delete";
+    }
+    if (requestOperation.compare("extract") == 0) {
+        *opcode = OP_LST;
+        return "listdata";
+    }
+    return "";
+}
+
 void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
     //Universal function to convert ascii string to EBCDIC-1047 in-place
     #ifndef __MVS__
@@ -60,67 +82,73 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
     #endif //__MVS__
 }
 
-char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
-{
+char * XmlGen::build_xml_string(
+    char * json_req_string, char * userid_buffer, unsigned char * opcode,
+    int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug
+){
     //Main body function that builds an xml string
     nlohmann::json request;
     request = nlohmann::json::parse(json_req_string);
-    std::string requestType;
+    std::string requestOperation, adminType, profileName, operation, runningUserId = "";
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
     build_attribute(make_xml_attribute("xmlns","http://www.ibm.com/systems/zos/saf"));
     build_attribute(make_xml_attribute("xmlns:racf","http://www.ibm.com/systems/zos/racf"));
     build_end_nested_tag();
 
-    for (const auto& item : request.items()) { requestType = item.key(); }
-    build_open_tag(requestType);
-
-    //Build the admin object
-    for (const auto& item : request[requestType].items())
-    {
-        //Skip the segment-trait data for now
-        if ( item.key().compare("segments") == 0 ) { continue; }
-        //Build in optional parameters
-        if ( item.key().compare("runninguserid") == 0 )
-        {
-            //Run this command as another user id
-            const int userid_length = item.value().get<std::string>().length();
-            strncpy(userid_buffer, item.value().get<std::string>().c_str(), userid_length);
-            convert_to_ebcdic(userid_buffer, userid_length);
-            continue; 
+    //Obtain JSON Header information and Build into Admin Object where appropriate
+    for (const auto& item : request.items()) { 
+        // requestData contains no Header information and is ignored
+        if ( item.key().compare("requestData") == 0 ) { continue; }
+        // The following options dictate parameters to IRRSMO00 and are not built into XML 
+        else if ( item.key().compare("runningUserId") == 0 ) { runningUserId = item.value().get<std::string>(); }
+        else if ( item.key().compare("resultBufferSize") == 0 ) { *result_buffer_size = item.value().get<uint>(); }
+        else if ( item.key().compare("debugmode") == 0 ) { *debug = item.value().get<bool>(); }
+        // All other valid header information should be built into the XML
+        else if ( item.key().compare("adminType") == 0 ) {
+            // The type of administrative object we are working with
+            adminType = item.value().get<std::string>();
+            build_open_tag(adminType);
         }
-        if ( item.key().compare("irrsmo00options") == 0 )
-        { 
-            *irrsmo00_options = item.value().get<uint>();
-            continue;
+        else if ( item.key().compare("profileName") == 0 ) {
+            // The name of the target profile
+            profileName = item.value().get<std::string>();
+            build_attribute(make_xml_attribute("name",profileName));
         }
-        if ( item.key().compare("resultbuffersize") == 0 )
-        { 
-            *result_buffer_size = item.value().get<uint>();
-            continue;
+        else if ( item.key().compare("requestOperation") == 0 ) {
+            // The type of request we are performing
+            requestOperation = item.value().get<std::string>();
+            operation = convert_operation(requestOperation,opcode,irrsmo00_options);
+            build_attribute("operation=\""+operation+"\"");
         }
-        if ( item.key().compare("debugmode") == 0 )
-        { 
-            *debug = item.value().get<bool>();
-            continue;
-        }
-        if ( item.value().is_string() )
-        {
-        //All other attribute information is built into the xml at this level
-        build_attribute(item.key()+"=\""+item.value().get<std::string>()+"\"");
+        else if ( item.value().is_string() ) {
+            //All other attribute information is built into the xml at this level to account for VOLUME/GENERIC/Others
+            build_attribute(make_xml_attribute(item.key(),item.value().get<std::string>())); 
         }
     }
-    if (request[requestType].contains("segments"))
+
+    if (!runningUserId.empty()) {
+        //Run this command as another user id
+        const int userid_length = runningUserId.length();
+        strncpy(userid_buffer, runningUserId.c_str(), userid_length);
+        convert_to_ebcdic(userid_buffer, userid_length);
+    }
+
+    build_attribute(make_xml_attribute("requestid",adminType+"_request"));
+
+    //TODO: Validate that "requestData" header has values in it
+
+    if (request[requestOperation].contains("requestData"))
     {
         build_end_nested_tag();
 
-        //Build the segments
-        for (const auto& item : request[requestType]["segments"].items())
+        //Build the request data (segment-trait information)
+        for (const auto& item : request[requestOperation]["requestData"].items())
         {
             build_open_tag(item.key());
             build_end_nested_tag();
             //Build each individual trait
-            for (const auto& trait : request[requestType]["segments"][item.key()].items())
+            for (const auto& trait : request[requestOperation]["requestData"][item.key()].items())
             {
                 std::string operation = (trait.value()["operation"].is_null()) ? "set" : trait.value()["operation"].get<std::string>();
                 std::string value = (trait.value()["value"].is_boolean()) ? "" : trait.value()["value"].get<std::string>();
@@ -130,7 +158,10 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, in
         }
         
         //Close the admin object
-        build_full_close_tag(requestType);
+        build_full_close_tag(requestOperation);
+
+        //Close the securityrequest tag (Consistent)
+        build_full_close_tag("securityrequest");
     }
     else
     {
@@ -138,9 +169,6 @@ char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, in
         build_close_tag_no_value();
     }
     
-    //Close the securityrequest tag (Consistent)
-    build_full_close_tag("securityrequest");
-
     if (*debug)
     {
         //print information in debug mode
@@ -269,7 +297,7 @@ void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
     #endif //__MVS__
 }
 
-char * XmlParse::build_json_string(char * xml_result_string, int saf_rc, int racf_rc, int racf_rsn, bool debug)
+char * XmlParse::build_json_string(char * xml_result_string, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug)
 {
 
     if (debug)
@@ -292,8 +320,8 @@ char * XmlParse::build_json_string(char * xml_result_string, int saf_rc, int rac
     std::regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
     //Regular expression designed to match the header, generic body, and closing tags of the xml
 
+    nlohmann::json result_json;
     nlohmann::json result;
-    nlohmann::json profile;
     nlohmann::json returnCodes;
 
     std::string profile_type, profile_close_tag, profile_xml_attrs, profile_xml_body;
@@ -312,19 +340,37 @@ char * XmlParse::build_json_string(char * xml_result_string, int saf_rc, int rac
     profile_xml_body = xml_sub_re_match[3];
 
     //Parse out these attributes
-    parse_header_attributes(&profile, profile_xml_attrs);
+    parse_header_attributes(&result, profile_xml_attrs);
     //Erase the profile close tag as it messes up later regex parsing
     profile_xml_body.erase(profile_xml_body.find(profile_close_tag),profile_close_tag.length());
     //Parse the body of the xml here
-    parse_outer_xml(&profile, profile_xml_body);
+    parse_outer_xml(&result, profile_xml_body);
 
+    result_json["adminType"] = profile_type;
+    switch (opcode) {
+        case OP_ADD:
+            result_json["requestOperation"] = "add";
+            break;
+        case OP_ALT:
+            result_json["requestOperation"] = "alter";
+            break;
+        case OP_DEL:
+            result_json["requestOperation"] = "delete";
+            break;
+        case OP_LST:
+            result_json["requestOperation"] = "extract";
+            break;
+        default:
+            result_json["requestOperation"] = "unsupported";
+    }
+    
     //Put the built JSON object in the result JSON
-    result[xml_sub_re_match[1]] = profile;
+    result_json["result"] = result;
     }
     else
     {
     //If the XML does not match the main regular expression, then return this string to indicate an error
-    result["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
+    result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
     }
 
     //Build a return codes object in the JSON to return IRRSMO00 return and reason codes
@@ -332,13 +378,13 @@ char * XmlParse::build_json_string(char * xml_result_string, int saf_rc, int rac
     returnCodes["racfReturnCode"] = racf_rc;
     returnCodes["racfReasonCode"] = racf_rsn;
 
-    result["returnCodes"] = returnCodes;
+    result_json["returnCodes"] = returnCodes;
     
     //Convert c++ string into char * c string
-    std::string json_result = result.dump();
-    const int length = json_result.length();
+    std::string result_json_as_string = result_json.dump();
+    const int length = result_json_as_string.length();
     char* output_buffer = new char[length + 1];
-    strncpy(output_buffer, json_result.c_str(), length+1);
+    strncpy(output_buffer, result_json_as_string.c_str(), length+1);
     return output_buffer;
 }
 
@@ -359,12 +405,12 @@ std::string cast_hex_string(char * input)
 
 // Connects the "XML library" to the C layer with these extern C functions
 
-extern char * injson_to_inxml(char * injson, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug){
+extern char * injson_to_inxml(char * injson, char * userid_buffer, unsigned char * opcode, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug){
     XmlGen * xml = new XmlGen();
-    return xml->build_xml_string(injson, userid_buffer, irrsmo00_options, result_buffer_size, debug);
+    return xml->build_xml_string(injson, userid_buffer, opcode, irrsmo00_options, result_buffer_size, debug);
 }
 
-extern char * outxml_to_outjson(char * outxml, int saf_rc, int racf_rc, int racf_rsn, bool debug){
+extern char * outxml_to_outjson(char * outxml, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug){
     XmlParse * xml = new XmlParse();
-    return xml->build_json_string(outxml, saf_rc, racf_rc, racf_rsn, debug);
+    return xml->build_json_string(outxml, opcode, saf_rc, racf_rc, racf_rsn, debug);
 }

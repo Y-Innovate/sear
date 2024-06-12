@@ -37,8 +37,8 @@ extern "C" {
 
 void null_byte_fix(char* str, unsigned int str_len);
 
-char * injson_to_inxml(char * injson, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
-char * outxml_to_outjson(char * outxml, int saf_rc, int racf_rc, int racf_rsn, bool debug);
+char * injson_to_inxml(char * injson, char * userid_buffer, unsigned char * opcode, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug);
+char * outxml_to_outjson(char * outxml, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug);
 
 char * call_irrsmo00(
     char * request_xml, char * running_userid, unsigned int result_buffer_size, int irrsmo00_options,

@@ -1,9 +1,7 @@
 {
-  "resource" : {
-    "name": "TESTING",
-    "class": "ELIJTEST",
-    "operation": "listdata",
-    "requestid": "ResourceRequest",
-    "runninguserid": "TESTUSR"
-    }
+  "requestOperation": "extract",
+  "adminType": "resource",
+  "profileName": "TESTING",
+  "class": "ELIJTEST",
+  "runninguserid": "TESTUSR"
 }
