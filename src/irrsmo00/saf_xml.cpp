@@ -1,4 +1,4 @@
-#include "saf_xml.h"
+#include "saf_xml.hpp"
 
 #include <regex>
 #include <string>
@@ -60,7 +60,7 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length){
     #endif //__MVS__
 }
 
-char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, unsigned int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
+char * XmlGen::build_xml_string(char * json_req_string, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
 {
     //Main body function that builds an xml string
     nlohmann::json request;
@@ -269,7 +269,7 @@ void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
     #endif //__MVS__
 }
 
-char * XmlParse::build_json_string(char * xml_result_string, unsigned int saf_rc, unsigned int racf_rc, unsigned int racf_rsn, bool debug)
+char * XmlParse::build_json_string(char * xml_result_string, int saf_rc, int racf_rc, int racf_rsn, bool debug)
 {
 
     if (debug)
@@ -355,4 +355,16 @@ std::string cast_hex_string(char * input)
     }
     output += " }";
     return output;
+}
+
+// Connects the "XML library" to the C layer with these extern C functions
+
+extern char * injson_to_inxml(char * injson, char * userid_buffer, int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug){
+    XmlGen * xml = new XmlGen();
+    return xml->build_xml_string(injson, userid_buffer, irrsmo00_options, result_buffer_size, debug);
+}
+
+extern char * outxml_to_outjson(char * outxml, int saf_rc, int racf_rc, int racf_rsn, bool debug){
+    XmlParse * xml = new XmlParse();
+    return xml->build_json_string(outxml, saf_rc, racf_rc, racf_rsn, debug);
 }

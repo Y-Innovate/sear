@@ -8,11 +8,11 @@
 #include <stdio.h>
 #include <string.h>
 
-json post_process_generic(
+nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer
 ) {
-  json profile;
-  profile["profile"] = json::object();
+  nlohmann::json profile;
+  profile["profile"] = nlohmann::json::object();
   char *profile_address = (char *)generic_result_buffer;
 
   // Set Class Name
@@ -35,7 +35,7 @@ json post_process_generic(
   char racfu_field_type;
 
   // Repeat Group Variables
-  std::vector<json> repeat_group;
+  std::vector<nlohmann::json> repeat_group;
   int repeat_group_count;
   int repeat_group_element_count;
   char repeat_field_key[8];
@@ -45,7 +45,7 @@ json post_process_generic(
   // Post Process Segments
   for (int i = 1; i <= generic_result_buffer->segment_count; i++) {
     post_process_key(segment_key, segment->name, 8);
-    profile["profile"][segment_key] = json::object();
+    profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     field =
         (generic_field_descriptor_t *)
@@ -73,7 +73,7 @@ json post_process_generic(
                     repeat_group_element_count;
         // Post Process Each Repeat Group
         for (int k = 1; k <= repeat_group_count; k++) {
-          repeat_group.push_back(json::object());
+          repeat_group.push_back(nlohmann::json::object());
           // Post Process Each Repeat Group Field
           for (int l = 1; l <= repeat_group_element_count; l++) {
             field++;
@@ -99,11 +99,11 @@ json post_process_generic(
   return profile;
 }
 
-json post_process_setropts(
+nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer
 ) {
-  json profile;
-  profile["profile"] = json::object();
+  nlohmann::json profile;
+  profile["profile"] = nlohmann::json::object();
   char *profile_address = (char *)setropts_result_buffer;
 
   // Set Class Name
@@ -123,14 +123,14 @@ json post_process_setropts(
               + sizeof(setropts_segment_descriptor_t));
   char field_key[8];
   std::string racfu_field_key;
-  char field_data[10025];
+  char field_data[10025]; // we may want to make this dynamic using a VLA or malloc()/calloc()
   std::vector<std::string> list_field_data;
   char *list_field_data_pointer;
   char field_type;
 
   // Post Process Base Segment
   post_process_key(segment_key, segment->name, 8);
-  profile["profile"][segment_key] = json::object();
+  profile["profile"][segment_key] = nlohmann::json::object();
 
   // Post Process Fields
   for (int i = 1; i <= segment->field_count; i++) {
@@ -143,12 +143,7 @@ json post_process_setropts(
         list_field_data_pointer =
             (char *)field + sizeof(setropts_field_descriptor_t);
         for (int j = 0; j < field->field_length / 9; j++) {
-          memset(field_data, 0, 8 + 1);
-          copy_and_encode_string(
-              field_data,
-              list_field_data_pointer,
-              8);
-          trim_trailing_spaces(field_data, 8);
+          process_setropts_field(field_data, list_field_data_pointer, 8);
           list_field_data.push_back(field_data);
           list_field_data_pointer += 9;
         }
@@ -156,12 +151,10 @@ json post_process_setropts(
         list_field_data.clear();
       // Post Process String & Number Fields
       } else {
-        memset(field_data, 0, field->field_length + 1);
-        copy_and_encode_string(
-            field_data,
+        process_setropts_field(
+            field_data, 
             (char *)field + sizeof(setropts_field_descriptor_t),
             field->field_length);
-        trim_trailing_spaces(field_data, 8);
         // Number
         if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
           profile["profile"][segment_key][racfu_field_key] = strtol(field_data, NULL, 10);
@@ -191,13 +184,13 @@ json post_process_setropts(
 }
 
 void process_generic_field(
-    json &json_field,
+    nlohmann::json &json_field,
     generic_field_descriptor_t *field,
     char *field_key,
     char *profile_address,
     const char racfu_field_type
 ) {
-  char field_data[1025];
+  char field_data[1025]; // we may want to make this dynamic using a VLA or malloc()/calloc()
   // Post Process Boolean Fields
   if (field->type & t_boolean_field) {
     if (field->flags & f_boolean_field) { json_field = true; }
@@ -224,6 +217,19 @@ void process_generic_field(
       json_field = field_data; 
     }
   }
+}
+
+void process_setropts_field(
+    char *field_data_destination,
+    char *field_data_source,
+    int field_length
+) {
+  memset(field_data_destination, 0, field_length + 1);
+  copy_and_encode_string(
+      field_data_destination,
+      field_data_source,
+      field_length);
+  trim_trailing_spaces(field_data_destination, field_length);
 }
 
 char get_setropts_field_type(char *field_key)

@@ -7,8 +7,6 @@
 #include <string.h>
 #include <iostream>
 
-using json = nlohmann::json;
-
 int main(int argc, char **argv)
 {
   char *result_buffer;
@@ -55,7 +53,7 @@ int main(int argc, char **argv)
   }
 
   int result_buffer_length;
-  json profile;
+  nlohmann::json profile;
 
   // Post Process Generic Result
   if (strcmp(argv[1], "setropts") != 0) {

@@ -5,16 +5,19 @@
 
 #include <nlohmann/json.hpp>
 
-using json = nlohmann::json;
-
-json post_process_generic(
+nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer);
 
-json post_process_setropts(
+nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer);
 
+void process_setropts_field(
+    char *field_data_destination,
+    char *field_data_source,
+    int field_length);
+
 void process_generic_field(
-    json &json_field,
+    nlohmann::json &json_field,
     generic_field_descriptor_t *field,
     char *field_key,
     char *profile_address,

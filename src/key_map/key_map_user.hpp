@@ -184,8 +184,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[] {
   {
     "base:restrict_global_access_checking", 
     "rest",
-    TRAIT_TYPE_BOOLEAN
-  },
+    TRAIT_TYPE_BOOLEAN },
   {
     "base:resume_date", 
     "resume",
@@ -292,8 +291,7 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
   {
     "omvs:uid", 
     "uid", 
-    TRAIT_TYPE_INTEGER
-  }
+    TRAIT_TYPE_INTEGER }
 };
 
 const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
