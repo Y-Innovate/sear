@@ -25,20 +25,38 @@ private:
     void build_end_nested_tag();
     void build_full_close_tag(std::string tag);
     void build_close_tag_no_value();
-    void build_single_trait(std::string tag, std::string operation, std::string value);
-    std::string make_xml_attribute(std::string name, std::string value);
-    std::string convert_operation(std::string requestOperation, unsigned char * opcode, int * irrsmo00_options);
-    void convert_to_ebcdic(char * ascii_str, int length);
+    void build_single_trait(
+        std::string tag,
+        std::string operation,
+        std::string value);
+    std::string make_xml_attribute(
+        std::string name,
+        std::string value);
+    std::string convert_operation(
+        std::string requestOperation,
+        unsigned char * opcode,
+        int * irrsmo00_options);
+    void convert_to_ebcdic(
+        char * ascii_str,
+        int length);
 public:
     char * build_xml_string(
-        char * json_req_string, char * userid_buffer, unsigned char * opcode,
-        int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug
+        char * json_req_string,
+        char * userid_buffer,
+        unsigned char * opcode,
+        int * irrsmo00_options,
+        unsigned int * result_buffer_size,
+        bool * debug
     );
 };
 
 extern char * injson_to_inxml(
-    char * injson, char * userid_buffer, unsigned char * opcode,
-    int * irrsmo00_options,unsigned int * result_buffer_size, bool * debug
+    char * injson,
+    char * userid_buffer,
+    unsigned char * opcode,
+    int * irrsmo00_options,
+    unsigned int * result_buffer_size,
+    bool * debug
 );
 
 #ifndef __MVS__

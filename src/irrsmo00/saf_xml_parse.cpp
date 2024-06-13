@@ -6,8 +6,14 @@
 #include <unistd.h>
 
 //Public Methods of XmlParse
-char * XmlParse::build_json_string(char * xml_result_string, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug)
-{   
+char * XmlParse::build_json_string(
+    char * xml_result_string,
+    unsigned char opcode,
+    int saf_rc,
+    int racf_rc,
+    int racf_rsn,
+    bool debug
+) {   
     //Build a JSON string from the XML result string, SMO return and Reason Codes, and the OPCODE used for the function
     if (debug)
     {
@@ -89,8 +95,10 @@ char * XmlParse::build_json_string(char * xml_result_string, unsigned char opcod
 }
 
 //Private Methods of XmlParse
-void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string header_string)
-{
+void XmlParse::parse_header_attributes(
+    nlohmann::json * input_json,
+    std::string header_string
+) {
     //Parse the header attributes of the XML for JSON information
     std::smatch attr_sub_re_match;
     std::regex attr {R"~(([a-z]*)="([^ ]*)")~"};
@@ -113,16 +121,20 @@ void XmlParse::parse_header_attributes(nlohmann::json * input_json, std::string 
     }while(n_old != n + 1);
 };
 
-void XmlParse::parse_xml_body(nlohmann::json * input_json, std::string body_string)
-{
+void XmlParse::parse_xml_body(
+    nlohmann::json * input_json,
+    std::string body_string
+) {
     //Parse the body of the XML for JSON information
     //This is done using a recursive parsing method to parse
     //outer (tags and attributes) and inner (data or another XML object) XML data
     parse_outer_xml(input_json, body_string);
 }
 
-void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_string)
-{
+void XmlParse::parse_outer_xml(
+    nlohmann::json * input_json,
+    std::string body_string
+) {
     //Parse the outer layer of the XML for attributes and tag names with regex
     std::regex outer_tag {R"(<([a-z]*)>.*</([a-z]*)>)"};
     std::smatch body_sub_re_match, body_iter_sub_re_match;
@@ -168,8 +180,11 @@ void XmlParse::parse_outer_xml(nlohmann::json * input_json, std::string body_str
     }
 };
 
-void XmlParse::parse_inner_xml(nlohmann::json * input_json, std::string inner_data, std::string outer_tag)
-{
+void XmlParse::parse_inner_xml(
+    nlohmann::json * input_json,
+    std::string inner_data,
+    std::string outer_tag
+) {
     //Parse data from within XML tags and add the values to the JSON
     if (inner_data.find("<") == std::string::npos)
     {
@@ -186,8 +201,11 @@ void XmlParse::parse_inner_xml(nlohmann::json * input_json, std::string inner_da
     update_json(input_json, nested_json, outer_tag);
 }
 
-void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag)
-{
+void XmlParse::update_json(
+    nlohmann::json * input_json,
+    nlohmann::json inner_data,
+    std::string outer_tag
+) {
     //Add specified information (inner_data) to the input_json JSON object
     //using the specified key (outer_tag)
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
@@ -209,8 +227,10 @@ void XmlParse::update_json(nlohmann::json * input_json, nlohmann::json inner_dat
     }
 }
 
-void XmlParse::convert_to_ascii(char * ebcdic_str, int length)
-{
+void XmlParse::convert_to_ascii(
+    char * ebcdic_str,
+    int length
+) {
     //Universal function to convert EBCDIC-1047 string to ascii in place
     #ifndef __MVS__
     for(int i = 0; i < length; i++)
@@ -242,9 +262,14 @@ std::string XmlParse::decode_opcode(unsigned char opcode)
 
 // Connects the "XML library" to the C layer with this extern C function
 
-extern char * outxml_to_outjson(char * outxml, unsigned char opcode,
-    int saf_rc, int racf_rc, int racf_rsn, bool debug)
-{
+extern char * outxml_to_outjson(
+    char * outxml,
+    unsigned char opcode,
+    int saf_rc,
+    int racf_rc,
+    int racf_rsn,
+    bool debug
+) {
     //Build an XMLParse XML Parser object and parse an IRRSMO00
     //response xml string into a JSON string
     XmlParse * xml = new XmlParse();

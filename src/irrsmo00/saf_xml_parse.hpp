@@ -19,18 +19,44 @@ class XmlParse
 {
 private:
     std::string xml_buffer;
-    void parse_header_attributes(nlohmann::json * input_json, std::string header_string);
-    void parse_xml_body(nlohmann::json * input_json, std::string body_string);
-    void parse_outer_xml(nlohmann::json * input_json, std::string body_string);
-    void parse_inner_xml(nlohmann::json * input_json, std::string inner_data, std::string outer_tag);
-    void update_json(nlohmann::json * input_json, nlohmann::json inner_data, std::string outer_tag);
-    void convert_to_ascii(char * ebcdic_str, int length);
+    void parse_header_attributes(
+        nlohmann::json * input_json,
+        std::string header_string);
+    void parse_xml_body(
+        nlohmann::json * input_json,
+        std::string body_string);
+    void parse_outer_xml(
+        nlohmann::json * input_json,
+        std::string body_string);
+    void parse_inner_xml(
+        nlohmann::json * input_json,
+        std::string inner_data,
+        std::string outer_tag);
+    void update_json(
+        nlohmann::json * input_json,
+        nlohmann::json inner_data,
+        std::string outer_tag);
+    void convert_to_ascii(
+        char * ebcdic_str,
+        int length);
     std::string decode_opcode(unsigned char opcode);
 public:
-    char * build_json_string(char * xml_result_string, unsigned char opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug);
+    char * build_json_string(
+        char * xml_result_string,
+        unsigned char opcode,
+        int saf_rc,
+        int racf_rc,
+        int racf_rsn,
+        bool debug);
 };
 
-extern char * outxml_to_outjson(char * outxml, unsigned char * opcode, int saf_rc, int racf_rc, int racf_rsn, bool debug);
+extern char * outxml_to_outjson(
+    char * outxml,
+    unsigned char * opcode,
+    int saf_rc,
+    int racf_rc,
+    int racf_rsn,
+    bool debug);
 
 #ifndef __MVS__
 //Character conversion tables for OSX and Windows Testing

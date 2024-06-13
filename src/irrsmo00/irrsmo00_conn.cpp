@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void null_byte_fix(char* str, unsigned int str_len) {
+void null_byte_fix(
+    char* str,
+    unsigned int str_len
+) {
    for (int i = 1; i < str_len; i++){
       if (str[i] == 0) {
          if (str[i-1] == 0x6E) {
@@ -18,10 +21,15 @@ void null_byte_fix(char* str, unsigned int str_len) {
 }
 
 char * call_irrsmo00(
-    char * request_xml, char * running_userid, unsigned int result_buffer_size, int irrsmo00_options,
-    int * saf_rc, int * racf_rc, int * racf_rsn, bool debug
-    )
-{
+    char * request_xml,
+    char * running_userid,
+    unsigned int result_buffer_size,
+    int irrsmo00_options,
+    int * saf_rc,
+    int * racf_rc,
+    int * racf_rsn,
+    bool debug
+) {
     char work_area[1024];
     char req_handle[64] = {0};
     running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
@@ -104,8 +112,10 @@ char * call_irrsmo00(
     return full_result;
 }
 
-void call_irrsmo00_with_json(char * json_req_string, racf_result_t * results)
-{
+void call_irrsmo00_with_json(
+    char * json_req_string,
+    racf_result_t * results
+) {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
     int irrsmo00_options, saf_rc, racf_rc, racf_rsn;

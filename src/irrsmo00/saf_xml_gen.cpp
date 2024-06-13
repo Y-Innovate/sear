@@ -7,9 +7,13 @@
 
 //Public Functions of XmlGen
 char * XmlGen::build_xml_string(
-    char * json_req_string, char * userid_buffer, unsigned char * opcode,
-    int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
-{
+    char * json_req_string,
+    char * userid_buffer,
+    unsigned char * opcode,
+    int * irrsmo00_options,
+    unsigned int * result_buffer_size,
+    bool * debug
+) {
     //Main body function that builds an xml string
     nlohmann::json request;
     request = nlohmann::json::parse(json_req_string);
@@ -135,7 +139,11 @@ void XmlGen::build_full_close_tag(std::string tag) {
 void XmlGen::build_close_tag_no_value() {
     xml_buffer.append("/>");
 }
-void XmlGen::build_single_trait(std::string tag, std::string operation, std::string value) {
+void XmlGen::build_single_trait(
+    std::string tag,
+    std::string operation,
+    std::string value
+) {
     //Combines above functions to build "trait" tags with added options and values
     //Ex: "<base:universal_access operation=set>Read</base:universal_access>"
     build_open_tag(tag);
@@ -146,8 +154,10 @@ void XmlGen::build_single_trait(std::string tag, std::string operation, std::str
         build_full_close_tag(tag);
     }
 }
-std::string XmlGen::make_xml_attribute(std::string name, std::string value)
-{
+std::string XmlGen::make_xml_attribute(
+    std::string name,
+    std::string value
+) {
     //Builds "attribute" string used by build_attribute
     //Ex: make_xml_attribute(operation,set) = "operation=set"
     std::string output = name;
@@ -155,8 +165,11 @@ std::string XmlGen::make_xml_attribute(std::string name, std::string value)
     return output;
 }
 
-std::string XmlGen::convert_operation(std::string requestOperation, unsigned char * opcode, int * irrsmo00_options)
-{
+std::string XmlGen::convert_operation(
+    std::string requestOperation,
+    unsigned char * opcode,
+    int * irrsmo00_options
+) {
     //Converts the designated function to a short OPCODE, the correct IRRSMO00 operation
     //and adjusts IRRSMO00 options as necessary (alter operations require the PRECHECK attribute)
     if (requestOperation.compare("add") == 0)  {
@@ -179,8 +192,10 @@ std::string XmlGen::convert_operation(std::string requestOperation, unsigned cha
     return "";
 }
 
-void XmlGen::convert_to_ebcdic(char * ascii_str, int length)
-{
+void XmlGen::convert_to_ebcdic(
+    char * ascii_str,
+    int length
+) {
     //Universal function to convert ascii string to EBCDIC-1047 in-place
     #ifndef __MVS__
     for(int i = 0; i < length; i++)
@@ -194,9 +209,14 @@ void XmlGen::convert_to_ebcdic(char * ascii_str, int length)
 
 // Connects the "XML library" to the C layer with these extern C functions
 
-extern char * injson_to_inxml(char * injson, char * userid_buffer, unsigned char * opcode,
-    int * irrsmo00_options, unsigned int * result_buffer_size, bool * debug)
-{
+extern char * injson_to_inxml(
+    char * injson,
+    char * userid_buffer,
+    unsigned char * opcode,
+    int * irrsmo00_options,
+    unsigned int * result_buffer_size,
+    bool * debug
+) {
     //Build an XMLGen XML Generator object and build an IRRSMO00
     //request xml string from a supplied JSON string
     XmlGen * xml = new XmlGen();
