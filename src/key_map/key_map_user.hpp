@@ -6,139 +6,183 @@
 #include <stdbool.h>
 
 const trait_key_mapping_t USER_BASE_SEGMENT_MAP[] {
-  { "base:automatic_data_set_protection",
+  { 
+    "base:automatic_data_set_protection",
     "adsp",
     TRAIT_TYPE_BOOLEAN },
-  { "base:auditor",
+  { 
+    "base:auditor",
     "auditor",
     TRAIT_TYPE_BOOLEAN },
-  { "base:default_group_authority",
+  { 
+    "base:default_group_authority",
     "auth",
     TRAIT_TYPE_STRING },
-  { "base:security_category",
+  { 
+    "base:security_category",
     "category",
     TRAIT_TYPE_STRING },
-  { "base:security_categories",
+  { 
+    "base:security_categories",
     "numctgy",
     TRAIT_TYPE_REPEAT },
-  { "base:class_authorization",
+  { 
+    "base:class_authorization",
     "clauth",
     TRAIT_TYPE_STRING },
-  { "base:class_authorizations",
+  { 
+    "base:class_authorizations",
     "clcnt",
     TRAIT_TYPE_REPEAT },
-  { "base:group_connections",
+  { 
+    "base:group_connections",
     "connects",
     TRAIT_TYPE_REPEAT },
-  { "base:group_connection_automatic_data_set_protection",
+  { 
+    "base:group_connection_automatic_data_set_protection",
     "cadsp",
     TRAIT_TYPE_BOOLEAN },
-  { "base:group_connection_auditor",
+  { 
+    "base:group_connection_auditor",
     "cauditor",
     TRAIT_TYPE_BOOLEAN },
-  { "base:group_connection_connect_date",
+  { 
+    "base:group_connection_connect_date",
     "cauthda",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_group",
+  { 
+    "base:group_connection_group",
     "cgroup",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_data_set_access",
+  { 
+    "base:group_connection_data_set_access",
     "cgrpacc",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_connects",
+  { 
+    "base:group_connection_connects",
     "cinitct",
     TRAIT_TYPE_INTEGER},
-  { "base:group_connection_last_connect_date",
+  { 
+    "base:group_connection_last_connect_date",
     "cljdate",
     TRAIT_TYPE_STRING },
   { "base:group_connection_last_connect_time",
     "cljtime",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_operations",
+  { 
+    "base:group_connection_operations",
     "coper",
     TRAIT_TYPE_BOOLEAN },
-  { "base:group_connection_owner",
+  { 
+    "base:group_connection_owner",
     "cowner",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_resume_date",
+  { 
+    "base:group_connection_resume_date",
     "cresume",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_revoke_date",
+  { 
+    "base:group_connection_revoke_date",
     "crevoke",
     TRAIT_TYPE_STRING },
-  { "base:group_connection_revoked",
+  { 
+    "base:group_connection_revoked",
     "crevokfl",
     TRAIT_TYPE_BOOLEAN },
-  { "base:group_connection_special",
+  { 
+    "base:group_connection_special",
     "cspecial",
     TRAIT_TYPE_BOOLEAN },
-  { "base:group_connection_universal_access",
+  { 
+    "base:group_connection_universal_access",
     "cuacc",
     TRAIT_TYPE_STRING },
-  { "base:create_date",
+  { 
+    "base:create_date",
     "creatdat",
     TRAIT_TYPE_STRING },
-  { "base:installation_data",
+  { 
+    "base:installation_data",
     "data",
     TRAIT_TYPE_STRING },
-  { "base:default_group",
+  { 
+    "base:default_group",
     "dfltgrp",
     TRAIT_TYPE_STRING },
-  { "base:password_expired",
+  { 
+    "base:password_expired",
     "expired",
     TRAIT_TYPE_BOOLEAN },
-  { "base:mfa",
+  { 
+    "base:mfa",
     "factorn",
     TRAIT_TYPE_REPEAT },
-  { "base:mfa_factor",
+  { 
+    "base:mfa_factor",
     "factor",
     TRAIT_TYPE_STRING },
-  { "base:mfa_active",
+  { 
+    "base:mfa_active",
     "facactv",
     TRAIT_TYPE_BOOLEAN },
-  { "base:factor_tag_*",
+  { 
+    "base:factor_tag_*",
     "factag*",
     TRAIT_TYPE_STRING },
-  { "base:factor_value_*",
+  { 
+    "base:factor_value_*",
     "facval*",
     TRAIT_TYPE_STRING },
-  { "base:group",
+  { 
+    "base:group",
     "group",
     TRAIT_TYPE_STRING },
-  { "base:group_data_set_access",
+  { 
+    "base:group_data_set_access",
     "grpacc",
     TRAIT_TYPE_BOOLEAN },
-  { "base:has_passphrase",
+  { 
+    "base:has_passphrase",
     "hasphras",
     TRAIT_TYPE_BOOLEAN},
-  { "base:has_password",
+  { 
+    "base:has_password",
     "haspwd",
     TRAIT_TYPE_BOOLEAN },
-  { "base:last_access_date",
+  { 
+    "base:last_access_date",
     "lastdate",
     TRAIT_TYPE_STRING },
-  { "base:last_acess_time",
+  { 
+    "base:last_acess_time",
     "lasttime",
     TRAIT_TYPE_STRING },
-  { "base:mfa_password_fallback",
+  { 
+    "base:mfa_password_fallback",
     "mfaflbk",
     TRAIT_TYPE_BOOLEAN },
-  { "base:mfa_policy",
+  { 
+    "base:mfa_policy",
     "mfapolnm",
     TRAIT_TYPE_STRING },
-  { "base:mfa_policies",
+  { 
+    "base:mfa_policies",
     "mfapoln",
     TRAIT_TYPE_REPEAT },
-  { "base:model_data_set",
+  { 
+    "base:model_data_set",
     "model",
     TRAIT_TYPE_STRING },
-  { "base:name",
+  { 
+    "base:name",
     "name",
     TRAIT_TYPE_STRING },
-  { "base:require_operator_id_card",
+  { 
+    "base:require_operator_id_card",
     "oidcard",
     TRAIT_TYPE_BOOLEAN },
-  { "base:operations",
+  { 
+    "base:operations",
     "oper",
     TRAIT_TYPE_BOOLEAN },
   {
