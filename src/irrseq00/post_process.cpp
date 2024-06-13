@@ -1,26 +1,24 @@
 #include "post_process.hpp"
 
+#include "key_map.hpp"
+
 #include <iostream>
 
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
-json post_process_generic(
+nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer
 ) {
-  json profile;
-  profile["profile"] = json::object();
+  nlohmann::json profile;
+  profile["profile"] = nlohmann::json::object();
   char *profile_address = (char *)generic_result_buffer;
 
   // Set Class Name
   char class_name[8];
-  copy_and_encode_string(
-      class_name,
-      generic_result_buffer->class_name,
-      8);
-  trim_trailing_spaces(class_name, 8);
-  profile["class"] = class_name;
+  post_process_key(class_name, generic_result_buffer->class_name, 8);
+  profile["profile_type"] = class_name;
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -33,41 +31,39 @@ json post_process_generic(
   // Field Variables
   generic_field_descriptor_t *field;
   char field_key[8];
-  char field_data[1025];
-  int field_length;
+  std::string racfu_field_key;
+  char racfu_field_type;
 
   // Repeat Group Variables
-  std::vector<json> repeat_group;
+  std::vector<nlohmann::json> repeat_group;
   int repeat_group_count;
   int repeat_group_element_count;
   char repeat_field_key[8];
+  std::string racfu_repeat_field_key;
+  char racfu_repeat_field_type;
 
   // Post Process Segments
   for (int i = 1; i <= generic_result_buffer->segment_count; i++) {
     post_process_key(segment_key, segment->name, 8);
-    profile["profile"][segment_key] = json::object();
-
+    profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     field =
         (generic_field_descriptor_t *)
             (profile_address + segment->field_descriptor_offset);
     for (int j = 1; j <= segment->field_count; j++) {
-      post_process_key(field_key, field->name, 8);
-      // Post Process Boolean Fields
-      if (field->type & t_boolean_field) {
-        profile["profile"][segment_key][field_key] =
-            process_boolean_field(
-                field,
-                field_key);
-        // Post Process Generic Fields
-      } else if (!(field->type & t_repeat_field_header)) {
+      racfu_field_key = post_process_field_key(
+          field_key, class_name, segment_key, field->name);
+      racfu_field_type = get_racfu_trait_type(
+          class_name, segment_key, field_key);
+      // Post Process Non-Repeat Fields
+      if (!(field->type & t_repeat_field_header)) {
         process_generic_field(
+            profile["profile"][segment_key][racfu_field_key],
             field,
             field_key,
-            field_data,
-            profile_address);
-        profile["profile"][segment_key][field_key] = field_data;
-        // Post Process Repeat Fields
+            profile_address,
+            racfu_field_type);
+      // Post Process Repeat Fields
       } else {
         repeat_group_count = 
             field->field_data_length_repeat_group_count.repeat_group_count;
@@ -75,24 +71,25 @@ json post_process_generic(
             field->
                 field_data_offset_repeat_group_element_count.
                     repeat_group_element_count;
-        field++;
         // Post Process Each Repeat Group
         for (int k = 1; k <= repeat_group_count; k++) {
-          repeat_group.push_back(json::object());
+          repeat_group.push_back(nlohmann::json::object());
           // Post Process Each Repeat Group Field
           for (int l = 1; l <= repeat_group_element_count; l++) {
-            post_process_key(repeat_field_key, field->name, 8);
-            // Assume that repeat fields just get processed as generic field?
+            field++;
+            racfu_repeat_field_key = post_process_field_key(
+                repeat_field_key, class_name, segment_key, field->name);
+            racfu_repeat_field_type = get_racfu_trait_type(
+                class_name, segment_key, repeat_field_key);
             process_generic_field(
+                repeat_group[k - 1][racfu_repeat_field_key],
                 field,
                 repeat_field_key,
-                field_data,
-                profile_address);
-            repeat_group[k - 1][repeat_field_key] = field_data;
-            field++;
+                profile_address,
+                racfu_repeat_field_type);
           }
         }
-        profile["profile"][segment_key][field_key] = repeat_group;
+        profile["profile"][segment_key][racfu_field_key] = repeat_group;
         repeat_group.clear();
       }
       field++;
@@ -102,15 +99,15 @@ json post_process_generic(
   return profile;
 }
 
-json post_process_setropts(
+nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer
 ) {
-  json profile;
-  profile["profile"] = json::object();
+  nlohmann::json profile;
+  profile["profile"] = nlohmann::json::object();
   char *profile_address = (char *)setropts_result_buffer;
 
   // Set Class Name
-  profile["class"] = "setropts";
+  profile["profile_type"] = "setropts";
 
   // Segment Variables
   setropts_segment_descriptor_t *segment =
@@ -125,18 +122,20 @@ json post_process_setropts(
               + sizeof(setropts_extract_results_t) 
               + sizeof(setropts_segment_descriptor_t));
   char field_key[8];
-  char field_data[10025];
+  std::string racfu_field_key;
+  char field_data[10025]; // we may want to make this dynamic using a VLA or malloc()/calloc()
   std::vector<std::string> list_field_data;
   char *list_field_data_pointer;
   char field_type;
 
   // Post Process Base Segment
   post_process_key(segment_key, segment->name, 8);
-  profile["profile"][segment_key] = json::object();
+  profile["profile"][segment_key] = nlohmann::json::object();
 
   // Post Process Fields
   for (int i = 1; i <= segment->field_count; i++) {
-    post_process_key(field_key, field->name, 8);
+    racfu_field_key = post_process_field_key(
+        field_key, "setropts", segment_key, field->name);
     field_type = get_setropts_field_type(field_key);
     if (field->field_length != 0) {
       // Post Process List Fields
@@ -144,43 +143,36 @@ json post_process_setropts(
         list_field_data_pointer =
             (char *)field + sizeof(setropts_field_descriptor_t);
         for (int j = 0; j < field->field_length / 9; j++) {
-          memset(field_data, 0, 8 + 1);
-          copy_and_encode_string(
-              field_data,
-              list_field_data_pointer,
-              8);
-          trim_trailing_spaces(field_data, 8);
+          process_setropts_field(field_data, list_field_data_pointer, 8);
           list_field_data.push_back(field_data);
           list_field_data_pointer += 9;
         }
-        profile["profile"][segment_key][field_key] = list_field_data;
+        profile["profile"][segment_key][racfu_field_key] = list_field_data;
         list_field_data.clear();
       // Post Process String & Number Fields
       } else {
-        memset(field_data, 0, field->field_length + 1);
-        copy_and_encode_string(
-            field_data,
+        process_setropts_field(
+            field_data, 
             (char *)field + sizeof(setropts_field_descriptor_t),
             field->field_length);
-        trim_trailing_spaces(field_data, 8);
         // Number
         if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
-          profile["profile"][segment_key][field_key] = strtol(field_data, NULL, 10);
+          profile["profile"][segment_key][racfu_field_key] = strtol(field_data, NULL, 10);
         // String
         } else {
-          profile["profile"][segment_key][field_key] = field_data;
+          profile["profile"][segment_key][racfu_field_key] = field_data;
         }
       }
     // Post Process Boolean Fields
     } else if (field_type == SETROPTS_FIELD_TYPE_BOOLEAN) {
       if (field->flag == 0xe8) { // 0xe8 is 'Y' in EBCDIC.
-        profile["profile"][segment_key][field_key] = true;
+        profile["profile"][segment_key][racfu_field_key] = true;
       } else {
-        profile["profile"][segment_key][field_key] = false;
+        profile["profile"][segment_key][racfu_field_key] = false;
       }
       // Post Process All Non-Boolean Fields Without a Value
     } else {
-      profile["profile"][segment_key][field_key] = nullptr;
+      profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
     field =
         (setropts_field_descriptor_t *)
@@ -191,29 +183,53 @@ json post_process_setropts(
   return profile;
 }
 
-bool process_boolean_field(
-    generic_field_descriptor_t *field,
-    char *field_key)
-{
-  if (field->flags & f_boolean_field) { return true; }
-  else { return false; }
-}
-
 void process_generic_field(
+    nlohmann::json &json_field,
     generic_field_descriptor_t *field,
     char *field_key,
-    char *field_data,
-    char *profile_address)
-{
-  int field_length = 
-      field->field_data_length_repeat_group_count.field_data_length;
-  memset(field_data, 0, field_length + 1);
+    char *profile_address,
+    const char racfu_field_type
+) {
+  char field_data[1025]; // we may want to make this dynamic using a VLA or malloc()/calloc()
+  // Post Process Boolean Fields
+  if (field->type & t_boolean_field) {
+    if (field->flags & f_boolean_field) { json_field = true; }
+    else { json_field = false; }
+  // Post Process Generic Fields
+  } else {
+    int field_length = 
+        field->field_data_length_repeat_group_count.field_data_length;
+    memset(field_data, 0, field_length + 1);
+    copy_and_encode_string(
+        field_data,
+        profile_address 
+            + field->
+                field_data_offset_repeat_group_element_count.field_data_offset,
+        field_length);
+    // Set Empty Fields to 'null'
+    if (strcmp(field_data, "") == 0) { 
+      json_field = nullptr; 
+    // Cast Integer Fields
+    } else if (racfu_field_type == TRAIT_TYPE_INTEGER) {
+      json_field = strtol(field_data, NULL, 10);
+    // Treat All Other Fields as Strings
+    } else { 
+      json_field = field_data; 
+    }
+  }
+}
+
+void process_setropts_field(
+    char *field_data_destination,
+    char *field_data_source,
+    int field_length
+) {
+  memset(field_data_destination, 0, field_length + 1);
   copy_and_encode_string(
-      field_data,
-      profile_address 
-          + field->
-              field_data_offset_repeat_group_element_count.field_data_offset,
+      field_data_destination,
+      field_data_source,
       field_length);
+  trim_trailing_spaces(field_data_destination, field_length);
 }
 
 char get_setropts_field_type(char *field_key)
@@ -225,6 +241,21 @@ char get_setropts_field_type(char *field_key)
     }
   }
   return SETROPTS_FIELD_TYPE_STRING;
+}
+
+std::string post_process_field_key(
+    char * field_key,
+    const char * profile_type,
+    const char * segment,
+    const char *raw_field_key
+) {
+    post_process_key(field_key, raw_field_key, 8);
+    const char *racfu_field_key = get_racfu_key(
+      profile_type, segment, field_key);
+    if (racfu_field_key == NULL) {
+      return std::string("experimental:") + std::string(field_key);
+    } 
+    return std::string(racfu_field_key);
 }
 
 void post_process_key(
