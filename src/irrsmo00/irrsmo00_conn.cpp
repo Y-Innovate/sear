@@ -114,7 +114,7 @@ char * call_irrsmo00(
 
 void call_irrsmo00_with_json(
     char * json_req_string,
-    racf_result_t * results
+    racfu_result_t * results
 ) {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;

@@ -1,3 +1,5 @@
+#include "racfu_result.hpp"
+
 #include "extract.hpp"
 #include "post_process.hpp"
 
@@ -7,43 +9,47 @@
 #include <string.h>
 #include <iostream>
 
-int main(int argc, char **argv)
-{
+// todo use C++ strings instead here?
+void do_extract(
+    racfu_result_t *result, 
+    const char *admin_type, 
+    const char *profile_name
+) {
   char *result_buffer;
 
   // Do Profile Extract
-  if (strcmp(argv[1], "user") == 0) {
+  if (strcmp(admin_type, "user") == 0) {
     result_buffer = extract(
-        argv[2],
+        profile_name,
         NULL,
         USER_EXTRACT_FUNCTION_CODE);
-  } else if (strcmp(argv[1], "group") == 0) {
+  } else if (strcmp(admin_type, "group") == 0) {
     result_buffer = extract(
-        argv[2],
+        profile_name,
         NULL,
         GROUP_EXTRACT_FUNCTION_CODE);
-  } else if (strcmp(argv[1], "group-connection") == 0) {
+  } else if (strcmp(admin_type, "group-connection") == 0) {
     result_buffer = extract(
-        argv[2],
+        profile_name,
         NULL,
         GROUP_CONNECTION_EXTRACT_FUNCTION_CODE);
-  } else if (strcmp(argv[1], "resource") == 0) {
+  } else if (strcmp(admin_type, "resource") == 0) {
     result_buffer = extract(
-        argv[2],
+        profile_name,
         argv[3],
         RESOURCE_EXTRACT_FUNCTION_CODE);
-  } else if (strcmp(argv[1], "data-set") == 0) {
+  } else if (strcmp(admin_type, "data-set") == 0) {
     result_buffer = extract(
-        argv[2],
+        profile_name,
         NULL,
         DATA_SET_EXTRACT_FUNCTION_CODE);
-  } else if (strcmp(argv[1], "setropts") == 0) {
+  } else if (strcmp(admin_type, "setropts") == 0) {
     result_buffer = extract(
         NULL,
         NULL,
         SETROPTS_EXTRACT_FUNCTION_CODE);
   } else {
-    std::cout << "Bad Extract Function: " << argv[1] << std::endl;
+    std::cout << "Bad Extract Function: " << admin_type << std::endl;
     return 1;
   }
 
@@ -56,7 +62,7 @@ int main(int argc, char **argv)
   nlohmann::json profile;
 
   // Post Process Generic Result
-  if (strcmp(argv[1], "setropts") != 0) {
+  if (strcmp(admin_type, "setropts") != 0) {
     generic_extract_parms_results_t *generic_result_buffer =
         (generic_extract_parms_results_t *) result_buffer;
     result_buffer_length = generic_result_buffer->result_buffer_length;
