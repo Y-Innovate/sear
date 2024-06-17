@@ -42,6 +42,7 @@ char * XmlParse::build_json_string(
 
     if(regex_match(xml_buffer, xml_sub_re_match, full_xml))
     {
+        //If we match the XML structure, we pull out relevant information with sub-matches.
         //std::cout << xml_sub_re_match[0] << "\n\n"; // Full std::string
         //std::cout << xml_sub_re_match[1] << '\n'; // Admin Type
         //std::cout << xml_sub_re_match[2] << '\n'; // Admin Attrs

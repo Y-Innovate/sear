@@ -84,7 +84,7 @@ char * call_irrsmo00(
     char * result_buffer_ptr;
     memset(full_result, 0, new_result_buffer_size);
     strncpy(full_result, result_buffer, result_len);
-    free(result_buffer);
+    delete[] result_buffer;
     result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
     result_len = *racf_rsn;
 
@@ -147,6 +147,9 @@ void call_irrsmo00_with_json(
 
     results->raw_result = xml_res_string;
     results->result_json = json_res_string;
+
+    // delete[] xml_res_string;
+    // delete[] json_res_string;
 
     //TODO: Make sure this isn't leaking memory?
     return;
