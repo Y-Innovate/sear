@@ -22,9 +22,6 @@ private:
     void parse_header_attributes(
         nlohmann::json * input_json,
         std::string header_string);
-    void parse_xml_body(
-        nlohmann::json * input_json,
-        std::string body_string);
     void parse_outer_xml(
         nlohmann::json * input_json,
         std::string body_string);

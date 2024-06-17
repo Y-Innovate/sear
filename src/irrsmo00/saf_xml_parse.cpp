@@ -62,7 +62,7 @@ char * XmlParse::build_json_string(
         //Erase the profile close tag as it messes up later regex parsing
         admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
         //Parse the body of the xml here
-        parse_xml_body(&result, admin_xml_body);
+        parse_outer_xml(&result, admin_xml_body);
 
         //Define attributes to the outer layer of the JSON
         result_json["adminType"] = admin_type;
@@ -121,16 +121,6 @@ void XmlParse::parse_header_attributes(
         }
     }while(n_old != n + 1);
 };
-
-void XmlParse::parse_xml_body(
-    nlohmann::json * input_json,
-    std::string body_string
-) {
-    //Parse the body of the XML for JSON information
-    //This is done using a recursive parsing method to parse
-    //outer (tags and attributes) and inner (data or another XML object) XML data
-    parse_outer_xml(input_json, body_string);
-}
 
 void XmlParse::parse_outer_xml(
     nlohmann::json * input_json,
