@@ -54,6 +54,9 @@ dkms.conf
 # Visual Studio Code
 .vscode
 
+# OSX Cache/Folder Data
+*.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

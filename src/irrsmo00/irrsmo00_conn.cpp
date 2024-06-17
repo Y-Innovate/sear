@@ -4,7 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-void null_byte_fix(char* str, unsigned int str_len) {
+void null_byte_fix(
+    char* str,
+    unsigned int str_len
+) {
    for (int i = 1; i < str_len; i++){
       if (str[i] == 0) {
          if (str[i-1] == 0x6E) {
@@ -18,16 +21,21 @@ void null_byte_fix(char* str, unsigned int str_len) {
 }
 
 char * call_irrsmo00(
-    char * request_xml, char * running_userid, unsigned int result_buffer_size, int irrsmo00_options,
-    int * saf_rc, int * racf_rc, int * racf_rsn, bool debug
-    )
-{
+    char * request_xml,
+    char * running_userid,
+    unsigned int result_buffer_size,
+    int irrsmo00_options,
+    int * saf_rc,
+    int * racf_rc,
+    int * racf_rsn,
+    bool debug
+) {
     char work_area[1024];
     char req_handle[64] = {0};
     running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
     int * alet = 0;
     int * acee = 0;
-    char  * result_buffer = (char *)malloc(result_buffer_size);
+    char  * result_buffer = new char[result_buffer_size];
     memset(result_buffer, 0, result_buffer_size);
     int request_xml_length = strlen(request_xml);
     int result_len = result_buffer_size;
@@ -72,11 +80,11 @@ char * call_irrsmo00(
 
     unsigned int new_result_buffer_size = *racf_rsn + result_len + 1;
     if (debug) { printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size); }
-    char * full_result = (char *)malloc(new_result_buffer_size);
+    char * full_result = new char [new_result_buffer_size];
     char * result_buffer_ptr;
     memset(full_result, 0, new_result_buffer_size);
     strncpy(full_result, result_buffer, result_len);
-    free(result_buffer);
+    delete[] result_buffer;
     result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
     result_len = *racf_rsn;
 
@@ -104,13 +112,16 @@ char * call_irrsmo00(
     return full_result;
 }
 
-extern char * call_irrsmo00_with_json(char * json_req_string)
-{
+void call_irrsmo00_with_json(
+    char * json_req_string,
+    racf_result_t * results
+) {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
     int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
     unsigned int result_buffer_size;
     bool debug_mode;
+    unsigned char opcode;
 
     irrsmo00_options = 13;
     result_buffer_size = 10000;
@@ -119,7 +130,7 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
     racf_rc = 0;
     racf_rsn = 0;
 
-    xml_req_string = injson_to_inxml(json_req_string, running_userid, &irrsmo00_options, &result_buffer_size, &debug_mode);
+    xml_req_string = injson_to_inxml(json_req_string, running_userid, &opcode, &irrsmo00_options, &result_buffer_size, &debug_mode);
 
     xml_res_string = call_irrsmo00(
         xml_req_string,
@@ -132,7 +143,14 @@ extern char * call_irrsmo00_with_json(char * json_req_string)
         debug_mode
     );
 
-    json_res_string = outxml_to_outjson(xml_res_string, saf_rc, racf_rc, racf_rsn, debug_mode);
-    free(xml_res_string);
-    return json_res_string;
+    json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
+
+    results->raw_result = xml_res_string;
+    results->result_json = json_res_string;
+
+    // delete[] xml_res_string;
+    // delete[] json_res_string;
+
+    //TODO: Make sure this isn't leaking memory?
+    return;
 }
