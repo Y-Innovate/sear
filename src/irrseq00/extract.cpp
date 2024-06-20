@@ -5,9 +5,10 @@
 #include <string.h>
 
 char *extract(
-    char *profile_name,   // Required for everything except setropts
-    char *class_name,     // Only required for general resource profile
-    uint8_t function_code // Always required
+    const char *profile_name,           // Required for everything except setropts
+    const char *class_name,             // Only required for general resource profile
+    uint8_t function_code,              // Always required
+    racfu_return_codes_t *return_codes  // Always required
 ) {
   int rc;
 
@@ -27,16 +28,13 @@ char *extract(
     setropts_extract_results_t *setropts_result_buffer =
         (setropts_extract_results_t *) arg_area_setropts->args.pResult_buffer;
     result_buffer = (char *) setropts_result_buffer;
-    // Check Return and Reason Codes
-    rc = check_return_and_reason_codes(
-        (char *) arg_area_setropts,
-        result_buffer,
-        rc,
-        arg_area_setropts->args.SAF_rc,
-        arg_area_setropts->args.RACF_rc,
-        arg_area_setropts->args.RACF_rsn);
+    // Preserve Return & Reason Codes
+    return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
+    return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
+    return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
+    return_codes->irrseq00_return_code = rc;
+    // Free Arg Area
     free(arg_area_setropts);
-    if (rc != 0) { return NULL; }
   /***************************************************************************/
   /* Generic Extract                                                         */
   /*                                                                         */
@@ -61,57 +59,35 @@ char *extract(
         (generic_extract_parms_results_t *)
             arg_area_generic->args.pResult_buffer;
     result_buffer = (char *)generic_result_buffer;
-    // Check Return and Reason Code
-    rc = check_return_and_reason_codes(
-        (char *) arg_area_generic,
-        result_buffer,
-        rc,
-        arg_area_generic->args.SAF_rc,
-        arg_area_generic->args.RACF_rc,
-        arg_area_generic->args.RACF_rsn);
+    // Preserve Return & Reason Codes
+    return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
+    return_codes->racf_return_code = arg_area_generic->args.RACF_rc;
+    return_codes->racf_reason_code = arg_area_generic->args.RACF_rsn;
+    return_codes->irrseq00_return_code = rc;
+    // Free Arg Area
     free(arg_area_generic);
-    if (rc != 0) { return NULL; }
+  }
+
+  // Check Return Codes
+  if (
+    return_codes->saf_return_code != 0
+    || return_codes->racf_return_code != 0
+    || return_codes->racf_reason_code != 0
+    || return_codes->irrseq00_return_code != 0
+  ) {
+    // Free Result Buffer & Return 'NULL' if not successful.
+    free(result_buffer);
+    return NULL;
   }
 
   // Return Result if Successful
   return result_buffer;
 }
 
-int check_return_and_reason_codes(
-    char *arg_area,
-    char *result_buffer,
-    uint32_t rc,
-    uint32_t SAF_rc,
-    uint32_t RACF_rc,
-    uint32_t RACF_rsn)
-{
-  if (
-      rc != 0 
-      || SAF_rc != 0 
-      || RACF_rc != 0 
-      || RACF_rsn != 0
-  ) {
-    printf(
-        "Fatal - IRRSEQ00 (R_Admin) service was unsuccessful.\n"
-        "RC = %d\n"
-        "SAF RC = %d\n"
-        "RACF RC = %d\n"
-        "RACF RSN = %d\n",
-        rc,
-        SAF_rc,
-        RACF_rc,
-        RACF_rsn);
-    free(result_buffer);
-    free(arg_area);
-    return -1;
-  }
-  return 0;
-}
-
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    char *profile_name,    // Required always.
-    char *class_name,      // Required only for resource extract.
-    uint8_t function_code  // Required always.
+    char *profile_name,     // Required always.
+    char *class_name,       // Required only for resource extract.
+    uint8_t function_code         // Required always.
 ) {
   int profile_name_length;
   if (profile_name != NULL) {
