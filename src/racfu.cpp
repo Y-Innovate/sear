@@ -19,15 +19,19 @@ void do_extract(
 void build_result(
     const char *operation,
     const char *admin_type,
+    const char *profile_name,
+    const char *class_name,
     char *raw_result,
     nlohmann::json profile_json,
     racfu_result_t *result,
+    int raw_result_length,
     racfu_return_codes_t *return_codes);
 
 void racfu(racfu_result_t *result, char *request_json) {
   nlohmann::json request;
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = { -1, -1, -1, -1, -1, -1 };
+  const char *profile_name = NULL;
   const char *class_name = NULL;
   // {
   //     "operation": "add",
@@ -39,12 +43,15 @@ void racfu(racfu_result_t *result, char *request_json) {
   // }
   // Extract
   if (request["operation"].get<std::string>().compare("extract") == 0) {
+    if (request.contains("profile_name")) {
+      profile_name = request["profile_name"].get<std::string>().c_str();
+    }
     if (request.contains("class_name")) {
       class_name = request["class_name"].get<std::string>().c_str();
     }
     do_extract(
         request["admin_type"].get<std::string>().c_str(),
-        request["profile_name"].get<std::string>().c_str(),
+        profile_name,
         class_name,
         result,
         &return_codes);
@@ -59,11 +66,11 @@ void do_extract(
     const char *admin_type,
     const char *profile_name,
     const char *class_name,
-    racfu_result_t *result,
+    racfu_result_t *racfu_result,
     racfu_return_codes_t *return_codes
 ) {
-  char *result_buffer = NULL;
-  int result_buffer_length;
+  char *raw_result = NULL;
+  int raw_result_length;
   uint8_t function_code;
   nlohmann::json profile_json;
 
@@ -86,12 +93,12 @@ void do_extract(
 
   // Do extract if function code is good.
   if (return_codes->racfu_return_code == -1) {
-    result_buffer = extract(
+    raw_result = extract(
         profile_name,
         class_name,
         function_code,
         return_codes);
-    if (result_buffer == NULL) {
+    if (raw_result == NULL) {
       return_codes->racfu_return_code = 4;
     } else {
       return_codes->racfu_return_code = 0;
@@ -99,13 +106,16 @@ void do_extract(
   }
 
   // Build Failure Result
-  if (result_buffer == NULL) {
+  if (raw_result == NULL) {
     build_result(
         "extract",
         admin_type,
+        profile_name,
+        class_name,
         NULL,
         nullptr,
-        result,
+        racfu_result,
+        0,
         return_codes);
     return;
   }
@@ -113,14 +123,14 @@ void do_extract(
   // Post Process Generic Result
   if (strcmp(admin_type, "setropts") != 0) {
     generic_extract_parms_results_t *generic_result_buffer =
-        (generic_extract_parms_results_t *) result_buffer;
-    result_buffer_length = generic_result_buffer->result_buffer_length;
+        (generic_extract_parms_results_t *) raw_result;
+    raw_result_length = generic_result_buffer->result_buffer_length;
     profile_json = post_process_generic(generic_result_buffer);
   // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
-        (setropts_extract_results_t *) result_buffer;
-    result_buffer_length = setropts_result_buffer->result_buffer_length;
+        (setropts_extract_results_t *) raw_result;
+    raw_result_length = setropts_result_buffer->result_buffer_length;
     profile_json = post_process_setropts(setropts_result_buffer);
   }
 
@@ -128,9 +138,12 @@ void do_extract(
   build_result(
       "extract",
       admin_type,
-      result_buffer,
+      profile_name,
+      class_name,
+      raw_result,
       profile_json,
-      result,
+      racfu_result,
+      raw_result_length,
       return_codes);
 
   return;
@@ -139,9 +152,12 @@ void do_extract(
 void build_result(
     const char *operation,
     const char *admin_type,
+    const char *profile_name,
+    const char *class_name,
     char *raw_result,
     nlohmann::json profile_json,
-    racfu_result_t *result,
+    racfu_result_t *racfu_result,
+    int raw_result_length,
     racfu_return_codes_t *return_codes
 ) {
   // Build Return Code JSON
@@ -183,9 +199,16 @@ void build_result(
   nlohmann::json result_json = {
     {"operation", operation},
     {"admin_type", admin_type},
+    {"profile_name", profile_name},
     {"result", profile_json},
     {"return_codes", return_code_json}
   };
+  if (profile_name == NULL) {
+    result_json["profile_name"] = nullptr;
+  }
+  if (class_name != NULL) {
+    result_json["class_name"] = class_name;
+  }
 
   // Convert profile JSON to C string.
   std::string result_json_cpp_string = result_json.dump();
@@ -193,8 +216,9 @@ void build_result(
   std::strcpy(result_json_string, result_json_cpp_string.c_str());
 
   // Build RACFu Result Structure
-  result->raw_result = raw_result;
-  result->result_json = result_json_string;
+  racfu_result->raw_result = raw_result;
+  racfu_result->raw_result_length = raw_result_length;
+  racfu_result->result_json = result_json_string;
 
   return;
 }

@@ -59,6 +59,11 @@ racfu: clean mkdirs
 		$(KEY_MAP)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
 
+dbg:
+	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
+		-o $(DIST)/debug \
+		${PWD}/debug/debug.c
+
 SMO64_TEST:	
 	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 

@@ -2,8 +2,9 @@
 #define __RACFU_RESULT_H_
 
 typedef struct {
-  char *raw_result;
-  char *result_json;
+    char *raw_result;
+    int raw_result_length;
+    char *result_json;
 } racfu_result_t;
 
 typedef struct {

@@ -389,14 +389,10 @@ char *extract(
     racfu_return_codes_t *return_codes);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    char *profile_name,
-    char *class_name,
+    const char *profile_name,
+    const char *class_name,
     uint8_t function_code);
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
-
-#ifndef UNIT_TEST
-int ascii_to_ebcdic(char *string);
-#endif
 
 #endif

@@ -16,9 +16,8 @@ nlohmann::json post_process_generic(
   char *profile_address = (char *)generic_result_buffer;
 
   // Set Class Name
-  char class_name[8];
-  post_process_key(class_name, generic_result_buffer->class_name, 8);
-  profile["profile_type"] = class_name;
+  char profile_type[8];
+  post_process_key(profile_type, generic_result_buffer->class_name, 8);
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -52,9 +51,9 @@ nlohmann::json post_process_generic(
             (profile_address + segment->field_descriptor_offset);
     for (int j = 1; j <= segment->field_count; j++) {
       racfu_field_key = post_process_field_key(
-          field_key, class_name, segment_key, field->name);
+          field_key, profile_type, segment_key, field->name);
       racfu_field_type = get_racfu_trait_type(
-          class_name, segment_key, field_key);
+          profile_type, segment_key, field_key);
       // Post Process Non-Repeat Fields
       if (!(field->type & t_repeat_field_header)) {
         process_generic_field(
@@ -78,9 +77,9 @@ nlohmann::json post_process_generic(
           for (int l = 1; l <= repeat_group_element_count; l++) {
             field++;
             racfu_repeat_field_key = post_process_field_key(
-                repeat_field_key, class_name, segment_key, field->name);
+                repeat_field_key, profile_type, segment_key, field->name);
             racfu_repeat_field_type = get_racfu_trait_type(
-                class_name, segment_key, repeat_field_key);
+                profile_type, segment_key, repeat_field_key);
             process_generic_field(
                 repeat_group[k - 1][racfu_repeat_field_key],
                 field,
@@ -105,9 +104,6 @@ nlohmann::json post_process_setropts(
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
   char *profile_address = (char *)setropts_result_buffer;
-
-  // Set Class Name
-  profile["profile_type"] = "setropts";
 
   // Segment Variables
   setropts_segment_descriptor_t *segment =
@@ -244,9 +240,9 @@ char get_setropts_field_type(char *field_key)
 }
 
 std::string post_process_field_key(
-    char * field_key,
-    const char * profile_type,
-    const char * segment,
+    char *field_key,
+    const char *profile_type,
+    const char *segment,
     const char *raw_field_key
 ) {
     post_process_key(field_key, raw_field_key, 8);

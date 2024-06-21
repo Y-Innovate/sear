@@ -85,8 +85,8 @@ char *extract(
 }
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    char *profile_name,     // Required always.
-    char *class_name,       // Required only for resource extract.
+    const char *profile_name,     // Required always.
+    const char *class_name,       // Required only for resource extract.
     uint8_t function_code         // Required always.
 ) {
   int profile_name_length;
@@ -97,18 +97,6 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   if (class_name != NULL) {
     class_name_length = strlen(class_name);
   }
-
-  /***************************************************************************/
-  /* ISO8859-1 to IBM-1047 Encoding Conversions                              */
-  /***************************************************************************/
-  #ifndef UNIT_TEST
-  if (ascii_to_ebcdic(profile_name) != 0) {
-    return NULL;
-  }
-  if (ascii_to_ebcdic(class_name) != 0) {
-    return NULL;
-  }
-  #endif
 
   /***************************************************************************/
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
@@ -139,6 +127,10 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
       args->profile_name,
       profile_name,
       profile_name_length);
+  // Encode profile name as IBM-1047.
+  #ifndef UNIT_TEST
+  __a2e_l(args->profile_name, profile_name_length);
+  #endif
   if (class_name != NULL)
   {
     // Class name must be padded with blanks.
@@ -147,6 +139,10 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
         profile_extract_parms->class_name,
         class_name,
         class_name_length);
+    // Encode class name as IBM-1047.
+    #ifndef UNIT_TEST
+    __a2e_l(profile_extract_parms->class_name, class_name_length);
+    #endif
   }
   profile_extract_parms->profile_name_length = profile_name_length;
 
@@ -195,21 +191,3 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
 
   return arg_area;
 }
-
-#ifndef UNIT_TEST
-int ascii_to_ebcdic(char *string)
-{
-  // Skip encoding conversion if 'string' is 'NULL'.
-  if (string == NULL) { return 0; }
-  int rc = __a2e_s(string);
-  if (rc == -1) {
-    perror("");
-    printf(
-        "Fatal - Unable to convert '%s' from "
-        "ISO8859-1 to IBM-1047 encoding.\n",
-        string);
-    return -1;
-  }
-  return 0;
-}
-#endif
