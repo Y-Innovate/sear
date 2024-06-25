@@ -8,6 +8,7 @@ SMO_CONN 		= irrsmo64_conn
 SMO_LIB 		= irrsmo64
 
 # Directory Paths
+SRC				= ${PWD}/src
 IRRSMO00_SRC	= ${PWD}/src/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/src/irrseq00
 KEY_MAP			= ${PWD}/src/key_map
@@ -22,10 +23,11 @@ ifeq ($(UNAME), OS/390)
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
 				-m64 -fzos-le-char-mode=ascii \
+				-I $(SRC) \
+				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(EXTERNALS)
-  	CPPFLAGS 	= -std=c++11 -c -m64 -fzos-le-char-mode=ascii -I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 
 	REQTEST		=
@@ -42,24 +44,28 @@ endif
 
 RM				= rm -rf
 
-all: clean mkdirs smo
+all: racfu
 
 mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
 
+racfu: clean mkdirs
+	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
+	cd $(ARTIFACTS) && $(CXX) -c $(CFLAGS) \
+		$(SRC)/*.cpp \
+		$(IRRSMO00_SRC)/*.cpp \
+		$(IRRSEQ00_SRC)/*.cpp \
+		$(KEY_MAP)/*.cpp
+	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
+
+dbg:
+	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
+		-o $(DIST)/debug \
+		${PWD}/debug/debug.c
+
 SMO64_TEST:	
 	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 
-smo: clean mkdirs $(REQTEST)
-	cd $(ARTIFACTS) \
-		&& $(CXX) $(CPPFLAGS) $(IRRSMO00_SRC)/*.cpp
-	$(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o $(DIST)/$(SMO_CONN).so
-
-extract: clean mkdirs
-	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
-	cd $(ARTIFACTS) && $(CXX) -c $(CFLAGS) $(IRRSEQ00_SRC)/*.cpp $(KEY_MAP)/*.cpp
-	$(CXX) $(LDFLAGS) -o $(DIST)/extract $(ARTIFACTS)/*.o 
-
 clean:
-	$(RM) $(ARTIFACTS) $(DIST) extract.bin
+	$(RM) $(ARTIFACTS) $(DIST)

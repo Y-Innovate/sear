@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "racfu_result.hpp"
+
 #ifndef UNIT_TEST
   #include <unistd.h>
 
@@ -381,27 +383,16 @@ const setropts_field_type_t SETROPTS_FIELD_TYPES[] {
 extern "C" uint32_t callRadmin(char ZOS_PTR_32);
 
 char *extract(
-    char *profile_name,
-    char *class_name,
-    uint8_t function_code);
-
-int check_return_and_reason_codes(
-    char *arg_area,
-    char *result_buffer,
-    uint32_t rc,
-    uint32_t SAF_rc,
-    uint32_t RACF_rc,
-    uint32_t RACF_rsn);
+    const char *profile_name,
+    const char *class_name,
+    uint8_t function_code,
+    racfu_return_codes_t *return_codes);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    char *profile_name,
-    char *class_name,
+    const char *profile_name,
+    const char *class_name,
     uint8_t function_code);
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
-
-#ifndef UNIT_TEST
-int ascii_to_ebcdic(char *string);
-#endif
 
 #endif

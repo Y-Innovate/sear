@@ -114,7 +114,7 @@ char * call_irrsmo00(
 
 void call_irrsmo00_with_json(
     char * json_req_string,
-    racf_result_t * results
+    racfu_result_t * results
 ) {
     char running_userid[8] = {0};
     char * xml_res_string, *xml_req_string, * json_res_string;
@@ -146,6 +146,7 @@ void call_irrsmo00_with_json(
     json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
 
     results->raw_result = xml_res_string;
+    results->raw_result_length = result_buffer_size;
     results->result_json = json_res_string;
 
     // delete[] xml_res_string;
