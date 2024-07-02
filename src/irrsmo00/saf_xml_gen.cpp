@@ -40,7 +40,7 @@ char * XmlGen::build_xml_string(
             profileName = item.value().get<std::string>();
             build_attribute("name",profileName);
         }
-        else if ( item.key().compare("request_operation") == 0 ) {
+        else if ( item.key().compare("operation") == 0 ) {
             // The type of request we are performing
             requestOperation = item.value().get<std::string>();
             operation = convert_operation(requestOperation,irrsmo00_options);
