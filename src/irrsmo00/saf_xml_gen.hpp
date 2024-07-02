@@ -34,7 +34,6 @@ private:
         std::string value);
     std::string convert_operation(
         std::string requestOperation,
-        unsigned char * opcode,
         int * irrsmo00_options);
     void convert_to_ebcdic(
         char * ascii_str,

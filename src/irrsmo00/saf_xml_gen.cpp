@@ -43,7 +43,7 @@ char * XmlGen::build_xml_string(
         else if ( item.key().compare("request_operation") == 0 ) {
             // The type of request we are performing
             requestOperation = item.value().get<std::string>();
-            operation = convert_operation(requestOperation,opcode,irrsmo00_options);
+            operation = convert_operation(requestOperation,irrsmo00_options);
             build_attribute("operation", operation);
         }
         else if ( item.value().is_string() ) {
@@ -197,26 +197,21 @@ void XmlGen::build_single_trait(
 
 std::string XmlGen::convert_operation(
     std::string requestOperation,
-    unsigned char * opcode,
     int * irrsmo00_options
 ) {
-    //Converts the designated function to a short OPCODE, the correct IRRSMO00 operation
-    //and adjusts IRRSMO00 options as necessary (alter operations require the PRECHECK attribute)
+    //Converts the designated function to the correct IRRSMO00 operation and adjusts IRRSMO00 options as necessary
+    //(alter operations require the PRECHECK attribute)
     if (requestOperation.compare("add") == 0)  {
-        *opcode = OP_ADD;
         return "set";
     }
     if (requestOperation.compare("alter") == 0) {
-        *opcode = OP_ALT;
         *irrsmo00_options = 15;
         return "set";
     }
     if (requestOperation.compare("delete") == 0) {
-        *opcode = OP_DEL;
         return "delete";
     }
     if (requestOperation.compare("extract") == 0) {
-        *opcode = OP_LST;
         return "listdata";
     }
     return "";

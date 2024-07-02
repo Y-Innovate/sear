@@ -188,7 +188,6 @@ void do_add_alter_delete(
     int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
     unsigned int result_buffer_size;
     bool debug_mode;
-    unsigned char opcode;
 
     nlohmann::json response_json;
     XmlParse * parser = new XmlParse();

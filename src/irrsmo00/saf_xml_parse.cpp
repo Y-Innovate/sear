@@ -13,7 +13,7 @@ char * XmlParse::build_json_string(
 ) {   
     std::string xml_buffer;
 
-    //Build a JSON string from the XML result string, SMO return and Reason Codes, and the OPCODE used for the function
+    //Build a JSON string from the XML result string, SMO return and Reason Codes
     if (debug)
     {
         //print information in debug mode
