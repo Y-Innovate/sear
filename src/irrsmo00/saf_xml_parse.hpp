@@ -44,14 +44,10 @@ private:
     void convert_to_ascii(
         char * ebcdic_str,
         int length);
-    std::string decode_opcode(unsigned char opcode);
 public:
     char * build_json_string(
         char * xml_result_string,
-        unsigned char opcode,
-        int saf_rc,
-        int racf_rc,
-        int racf_rsn,
+        int * racfu_rc,
         bool debug);
 };
 

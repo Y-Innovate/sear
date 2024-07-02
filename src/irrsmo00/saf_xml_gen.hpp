@@ -41,23 +41,13 @@ private:
         int length);
 public:
     char * build_xml_string(
-        char * json_req_string,
+        nlohmann::json request,
         char * userid_buffer,
-        unsigned char * opcode,
         int * irrsmo00_options,
         unsigned int * result_buffer_size,
         bool * debug
     );
 };
-
-extern char * injson_to_inxml(
-    char * injson,
-    char * userid_buffer,
-    unsigned char * opcode,
-    int * irrsmo00_options,
-    unsigned int * result_buffer_size,
-    bool * debug
-);
 
 #ifndef __MVS__
 //Character conversion tables for OSX and Windows Testing

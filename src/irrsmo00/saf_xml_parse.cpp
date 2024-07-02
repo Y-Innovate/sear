@@ -8,10 +8,7 @@
 //Public Methods of XmlParse
 char * XmlParse::build_json_string(
     char * xml_result_string,
-    unsigned char opcode,
-    int saf_rc,
-    int racf_rc,
-    int racf_rsn,
+    int * racfu_rc,
     bool debug
 ) {   
     std::string xml_buffer;
@@ -58,7 +55,7 @@ char * XmlParse::build_json_string(
         parse_outer_xml(&result, admin_xml_body);
 
 
-        result_json["adminType"] = admin_type;
+        result_json["admin_type"] = admin_type;
         result_json["result"] = result;
     }
     else
@@ -66,8 +63,6 @@ char * XmlParse::build_json_string(
         //If the XML does not match the main regular expression, then return this string to indicate an error
         result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
     }
-    //Return the type of operation requested as part of the JSON in success or failure case
-    result_json["requestOperation"] = decode_opcode(opcode);
 
     //Build a return codes object in the JSON to return IRRSMO00 return and reason codes
     returnCodes["safReturnCode"] = saf_rc;
@@ -218,23 +213,6 @@ void XmlParse::convert_to_ascii(
     //If we are on z/OS, we use the built in e2a function for this
     __e2a_s(ebcdic_str);
     #endif //__MVS__
-}
-
-std::string XmlParse::decode_opcode(unsigned char opcode)
-{
-    //Decode the opcode into a string representing the designated function
-    switch (opcode) {
-        case OP_ADD:
-            return "add";
-        case OP_ALT:
-            return "alter";
-        case OP_DEL:
-            return "delete";
-        case OP_LST:
-            return "extract";
-        default:
-            return "unsupported";
-    }
 }
 
 std::string XmlParse::replace_xml_chars(std::string xml_data)

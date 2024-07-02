@@ -1,6 +1,8 @@
 #include "racfu.hpp"
 
 #include "irrsmo00_conn.hpp"
+#include "saf_xml_gen.hpp"
+#include "saf_xml_parse.hpp"
 #include "extract.hpp"
 #include "post_process.hpp"
 
@@ -14,6 +16,15 @@ void do_extract(
     const char *profile_name,
     const char *class_name,
     racfu_result_t *result,
+    racfu_return_codes_t *return_codes);
+  
+void do_add_alter_delete(
+    const char *admin_type,
+    const char *profile_name,
+    const char *class_name,
+    const char *operation,
+    nlohmann::json full_request_json,
+    racfu_result_t * results,
     racfu_return_codes_t *return_codes);
 
 void build_result(
@@ -29,6 +40,7 @@ void build_result(
 
 void racfu(racfu_result_t *result, char *request_json) {
   nlohmann::json request;
+  std::string operation;
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = { -1, -1, -1, -1, -1, -1 };
   const char *profile_name = NULL;
@@ -42,7 +54,8 @@ void racfu(racfu_result_t *result, char *request_json) {
   //     }
   // }
   // Extract
-  if (request["operation"].get<std::string>().compare("extract") == 0) {
+  operation = request["operation"].get<std::string>();
+  if (operation.compare("extract") == 0) {
     if (request.contains("profile_name")) {
       profile_name = request["profile_name"].get<std::string>().c_str();
     }
@@ -57,8 +70,20 @@ void racfu(racfu_result_t *result, char *request_json) {
         &return_codes);
   // Add/Alter/Delete
   } else {
-    // todo just pass the json object.
-    call_irrsmo00_with_json(request_json, result);
+    if (request.contains("profile_name")) {
+      profile_name = request["profile_name"].get<std::string>().c_str();
+    }
+    if (request.contains("class_name")) {
+      class_name = request["class_name"].get<std::string>().c_str();
+    }
+    do_add_alter_delete(
+      request["admin_type"].get<std::string>().c_str(),
+      profile_name,
+      class_name,
+      operation.c_str(),
+      request,
+      result,
+      &return_codes);
   }
 }
 
@@ -147,6 +172,83 @@ void do_extract(
       return_codes);
 
   return;
+}
+
+void do_add_alter_delete(
+    const char *admin_type,
+    const char *profile_name,
+    const char *class_name,
+    const char *operation,
+    nlohmann::json full_request_json,
+    racfu_result_t * racfu_result,
+    racfu_return_codes_t *return_codes
+) {
+    char running_userid[8] = {0};
+    char * xml_response_string, * xml_request_string;
+    int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
+    unsigned int result_buffer_size;
+    bool debug_mode;
+    unsigned char opcode;
+
+    nlohmann::json response_json;
+    XmlParse * parser = new XmlParse();
+    XmlGen * generator = new XmlGen();
+
+
+    irrsmo00_options = 13;
+    result_buffer_size = 10000;
+    debug_mode = false;
+    saf_rc = 0;
+    racf_rc = 0;
+    racf_rsn = 0;
+
+    xml_request_string = generator->build_xml_string(
+        full_request_json,
+        running_userid,
+        &irrsmo00_options,
+        &result_buffer_size,
+        &debug_mode
+    );
+
+    xml_response_string = call_irrsmo00(
+        xml_request_string,
+        running_userid,
+        result_buffer_size,
+        irrsmo00_options,
+        &saf_rc,
+        &racf_rc,
+        &racf_rsn,
+        debug_mode
+    );
+
+    return_codes->saf_return_code = saf_rc;
+    return_codes->racf_return_code = racf_rc;
+    return_codes->racf_reason_code = racf_rsn;
+
+    response_json = parser->build_json_string(
+        xml_response_string,
+        &(return_codes->racfu_return_code),
+        debug_mode
+    );
+
+    delete generator;
+    delete parser;
+    // delete[] xml_response_string;
+    // delete[] json_res_string;
+
+    // Build Success Result
+    build_result(
+      operation,
+      admin_type,
+      profile_name,
+      class_name,
+      xml_response_string,
+      response_json,
+      racfu_result,
+      result_buffer_size,
+      return_codes);
+    //TODO: Make sure this isn't leaking memory?
+    return;
 }
 
 void build_result(

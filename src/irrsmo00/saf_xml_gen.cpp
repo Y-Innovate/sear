@@ -7,7 +7,7 @@
 
 //Public Functions of XmlGen
 char * XmlGen::build_xml_string(
-    char * json_req_string,
+    nlohmann::json request,
     char * userid_buffer,
     unsigned char * opcode,
     int * irrsmo00_options,
@@ -15,8 +15,6 @@ char * XmlGen::build_xml_string(
     bool * debug
 ) {
     //Main body function that builds an xml string
-    nlohmann::json request;
-    request = nlohmann::json::parse(json_req_string);
     std::string requestOperation, adminType, profileName, operation, runningUserId = "";
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
