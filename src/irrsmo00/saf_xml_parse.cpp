@@ -14,6 +14,8 @@ char * XmlParse::build_json_string(
     int racf_rsn,
     bool debug
 ) {   
+    std::string xml_buffer;
+
     //Build a JSON string from the XML result string, SMO return and Reason Codes, and the OPCODE used for the function
     if (debug)
     {
@@ -31,7 +33,7 @@ char * XmlParse::build_json_string(
     }
 
     //Regular expression designed to match the header, generic body, and closing tags of the xml
-    std::regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
+    std::regex full_xml_regex {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
     std::smatch useful_xml_substrings;
 
     nlohmann::json result_json;
@@ -40,28 +42,23 @@ char * XmlParse::build_json_string(
 
     std::string admin_type, admin_close_tag, admin_xml_attrs, admin_xml_body;
 
-    if(regex_match(xml_buffer, useful_xml_substrings, full_xml))
+    if(regex_match(xml_buffer, useful_xml_substrings, full_xml_regex))
     {
         //Use sub-matches in the regular expression to pull out useful information
         admin_type = useful_xml_substrings[1];
         admin_xml_attrs = useful_xml_substrings[2];
         admin_xml_body = useful_xml_substrings[3];
 
-
         parse_header_attributes(&result, admin_xml_attrs);
 
-
-        //Identify the closing tag of the xml for later xml operations
-        admin_close_tag = R"(</)"+admin_type+">";
         //Erase the profile close tag as it messes up later regex parsing
+        admin_close_tag = R"(</)"+admin_type+">";
         admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
-        //Parse the body of the xml here
+
         parse_outer_xml(&result, admin_xml_body);
 
-        //Define attributes to the outer layer of the JSON
+
         result_json["adminType"] = admin_type;
-        
-        //Put the built JSON object in the result JSON
         result_json["result"] = result;
     }
     else
@@ -142,8 +139,8 @@ void XmlParse::parse_outer_xml(
         start_index += xml_object_length+current_end_tag.length();
         current_end_tag = R"(</)"+current_tag+">";
         current_start_tag_length = current_end_tag.length()-1;
-        xml_object_length = input_xml_string.substr(start_index,input_xml_string.length()-start_index).find(current_end_tag);
-        data_within_current_tags = input_xml_string.substr(start_index + current_start_tag_length,xml_object_length);
+        xml_object_length = input_xml_string.find(current_end_tag,start_index);
+        data_within_current_tags = input_xml_string.substr(start_index + current_start_tag_length,xml_object_length-current_end_tag.length()+1);
 
         parse_inner_xml(input_json, data_within_current_tags, current_tag);
 
@@ -183,6 +180,11 @@ void XmlParse::update_json(
 ) {
     //Add specified information (inner_data) to the input_json JSON object
     //using the specified key (outer_tag)
+    outer_tag = replace_xml_chars(outer_tag);
+    if (inner_data.is_string())
+    {
+        inner_data = replace_xml_chars(inner_data);
+    }
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
     {
         //If we do not already have this tag used in our object (at this layer), just add data
@@ -235,21 +237,42 @@ std::string XmlParse::decode_opcode(unsigned char opcode)
     }
 }
 
-// Connects the "XML library" to the C layer with this extern C function
+std::string XmlParse::replace_xml_chars(std::string xml_data)
+{
+    std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;", apos = "&apos;";
+    std::size_t index;
+    
+    index = xml_data.find("&");
+    if (index == std::string::npos)
+    {
+        return xml_data;
+    }
+    do
+    {
+       xml_data = replace_substring(xml_data, gt, ">", index);
+       xml_data = replace_substring(xml_data, lt, "<", index);
+       xml_data = replace_substring(xml_data, apos, "'", index);
+       xml_data = replace_substring(xml_data, quot, "\"", index);
+       xml_data = replace_substring(xml_data, amp, "&", index);
+       index = xml_data.find("&",index+1);
+    } while (index != std::string::npos);
+    return xml_data;
+}
 
-extern char * outxml_to_outjson(
-    char * outxml,
-    unsigned char opcode,
-    int saf_rc,
-    int racf_rc,
-    int racf_rsn,
-    bool debug
-) {
-    //Build an XMLParse XML Parser object and parse an IRRSMO00
-    //response xml string into a JSON string
-    XmlParse * xml = new XmlParse();
-    return xml->build_json_string(outxml, opcode, saf_rc, racf_rc, racf_rsn, debug);
-    //TODO: STOP LEAKING MEMORY
+std::string XmlParse::replace_substring(std::string data, std::string substring, std::string replacement, std::size_t start)
+{
+    std::size_t match;
+    if ((data.length() - start) < substring.length())
+    {
+        return data;
+    }
+    match = data.find(substring,start);
+    if (match == std::string::npos)
+    {
+        return data;
+    }
+    data.replace(match,substring.length(),replacement);
+    return data;
 }
 
 #ifndef XML_COMMON_LIB_H_

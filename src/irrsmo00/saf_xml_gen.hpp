@@ -19,8 +19,11 @@ class XmlGen
 {
 private:
     std::string xml_buffer;
+    std::string replace_xml_chars(std::string data);
     void build_open_tag(std::string tag);
-    void build_attribute(std::string attribute);
+    void build_attribute(
+        std::string name,
+        std::string value);
     void build_value(std::string value);
     void build_end_nested_tag();
     void build_full_close_tag(std::string tag);
@@ -28,9 +31,6 @@ private:
     void build_single_trait(
         std::string tag,
         std::string operation,
-        std::string value);
-    std::string make_xml_attribute(
-        std::string name,
         std::string value);
     std::string convert_operation(
         std::string requestOperation,

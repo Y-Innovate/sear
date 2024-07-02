@@ -1,4 +1,6 @@
 #include "irrsmo00_conn.hpp"
+#include "saf_xml_parse.hpp"
+#include "saf_xml_gen.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -122,6 +124,9 @@ void call_irrsmo00_with_json(
     unsigned int result_buffer_size;
     bool debug_mode;
     unsigned char opcode;
+    XmlParse * parser = new XmlParse();
+    XmlGen * generator = new XmlGen();
+
 
     irrsmo00_options = 13;
     result_buffer_size = 10000;
@@ -130,7 +135,14 @@ void call_irrsmo00_with_json(
     racf_rc = 0;
     racf_rsn = 0;
 
-    xml_req_string = injson_to_inxml(json_req_string, running_userid, &opcode, &irrsmo00_options, &result_buffer_size, &debug_mode);
+    xml_req_string = generator->build_xml_string(
+        json_req_string,
+        running_userid,
+        &opcode,
+        &irrsmo00_options,
+        &result_buffer_size,
+        &debug_mode
+    );
 
     xml_res_string = call_irrsmo00(
         xml_req_string,
@@ -143,12 +155,21 @@ void call_irrsmo00_with_json(
         debug_mode
     );
 
-    json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
+    json_res_string = parser->build_json_string(
+        xml_res_string,
+        opcode,
+        saf_rc,
+        racf_rc,
+        racf_rsn,
+        debug_mode
+    );
 
     results->raw_result = xml_res_string;
     results->raw_result_length = result_buffer_size;
     results->result_json = json_res_string;
 
+    delete generator;
+    delete parser;
     // delete[] xml_res_string;
     // delete[] json_res_string;
 
