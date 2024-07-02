@@ -35,7 +35,7 @@ private:
     std::string replace_xml_chars(
         std::string xml_data
     );
-    std::string XmlParse::replace_substring(
+    std::string replace_substring(
         std::string data,
         std::string substring,
         std::string replacement,

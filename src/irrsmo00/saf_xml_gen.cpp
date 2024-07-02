@@ -9,7 +9,6 @@
 char * XmlGen::build_xml_string(
     nlohmann::json request,
     char * userid_buffer,
-    unsigned char * opcode,
     int * irrsmo00_options,
     unsigned int * result_buffer_size,
     bool * debug
@@ -236,20 +235,4 @@ void XmlGen::convert_to_ebcdic(
     #else
     __a2e_s(ascii_str);
     #endif //__MVS__
-}
-
-// Connects the "XML library" to the C layer with these extern C functions
-
-extern char * injson_to_inxml(
-    char * injson,
-    char * userid_buffer,
-    unsigned char * opcode,
-    int * irrsmo00_options,
-    unsigned int * result_buffer_size,
-    bool * debug
-) {
-    //Build an XMLGen XML Generator object and build an IRRSMO00
-    //request xml string from a supplied JSON string
-    XmlGen * xml = new XmlGen();
-    return xml->build_xml_string(injson, userid_buffer, opcode, irrsmo00_options, result_buffer_size, debug);
 }

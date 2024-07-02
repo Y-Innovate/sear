@@ -35,7 +35,6 @@ char * XmlParse::build_json_string(
 
     nlohmann::json result_json;
     nlohmann::json result;
-    nlohmann::json returnCodes;
 
     std::string admin_type, admin_close_tag, admin_xml_attrs, admin_xml_body;
 
@@ -57,20 +56,15 @@ char * XmlParse::build_json_string(
 
         result_json["admin_type"] = admin_type;
         result_json["result"] = result;
+        *racfu_rc = 0;
     }
     else
     {
         //If the XML does not match the main regular expression, then return this string to indicate an error
         result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
+        *racfu_rc = 101;
     }
 
-    //Build a return codes object in the JSON to return IRRSMO00 return and reason codes
-    returnCodes["safReturnCode"] = saf_rc;
-    returnCodes["racfReturnCode"] = racf_rc;
-    returnCodes["racfReasonCode"] = racf_rsn;
-
-    result_json["returnCodes"] = returnCodes;
-    
     //Convert c++ string into char * c string
     std::string result_json_as_string = result_json.dump();
     const int length = result_json_as_string.length();

@@ -35,8 +35,6 @@ extern "C" {
 /* Callable service prototypes */
 #pragma linkage(IRRSMO64,OS_NOSTACK)
 
-#pragma export(call_irrsmo00_with_json)
-
 void null_byte_fix(
     char* str,
     unsigned int str_len);
