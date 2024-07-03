@@ -5,7 +5,7 @@ import os
 import platform
 
 class racf_result_t(Structure):
-    _fields_ = [('raw_result', c_char_p),('result_json',c_char_p)]
+    _fields_ = [('raw_result', c_char_p),('raw_result_length', c_int), ('result_json',c_char_p)]
 
 class RACFAdmin:
     """Test class for Administration Interfaces"""
@@ -16,7 +16,7 @@ class RACFAdmin:
         file_path = f"{os.path.dirname(__file__)}/../../../dist/"
         cwd = os.getcwd()
         os.chdir(file_path)
-        self.dll = CDLL(file_path+"irrsmo64_conn.so")
+        self.dll = CDLL(file_path+"racfu.so")
         os.chdir(cwd)
         
     
@@ -31,11 +31,12 @@ class RACFAdmin:
         if not (self.__buffer_size == 10000):
             json_data["resultBufferSize"] = self.__buffer_size
 
-        self.dll.call_irrsmo00_with_json.argtypes = [c_char_p, POINTER(racf_result_t)]
+        self.dll.racfu.argtypes = [POINTER(racf_result_t),
+                                                     c_char_p]
 
         json_req_string = c_char_p(json.dumps(json_data).encode("utf-8"))
-        results = racf_result_t(c_char_p("".encode("utf-8")),c_char_p("".encode("utf-8")))
-        self.dll.call_irrsmo00_with_json(json_req_string, results)
+        results = racf_result_t(c_char_p("".encode("utf-8")),0,c_char_p("".encode("utf-8")))
+        self.dll.racfu(results, json_req_string)
 
         json_res_string = results.result_json
 
