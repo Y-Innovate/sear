@@ -45,7 +45,7 @@ private:
         char * ebcdic_str,
         int length);
 public:
-    char * build_json_string(
+    nlohmann::json build_json_string(
         char * xml_result_string,
         int * racfu_rc,
         bool debug);

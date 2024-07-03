@@ -3,7 +3,7 @@
 #ifndef IRRSMO00_CONN_H_
 #define IRRSMO00_CONN_H_
 
-#include "racfu_result.hpp"
+#include "racfu_result.h"
 
 #include <stdbool.h>
 

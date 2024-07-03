@@ -220,6 +220,8 @@ void do_add_alter_delete(
         debug_mode
     );
 
+    free(xml_request_string);
+
     return_codes->saf_return_code = saf_rc;
     return_codes->racf_return_code = racf_rc;
     return_codes->racf_reason_code = racf_rsn;
@@ -313,7 +315,7 @@ void build_result(
 
   // Convert profile JSON to C string.
   std::string result_json_cpp_string = result_json.dump();
-  char *result_json_string = new char[result_json_cpp_string.size() + 1];
+  char *result_json_string = (char *)malloc(sizeof(char)*(result_json_cpp_string.size() + 1));
   std::strcpy(result_json_string, result_json_cpp_string.c_str());
 
   // Build RACFu Result Structure

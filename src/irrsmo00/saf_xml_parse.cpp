@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 //Public Methods of XmlParse
-char * XmlParse::build_json_string(
+nlohmann::json XmlParse::build_json_string(
     char * xml_result_string,
     int * racfu_rc,
     bool debug
@@ -64,15 +64,8 @@ char * XmlParse::build_json_string(
         result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
         *racfu_rc = 101;
     }
-
-    //Convert c++ string into char * c string
-    std::string result_json_as_string = result_json.dump();
-    const int length = result_json_as_string.length();
-    char* output_buffer = new char[length + 1];
-    strncpy(output_buffer, result_json_as_string.c_str(), length+1);
-
-    //Return the char * c string
-    return output_buffer;
+    
+    return result_json;
 }
 
 //Private Methods of XmlParse

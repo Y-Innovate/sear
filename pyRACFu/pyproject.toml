@@ -1,0 +1,69 @@
+[build-system]
+    build-backend = "poetry.core.masonry.api"
+    requires = ["poetry-core>=1.9.0", "setuptools>=69"]
+
+[tool.poetry]
+    name="pyRACFu"
+    version="1.0a1"
+    description="Python interface to RACF using RACF Callable Services."
+    license = "Apache-2.0"
+    authors = [
+        "Joe Bostian <jbostian@ibm.com>",
+        "Frank De Gilio <degilio@us.ibm.com>",
+        "Leonard J. Carcaramo Jr <lcarcaramo@ibm.com>",
+        "Elijah Swift <elijah.swift@ibm.com>",
+    ]
+    maintainers = [
+        "Leonard J. Carcaramo Jr <lcarcaramo@ibm.com>",
+        "Elijah Swift <elijah.swift@ibm.com>",
+    ]
+    readme = "../README.md"
+    repository = "https://github.com/ambitus/pyracf"
+    documentation = "https://ambitus.github.io/pyracf/"
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: POSIX :: Other",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: Implementation :: CPython",
+        "Programming Language :: Python :: Implementation :: PyPy",
+        "Topic :: Security",
+        "Topic :: System :: Hardware :: Mainframes",
+        "Topic :: System :: Systems Administration",
+    ]
+
+[tool.poetry.build]
+    script = "build_extension.py"
+    generate-setup-file = true
+
+[tool.poetry.dependencies]
+    python = ">=3.10"
+
+[tool.poetry.group.dev.dependencies]
+    isort = ">=5.13.2"
+    pre-commit = ">=3.6.0"
+    black = ">=24.1.1"
+    flake8 = ">=7.0.0"
+    pylint = ">=3.0.3"
+    coverage = ">=7.4.1"
+    wheel = ">=0.42.0"
+    ebcdic = ">=1.1.1"
+
+[tool.isort]
+    profile = "black"
+
+[tool.pylint.FORMAT]
+    max-args = 6
+    max-returns = 7
+    max-attributes = 10
+
+[tool.pylint.'MESSAGES CONTROL']
+    disable = """
+        too-few-public-methods,
+        too-many-public-methods,
+        import-error,
+        pointless-statement
+    """
