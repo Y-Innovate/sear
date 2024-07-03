@@ -24,12 +24,12 @@ class RACFAdmin:
 
         if self.__debug:
             print(json.dumps(json_data))
-            json_data["debugmode"] = True
+            json_data["debug_mode"] = True
         
         if not (platform.system() == "OS/390"):
             self.__buffer_size = 1500
         if not (self.__buffer_size == 10000):
-            json_data["resultBufferSize"] = self.__buffer_size
+            json_data["result_buffer_size"] = self.__buffer_size
 
         self.dll.racfu.argtypes = [POINTER(racf_result_t),
                                                      c_char_p]
