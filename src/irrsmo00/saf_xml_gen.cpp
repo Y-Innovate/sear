@@ -161,7 +161,7 @@ void XmlGen::build_attribute(
     //Ex: " operation=set"
     name = replace_xml_chars(name);
     value = replace_xml_chars(value);
-    xml_buffer.append(name+"=\""+value+"\"");
+    xml_buffer.append(" "+name+"=\""+value+"\"");
 }
 void XmlGen::build_value(std::string value) {
     //Ex: ">Read"
