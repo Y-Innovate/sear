@@ -133,6 +133,7 @@ void XmlParse::parse_outer_xml(
         if (regex_match(remaining_string, next_xml_tag, outermost_xml_tags_regex))
         {
             current_tag = next_xml_tag[1];
+            std::cout << "Got to the end and found the next tag: " << current_tag << "\n";
         }
     }while(xml_object_length + current_end_tag.length() < input_xml_string.length() - start_index);
 };
@@ -146,6 +147,7 @@ void XmlParse::parse_inner_xml(
     if (data_within_outer_tags.find("<") == std::string::npos)
     {
         update_json(input_json, data_within_outer_tags, outer_tag);
+        std::cout << "updated json " << input_json->dump() << "\n";
         return;
     }
     //If we did not return, there is another xml tag within this data (nested)
@@ -153,6 +155,7 @@ void XmlParse::parse_inner_xml(
     std::string nested_xml = data_within_outer_tags;
     parse_outer_xml(&nested_json, nested_xml);
     update_json(input_json, nested_json, outer_tag);
+    std::cout << "updated json " << input_json->dump() << "\n";
 }
 
 void XmlParse::update_json(
@@ -165,27 +168,27 @@ void XmlParse::update_json(
     outer_tag = replace_xml_chars(outer_tag);
     if (inner_data.is_string())
     {
-        std::cout << "Adding " << inner_data << "to tag " << outer_tag << "\n";
+        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "\n";
         inner_data = replace_xml_chars(inner_data);
     }
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
     {
         //If we do not already have this tag used in our object (at this layer), just add data
-        std::cout << "Adding " << inner_data << "to tag " << outer_tag << "\n";
+        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "\n";
         (*input_json)[outer_tag] = inner_data;
         return;
     }
     if ((*input_json).contains(outer_tag))
     {
         //If we do already use this tag, pluralize the tag and merge the data
-        std::cout << "Adding " << inner_data << "to tag " << outer_tag << "s\n";
+        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "s\n";
         (*input_json)[outer_tag+"s"] = {(*input_json)[outer_tag], inner_data};
         (*input_json).erase(outer_tag);
     }
     else
     {
         //If we already have the plural version of this tag, simply merge the data
-        std::cout << "Adding " << inner_data << "to tag " << outer_tag << "s\n";
+        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "s\n";
         (*input_json)[outer_tag+"s"].push_back(inner_data);
     }
 }
