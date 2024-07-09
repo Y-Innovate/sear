@@ -2,6 +2,6 @@
   "operation": "add",
   "admin_type": "resource",
   "profile_name": "TESTING",
-  "class_name": "ELIJTEST",
+  "class": "ELIJTEST",
   "request_data": null
 }
