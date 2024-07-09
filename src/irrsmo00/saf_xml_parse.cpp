@@ -104,38 +104,33 @@ void XmlParse::parse_outer_xml(
 ) {
     //Parse the outer layer of the XML for attributes and tag names with regex
     std::regex outermost_xml_tags_regex {R"(<([a-z]*)>.*</([a-z]*)>)"};
-    std::smatch outermost_xml_tags, next_xml_tag;
+    std::smatch outermost_xml_tags, next_xml_tag, data_around_current_tag;
     
-    std::string::size_type xml_object_length = 0, start_index = 0, end_index, current_start_tag_length;
-    std::string sel_str, current_tag, current_end_tag, remaining_string, data_within_current_tags;
+    std::string::size_type xml_object_length = 0, start_index = 0, end_index, current_tag_length = 0;
+    std::string current_tag, remaining_string, data_within_current_tags;
 
     //If we do not match our generic regular expression for an XML attribute
     if(!regex_match(input_xml_string, outermost_xml_tags, outermost_xml_tags_regex)) { return; }
     //Use regex substrings to identify the name of the current xml tag
     current_tag = outermost_xml_tags[1];
-    do
+    while(!current_tag.empty())
     {
         //Enter a loop iterating through xml looking for XML tags within the "current" tag
         //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
         //At individual xml entries within these "Command" entries like "image" or "message"
-        start_index += xml_object_length+current_end_tag.length();
-        current_end_tag = R"(</)"+current_tag+">";
-        current_start_tag_length = current_end_tag.length()-1;
-        xml_object_length = input_xml_string.find(current_end_tag,start_index);
-        data_within_current_tags = input_xml_string.substr(start_index + current_start_tag_length,xml_object_length-current_end_tag.length()+1);
-
-        parse_inner_xml(input_json, data_within_current_tags, current_tag);
-
-        //Check to see if I have finished parsing this "outer tag" (like a "command") entry
-        //If so, get the next "outer tag" (possibly another "command" entry)
-        end_index = start_index+xml_object_length+current_end_tag.length();
-        remaining_string = input_xml_string.substr(end_index,input_xml_string.length()-end_index);
-        if (regex_match(remaining_string, next_xml_tag, outermost_xml_tags_regex))
+        start_index += xml_object_length+current_tag_length;
+        std::regex current_tags_regex {"<"+current_tag+R"(>(.*?)</)"+current_tag+">(<(.*?)>)*.*"};
+        remaining_string = input_xml_string.substr(start_index);
+        if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
-            current_tag = next_xml_tag[1];
-            std::cout << "Got to the end and found the next tag: " << current_tag << "\n";
+            start_index += current_tag.length()*2 + ((std::string)"<></>").length();
+            data_within_current_tags = data_around_current_tag[1];
+            start_index += data_within_current_tags.length();
+            parse_inner_xml(input_json, data_within_current_tags, current_tag);
+            //Update current tag with the "next" tag found after the current set
+            current_tag = data_around_current_tag[3];
         }
-    }while(xml_object_length + current_end_tag.length() < input_xml_string.length() - start_index);
+    }
 };
 
 void XmlParse::parse_inner_xml(
