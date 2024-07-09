@@ -74,6 +74,7 @@ void XmlParse::parse_header_attributes(
     std::string header_string
 ) {
     //Parse the header attributes of the XML for JSON information
+    //Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
     std::smatch attribute_key_value;
     std::regex attribute_regex {R"~(([a-z]*)="([^ ]*)")~"};
 
@@ -91,6 +92,7 @@ void XmlParse::parse_header_attributes(
 
         if (regex_match(attribute_string, attribute_key_value, attribute_regex))
         {
+            //Ex: 1) name 2) SQUIDWRD
             attribute_key = attribute_key_value[1];
             attribute_value = attribute_key_value[2];
             (*input_json)[attribute_key] = attribute_value;
@@ -103,6 +105,7 @@ void XmlParse::parse_outer_xml(
     std::string input_xml_string
 ) {
     //Parse the outer layer of the XML for attributes and tag names with regex
+    //Ex: <safreturncode>0</safreturncode><returncode>0</returncode><reasoncode>0</reasoncode><image>ADDUSER SQUIDWRD </image><message>ICH01024I User SQUIDWRD is defined as PROTECTED.</message>
     std::regex outermost_xml_tags_regex {R"(<([a-z]*)>.*</([a-z]*)>)"};
     std::smatch outermost_xml_tags, next_xml_tag, data_around_current_tag;
     
@@ -112,6 +115,7 @@ void XmlParse::parse_outer_xml(
     //If we do not match our generic regular expression for an XML attribute
     if(!regex_match(input_xml_string, outermost_xml_tags, outermost_xml_tags_regex)) { return; }
     //Use regex substrings to identify the name of the current xml tag
+    //Ex: safreturncode
     current_tag = outermost_xml_tags[1];
     while(!current_tag.empty())
     {
@@ -123,6 +127,7 @@ void XmlParse::parse_outer_xml(
         remaining_string = input_xml_string.substr(start_index);
         if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
+            //Ex: 1) 0 2) <returncode> 3) returncode
             start_index += current_tag.length()*2 + ((std::string)"<></>").length();
             data_within_current_tags = data_around_current_tag[1];
             start_index += data_within_current_tags.length();

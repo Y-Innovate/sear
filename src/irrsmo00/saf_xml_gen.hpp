@@ -6,11 +6,6 @@
 #ifndef XML_COMMON_LIB_H_
 #include "../../externals/nlohmann/json.hpp"
 
-#define OP_ADD 0
-#define OP_ALT 1
-#define OP_DEL 2
-#define OP_LST 3
-
 std::string cast_hex_string(char * input);
 #endif /* XML_COMMON_LIB_H_ */
 
