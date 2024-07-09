@@ -209,7 +209,7 @@ std::string XmlGen::convert_operation(
         return "set";
     }
     if (requestOperation.compare("delete") == 0) {
-        return "delete";
+        return "del";
     }
     if (requestOperation.compare("extract") == 0) {
         return "listdata";

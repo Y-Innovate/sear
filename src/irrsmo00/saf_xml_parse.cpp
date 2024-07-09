@@ -40,14 +40,14 @@ nlohmann::json XmlParse::build_json_string(
 
     if(regex_match(xml_buffer, useful_xml_substrings, full_xml_regex))
     {
-        std::cout << "Use sub-matches in the regular expression to pull out useful information\n";
+        //Use sub-matches in the regular expression to pull out useful information
         admin_type = useful_xml_substrings[1];
         admin_xml_attrs = useful_xml_substrings[2];
         admin_xml_body = useful_xml_substrings[3];
 
         parse_header_attributes(&result, admin_xml_attrs);
 
-        std::cout << "Erase the profile close tag as it messes up later regex parsing\n";
+        //Erase the profile close tag as it messes up later regex parsing
         admin_close_tag = R"(</)"+admin_type+">";
         admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
 
@@ -60,7 +60,7 @@ nlohmann::json XmlParse::build_json_string(
     }
     else
     {
-        std::cout << "If the XML does not match the main regular expression, then return this string to indicate an error\n";
+        //If the XML does not match the main regular expression, then return this string to indicate an error
         result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
         *racfu_rc = 101;
     }
@@ -142,7 +142,6 @@ void XmlParse::parse_inner_xml(
     if (data_within_outer_tags.find("<") == std::string::npos)
     {
         update_json(input_json, data_within_outer_tags, outer_tag);
-        std::cout << "updated json " << input_json->dump() << "\n";
         return;
     }
     //If we did not return, there is another xml tag within this data (nested)
@@ -150,7 +149,6 @@ void XmlParse::parse_inner_xml(
     std::string nested_xml = data_within_outer_tags;
     parse_outer_xml(&nested_json, nested_xml);
     update_json(input_json, nested_json, outer_tag);
-    std::cout << "updated json " << input_json->dump() << "\n";
 }
 
 void XmlParse::update_json(
@@ -163,27 +161,23 @@ void XmlParse::update_json(
     outer_tag = replace_xml_chars(outer_tag);
     if (inner_data.is_string())
     {
-        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "\n";
         inner_data = replace_xml_chars(inner_data);
     }
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
     {
         //If we do not already have this tag used in our object (at this layer), just add data
-        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "\n";
         (*input_json)[outer_tag] = inner_data;
         return;
     }
     if ((*input_json).contains(outer_tag))
     {
         //If we do already use this tag, pluralize the tag and merge the data
-        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "s\n";
         (*input_json)[outer_tag+"s"] = {(*input_json)[outer_tag], inner_data};
         (*input_json).erase(outer_tag);
     }
     else
     {
         //If we already have the plural version of this tag, simply merge the data
-        std::cout << "Adding " << inner_data << " to tag " << outer_tag << "s\n";
         (*input_json)[outer_tag+"s"].push_back(inner_data);
     }
 }
