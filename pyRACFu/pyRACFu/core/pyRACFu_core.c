@@ -6,8 +6,7 @@ extern void racfu(racfu_result_t *result, char *request_json);
 
 // Entry point to the call_RACFu() function
 static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject *kwargs) {
-  PyObject* request_dictionary;
-  PyObject* result_dictionary;
+  PyObject * request_dictionary, * result_dictionary, * return_dictionary;
 
   static char *kwlist[] = {"request_dictionary", NULL};
 
@@ -19,24 +18,26 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject *kwargs) {
       return NULL;
   }
 
-  request_dictionary = PyObject_Repr(request_dictionary);
+  request_dictionary = PyObject_Str(request_dictionary);
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
 
   racfu_result_t result;
 
   racfu(&result,request_as_string);
 
-  result_dictionary = Py_BuildValue(
-    "{s:y,s:B,s:s}",
+  result_dictionary = PyBytes_FromString(result.result_json);
+
+  return_dictionary = Py_BuildValue(
+    "{s:y,s:B,s:O}",
     "raw_result", result.raw_result,
     "raw_result_length", result.raw_result_length,
-    "result_json", result.result_json
+    "result_json", result_dictionary
   );
 
   free(result.raw_result);
   free(result.result_json);
 
-  return result_dictionary;
+  return return_dictionary;
 }
 
 //Method docstrings
