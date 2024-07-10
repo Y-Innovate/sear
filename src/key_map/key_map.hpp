@@ -19,7 +19,9 @@ const char *get_racfu_key(
 const char *get_racf_key(
     const char *profile_type, 
     const char *segment,
-    const char *racfu_key);
+    const char *racfu_key,
+    char trait_type,
+    char trait_operator);
 
 const char get_racfu_trait_type(
     const char *profile_type,
