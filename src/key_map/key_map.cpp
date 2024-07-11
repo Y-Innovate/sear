@@ -8,15 +8,15 @@ static const trait_key_mapping_t *get_key_mapping(
     const char *segment,      // The segment      (i.e., 'omvs')
     const char *racf_key,     // The RACF key     (i.e., 'program')
     const char *racfu_key,    // The RACFu key    (i.e., 'omvs:default_shell')
-    char trait_type,          // The trait type   (i.e.,  'TRAIT_TYPE_INTEGER')
-    char trait_operator,      // The operator     (i.e.,  'OPERATOR_SET')
+    int8_t trait_type,        // The trait type   (i.e.,  'TRAIT_TYPE_INTEGER')
+    int8_t trait_operator,    // The operator     (i.e.,  'OPERATOR_SET')
     bool extract);            // Set to 'true' to get the RACFu Key
                               // Set to 'false' to get the RACF Key
 
-static bool check_trait_type(char actual, char expected);
+static bool check_trait_type(int8_t actual, int8_t expected);
 
 static bool check_trait_operator(
-    char trait_operator, 
+    int8_t trait_operator, 
     const operators_allowed_t *operators_allowed);
 
 const char *get_racfu_key(
@@ -98,12 +98,12 @@ static const trait_key_mapping_t *get_key_mapping(
     const char *segment,
     const char *racf_key,
     const char *racfu_key,
-    char trait_type,
-    char trait_operator,
+    int8_t trait_type,
+    int8_t trait_operator,
     bool extract
 ) {
   bool trait_type_good;
-  bool trait_operator_good = true;
+  bool trait_operator_good;
   // Search for segment key mappings for the provided profile type
   for (int i = 0; i < sizeof(KEY_MAP)/sizeof(segment_key_mapping_t); i++) {
     if (strcmp(profile_type, KEY_MAP[i].profile_type) == 0) {
@@ -142,14 +142,14 @@ static const trait_key_mapping_t *get_key_mapping(
   return NULL;
 }
 
-static bool check_trait_type(char actual, char expected) {
+static bool check_trait_type(int8_t actual, int8_t expected) {
   if (actual == TRAIT_TYPE_ANY) { return true; }
   if (actual != expected) { return false; }
   return true;
 }
 
 static bool check_trait_operator(
-    char trait_operator, 
+    int8_t trait_operator, 
     const operators_allowed_t *operators_allowed
 ) {
   switch (trait_operator) {
