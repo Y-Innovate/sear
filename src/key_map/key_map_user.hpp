@@ -462,8 +462,9 @@ const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
   }, {
     "tso:logon_procedure", 
     "proc", 
-    TRAIT_TYPE_STRING },
-  {
+    TRAIT_TYPE_STRING,
+    { true, false, false, true } 
+  }, {
     "tso:security_label", 
     "seclabel", 
     TRAIT_TYPE_STRING,
