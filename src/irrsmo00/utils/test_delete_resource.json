@@ -2,6 +2,6 @@
   "operation": "delete",
   "admin_type": "resource",
   "profile_name": "TESTING",
-  "class": "ELIJTEST",
+  "class_name": "ELIJTEST",
   "request_data": null
 }

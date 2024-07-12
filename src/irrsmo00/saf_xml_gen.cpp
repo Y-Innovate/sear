@@ -14,7 +14,7 @@ char * XmlGen::build_xml_string(
     bool * debug
 ) {
     //Main body function that builds an xml string
-    std::string requestOperation, adminType, profileName, operation, runningUserId = "";
+    std::string requestOperation, adminType, profileName, className, operation, runningUserId = "";
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
     build_attribute("xmlns","http://www.ibm.com/systems/zos/saf");
@@ -45,6 +45,11 @@ char * XmlGen::build_xml_string(
             requestOperation = item.value().get<std::string>();
             operation = convert_operation(requestOperation,irrsmo00_options);
             build_attribute("operation", operation);
+        }
+        else if ( item.key().compare("class_name") == 0 ) {
+            // The name of the target profile
+            className = item.value().get<std::string>();
+            build_attribute("class", className);
         }
         else if ( item.value().is_string() ) {
             //All other attribute information is built into the xml at this level to account for VOLUME/GENERIC/Others

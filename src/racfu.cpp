@@ -73,8 +73,8 @@ void racfu(racfu_result_t *result, char *request_json) {
     if (request.contains("profile_name")) {
       profile_name = request["profile_name"].get<std::string>().c_str();
     }
-    if (request.contains("class")) {
-      class_name = request["class"].get<std::string>().c_str();
+    if (request.contains("class_name")) {
+      class_name = request["class_name"].get<std::string>().c_str();
     }
     do_add_alter_delete(
       request["admin_type"].get<std::string>().c_str(),

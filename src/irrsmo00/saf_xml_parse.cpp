@@ -51,7 +51,7 @@ nlohmann::json XmlParse::build_json_string(
         admin_close_tag = R"(</)"+admin_type+">";
         admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
 
-        parse_outer_xml(&result, admin_xml_body);
+        parse_xml_tags(&result, admin_xml_body);
 
 
         result_json["admin_type"] = admin_type;
@@ -61,8 +61,8 @@ nlohmann::json XmlParse::build_json_string(
     else
     {
         //If the XML does not match the main regular expression, then return this string to indicate an error
-        result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
-        *racfu_rc = 101;
+        result_json["error_message"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
+        *racfu_rc = 4;
     }
     
     return result_json;
@@ -100,16 +100,16 @@ void XmlParse::parse_header_attributes(
     }while(attribute_start_index != attribute_length + attribute_start_index + 1);
 };
 
-void XmlParse::parse_outer_xml(
+void XmlParse::parse_xml_tags(
     nlohmann::json * input_json,
     std::string input_xml_string
 ) {
-    //Parse the outer layer of the XML for attributes and tag names with regex
+    //Parse the outer layer of the XML (the tags) for attributes and tag names with regex
     //Ex: <safreturncode>0</safreturncode><returncode>0</returncode><reasoncode>0</reasoncode><image>ADDUSER SQUIDWRD </image><message>ICH01024I User SQUIDWRD is defined as PROTECTED.</message>
     std::regex outermost_xml_tags_regex {R"(<([a-z]*)>.*</([a-z]*)>)"};
     std::smatch outermost_xml_tags, next_xml_tag, data_around_current_tag;
     
-    std::string::size_type xml_object_length = 0, start_index = 0, end_index, current_tag_length = 0;
+    std::string::size_type start_index = 0, end_index;
     std::string current_tag, remaining_string, data_within_current_tags;
 
     //If we do not match our generic regular expression for an XML attribute
@@ -122,23 +122,21 @@ void XmlParse::parse_outer_xml(
         //Enter a loop iterating through xml looking for XML tags within the "current" tag
         //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
         //At individual xml entries within these "Command" entries like "image" or "message"
-        start_index += xml_object_length+current_tag_length;
         std::regex current_tags_regex {"<"+current_tag+R"(>(.*?)</)"+current_tag+">(<(.*?)>)*.*"};
         remaining_string = input_xml_string.substr(start_index);
         if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
             //Ex: 1) 0 2) <returncode> 3) returncode
-            start_index += current_tag.length()*2 + ((std::string)"<></>").length();
             data_within_current_tags = data_around_current_tag[1];
-            start_index += data_within_current_tags.length();
-            parse_inner_xml(input_json, data_within_current_tags, current_tag);
+            parse_xml_data(input_json, data_within_current_tags, current_tag);
+            start_index += current_tag.length()*2 + ((std::string)"<></>").length() + data_within_current_tags.length();
             //Update current tag with the "next" tag found after the current set
             current_tag = data_around_current_tag[3];
         }
     }
 };
 
-void XmlParse::parse_inner_xml(
+void XmlParse::parse_xml_data(
     nlohmann::json * input_json,
     std::string data_within_outer_tags,
     std::string outer_tag
@@ -152,7 +150,7 @@ void XmlParse::parse_inner_xml(
     //If we did not return, there is another xml tag within this data (nested)
     nlohmann::json nested_json;
     std::string nested_xml = data_within_outer_tags;
-    parse_outer_xml(&nested_json, nested_xml);
+    parse_xml_tags(&nested_json, nested_xml);
     update_json(input_json, nested_json, outer_tag);
 }
 
