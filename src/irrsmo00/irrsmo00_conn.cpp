@@ -35,8 +35,8 @@ char * call_irrsmo00(
     char work_area[1024];
     char req_handle[64] = {0};
     running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
-    int * alet = 0;
-    int * acee = 0;
+    unsigned int alet = 0;
+    unsigned int acee = 0;
     char  * result_buffer = (char *)malloc(sizeof(char)*result_buffer_size);
     memset(result_buffer, 0, result_buffer_size);
     int request_xml_length = strlen(request_xml);

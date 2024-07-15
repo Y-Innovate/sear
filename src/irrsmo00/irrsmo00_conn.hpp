@@ -16,9 +16,9 @@ typedef struct
 /* Prototype for IRRSMO64 */
 extern "C" {
     void IRRSMO64(char*,   // Workarea
-        int*, int*, // safrc
-        int*, int*, // racfrc
-        int*, int*, // racfrsn
+        unsigned int, int*, // safrc
+        unsigned int, int*, // racfrc
+        unsigned int, int*, // racfrsn
         int*,  // Numparms
         int*,  // Function code
         int*,  // options
@@ -26,7 +26,7 @@ extern "C" {
         char *, // Request
         char *, // Request Handle
         char *, // run as user
-        int *,  // ACEE (not used)
+        unsigned int,  // ACEE (not used)
         int *,  // Result buffer
         char * // Result
         );
