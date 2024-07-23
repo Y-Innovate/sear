@@ -14,7 +14,9 @@ char * XmlGen::build_xml_string(
     bool * debug
 ) {
     //Main body function that builds an xml string
-    std::string requestOperation, adminType, profileName, className, operation, runningUserId = "";
+    std::string requestOperation, adminType, profileName, className, operation, currentSegment, runningUserId = "";
+    nlohmann::json requestData;
+
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
     build_attribute("xmlns","http://www.ibm.com/systems/zos/saf");
@@ -66,24 +68,11 @@ char * XmlGen::build_xml_string(
 
     build_attribute("requestid",adminType+"_request");
 
-    if ((request[requestOperation].contains("request_data")) && (!request[requestOperation].empty()))
+    if ((request.contains("request_data")) && (!request["request_data"].empty()))
     {
         build_end_nested_tag();
 
-        //Build the request data (segment-trait information)
-        for (const auto& item : request[requestOperation]["request_data"].items())
-        {
-            build_open_tag(item.key());
-            build_end_nested_tag();
-            //Build each individual trait
-            for (const auto& trait : request[requestOperation]["request_data"][item.key()].items())
-            {
-                std::string operation = (trait.value()["operation"].is_null()) ? "set" : trait.value()["operation"].get<std::string>();
-                std::string value = (trait.value()["value"].is_boolean()) ? "" : trait.value()["value"].get<std::string>();
-                build_single_trait(trait.key(), operation, value);
-            }
-            build_full_close_tag(item.key());
-        }
+        build_request_data(request["request_data"]);
         
         //Close the admin object
         build_full_close_tag(requestOperation);
@@ -197,6 +186,54 @@ void XmlGen::build_single_trait(
     else {
         build_value(value);
         build_full_close_tag(tag);
+    }
+}
+
+void XmlGen::build_request_data(nlohmann::json requestData) {
+    //Builds the xml for request data (segment-trait information) passed in a json object
+    std::string currentSegment, itemSegment, itemTrait, itemOperation, translatedKey;
+
+    std::regex segment_trait_key_regex {R"(([a-z]*):*)([a-z]*):(.*)"};
+    std::smatch segment_trait_key_data;
+
+    auto item = requestData.begin();
+    while (!requestData.empty())
+    {
+        if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
+        if (segment_trait_key_data[3] == "")
+        {
+            itemOperation = "";
+            itemSegment = segment_trait_key_data[2];
+        }
+        else
+        {
+            itemOperation = segment_trait_key_data[2];
+            itemSegment = segment_trait_key_data[3];
+        }
+        itemTrait = segment_trait_key_data[4];
+
+        if (currentSegment.empty())
+        {
+            currentSegment = itemSegment;
+            build_open_tag(currentSegment);
+            build_end_nested_tag();
+        }
+        if ((itemSegment.compare(currentSegment) == 0))
+        {
+            //Build each individual trait
+            translatedKey = itemSegment + ":" + itemTrait;
+            std::string operation = (item.value()["operation"].is_null()) ? "set" : item.value()["operation"].get<std::string>();
+            std::string value = (item.value()["value"].is_boolean()) ? "" : item.value()["value"].get<std::string>();
+            build_single_trait(translatedKey, operation, value);
+
+        }
+        if (item == requestData.end())
+        {
+            item = requestData.begin();
+            build_full_close_tag(currentSegment);
+            currentSegment = "";
+        }
+        else item++;
     }
 }
 
