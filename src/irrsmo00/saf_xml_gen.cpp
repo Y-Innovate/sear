@@ -72,6 +72,7 @@ char * XmlGen::build_xml_string(
     {
         build_end_nested_tag();
 
+        std::cout << "request: " << request << "\n";
         build_request_data(request["request_data"]);
         
         //Close the admin object
@@ -196,9 +197,12 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     std::regex segment_trait_key_regex {R"(([a-z]*):*)([a-z]*):(.*)"};
     std::smatch segment_trait_key_data;
 
+    std::cout << "request data: " << requestData << "\n";
+
     auto item = requestData.begin();
     while (!requestData.empty())
     {
+        std::cout << "\ntop of the loop\n";
         if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
         if (segment_trait_key_data[3] == "")
         {
@@ -211,6 +215,11 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
             itemSegment = segment_trait_key_data[3];
         }
         itemTrait = segment_trait_key_data[4];
+
+        std::cout << "Item Segment: " << itemSegment << "\n";
+        std::cout << "Item Operation: " << itemOperation << "\n";
+        std::cout << "Item Trait: " << itemTrait << "\n";
+        std::cout << "Current Segment: " << currentSegment << "\n";
 
         if (currentSegment.empty())
         {
