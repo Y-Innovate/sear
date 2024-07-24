@@ -238,7 +238,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
                 //Build each individual trait
                 translatedKey = itemSegment + ":" + itemTrait;
                 std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
-                std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
+                std::string value = (item.value().is_boolean()) ? "" : json_value_to_string(item.value());
                 build_single_trait(translatedKey, operation, value);
                 std::cout << "request data (before erase): " << requestData << "\n";
                 item = requestData.erase(item);
@@ -251,6 +251,15 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
         build_full_close_tag(currentSegment);
         currentSegment = "";
     }
+}
+
+std::string XmlGen::json_value_to_string(const nlohmann::json &j)
+{
+    if (j.type() == nlohmann::json::value_t::string) {
+        return j.get<std::string>();
+    }
+
+    return j.dump();
 }
 
 std::string XmlGen::convert_operation(

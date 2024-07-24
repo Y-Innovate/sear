@@ -28,6 +28,7 @@ private:
         std::string operation,
         std::string value);
     void build_request_data(nlohmann::json requestData);
+    std::string json_value_to_string(const nlohmann::json &j);
     std::string convert_operation(
         std::string requestOperation,
         int * irrsmo00_options);
