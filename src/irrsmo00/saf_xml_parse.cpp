@@ -45,14 +45,12 @@ nlohmann::json XmlParse::build_json_string(
         admin_xml_attrs = useful_xml_substrings[2];
         admin_xml_body = useful_xml_substrings[3];
 
-        std::cout << "about to parse header attributes!\n";
         parse_header_attributes(&result, admin_xml_attrs);
 
         //Erase the profile close tag as it messes up later regex parsing
         admin_close_tag = R"(</)"+admin_type+">";
         admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
 
-        std::cout << "about to parse xml tags!\n";
         parse_xml_tags(&result, admin_xml_body);
 
 
@@ -126,7 +124,6 @@ void XmlParse::parse_xml_tags(
         //At individual xml entries within these "Command" entries like "image" or "message"
         std::regex current_tags_regex {"<"+current_tag+R"~(>(.*?)(<\/)~"+current_tag+">)(<(.*?)>)?.*"};
         remaining_string = input_xml_string.substr(start_index);
-        std::cout << "remaining string: " << remaining_string << "\n";
         if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
             //Ex: 1) 0 2) </safreturncode> 3) <returncode>  4) returncode
@@ -135,8 +132,6 @@ void XmlParse::parse_xml_tags(
             start_index += current_tag.length()*2 + ((std::string)"<></>").length() + data_within_current_tags.length();
             //Update current tag with the "next" tag found after the current set
             current_tag = data_around_current_tag[4];
-            std::cout << "data within current tags: " << data_within_current_tags << "\n";
-            std::cout << "next tag: " << current_tag << "\n";
         }
 
     }
@@ -154,12 +149,10 @@ void XmlParse::parse_xml_data(
         return;
     }
     //If we did not return, there is another xml tag within this data (nested)
-    std::cout << "xml data contains xml tags within: " << outer_tag << "\n";
     nlohmann::json nested_json;
     std::string nested_xml = data_within_outer_tags;
     parse_xml_tags(&nested_json, nested_xml);
     update_json(input_json, nested_json, outer_tag);
-    std::cout << "finished processing xml data within: " << outer_tag << "\n";
 }
 
 void XmlParse::update_json(
