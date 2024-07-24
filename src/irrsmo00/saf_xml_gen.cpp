@@ -202,7 +202,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     auto item = requestData.begin();
     while (!requestData.empty())
     {
-        for (auto item = requestData.begin(); item != requestData.end(); item++)
+        for (auto item = requestData.begin(); item != requestData.end(); )
         {
             std::cout << "\ntop of the loop: " << "\n";
             if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
@@ -221,7 +221,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
             std::cout << "Item Segment: " << itemSegment << "\n";
             std::cout << "Item Operation: " << itemOperation << "\n";
             std::cout << "Item Trait: " << itemTrait << "\n";
-            std::cout << "Current Segment: " << currentSegment << "\n";
+            std::cout << "Current Segment (before update): " << currentSegment << "\n";
 
             if (currentSegment.empty())
             {
@@ -229,6 +229,10 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
                 build_open_tag(currentSegment);
                 build_end_nested_tag();
             }
+
+            std::cout << "Current Segment (after update): " << currentSegment << "\n";
+
+
             if ((itemSegment.compare(currentSegment) == 0))
             {
                 //Build each individual trait
@@ -239,6 +243,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
                 item = requestData.erase(item);
 
             }
+            else item++;
         }
         std::cout << "hit the end of an iteration!\n";
         build_full_close_tag(currentSegment);
