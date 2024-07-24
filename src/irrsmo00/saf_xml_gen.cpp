@@ -202,7 +202,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     auto item = requestData.begin();
     while (!requestData.empty())
     {
-        std::cout << "\ntop of the loop: " << item << "\n";
+        std::cout << "\ntop of the loop: " << "\n";
         if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
         if (segment_trait_key_data[3] == "")
         {
