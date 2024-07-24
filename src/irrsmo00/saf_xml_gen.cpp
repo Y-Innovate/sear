@@ -202,7 +202,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     auto item = requestData.begin();
     while (!requestData.empty())
     {
-        for (const auto& item : requestData.items())
+        for (auto item = requestData.begin(); item != requestData.end(); item++)
         {
             std::cout << "\ntop of the loop: " << "\n";
             if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
@@ -236,7 +236,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
                 std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
                 std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
                 build_single_trait(translatedKey, operation, value);
-                requestData.erase(item);
+                item = requestData.erase(item);
 
             }
         }
