@@ -234,6 +234,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
             std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
             std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
             build_single_trait(translatedKey, operation, value);
+            requestData.erase(item);
 
         }
         if (item == requestData.end())
