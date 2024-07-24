@@ -124,19 +124,22 @@ void XmlParse::parse_xml_tags(
         //Enter a loop iterating through xml looking for XML tags within the "current" tag
         //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
         //At individual xml entries within these "Command" entries like "image" or "message"
-        std::regex current_tags_regex {"<"+current_tag+R"(>(.*?)</)"+current_tag+">(<(.*?)>)*.*"};
+        std::regex current_tags_regex = std::regex(
+            "<"+current_tag+R"~(>(.*?)<\/)~"+current_tag+R"~(>((?<=(<\/)~"+current_tag+">))<(.*?)>)*.*");
         remaining_string = input_xml_string.substr(start_index);
+        std::cout << "remaining string: " << remaining_string << "\n";
         if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
-            //Ex: 1) 0 2) <returncode> 3) returncode
+            //Ex: 1) 0 2) <returncode> 3) </safreturncode> 4) returncode
             data_within_current_tags = data_around_current_tag[1];
             parse_xml_data(input_json, data_within_current_tags, current_tag);
             start_index += current_tag.length()*2 + ((std::string)"<></>").length() + data_within_current_tags.length();
             //Update current tag with the "next" tag found after the current set
-            current_tag = data_around_current_tag[3];
+            current_tag = data_around_current_tag[4];
             std::cout << "data within current tags: " << data_within_current_tags << "\n";
             std::cout << "next tag: " << current_tag << "\n";
         }
+
     }
 };
 
