@@ -202,49 +202,47 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     auto item = requestData.begin();
     while (!requestData.empty())
     {
-        std::cout << "\ntop of the loop: " << "\n";
-        if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
-        if (segment_trait_key_data[3] == "")
+        for (const auto& item : requestData.items())
         {
-            itemOperation = "";
-            itemSegment = segment_trait_key_data[2];
-        }
-        else
-        {
-            itemOperation = segment_trait_key_data[2];
-            itemSegment = segment_trait_key_data[3];
-        }
-        itemTrait = segment_trait_key_data[4];
+            std::cout << "\ntop of the loop: " << "\n";
+            if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
+            if (segment_trait_key_data[3] == "")
+            {
+                itemOperation = "";
+                itemSegment = segment_trait_key_data[2];
+            }
+            else
+            {
+                itemOperation = segment_trait_key_data[2];
+                itemSegment = segment_trait_key_data[3];
+            }
+            itemTrait = segment_trait_key_data[4];
 
-        std::cout << "Item Segment: " << itemSegment << "\n";
-        std::cout << "Item Operation: " << itemOperation << "\n";
-        std::cout << "Item Trait: " << itemTrait << "\n";
-        std::cout << "Current Segment: " << currentSegment << "\n";
+            std::cout << "Item Segment: " << itemSegment << "\n";
+            std::cout << "Item Operation: " << itemOperation << "\n";
+            std::cout << "Item Trait: " << itemTrait << "\n";
+            std::cout << "Current Segment: " << currentSegment << "\n";
 
-        if (currentSegment.empty())
-        {
-            currentSegment = itemSegment;
-            build_open_tag(currentSegment);
-            build_end_nested_tag();
-        }
-        if ((itemSegment.compare(currentSegment) == 0))
-        {
-            //Build each individual trait
-            translatedKey = itemSegment + ":" + itemTrait;
-            std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
-            std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
-            build_single_trait(translatedKey, operation, value);
-            requestData.erase(item);
+            if (currentSegment.empty())
+            {
+                currentSegment = itemSegment;
+                build_open_tag(currentSegment);
+                build_end_nested_tag();
+            }
+            if ((itemSegment.compare(currentSegment) == 0))
+            {
+                //Build each individual trait
+                translatedKey = itemSegment + ":" + itemTrait;
+                std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
+                std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
+                build_single_trait(translatedKey, operation, value);
+                requestData.erase(item);
 
+            }
         }
-        if (item >= requestData.end())
-        {
-            std::cout << "hit the end of an iteration!\n";
-            item = requestData.begin();
-            build_full_close_tag(currentSegment);
-            currentSegment = "";
-        }
-        else item++;
+        std::cout << "hit the end of an iteration!\n";
+        build_full_close_tag(currentSegment);
+        currentSegment = "";
     }
 }
 
