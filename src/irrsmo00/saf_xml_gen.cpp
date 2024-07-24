@@ -194,7 +194,7 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
     //Builds the xml for request data (segment-trait information) passed in a json object
     std::string currentSegment, itemSegment, itemTrait, itemOperation, translatedKey;
 
-    std::regex segment_trait_key_regex {R"(([a-z]*):*)([a-z]*):(.*)"};
+    std::regex segment_trait_key_regex {R"~((([a-z]*):*)([a-z]*):(.*))~"};
     std::smatch segment_trait_key_data;
 
     std::cout << "request data: " << requestData << "\n";
