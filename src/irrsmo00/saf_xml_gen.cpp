@@ -192,7 +192,7 @@ void XmlGen::build_single_trait(
 
 void XmlGen::build_request_data(nlohmann::json requestData) {
     //Builds the xml for request data (segment-trait information) passed in a json object
-    std::string currentSegment, itemSegment, itemTrait, itemOperation, translatedKey;
+    std::string currentSegment = "", itemSegment, itemTrait, itemOperation, translatedKey;
 
     std::regex segment_trait_key_regex {R"~((([a-z]*):*)([a-z]*):(.*))~"};
     std::smatch segment_trait_key_data;
@@ -231,8 +231,8 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
         {
             //Build each individual trait
             translatedKey = itemSegment + ":" + itemTrait;
-            std::string operation = (item.value()["operation"].is_null()) ? "set" : item.value()["operation"].get<std::string>();
-            std::string value = (item.value()["value"].is_boolean()) ? "" : item.value()["value"].get<std::string>();
+            std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
+            std::string value = (item.value().is_boolean()) ? "" : item.value().get<std::string>();
             build_single_trait(translatedKey, operation, value);
 
         }
