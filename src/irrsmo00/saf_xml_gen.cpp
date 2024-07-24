@@ -1,5 +1,7 @@
 #include "saf_xml_gen.hpp"
 
+#include "key_map.hpp"
+
 #include <regex>
 #include <string>
 #include <iostream>
@@ -72,7 +74,7 @@ char * XmlGen::build_xml_string(
     {
         build_end_nested_tag();
 
-        build_request_data(request["request_data"]);
+        build_request_data(adminType, request["request_data"]);
         
         //Close the admin object
         build_full_close_tag(adminType);
@@ -189,7 +191,7 @@ void XmlGen::build_single_trait(
     }
 }
 
-void XmlGen::build_request_data(nlohmann::json requestData) {
+void XmlGen::build_request_data(std::string adminType, nlohmann::json requestData) {
     //Builds the xml for request data (segment-trait information) passed in a json object
     std::string currentSegment = "", itemSegment, itemTrait, itemOperation, translatedKey;
 
@@ -222,15 +224,17 @@ void XmlGen::build_request_data(nlohmann::json requestData) {
                 build_end_nested_tag();
             }
 
-
-
             if ((itemSegment.compare(currentSegment) == 0))
             {
                 //Build each individual trait
-                translatedKey = itemSegment + ":" + itemTrait;
+                translatedKey = get_racf_key(
+                    adminType.c_str(),
+                    itemSegment.c_str(),
+                    (itemSegment + ":" + itemTrait).c_str()
+                );
                 std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
                 std::string value = (item.value().is_boolean()) ? "" : json_value_to_string(item.value());
-                build_single_trait(translatedKey, operation, value);
+                build_single_trait(("racf:" + translatedKey), operation, value);
                 item = requestData.erase(item);
 
             }
