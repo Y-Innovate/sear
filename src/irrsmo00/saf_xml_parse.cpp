@@ -124,8 +124,7 @@ void XmlParse::parse_xml_tags(
         //Enter a loop iterating through xml looking for XML tags within the "current" tag
         //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
         //At individual xml entries within these "Command" entries like "image" or "message"
-        std::regex current_tags_regex = std::regex(
-            "<"+current_tag+R"~(>(.*?)<\/)~"+current_tag+R"~(>((?<=(<\/)~"+current_tag+">))<(.*?)>)*.*");
+        std::regex current_tags_regex {"<"+current_tag+R"~(>(.*?)<\/)~"+current_tag+R"~(>((?<=(<\/)~"+current_tag+">))<(.*?)>)*.*"};
         remaining_string = input_xml_string.substr(start_index);
         std::cout << "remaining string: " << remaining_string << "\n";
         if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
