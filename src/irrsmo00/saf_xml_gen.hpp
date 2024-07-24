@@ -27,7 +27,7 @@ private:
         std::string tag,
         std::string operation,
         std::string value);
-    void XmlGen::build_request_data(nlohmann::json requestData);
+    void build_request_data(nlohmann::json requestData);
     std::string convert_operation(
         std::string requestOperation,
         int * irrsmo00_options);
