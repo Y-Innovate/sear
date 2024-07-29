@@ -6,11 +6,6 @@
 #ifndef XML_COMMON_LIB_H_
 #include "../../externals/nlohmann/json.hpp"
 
-#define OP_ADD 0
-#define OP_ALT 1
-#define OP_DEL 2
-#define OP_LST 3
-
 std::string cast_hex_string(char * input);
 #endif /* XML_COMMON_LIB_H_ */
 
@@ -18,14 +13,13 @@ std::string cast_hex_string(char * input);
 class XmlParse
 {
 private:
-    std::string xml_buffer;
     void parse_header_attributes(
         nlohmann::json * input_json,
         std::string header_string);
-    void parse_outer_xml(
+    void parse_xml_tags(
         nlohmann::json * input_json,
         std::string body_string);
-    void parse_inner_xml(
+    void parse_xml_data(
         nlohmann::json * input_json,
         std::string inner_data,
         std::string outer_tag);
@@ -33,27 +27,24 @@ private:
         nlohmann::json * input_json,
         nlohmann::json inner_data,
         std::string outer_tag);
+    std::string replace_xml_chars(
+        std::string xml_data
+    );
+    std::string replace_substring(
+        std::string data,
+        std::string substring,
+        std::string replacement,
+        std::size_t start
+    );
     void convert_to_ascii(
         char * ebcdic_str,
         int length);
-    std::string decode_opcode(unsigned char opcode);
 public:
-    char * build_json_string(
+    nlohmann::json build_json_string(
         char * xml_result_string,
-        unsigned char opcode,
-        int saf_rc,
-        int racf_rc,
-        int racf_rsn,
+        int * racfu_rc,
         bool debug);
 };
-
-extern char * outxml_to_outjson(
-    char * outxml,
-    unsigned char * opcode,
-    int saf_rc,
-    int racf_rc,
-    int racf_rsn,
-    bool debug);
 
 #ifndef __MVS__
 //Character conversion tables for OSX and Windows Testing

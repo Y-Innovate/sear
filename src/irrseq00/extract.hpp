@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "racfu_result.hpp"
+#include "racfu_result.h"
 
 #ifndef UNIT_TEST
   #include <unistd.h>

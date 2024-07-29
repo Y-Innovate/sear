@@ -1,0 +1,8 @@
+{
+  "operation": "add",
+  "admin_type": "resource",
+  "profile_name": "TESTING",
+  "class_name": "ELIJTEST",
+  "running_user_id": "TESTUSR",
+  "request_data": null
+}

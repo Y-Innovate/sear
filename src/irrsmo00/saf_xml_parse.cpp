@@ -6,15 +6,14 @@
 #include <unistd.h>
 
 //Public Methods of XmlParse
-char * XmlParse::build_json_string(
+nlohmann::json XmlParse::build_json_string(
     char * xml_result_string,
-    unsigned char opcode,
-    int saf_rc,
-    int racf_rc,
-    int racf_rsn,
+    int * racfu_rc,
     bool debug
 ) {   
-    //Build a JSON string from the XML result string, SMO return and Reason Codes, and the OPCODE used for the function
+    std::string xml_buffer;
+
+    //Build a JSON string from the XML result string, SMO return and Reason Codes
     if (debug)
     {
         //print information in debug mode
@@ -30,69 +29,43 @@ char * XmlParse::build_json_string(
         std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
     }
 
-    std::smatch xml_sub_re_match;
-    std::regex full_xml {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
     //Regular expression designed to match the header, generic body, and closing tags of the xml
+    std::regex full_xml_regex {R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"}; 
+    std::smatch useful_xml_substrings;
 
     nlohmann::json result_json;
     nlohmann::json result;
-    nlohmann::json returnCodes;
 
     std::string admin_type, admin_close_tag, admin_xml_attrs, admin_xml_body;
 
-    if(regex_match(xml_buffer, xml_sub_re_match, full_xml))
+    if(regex_match(xml_buffer, useful_xml_substrings, full_xml_regex))
     {
-        //If we match the XML structure, we pull out relevant information with sub-matches.
-        //std::cout << xml_sub_re_match[0] << "\n\n"; // Full std::string
-        //std::cout << xml_sub_re_match[1] << '\n'; // Admin Type
-        //std::cout << xml_sub_re_match[2] << '\n'; // Admin Attrs
-        //std::cout << xml_sub_re_match[3] << '\n'; // Command Information
+        //Use sub-matches in the regular expression to pull out useful information
+        admin_type = useful_xml_substrings[1];
+        admin_xml_attrs = useful_xml_substrings[2];
+        admin_xml_body = useful_xml_substrings[3];
 
-        //Use sub-matches in the regular expression to pull out useful information from the header of the xml
-        admin_type = xml_sub_re_match[1];
-        admin_xml_attrs = xml_sub_re_match[2];
-        //Use a sub-match in the regular expression to identify the body of the xml for further parsing
-        admin_xml_body = xml_sub_re_match[3];
-
-        //Identify the closing tag of the xml for later xml operations
-        admin_close_tag = R"(</)"+admin_type+">";
-
-        //Parse out the header attributes
         parse_header_attributes(&result, admin_xml_attrs);
-        //Erase the profile close tag as it messes up later regex parsing
-        admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
-        //Parse the body of the xml here
-        parse_outer_xml(&result, admin_xml_body);
 
-        //Define attributes to the outer layer of the JSON
-        result_json["adminType"] = admin_type;
-        
-        //Put the built JSON object in the result JSON
+        //Erase the profile close tag as it messes up later regex parsing
+        admin_close_tag = R"(</)"+admin_type+">";
+        admin_xml_body.erase(admin_xml_body.find(admin_close_tag),admin_close_tag.length());
+
+        parse_xml_tags(&result, admin_xml_body);
+
+
+        result_json["admin_type"] = admin_type;
         result_json["result"] = result;
+        *racfu_rc = 0;
     }
     else
     {
         //If the XML does not match the main regular expression, then return this string to indicate an error
-        result_json["error"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
+        result_json["error_message"] = "XML PARSE ERROR: Could not match data to valid xml patterns!";
+        *racfu_rc = 4;
     }
-    //Return the type of operation requested as part of the JSON in success or failure case
-    result_json["requestOperation"] = decode_opcode(opcode);
-
-    //Build a return codes object in the JSON to return IRRSMO00 return and reason codes
-    returnCodes["safReturnCode"] = saf_rc;
-    returnCodes["racfReturnCode"] = racf_rc;
-    returnCodes["racfReasonCode"] = racf_rsn;
-
-    result_json["returnCodes"] = returnCodes;
     
-    //Convert c++ string into char * c string
-    std::string result_json_as_string = result_json.dump();
-    const int length = result_json_as_string.length();
-    char* output_buffer = new char[length + 1];
-    strncpy(output_buffer, result_json_as_string.c_str(), length+1);
-
-    //Return the char * c string
-    return output_buffer;
+    return result_json;
 }
 
 //Private Methods of XmlParse
@@ -101,94 +74,84 @@ void XmlParse::parse_header_attributes(
     std::string header_string
 ) {
     //Parse the header attributes of the XML for JSON information
-    std::smatch attr_sub_re_match;
-    std::regex attr {R"~(([a-z]*)="([^ ]*)")~"};
+    //Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
+    std::smatch attribute_key_value;
+    std::regex attribute_regex {R"~(([a-z]*)="([^ ]*)")~"};
 
-    std::string::size_type n = 0, n_old;
-    std::string sel_str;
+    std::string::size_type attribute_length = -1, attribute_start_index = 0, header_string_length;
+    std::string remaining_header_string, attribute_string, attribute_key, attribute_value;
+
+    header_string_length = header_string.length();
     do
     {
         //Loop through XML attributes and add them to the input_json JSON object
-        n_old = (n == 0) ? n:n+1;
-        n = header_string.substr(n_old,header_string.length()-n_old).find(' ') + n_old;
-        sel_str = header_string.substr(n_old,n - n_old);
-        if (regex_match(sel_str, attr_sub_re_match, attr))
+        attribute_start_index += attribute_length+1;
+        remaining_header_string = header_string.substr(attribute_start_index, header_string_length - attribute_start_index);
+        attribute_length = remaining_header_string.find(' ');
+        attribute_string = header_string.substr(attribute_start_index, attribute_length);
+
+        if (regex_match(attribute_string, attribute_key_value, attribute_regex))
         {
-            //std::cout << attr_sub_re_match[0] << '\n'; // Full std::string
-            //std::cout << attr_sub_re_match[1] << '\n'; // Attribute Key
-            //std::cout << attr_sub_re_match[2] << '\n'; // Attribute Value
-            (*input_json)[attr_sub_re_match[1]] = attr_sub_re_match[2];
+            //Ex: 1) name 2) SQUIDWRD
+            attribute_key = attribute_key_value[1];
+            attribute_value = attribute_key_value[2];
+            (*input_json)[attribute_key] = attribute_value;
         }
-    }while(n_old != n + 1);
+    }while(attribute_start_index != attribute_length + attribute_start_index + 1);
 };
 
-void XmlParse::parse_outer_xml(
+void XmlParse::parse_xml_tags(
     nlohmann::json * input_json,
-    std::string body_string
+    std::string input_xml_string
 ) {
-    //Parse the outer layer of the XML for attributes and tag names with regex
-    std::regex outer_tag {R"(<([a-z]*)>.*</([a-z]*)>)"};
-    std::smatch body_sub_re_match, body_iter_sub_re_match;
+    //Parse the outer layer of the XML (the tags) for attributes and tag names with regex
+    //Ex: <safreturncode>0</safreturncode><returncode>0</returncode><reasoncode>0</reasoncode><image>ADDUSER SQUIDWRD </image><message>ICH01024I User SQUIDWRD is defined as PROTECTED.</message>
+    std::regex outermost_xml_tags_regex {R"(<([a-z]*)>.*</([a-z]*)>)"};
+    std::smatch outermost_xml_tags, next_xml_tag, data_around_current_tag;
     
-    std::string::size_type n = 0, n_old;
-    std::string sel_str, current_tag, current_end_tag, remaining_str;
+    std::string::size_type start_index = 0, end_index;
+    std::string current_tag, remaining_string, data_within_current_tags;
 
-    if(regex_match(body_string, body_sub_re_match, outer_tag))
+    //If we do not match our generic regular expression for an XML attribute
+    if(!regex_match(input_xml_string, outermost_xml_tags, outermost_xml_tags_regex)) { return; }
+    //Use regex substrings to identify the name of the current xml tag
+    //Ex: safreturncode
+    current_tag = outermost_xml_tags[1];
+    while(current_tag != "")
     {
-        //Use regex substrings to identify the name of the current xml tag
-        current_tag = body_sub_re_match[1];
-        std::regex inner_tag {"<"+current_tag+R"(>(.*?)</)"+current_tag+">"};
-        do
+        //Enter a loop iterating through xml looking for XML tags within the "current" tag
+        //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
+        //At individual xml entries within these "Command" entries like "image" or "message"
+        std::regex current_tags_regex {"<"+current_tag+R"~(>(.*?)(<\/)~"+current_tag+">)(<(.*?)>)?.*"};
+        remaining_string = input_xml_string.substr(start_index);
+        if(regex_match(remaining_string, data_around_current_tag, current_tags_regex))
         {
-            //Enter a loop iterating through xml looking for XML tags within the "current" tag
-            //In a practical sense, from SMO this ends up parsing "Command" entries, then looking
-            //At individual xml entries within these "Command" entries like "image" or "message"
-            n_old = (n == 0) ? n:n+current_end_tag.length();
-            current_end_tag = R"(</)"+current_tag+">";
-            std::regex inner_tag {"<"+current_tag+R"(>(.*?)</)"+current_tag+">"};
-            n = body_string.substr(n_old,body_string.length()-n_old).find(current_end_tag) + n_old;
-            sel_str = body_string.substr(n_old,n + current_end_tag.length() - n_old);
-            //std::cout << "Selection std::string: " << sel_str << "\n";
-            if (regex_match(sel_str, body_iter_sub_re_match, inner_tag))
-            {
-                //If we identified an inner XML object, so we call parse_inner_xml to parse it
-                //std::cout << "Full std::string: " << body_iter_sub_re_match[0] << '\n'; // Full std::string
-                //std::cout << "Inner Tags: " << body_iter_sub_re_match[1] << '\n'; // Inner XML object
-                parse_inner_xml(input_json, body_iter_sub_re_match[1], current_tag);
+            //Ex: 1) 0 2) </safreturncode> 3) <returncode>  4) returncode
+            data_within_current_tags = data_around_current_tag[1];
+            parse_xml_data(input_json, data_within_current_tags, current_tag);
+            start_index += current_tag.length()*2 + ((std::string)"<></>").length() + data_within_current_tags.length();
+            //Update current tag with the "next" tag found after the current set
+            current_tag = data_around_current_tag[4];
+        }
 
-            }
-
-            //Check to see if I have finished parsing this "outer tag" (like a "command") entry
-            //If so, get the next "outer tag" (possibly another "command" entry)
-            remaining_str = body_string.substr(n+current_end_tag.length(),body_string.length()-current_end_tag.length()-n);
-            //std::cout << "Remaining std::string: " << remaining_str << "\n";
-            if (regex_match(remaining_str, body_iter_sub_re_match, outer_tag))
-            {
-                current_tag = body_iter_sub_re_match[1];
-                //std::cout << "Updating Current Tag: " << current_tag << "\n";
-            }
-        }while(n + current_end_tag.length() < body_string.length());
     }
 };
 
-void XmlParse::parse_inner_xml(
+void XmlParse::parse_xml_data(
     nlohmann::json * input_json,
-    std::string inner_data,
+    std::string data_within_outer_tags,
     std::string outer_tag
 ) {
     //Parse data from within XML tags and add the values to the JSON
-    if (inner_data.find("<") == std::string::npos)
+    if (data_within_outer_tags.find("<") == std::string::npos)
     {
-        //Confirmed there are no XML tags within this XML object, so just add the data to the JSON
-        //std::cout << "Updating " << outer_tag << " with value: " << inner_data << "\n";
-        update_json(input_json, inner_data, outer_tag);
+        update_json(input_json, data_within_outer_tags, outer_tag);
         return;
     }
     //If we did not return, there is another xml tag within this data (nested)
-    //Recursively call parse_outer_xml to handle the xml tags here, and create a new JSON to store this data
     nlohmann::json nested_json;
-    parse_outer_xml(&nested_json, inner_data);
-    //Add the JSON for the nested data to the main JSON
+    std::string nested_xml = data_within_outer_tags;
+    parse_xml_tags(&nested_json, nested_xml);
     update_json(input_json, nested_json, outer_tag);
 }
 
@@ -199,6 +162,11 @@ void XmlParse::update_json(
 ) {
     //Add specified information (inner_data) to the input_json JSON object
     //using the specified key (outer_tag)
+    outer_tag = replace_xml_chars(outer_tag);
+    if (inner_data.is_string())
+    {
+        inner_data = replace_xml_chars(inner_data);
+    }
     if (!((*input_json).contains(outer_tag) || (*input_json).contains(outer_tag+"s")))
     {
         //If we do not already have this tag used in our object (at this layer), just add data
@@ -234,37 +202,42 @@ void XmlParse::convert_to_ascii(
     #endif //__MVS__
 }
 
-std::string XmlParse::decode_opcode(unsigned char opcode)
+std::string XmlParse::replace_xml_chars(std::string xml_data)
 {
-    //Decode the opcode into a string representing the designated function
-    switch (opcode) {
-        case OP_ADD:
-            return "add";
-        case OP_ALT:
-            return "alter";
-        case OP_DEL:
-            return "delete";
-        case OP_LST:
-            return "extract";
-        default:
-            return "unsupported";
+    std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;", apos = "&apos;";
+    std::size_t index;
+    
+    index = xml_data.find("&");
+    if (index == std::string::npos)
+    {
+        return xml_data;
     }
+    do
+    {
+       xml_data = replace_substring(xml_data, gt, ">", index);
+       xml_data = replace_substring(xml_data, lt, "<", index);
+       xml_data = replace_substring(xml_data, apos, "'", index);
+       xml_data = replace_substring(xml_data, quot, "\"", index);
+       xml_data = replace_substring(xml_data, amp, "&", index);
+       index = xml_data.find("&",index+1);
+    } while (index != std::string::npos);
+    return xml_data;
 }
 
-// Connects the "XML library" to the C layer with this extern C function
-
-extern char * outxml_to_outjson(
-    char * outxml,
-    unsigned char opcode,
-    int saf_rc,
-    int racf_rc,
-    int racf_rsn,
-    bool debug
-) {
-    //Build an XMLParse XML Parser object and parse an IRRSMO00
-    //response xml string into a JSON string
-    XmlParse * xml = new XmlParse();
-    return xml->build_json_string(outxml, opcode, saf_rc, racf_rc, racf_rsn, debug);
+std::string XmlParse::replace_substring(std::string data, std::string substring, std::string replacement, std::size_t start)
+{
+    std::size_t match;
+    if ((data.length() - start) < substring.length())
+    {
+        return data;
+    }
+    match = data.find(substring,start);
+    if (match == std::string::npos)
+    {
+        return data;
+    }
+    data.replace(match,substring.length(),replacement);
+    return data;
 }
 
 #ifndef XML_COMMON_LIB_H_

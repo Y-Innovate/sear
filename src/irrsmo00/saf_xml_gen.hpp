@@ -6,11 +6,6 @@
 #ifndef XML_COMMON_LIB_H_
 #include "../../externals/nlohmann/json.hpp"
 
-#define OP_ADD 0
-#define OP_ALT 1
-#define OP_DEL 2
-#define OP_LST 3
-
 std::string cast_hex_string(char * input);
 #endif /* XML_COMMON_LIB_H_ */
 
@@ -19,8 +14,11 @@ class XmlGen
 {
 private:
     std::string xml_buffer;
+    std::string replace_xml_chars(std::string data);
     void build_open_tag(std::string tag);
-    void build_attribute(std::string attribute);
+    void build_attribute(
+        std::string name,
+        std::string value);
     void build_value(std::string value);
     void build_end_nested_tag();
     void build_full_close_tag(std::string tag);
@@ -29,35 +27,25 @@ private:
         std::string tag,
         std::string operation,
         std::string value);
-    std::string make_xml_attribute(
-        std::string name,
-        std::string value);
+    void build_request_data(
+        std::string adminType,
+        nlohmann::json requestData);
+    std::string json_value_to_string(const nlohmann::json &j);
     std::string convert_operation(
         std::string requestOperation,
-        unsigned char * opcode,
         int * irrsmo00_options);
     void convert_to_ebcdic(
         char * ascii_str,
         int length);
 public:
     char * build_xml_string(
-        char * json_req_string,
+        nlohmann::json request,
         char * userid_buffer,
-        unsigned char * opcode,
         int * irrsmo00_options,
         unsigned int * result_buffer_size,
         bool * debug
     );
 };
-
-extern char * injson_to_inxml(
-    char * injson,
-    char * userid_buffer,
-    unsigned char * opcode,
-    int * irrsmo00_options,
-    unsigned int * result_buffer_size,
-    bool * debug
-);
 
 #ifndef __MVS__
 //Character conversion tables for OSX and Windows Testing
