@@ -4,6 +4,8 @@
 #include "key_map_structs.hpp"
 #include "key_map_user.hpp"
 
+#include <stdint.h>
+
 const key_mapping_t KEY_MAP[] = {
   { 
     "user", 
@@ -19,7 +21,9 @@ const char *get_racfu_key(
 const char *get_racf_key(
     const char *profile_type, 
     const char *segment,
-    const char *racfu_key);
+    const char *racfu_key,
+    int8_t trait_type,
+    int8_t trait_operator);
 
 const char get_racfu_trait_type(
     const char *profile_type,
