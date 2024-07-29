@@ -41,8 +41,8 @@ const char *get_racf_key(
     const char *profile_type, 
     const char *segment,
     const char *racfu_key,
-    char trait_type,
-    char trait_operator
+    int8_t trait_type,
+    int8_t trait_operator
 ) {
   const trait_key_mapping_t *key_mapping = 
     get_key_mapping(

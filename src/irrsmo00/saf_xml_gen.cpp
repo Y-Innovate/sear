@@ -230,7 +230,9 @@ void XmlGen::build_request_data(std::string adminType, nlohmann::json requestDat
                 translatedKey = get_racf_key(
                     adminType.c_str(),
                     itemSegment.c_str(),
-                    (itemSegment + ":" + itemTrait).c_str()
+                    (itemSegment + ":" + itemTrait).c_str(),
+                    TRAIT_TYPE_ANY,
+                    OPERATOR_ANY
                 );
                 std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
                 std::string value = (item.value().is_boolean()) ? "" : json_value_to_string(item.value());
