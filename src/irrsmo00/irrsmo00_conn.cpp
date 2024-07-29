@@ -1,4 +1,6 @@
 #include "irrsmo00_conn.hpp"
+#include "saf_xml_parse.hpp"
+#include "saf_xml_gen.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,9 +35,9 @@ char * call_irrsmo00(
     char work_area[1024];
     char req_handle[64] = {0};
     running_userid_t running_userid_struct = {(unsigned char)strlen(running_userid), {0}};
-    int * alet = 0;
-    int * acee = 0;
-    char  * result_buffer = new char[result_buffer_size];
+    unsigned int alet = 0;
+    unsigned int acee = 0;
+    char  * result_buffer = (char *)malloc(sizeof(char)*result_buffer_size);
     memset(result_buffer, 0, result_buffer_size);
     int request_xml_length = strlen(request_xml);
     int result_len = result_buffer_size;
@@ -80,11 +82,11 @@ char * call_irrsmo00(
 
     unsigned int new_result_buffer_size = *racf_rsn + result_len + 1;
     if (debug) { printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size); }
-    char * full_result = new char [new_result_buffer_size];
+    char * full_result = (char *)malloc(sizeof(char)*new_result_buffer_size);
     char * result_buffer_ptr;
     memset(full_result, 0, new_result_buffer_size);
     strncpy(full_result, result_buffer, result_len);
-    delete[] result_buffer;
+    free(result_buffer);
     result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
     result_len = *racf_rsn;
 
@@ -110,48 +112,4 @@ char * call_irrsmo00(
 
     null_byte_fix(result_buffer_ptr, result_len);
     return full_result;
-}
-
-void call_irrsmo00_with_json(
-    char * json_req_string,
-    racfu_result_t * results
-) {
-    char running_userid[8] = {0};
-    char * xml_res_string, *xml_req_string, * json_res_string;
-    int irrsmo00_options, saf_rc, racf_rc, racf_rsn;
-    unsigned int result_buffer_size;
-    bool debug_mode;
-    unsigned char opcode;
-
-    irrsmo00_options = 13;
-    result_buffer_size = 10000;
-    debug_mode = false;
-    saf_rc = 0;
-    racf_rc = 0;
-    racf_rsn = 0;
-
-    xml_req_string = injson_to_inxml(json_req_string, running_userid, &opcode, &irrsmo00_options, &result_buffer_size, &debug_mode);
-
-    xml_res_string = call_irrsmo00(
-        xml_req_string,
-        running_userid,
-        result_buffer_size,
-        irrsmo00_options,
-        &saf_rc,
-        &racf_rc,
-        &racf_rsn,
-        debug_mode
-    );
-
-    json_res_string = outxml_to_outjson(xml_res_string, opcode, saf_rc, racf_rc, racf_rsn, debug_mode);
-
-    results->raw_result = xml_res_string;
-    results->raw_result_length = result_buffer_size;
-    results->result_json = json_res_string;
-
-    // delete[] xml_res_string;
-    // delete[] json_res_string;
-
-    //TODO: Make sure this isn't leaking memory?
-    return;
 }

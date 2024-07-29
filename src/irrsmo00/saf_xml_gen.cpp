@@ -1,5 +1,7 @@
 #include "saf_xml_gen.hpp"
 
+#include "key_map.hpp"
+
 #include <regex>
 #include <string>
 #include <iostream>
@@ -7,51 +9,55 @@
 
 //Public Functions of XmlGen
 char * XmlGen::build_xml_string(
-    char * json_req_string,
+    nlohmann::json request,
     char * userid_buffer,
-    unsigned char * opcode,
     int * irrsmo00_options,
     unsigned int * result_buffer_size,
     bool * debug
 ) {
     //Main body function that builds an xml string
-    nlohmann::json request;
-    request = nlohmann::json::parse(json_req_string);
-    std::string requestOperation, adminType, profileName, operation, runningUserId = "";
+    std::string requestOperation, adminType, profileName, className, operation, currentSegment, runningUserId = "";
+    nlohmann::json requestData;
+
     //Build the securityrequest tag (Consistent)
     build_open_tag("securityrequest");
-    build_attribute(make_xml_attribute("xmlns","http://www.ibm.com/systems/zos/saf"));
-    build_attribute(make_xml_attribute("xmlns:racf","http://www.ibm.com/systems/zos/racf"));
+    build_attribute("xmlns","http://www.ibm.com/systems/zos/saf");
+    build_attribute("xmlns:racf","http://www.ibm.com/systems/zos/racf");
     build_end_nested_tag();
 
     //Obtain JSON Header information and Build into Admin Object where appropriate
     for (const auto& item : request.items()) { 
         // requestData contains no Header information and is ignored
-        if ( item.key().compare("requestData") == 0 ) { continue; }
+        if ( item.key().compare("request_data") == 0 ) { continue; }
         // The following options dictate parameters to IRRSMO00 and are not built into XML 
-        else if ( item.key().compare("runningUserId") == 0 ) { runningUserId = item.value().get<std::string>(); }
-        else if ( item.key().compare("resultBufferSize") == 0 ) { *result_buffer_size = item.value().get<uint>(); }
-        else if ( item.key().compare("debugmode") == 0 ) { *debug = item.value().get<bool>(); }
+        else if ( item.key().compare("running_user_id") == 0 ) { runningUserId = item.value().get<std::string>(); }
+        else if ( item.key().compare("result_buffer_size") == 0 ) { *result_buffer_size = item.value().get<uint>(); }
+        else if ( item.key().compare("debug_mode") == 0 ) { *debug = item.value().get<bool>(); }
         // All other valid header information should be built into the XML
-        else if ( item.key().compare("adminType") == 0 ) {
+        else if ( item.key().compare("admin_type") == 0 ) {
             // The type of administrative object we are working with
             adminType = item.value().get<std::string>();
             build_open_tag(adminType);
         }
-        else if ( item.key().compare("profileName") == 0 ) {
+        else if ( item.key().compare("profile_name") == 0 ) {
             // The name of the target profile
             profileName = item.value().get<std::string>();
-            build_attribute(make_xml_attribute("name",profileName));
+            build_attribute("name",profileName);
         }
-        else if ( item.key().compare("requestOperation") == 0 ) {
+        else if ( item.key().compare("operation") == 0 ) {
             // The type of request we are performing
             requestOperation = item.value().get<std::string>();
-            operation = convert_operation(requestOperation,opcode,irrsmo00_options);
-            build_attribute("operation=\""+operation+"\"");
+            operation = convert_operation(requestOperation,irrsmo00_options);
+            build_attribute("operation", operation);
+        }
+        else if ( item.key().compare("class_name") == 0 ) {
+            // The name of the target profile
+            className = item.value().get<std::string>();
+            build_attribute("class", className);
         }
         else if ( item.value().is_string() ) {
             //All other attribute information is built into the xml at this level to account for VOLUME/GENERIC/Others
-            build_attribute(make_xml_attribute(item.key(),item.value().get<std::string>())); 
+            build_attribute(item.key(),item.value().get<std::string>()); 
         }
     }
 
@@ -62,29 +68,16 @@ char * XmlGen::build_xml_string(
         convert_to_ebcdic(userid_buffer, userid_length);
     }
 
-    build_attribute(make_xml_attribute("requestid",adminType+"_request"));
+    build_attribute("requestid",adminType+"_request");
 
-    if ((request[requestOperation].contains("requestData")) && (!request[requestOperation].empty()))
+    if ((request.contains("request_data")) && (!request["request_data"].empty()))
     {
         build_end_nested_tag();
 
-        //Build the request data (segment-trait information)
-        for (const auto& item : request[requestOperation]["requestData"].items())
-        {
-            build_open_tag(item.key());
-            build_end_nested_tag();
-            //Build each individual trait
-            for (const auto& trait : request[requestOperation]["requestData"][item.key()].items())
-            {
-                std::string operation = (trait.value()["operation"].is_null()) ? "set" : trait.value()["operation"].get<std::string>();
-                std::string value = (trait.value()["value"].is_boolean()) ? "" : trait.value()["value"].get<std::string>();
-                build_single_trait(trait.key(), operation, value);
-            }
-            build_full_close_tag(item.key());
-        }
+        build_request_data(adminType, request["request_data"]);
         
         //Close the admin object
-        build_full_close_tag(requestOperation);
+        build_full_close_tag(adminType);
 
         //Close the securityrequest tag (Consistent)
         build_full_close_tag("securityrequest");
@@ -103,7 +96,7 @@ char * XmlGen::build_xml_string(
 
     //convert our c++ string to a char * buffer
     const int length = xml_buffer.length();
-    char* output_buffer = new char[length + 1];
+    char* output_buffer = (char *)malloc(sizeof(char) * (length + 1));
     strncpy(output_buffer, xml_buffer.c_str(), length+1);
     convert_to_ebcdic(output_buffer, length);
 
@@ -117,16 +110,58 @@ char * XmlGen::build_xml_string(
 }
 
 //Private Functions of XmlGen
+std::string XmlGen::replace_xml_chars(std::string data)
+{
+    //Replace xml-substituted characters with their substitution strings
+    std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;", apos = "&apos;";
+    std::size_t index;
+    for (int i=0; i<data.length(); i++)
+    {
+        if (data[i] == '&')
+        {
+            data.replace(i,1,amp,0,amp.length());
+            i += amp.length() - 1 - 1;
+        }
+        if (data[i] == '<')
+        {
+            data.replace(i,1,lt,0,lt.length());
+            i += lt.length() - 1 - 1;
+        }
+        if (data[i] == '>')
+        {
+            data.replace(i,1,gt,0,gt.length());
+            i += gt.length() - 1 - 1;
+        }
+        if (data[i] == '"')
+        {
+            data.replace(i,1,quot,0,quot.length());
+            i += quot.length() - 1 - 1;
+        }
+        if (data[i] == '\'')
+        {
+            data.replace(i,1,apos,0,apos.length());
+            i += apos.length() - 1 - 1;
+        }
+    }
+    return data;
+}
 void XmlGen::build_open_tag(std::string tag) {
     //Ex: "<base:universal_access"
+    tag = replace_xml_chars(tag);
     xml_buffer.append("<"+tag);
 }
-void XmlGen::build_attribute(std::string attribute) {
+void XmlGen::build_attribute(
+    std::string name,
+    std::string value
+) {
     //Ex: " operation=set"
-    xml_buffer.append(" "+attribute);
+    name = replace_xml_chars(name);
+    value = replace_xml_chars(value);
+    xml_buffer.append(" "+name+"=\""+value+"\"");
 }
 void XmlGen::build_value(std::string value) {
     //Ex: ">Read"
+    value = replace_xml_chars(value);
     xml_buffer.append(">"+value);
 }
 void XmlGen::build_end_nested_tag() {
@@ -134,6 +169,7 @@ void XmlGen::build_end_nested_tag() {
 }
 void XmlGen::build_full_close_tag(std::string tag) {
     //Ex: "</base:universal_access>"
+    tag = replace_xml_chars(tag);
     xml_buffer.append("</"+tag+">");
 }
 void XmlGen::build_close_tag_no_value() {
@@ -147,46 +183,94 @@ void XmlGen::build_single_trait(
     //Combines above functions to build "trait" tags with added options and values
     //Ex: "<base:universal_access operation=set>Read</base:universal_access>"
     build_open_tag(tag);
-    if (operation.length() != 0) { build_attribute(make_xml_attribute("operation",operation)); }
+    if (operation.length() != 0) { build_attribute("operation",operation); }
     if (value.length() == 0) { build_close_tag_no_value(); }
     else {
         build_value(value);
         build_full_close_tag(tag);
     }
 }
-std::string XmlGen::make_xml_attribute(
-    std::string name,
-    std::string value
-) {
-    //Builds "attribute" string used by build_attribute
-    //Ex: make_xml_attribute(operation,set) = "operation=set"
-    std::string output = name;
-    output.append("=\""+value+"\"");
-    return output;
+
+void XmlGen::build_request_data(std::string adminType, nlohmann::json requestData) {
+    //Builds the xml for request data (segment-trait information) passed in a json object
+    std::string currentSegment = "", itemSegment, itemTrait, itemOperation, translatedKey;
+
+    std::regex segment_trait_key_regex {R"~((([a-z]*):*)([a-z]*):(.*))~"};
+    std::smatch segment_trait_key_data;
+
+
+    auto item = requestData.begin();
+    while (!requestData.empty())
+    {
+        for (auto item = requestData.begin(); item != requestData.end(); )
+        {
+            if (!regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex)) continue;
+            if (segment_trait_key_data[3] == "")
+            {
+                itemOperation = "";
+                itemSegment = segment_trait_key_data[2];
+            }
+            else
+            {
+                itemOperation = segment_trait_key_data[2];
+                itemSegment = segment_trait_key_data[3];
+            }
+            itemTrait = segment_trait_key_data[4];
+
+            if (currentSegment.empty())
+            {
+                currentSegment = itemSegment;
+                build_open_tag(currentSegment);
+                build_end_nested_tag();
+            }
+
+            if ((itemSegment.compare(currentSegment) == 0))
+            {
+                //Build each individual trait
+                translatedKey = get_racf_key(
+                    adminType.c_str(),
+                    itemSegment.c_str(),
+                    (itemSegment + ":" + itemTrait).c_str()
+                );
+                std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
+                std::string value = (item.value().is_boolean()) ? "" : json_value_to_string(item.value());
+                build_single_trait(("racf:" + translatedKey), operation, value);
+                item = requestData.erase(item);
+
+            }
+            else item++;
+        }
+        build_full_close_tag(currentSegment);
+        currentSegment = "";
+    }
+}
+
+std::string XmlGen::json_value_to_string(const nlohmann::json &j)
+{
+    if (j.type() == nlohmann::json::value_t::string) {
+        return j.get<std::string>();
+    }
+
+    return j.dump();
 }
 
 std::string XmlGen::convert_operation(
     std::string requestOperation,
-    unsigned char * opcode,
     int * irrsmo00_options
 ) {
-    //Converts the designated function to a short OPCODE, the correct IRRSMO00 operation
-    //and adjusts IRRSMO00 options as necessary (alter operations require the PRECHECK attribute)
+    //Converts the designated function to the correct IRRSMO00 operation and adjusts IRRSMO00 options as necessary
+    //(alter operations require the PRECHECK attribute)
     if (requestOperation.compare("add") == 0)  {
-        *opcode = OP_ADD;
         return "set";
     }
     if (requestOperation.compare("alter") == 0) {
-        *opcode = OP_ALT;
         *irrsmo00_options = 15;
         return "set";
     }
     if (requestOperation.compare("delete") == 0) {
-        *opcode = OP_DEL;
-        return "delete";
+        return "del";
     }
     if (requestOperation.compare("extract") == 0) {
-        *opcode = OP_LST;
         return "listdata";
     }
     return "";
@@ -205,20 +289,4 @@ void XmlGen::convert_to_ebcdic(
     #else
     __a2e_s(ascii_str);
     #endif //__MVS__
-}
-
-// Connects the "XML library" to the C layer with these extern C functions
-
-extern char * injson_to_inxml(
-    char * injson,
-    char * userid_buffer,
-    unsigned char * opcode,
-    int * irrsmo00_options,
-    unsigned int * result_buffer_size,
-    bool * debug
-) {
-    //Build an XMLGen XML Generator object and build an IRRSMO00
-    //request xml string from a supplied JSON string
-    XmlGen * xml = new XmlGen();
-    return xml->build_xml_string(injson, userid_buffer, opcode, irrsmo00_options, result_buffer_size, debug);
 }
