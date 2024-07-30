@@ -125,7 +125,7 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
     /* Turn on the hight order bit of the last argument - marks the end of the \
      */                                                                        \
     /* argument list. */                                                       \
-    *((uint32_t ZOS_PTR_32) & arg_pointers->ppResult_buffer) |= 0x80000000;
+    *((uint32_t ZOS_PTR_32)&arg_pointers->ppResult_buffer) |= 0x80000000;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 

@@ -244,7 +244,7 @@ std::string XmlGen::convert_operation(std::string requestOperation,
                                       int* irrsmo00_options) {
     // Converts the designated function to the correct IRRSMO00 operation and
     // adjusts IRRSMO00 options as necessary (alter operations require the
-    //PRECHECK attribute)
+    // PRECHECK attribute)
     if (requestOperation.compare("add") == 0) {
         return "set";
     }
