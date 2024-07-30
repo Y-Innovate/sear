@@ -64,6 +64,14 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
+check:
+	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
+	cd $(ARTIFACTS) && clang-tidy -c $(CFLAGS) --checks=cert-* --warnings-as-errors=* \
+		$(SRC)/*.cpp \
+		$(IRRSMO00_SRC)/*.cpp \
+		$(IRRSEQ00_SRC)/*.cpp \
+		$(KEY_MAP)/*.cpp 
+
 SMO64_TEST:	
 	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 
