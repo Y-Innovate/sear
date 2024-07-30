@@ -65,8 +65,16 @@ dbg:
 		${PWD}/debug/debug.c
 
 check:
-	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
-	cd $(ARTIFACTS) && clang-tidy -c $(CFLAGS) --checks=cert-* --warnings-as-errors=* \
+	cd $(ARTIFACTS) && cppcheck \
+		--language=c++ \
+		--std=c++11 \
+		--enable=all \
+		--clang=$(CXX) \
+		-I $(SRC) \
+		-I $(IRRSMO00_SRC) \
+		-I $(IRRSEQ00_SRC) \
+		-I $(KEY_MAP) \
+		-I $(EXTERNALS) \
 		$(SRC)/*.cpp \
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
