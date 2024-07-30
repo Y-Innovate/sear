@@ -10,30 +10,27 @@
 #define RESULT_XML_SIZE 2328
 #define PARTIAL_XML_SIZE 201
 
-
-typedef struct
-{
+typedef struct {
     unsigned char running_userid_length;
     char running_userid[8];
 } running_userid_t;
 
-
 extern "C" {
-    void IRRSMO64(char*,   // Workarea
-        int*, int*, // safrc
-        int*, int*, // racfrc
-        int*, int*, // racfrsn
-        int*,  // Numparms
-        int*,  // Function code
-        int*,  // options
-        int*,  // Request Length
-        char *, // Request
-        char *, // Request Handle
-        char *, // run as user
-        int *,  // ACEE (not used)
-        int *,  // Result buffer
-        char * // Result
-        );
+void IRRSMO64(char *,        // Workarea
+              int *, int *,  // safrc
+              int *, int *,  // racfrc
+              int *, int *,  // racfrsn
+              int *,         // Numparms
+              int *,         // Function code
+              int *,         // options
+              int *,         // Request Length
+              char *,        // Request
+              char *,        // Request Handle
+              char *,        // run as user
+              int *,         // ACEE (not used)
+              int *,         // Result buffer
+              char *         // Result
+);
 }
 
 #endif
