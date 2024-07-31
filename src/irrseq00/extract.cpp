@@ -39,7 +39,7 @@ char *extract(
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
     return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
-    return_codes->irrseq00_return_code = rc;
+    return_codes->racfu_return_code = rc;
     // Free Arg Area
     free(arg_area_setropts);
     /***************************************************************************/
@@ -73,7 +73,7 @@ char *extract(
     return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
     return_codes->racf_return_code = arg_area_generic->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_generic->args.RACF_rsn;
-    return_codes->irrseq00_return_code = rc;
+    return_codes->racfu_return_code = rc;
     // Free Arg Area
     free(arg_area_generic);
   }
@@ -82,7 +82,7 @@ char *extract(
   if (return_codes->saf_return_code != 0 ||
       return_codes->racf_return_code != 0 ||
       return_codes->racf_reason_code != 0 ||
-      return_codes->irrseq00_return_code != 0) {
+      return_codes->racfu_return_code != 0) {
     // Free Result Buffer & Return 'NULL' if not successful.
     free(result_buffer);
     return NULL;
