@@ -55,77 +55,64 @@ MALLOC31 ALIAS C'__malloc31'
 MALLOC31 AMODE 64
 MALLOC31 XATTR LINKAGE(XPLINK),SCOPE(IMPORT),REF(CODE)
 MALL31FD DC    RD(MALLOC31)
-DC VD(MALLOC31)
-CALADMN LOCTR
+         DC    VD(MALLOC31)
+CALADMN  LOCTR
 
-    DS 0H LGR R5,
-    R10 Restore our environment LTR R3,
-    R3 Was call successful ? JZ NOMALL31 Terminate if no storage
+         DS    0H
+         LGR   R5,R10                 Restore our environment
+         LTR   R3,R3                  Was call successful?
+         JZ    NOMALL31               Terminate if no storage
 
-                                 LGR R12,
-    R3 Return from malloc into R12 EJECT,
+         LGR   R12,R3                 Return from malloc into R12
+         EJECT ,
 
-    *-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -**Build a
-                                                                                                                 fully -
-        working stack * *
-            -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -*SKIPMALL
-                                                                                                                       DS 0H USING
-                                                                                                                           STOR31,
-    R12 Address dedicated 31 - bit storage LGR R1,
-    R8
+*---------------------------------------------------------------------*
+* Build a fully-working stack                                         *
+*---------------------------------------------------------------------*
+SKIPMALL DS    0H
+         USING STOR31,R12             Address dedicated 31-bit storage
+         LGR   R1,R8
 
-        LA R13,
-    SAVEAREA Point R13 at the save area... XC SAVEAREA,
-    SAVEAREA... and clear XC IRRSRC, IRRSRC Clear RC placeholder EJECT,
+         LA    R13,SAVEAREA           Point R13 at the save area ...
+         XC    SAVEAREA,SAVEAREA      ... and clear
+         XC    IRRSRC,IRRSRC          Clear RC placeholder
+         EJECT ,
 
-    *-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
-                                                                                                               **Call
-                                                                                                                   the
-                                                                                                                       IRRSEQ00
-                                                                                                                           program
-                                                                                                                               in
-                                                                                                                                   the
-                                                                                                                                       correct
-                                                                                                                                           AMODE
-                                                                                                                                               .
-                                                                                                                                                   *
-                                                                                                                                                       *
-                                                                                                                                                           *
-                                                                                                                                                               *
-                                                                                                                                                                   Save
-                                                                                                                                                                       the high halves of R2 through R14 because the RACF Admin **interface doesn't seem to preserve the top of 64-bit regs for       * *the
-                                                                                                                                                                           caller
-                                                                                                                                               .
-                                                                                                                                                   *
-                                                                                                                                                       *-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
-                                                                                                                                                           *CALLPROG
-                                                                                                                                                               DS 0H LARL
-                                                                                                                                                                   R15,
-    = V(IRRSEQ00) Entry point to racf admin routine L R15,
-    0(0, R15)SAM31 STMH R2, R14, SAVEHIGH Save the high halves BALR R14,
-    R15 Off we go... LMH R2, R14, SAVEHIGH Restore the high halves SAM64 ST R15,
-    IRRSRC Save the return code EJECT,
+*---------------------------------------------------------------------*
+* Call the IRRSEQ00 program in the correct AMODE.                     *
+*                                                                     *
+* Save the high halves of R2 through R14 because the RACF Admin       *
+* interface doesn't seem to preserve the top of 64-bit regs for       *
+* the caller.                                                         *
+*---------------------------------------------------------------------*
+CALLPROG DS    0H
+         LARL  R15,=V(IRRSEQ00)       Entry point to racf admin routine
+         L     R15,0(0,R15)
+         SAM31
+         STMH  R2,R14,SAVEHIGH        Save the high halves
+         BALR  R14,R15                Off we go ...
+         LMH   R2,R14,SAVEHIGH        Restore the high halves
+         SAM64
+         ST    R15,IRRSRC             Save the return code
+         EJECT ,
 
-    *-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -**Release
-                                                                                                             our
-                                                                                                             31 -
-        bit storage * *
-            -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -*RELEASE
-                                                                                                                   DS
-                                                                                                                   0H STG
-                                                                                                                   R12
-    ,
-    PARM1 Pointer to data to free
+*---------------------------------------------------------------------*
+* Release our 31-bit storage                                          *
+*---------------------------------------------------------------------*
+RELEASE  DS    0H
+         STG   R12,PARM1              Pointer to data to free
 
-    LMG R5,
-    R6, FREE_FD Setup function descriptor BASR R7,
-    R6 Call function NOPR 0
+         LMG   R5,R6,FREE_FD          Setup function descriptor
+         BASR  R7,R6                  Call function
+         NOPR  0
 
-    CEEWSA LOCTR C_WSA64 CATTR DEFLOAD,
-    RMODE(64),
-    PART(CALADMN1) FREE ALIAS C 'free' FREE AMODE 64 FREE XATTR LINKAGE(XPLINK),
-    SCOPE(IMPORT), REF(CODE) FREE_FD DC RD(FREE)
-DC VD(FREE)
+CEEWSA   LOCTR
+C_WSA64  CATTR DEFLOAD,RMODE(64),PART(CALADMN1)
+FREE     ALIAS C'free'
+FREE     AMODE 64
+FREE     XATTR LINKAGE(XPLINK),SCOPE(IMPORT),REF(CODE)
+FREE_FD  DC    RD(FREE)
+         DC    VD(FREE)
 CALADMN  LOCTR
 
 SKIPFREE DS    0H
