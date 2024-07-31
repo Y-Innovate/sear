@@ -7,7 +7,7 @@
 char *extract(
     const char *profile_name,  // Required for everything except setropts
     const char *class_name,    // Only required for general resource profile
-    char *raw_request,         // Always required
+    char **raw_request,         // Always required
     int *raw_request_length,   // Always required
     uint8_t function_code,     // Always required
     racfu_return_codes_t *return_codes  // Always required
@@ -15,7 +15,7 @@ char *extract(
   int rc;
 
   char *result_buffer;
-  int result_buffer_length;
+  //int result_buffer_length;
 
   /*************************************************************************/
   /* Setropts Extract                                                      */
@@ -28,13 +28,13 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    raw_request = (char *)&arg_area_setropts->arg_pointers;
+    *raw_request = reinterpret_cast<char*>(&arg_area_setropts->arg_pointers);
     *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
     // Call R_Admin
     rc = callRadmin((char ZOS_PTR_32) & arg_area_setropts->arg_pointers);
     setropts_extract_results_t *setropts_result_buffer =
         (setropts_extract_results_t *)arg_area_setropts->args.pResult_buffer;
-    result_buffer = (char *)setropts_result_buffer;
+    result_buffer = reinterpret_cast<char*>(setropts_result_buffer);
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
     return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
@@ -61,14 +61,14 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    raw_request = (char *)&arg_area_generic->arg_pointers;
+    *raw_request = reinterpret_cast<char*>(&arg_area_generic->arg_pointers);
     *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
     // Call R_Admin
     rc = callRadmin((char ZOS_PTR_32) & arg_area_generic->arg_pointers);
     generic_extract_parms_results_t *generic_result_buffer =
         (generic_extract_parms_results_t *)
             arg_area_generic->args.pResult_buffer;
-    result_buffer = (char *)generic_result_buffer;
+    result_buffer = reinterpret_cast<char*>(generic_result_buffer);
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
     return_codes->racf_return_code = arg_area_generic->args.RACF_rc;

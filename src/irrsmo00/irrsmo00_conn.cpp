@@ -28,7 +28,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
       (unsigned char)strlen(running_userid), {0}};
   unsigned int alet = 0;
   unsigned int acee = 0;
-  char *result_buffer = (char *)malloc(sizeof(char) * result_buffer_size);
+  char *result_buffer = static_cast<char*>malloc(sizeof(char) * result_buffer_size);
   memset(result_buffer, 0, result_buffer_size);
   int request_xml_length = strlen(request_xml);
   int result_len = result_buffer_size;
@@ -44,7 +44,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
 
   IRRSMO64(work_area, alet, saf_rc, alet, racf_rc, alet, racf_rsn, &num_parms,
            &fn, &irrsmo00_options, &request_xml_length, request_xml, req_handle,
-           (char *)&running_userid_struct, acee, &result_len, result_buffer);
+           static_cast<char*>&running_userid_struct, acee, &result_len, result_buffer);
 
   null_byte_fix(result_buffer, result_len);
 
@@ -57,7 +57,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   if (debug) {
     printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size);
   }
-  char *full_result = (char *)malloc(sizeof(char) * new_result_buffer_size);
+  char *full_result = static_cast<char*>malloc(sizeof(char) * new_result_buffer_size);
   char *result_buffer_ptr;
   memset(full_result, 0, new_result_buffer_size);
   strncpy(full_result, result_buffer, result_len);
@@ -68,7 +68,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   // Call IRRSMO64 Again with the appropriate buffer size
   IRRSMO64(work_area, alet, saf_rc, alet, racf_rc, alet, racf_rsn, &num_parms,
            &fn, &irrsmo00_options, &request_xml_length, request_xml, req_handle,
-           (char *)&running_userid_struct, acee, &result_len,
+           static_cast<char*>&running_userid_struct, acee, &result_len,
            result_buffer_ptr);
 
   null_byte_fix(result_buffer_ptr, result_len);

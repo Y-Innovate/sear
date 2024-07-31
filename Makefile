@@ -74,7 +74,8 @@ check:
 		--output-file=cppcheck/output.xml \
 		--checkers-report=cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=cppcheck \
-		--xml --xml-version=2 -v \
+		--xml --xml-version=2 \
+		--force --verbose --check-level=exhaustive \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
 		-I $(IRRSEQ00_SRC) \

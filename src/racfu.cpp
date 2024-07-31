@@ -243,7 +243,7 @@ void build_result(const char *operation, const char *admin_type,
   // Convert profile JSON to C string.
   std::string result_json_cpp_string = result_json.dump();
   char *result_json_string =
-      (char *)malloc(sizeof(char) * (result_json_cpp_string.size() + 1));
+      static_cast<char*>malloc(sizeof(char) * (result_json_cpp_string.size() + 1));
   std::strcpy(result_json_string, result_json_cpp_string.c_str());
 
   // Build RACFu Result Structure
