@@ -31,7 +31,7 @@ void racfu(racfu_result_t *result, char *request_json) {
   nlohmann::json request;
   std::string operation;
   request = nlohmann::json::parse(request_json);
-  racfu_return_codes_t return_codes = {-1, -1, -1, -1, -1, -1};
+  racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   const char *profile_name = NULL;
   const char *class_name = NULL;
   // {
