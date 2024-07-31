@@ -69,12 +69,11 @@ check:
 		--language=c++ \
 		--std=c++11 \
 		--enable=all \
-		--inconclusive \
-		--suppress='*:externals/*' \
+		--suppress='*:*/externals/*' \
+		--suppress='missingIncludeSystem' \
 		--output-file=cppcheck/output.xml \
 		--checkers-report=cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=cppcheck \
-		--clang=$(CXX) \
 		--xml --xml-version=2 -v \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \

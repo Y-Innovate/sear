@@ -11,22 +11,22 @@ std::string cast_hex_string(char* input);
 
 // XmlParse Parses an XML String and forms a JSON String
 class XmlParse {
-   private:
-    void parse_header_attributes(nlohmann::json* input_json,
-                                 std::string header_string);
-    void parse_xml_tags(nlohmann::json* input_json, std::string body_string);
-    void parse_xml_data(nlohmann::json* input_json, std::string inner_data,
-                        std::string outer_tag);
-    void update_json(nlohmann::json* input_json, nlohmann::json inner_data,
-                     std::string outer_tag);
-    std::string replace_xml_chars(std::string xml_data);
-    std::string replace_substring(std::string data, std::string substring,
-                                  std::string replacement, std::size_t start);
-    void convert_to_ascii(char* ebcdic_str, int length);
+ private:
+  void parse_header_attributes(nlohmann::json* input_json,
+                               std::string header_string);
+  void parse_xml_tags(nlohmann::json* input_json, std::string body_string);
+  void parse_xml_data(nlohmann::json* input_json, std::string inner_data,
+                      std::string outer_tag);
+  void update_json(nlohmann::json* input_json, nlohmann::json inner_data,
+                   std::string outer_tag);
+  std::string replace_xml_chars(std::string xml_data);
+  std::string replace_substring(std::string data, std::string substring,
+                                std::string replacement, std::size_t start);
+  void convert_to_ascii(char* ebcdic_str, char* ascii_str, int length);
 
-   public:
-    nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc,
-                                     bool debug);
+ public:
+  nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc,
+                                   bool debug);
 };
 
 #ifndef __MVS__

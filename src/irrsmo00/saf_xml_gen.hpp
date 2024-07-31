@@ -11,27 +11,29 @@ std::string cast_hex_string(char *input);
 
 // XmlGen Generates an XML String from a JSON string
 class XmlGen {
-   private:
-    std::string xml_buffer;
-    std::string replace_xml_chars(std::string data);
-    void build_open_tag(std::string tag);
-    void build_attribute(std::string name, std::string value);
-    void build_value(std::string value);
-    void build_end_nested_tag();
-    void build_full_close_tag(std::string tag);
-    void build_close_tag_no_value();
-    void build_single_trait(std::string tag, std::string operation,
-                            std::string value);
-    void build_request_data(std::string adminType, nlohmann::json requestData);
-    std::string json_value_to_string(const nlohmann::json &j);
-    std::string convert_operation(std::string requestOperation,
-                                  int *irrsmo00_options);
-    void convert_to_ebcdic(char *ascii_str, int length);
+ private:
+  std::string xml_buffer;
+  std::string replace_xml_chars(std::string data);
+  void build_open_tag(std::string tag);
+  void build_attribute(std::string name, std::string value);
+  void build_value(std::string value);
+  void build_end_nested_tag();
+  void build_full_close_tag(std::string tag);
+  void build_close_tag_no_value();
+  void build_single_trait(std::string tag, std::string operation,
+                          std::string value);
+  void build_request_data(std::string adminType, nlohmann::json requestData);
+  std::string json_value_to_string(const nlohmann::json &j);
+  std::string convert_operation(std::string requestOperation,
+                                int *irrsmo00_options);
+  void convert_to_ebcdic(char *ascii_str, int length);
 
-   public:
-    char *build_xml_string(nlohmann::json request, char *userid_buffer,
-                           int *irrsmo00_options,
-                           unsigned int *result_buffer_size, bool *debug);
+ public:
+  char *build_xml_string(nlohmann::json request, char *userid_buffer,
+                         int *irrsmo00_options,
+                         unsigned int *result_buffer_size,
+                         unsigned int *request_length, int *racfu_rc,
+                         bool *debug);
 };
 
 #ifndef __MVS__

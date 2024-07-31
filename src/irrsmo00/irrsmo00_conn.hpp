@@ -8,8 +8,8 @@
 #include "racfu_result.h"
 
 typedef struct {
-    unsigned char running_userid_length;
-    char running_userid[8];
+  unsigned char running_userid_length;
+  char running_userid[8];
 } running_userid_t;
 
 /* Prototype for IRRSMO64 */

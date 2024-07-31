@@ -58,74 +58,74 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
 /*************************************************************************/
 #define PROFILE_NAME_MAX_LENGTH 247
 
-#define COMMON_START_ARGS             \
-    char RACF_work_area[1024];        \
-    /* return and reason codes */     \
-    uint32_t ALET_SAF_rc;             \
-    uint32_t SAF_rc;                  \
-    uint32_t ALET_RACF_rc;            \
-    uint32_t RACF_rc;                 \
-    uint32_t ALET_RACF_rsn;           \
-    uint32_t RACF_rsn;                \
-    /* extract function to perform */ \
-    uint8_t function_code;
+#define COMMON_START_ARGS           \
+  char RACF_work_area[1024];        \
+  /* return and reason codes */     \
+  uint32_t ALET_SAF_rc;             \
+  uint32_t SAF_rc;                  \
+  uint32_t ALET_RACF_rc;            \
+  uint32_t RACF_rc;                 \
+  uint32_t ALET_RACF_rsn;           \
+  uint32_t RACF_rsn;                \
+  /* extract function to perform */ \
+  uint8_t function_code;
 
-#define COMMON_START_ARG_POINTERS       \
-    char ZOS_PTR_32 pWork_area;         \
-    /* return and reason code */        \
-    uint32_t ZOS_PTR_32 pALET_SAF_rc;   \
-    uint32_t ZOS_PTR_32 pSAF_rc;        \
-    uint32_t ZOS_PTR_32 pALET_RACF_rc;  \
-    uint32_t ZOS_PTR_32 pRACF_rc;       \
-    uint32_t ZOS_PTR_32 pALET_RACF_rsn; \
-    uint32_t ZOS_PTR_32 pRACF_rsn;      \
-    /* extract function to perform */   \
-    uint8_t ZOS_PTR_32 pFunction_code;
+#define COMMON_START_ARG_POINTERS     \
+  char ZOS_PTR_32 pWork_area;         \
+  /* return and reason code */        \
+  uint32_t ZOS_PTR_32 pALET_SAF_rc;   \
+  uint32_t ZOS_PTR_32 pSAF_rc;        \
+  uint32_t ZOS_PTR_32 pALET_RACF_rc;  \
+  uint32_t ZOS_PTR_32 pRACF_rc;       \
+  uint32_t ZOS_PTR_32 pALET_RACF_rsn; \
+  uint32_t ZOS_PTR_32 pRACF_rsn;      \
+  /* extract function to perform */   \
+  uint8_t ZOS_PTR_32 pFunction_code;
 
-#define COMMON_END_ARGS                             \
-    /* Max of 247 + 1 for null terimnator */        \
-    char profile_name[PROFILE_NAME_MAX_LENGTH + 1]; \
-    /* Result area for the service */               \
-    uint32_t ACEE;                                  \
-    uint8_t result_buffer_subpool;                  \
-    /* R_admin returns data here */                 \
-    char ZOS_PTR_32 pResult_buffer;
+#define COMMON_END_ARGS                           \
+  /* Max of 247 + 1 for null terimnator */        \
+  char profile_name[PROFILE_NAME_MAX_LENGTH + 1]; \
+  /* Result area for the service */               \
+  uint32_t ACEE;                                  \
+  uint8_t result_buffer_subpool;                  \
+  /* R_admin returns data here */                 \
+  char ZOS_PTR_32 pResult_buffer;
 
-#define COMMON_END_ARG_POINTERS                \
-    char ZOS_PTR_32 pProfile_name;             \
-    /* Result area for the service */          \
-    uint32_t ZOS_PTR_32 pACEE;                 \
-    uint8_t ZOS_PTR_32 pResult_buffer_subpool; \
-    /* R_admin returns data here */            \
-    char ZOS_PTR_32 ZOS_PTR_32 ppResult_buffer;
+#define COMMON_END_ARG_POINTERS              \
+  char ZOS_PTR_32 pProfile_name;             \
+  /* Result area for the service */          \
+  uint32_t ZOS_PTR_32 pACEE;                 \
+  uint8_t ZOS_PTR_32 pResult_buffer_subpool; \
+  /* R_admin returns data here */            \
+  char ZOS_PTR_32 ZOS_PTR_32 ppResult_buffer;
 
-#define SET_COMMON_ARGS         \
-    args->ALET_SAF_rc = ALET;   \
-    args->ALET_RACF_rc = ALET;  \
-    args->ALET_RACF_rsn = ALET; \
-    args->ACEE = ACEE;          \
-    args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
+#define SET_COMMON_ARGS       \
+  args->ALET_SAF_rc = ALET;   \
+  args->ALET_RACF_rc = ALET;  \
+  args->ALET_RACF_rsn = ALET; \
+  args->ACEE = ACEE;          \
+  args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
 
-#define SET_COMMON_ARG_POINTERS                                                \
-    arg_pointers->pWork_area = (char ZOS_PTR_32) & args->RACF_work_area;       \
-    arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
-    arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
-    arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
-    arg_pointers->pRACF_rc = &(args->RACF_rc);                                 \
-    arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
-    arg_pointers->pRACF_rsn = &(args->RACF_rsn);                               \
-                                                                               \
-    arg_pointers->pFunction_code = &(args->function_code);                     \
-    /* Function specific parms between function code and profile name */       \
-    arg_pointers->pProfile_name = &(args->profile_name[0]);                    \
-    arg_pointers->pACEE = &(args->ACEE);                                       \
-    arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
-    arg_pointers->ppResult_buffer = &(args->pResult_buffer);                   \
-                                                                               \
-    /* Turn on the hight order bit of the last argument - marks the end of the \
-     */                                                                        \
-    /* argument list. */                                                       \
-    *((uint32_t ZOS_PTR_32)&arg_pointers->ppResult_buffer) |= 0x80000000;
+#define SET_COMMON_ARG_POINTERS                                              \
+  arg_pointers->pWork_area = (char ZOS_PTR_32) & args->RACF_work_area;       \
+  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
+  arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
+  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
+  arg_pointers->pRACF_rc = &(args->RACF_rc);                                 \
+  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
+  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                               \
+                                                                             \
+  arg_pointers->pFunction_code = &(args->function_code);                     \
+  /* Function specific parms between function code and profile name */       \
+  arg_pointers->pProfile_name = &(args->profile_name[0]);                    \
+  arg_pointers->pACEE = &(args->ACEE);                                       \
+  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
+  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                   \
+                                                                             \
+  /* Turn on the hight order bit of the last argument - marks the end of the \
+   */                                                                        \
+  /* argument list. */                                                       \
+  *((uint32_t ZOS_PTR_32)&arg_pointers->ppResult_buffer) |= 0x80000000;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -140,39 +140,39 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
 /*   - Data Set Extract                                                  */
 /*************************************************************************/
 typedef struct {
-    char eyecatcher[4];             // 'PXTR'
-    uint32_t result_buffer_length;  // result buffer length
-    uint8_t subpool;                // subpool of result buffer
-    uint8_t version;                // parameter list version
-    uint8_t reserved_1[2];          // reserved
-    char class_name[8];             // class name - upper case, blank pad
-    uint32_t profile_name_length;   // length of profile name
-    char reserved_2[2];             // reserved
-    char volume[6];                 // volume (for data set extract)
-    char reserved_3[4];             // reserved
-    uint32_t flags;                 // see flag constants below
-    uint32_t segment_count;         // number of segments
-    char reserved_4[16];            // reserved
-                                    // start of extracted data
+  char eyecatcher[4];             // 'PXTR'
+  uint32_t result_buffer_length;  // result buffer length
+  uint8_t subpool;                // subpool of result buffer
+  uint8_t version;                // parameter list version
+  uint8_t reserved_1[2];          // reserved
+  char class_name[8];             // class name - upper case, blank pad
+  uint32_t profile_name_length;   // length of profile name
+  char reserved_2[2];             // reserved
+  char volume[6];                 // volume (for data set extract)
+  char reserved_3[4];             // reserved
+  uint32_t flags;                 // see flag constants below
+  uint32_t segment_count;         // number of segments
+  char reserved_4[16];            // reserved
+                                  // start of extracted data
 } generic_extract_parms_results_t;
 // Note: This structure is used for both input & output.
 
 typedef struct {
-    COMMON_START_ARGS
-    generic_extract_parms_results_t profile_extract_parms;
-    COMMON_END_ARGS
+  COMMON_START_ARGS
+  generic_extract_parms_results_t profile_extract_parms;
+  COMMON_END_ARGS
 } generic_extract_args_t;
 
 typedef struct {
-    COMMON_START_ARG_POINTERS
-    generic_extract_parms_results_t ZOS_PTR_32 pProfile_extract_parms;
-    COMMON_END_ARG_POINTERS
+  COMMON_START_ARG_POINTERS
+  generic_extract_parms_results_t ZOS_PTR_32 pProfile_extract_parms;
+  COMMON_END_ARG_POINTERS
 } generic_extract_arg_pointers_t;
 
 // 31-bit for IRRSEQ00 arguments.
 typedef struct {
-    generic_extract_args_t args;
-    generic_extract_arg_pointers_t arg_pointers;
+  generic_extract_args_t args;
+  generic_extract_arg_pointers_t arg_pointers;
 } generic_extract_underbar_arg_area_t;
 
 /*************************************************************************/
@@ -181,38 +181,37 @@ typedef struct {
 /* Used to interpret extracted generic profile data                      */
 /*************************************************************************/
 typedef struct {
-    char name[8];                      // segment name, upper case, blank padded
-    uint32_t flags;                    //
-    uint32_t field_count;              // number of fields
-    char reserved_1[4];                // reserved
-    uint32_t field_descriptor_offset;  // offset to first field descriptor
-    char reserved_2[16];               // reserved
-                                       // start of next segment descriptor
+  char name[8];                      // segment name, upper case, blank padded
+  uint32_t flags;                    //
+  uint32_t field_count;              // number of fields
+  char reserved_1[4];                // reserved
+  uint32_t field_descriptor_offset;  // offset to first field descriptor
+  char reserved_2[16];               // reserved
+                                     // start of next segment descriptor
 } generic_segment_descriptor_t;
 
 typedef union {
-    uint32_t field_data_length;   // length of field data or ...
-    uint32_t repeat_group_count;  // number of repeat groups
+  uint32_t field_data_length;   // length of field data or ...
+  uint32_t repeat_group_count;  // number of repeat groups
 } generic_field_data_length_repeat_group_count_t;
 
 typedef union {
-    uint32_t field_data_offset;  // offset to field data or ...
-    uint32_t
-        repeat_group_element_count;  // number of elems in repeat field hdrs
+  uint32_t field_data_offset;           // offset to field data or ...
+  uint32_t repeat_group_element_count;  // number of elems in repeat field hdrs
 } generic_field_data_offset_repeat_group_element_count_t;
 
 typedef struct {
-    char name[8];  // field name, upper case, blank padded
-    uint16_t type;
-    char reserved_1[2];
-    uint32_t flags;
-    generic_field_data_length_repeat_group_count_t
-        field_data_length_repeat_group_count;
-    char rserved_2[4];
-    generic_field_data_offset_repeat_group_element_count_t
-        field_data_offset_repeat_group_element_count;
-    char reserved_3[16];
-    // start of next field descriptor
+  char name[8];  // field name, upper case, blank padded
+  uint16_t type;
+  char reserved_1[2];
+  uint32_t flags;
+  generic_field_data_length_repeat_group_count_t
+      field_data_length_repeat_group_count;
+  char rserved_2[4];
+  generic_field_data_offset_repeat_group_element_count_t
+      field_data_offset_repeat_group_element_count;
+  char reserved_3[16];
+  // start of next field descriptor
 } generic_field_descriptor_t;
 
 /*************************************************************************/
@@ -221,26 +220,26 @@ typedef struct {
 /* Specific to Setropts Extract.                                         */
 /*************************************************************************/
 typedef struct {
-    uint32_t request_flags;
-    uint8_t reserved_1[10];
+  uint32_t request_flags;
+  uint8_t reserved_1[10];
 } setropts_extract_parms_t;
 
 typedef struct {
-    COMMON_START_ARGS
-    setropts_extract_parms_t setropts_extract_parms;
-    COMMON_END_ARGS
+  COMMON_START_ARGS
+  setropts_extract_parms_t setropts_extract_parms;
+  COMMON_END_ARGS
 } setropts_extract_args_t;
 
 typedef struct {
-    COMMON_START_ARG_POINTERS
-    setropts_extract_parms_t ZOS_PTR_32 pSetropts_extract_parms;
-    COMMON_END_ARG_POINTERS
+  COMMON_START_ARG_POINTERS
+  setropts_extract_parms_t ZOS_PTR_32 pSetropts_extract_parms;
+  COMMON_END_ARG_POINTERS
 } setropts_extract_arg_pointers_t;
 
 // 31-bit for IRRSEQ00 arguments.
 typedef struct {
-    setropts_extract_args_t args;
-    setropts_extract_arg_pointers_t arg_pointers;
+  setropts_extract_args_t args;
+  setropts_extract_arg_pointers_t arg_pointers;
 } setropts_extract_underbar_arg_area_t;
 
 /*************************************************************************/
@@ -249,30 +248,30 @@ typedef struct {
 /* Used to interpret extracted setropts profile data                     */
 /*************************************************************************/
 typedef struct {
-    char eyecatcher[4];
-    uint32_t result_buffer_length;
-    char reserved_2[4];
-    uint16_t segment_count;
-    // Start of first segment descriptor.
+  char eyecatcher[4];
+  uint32_t result_buffer_length;
+  char reserved_2[4];
+  uint16_t segment_count;
+  // Start of first segment descriptor.
 } setropts_extract_results_t;
 
 typedef struct {
-    char name[8];
-    uint8_t flag;
-    uint16_t field_count;
-    // Start of first field descriptor
+  char name[8];
+  uint8_t flag;
+  uint16_t field_count;
+  // Start of first field descriptor
 } setropts_segment_descriptor_t;
 
 typedef struct {
-    char name[8];
-    uint8_t flag;
-    uint16_t field_length;
-    // Start of next field descriptor, next segment, or end of data
+  char name[8];
+  uint8_t flag;
+  uint16_t field_length;
+  // Start of next field descriptor, next segment, or end of data
 } setropts_field_descriptor_t;
 
 typedef struct {
-    char key[8 + 1];
-    char type;
+  char key[8 + 1];
+  char type;
 } setropts_field_type_t;
 
 #pragma pack(pop)  // Restore default structure packing options.
@@ -369,7 +368,8 @@ const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
 extern "C" uint32_t callRadmin(char ZOS_PTR_32);
 
 char *extract(const char *profile_name, const char *class_name,
-              uint8_t function_code, racfu_return_codes_t *return_codes);
+              uint8_t function_code, char *raw_request, int *raw_request_length,
+              racfu_return_codes_t *return_codes);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);

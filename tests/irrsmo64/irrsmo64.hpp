@@ -11,8 +11,8 @@
 #define PARTIAL_XML_SIZE 201
 
 typedef struct {
-    unsigned char running_userid_length;
-    char running_userid[8];
+  unsigned char running_userid_length;
+  char running_userid[8];
 } running_userid_t;
 
 extern "C" {
