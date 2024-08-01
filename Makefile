@@ -78,7 +78,10 @@ check:
 		--checkers-report=cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=cppcheck \
 		--xml --xml-version=2 \
-		--force --verbose --check-level=exhaustive \
+		--force \
+		--verbose \
+		--check-level=exhaustive \
+		--inconclusive \
 		$(CKFLGS) \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
