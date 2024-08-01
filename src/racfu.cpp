@@ -115,13 +115,13 @@ void do_extract(const char *admin_type, const char *profile_name,
   // Post Process Generic Result
   if (strcmp(admin_type, "setropts") != 0) {
     generic_extract_parms_results_t *generic_result_buffer =
-        reinterpret_cast<generic_extract_parms_results_t*>(raw_result);
+        reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
     raw_result_length = generic_result_buffer->result_buffer_length;
     profile_json = post_process_generic(generic_result_buffer);
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
-        reinterpret_cast<setropts_extract_results_t*>(raw_result);
+        reinterpret_cast<setropts_extract_results_t *>(raw_result);
     raw_result_length = setropts_result_buffer->result_buffer_length;
     profile_json = post_process_setropts(setropts_result_buffer);
   }
@@ -242,8 +242,8 @@ void build_result(const char *operation, const char *admin_type,
 
   // Convert profile JSON to C string.
   std::string result_json_cpp_string = result_json.dump();
-  char *result_json_string =
-      static_cast<char*>(malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
+  char *result_json_string = static_cast<char *>(
+      malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
   std::strcpy(result_json_string, result_json_cpp_string.c_str());
 
   // Build RACFu Result Structure

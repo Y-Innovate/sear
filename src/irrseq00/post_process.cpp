@@ -12,7 +12,7 @@ nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer) {
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
-  char *profile_address = reinterpret_cast<char*>(generic_result_buffer);
+  char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
 
   // Set Class Name
   char profile_type[8];
@@ -22,7 +22,8 @@ nlohmann::json post_process_generic(
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
   first_segment_offset += generic_result_buffer->profile_name_length;
   generic_segment_descriptor_t *segment =
-      reinterpret_cast<generic_segment_descriptor_t*>(profile_address + first_segment_offset);
+      reinterpret_cast<generic_segment_descriptor_t *>(profile_address +
+                                                       first_segment_offset);
   char segment_key[8];
 
   // Field Variables
@@ -44,8 +45,8 @@ nlohmann::json post_process_generic(
     post_process_key(segment_key, segment->name, 8);
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
-    field = reinterpret_cast<generic_field_descriptor_t*>(profile_address +
-                                           segment->field_descriptor_offset);
+    field = reinterpret_cast<generic_field_descriptor_t *>(
+        profile_address + segment->field_descriptor_offset);
     for (int j = 1; j <= segment->field_count; j++) {
       racfu_field_key = post_process_field_key(field_key, profile_type,
                                                segment_key, field->name);
@@ -92,19 +93,19 @@ nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer) {
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
-  char *profile_address = reinterpret_cast<char*>(setropts_result_buffer);
+  char *profile_address = reinterpret_cast<char *>(setropts_result_buffer);
 
   // Segment Variables
   setropts_segment_descriptor_t *segment =
-      reinterpret_cast<setropts_segment_descriptor_t*>(profile_address +
-                                        sizeof(setropts_extract_results_t));
+      reinterpret_cast<setropts_segment_descriptor_t *>(
+          profile_address + sizeof(setropts_extract_results_t));
   char segment_key[8];
 
   // Field Variables
   setropts_field_descriptor_t *field =
-      reinterpret_cast<setropts_field_descriptor_t*>(profile_address +
-                                      sizeof(setropts_extract_results_t) +
-                                      sizeof(setropts_segment_descriptor_t));
+      reinterpret_cast<setropts_field_descriptor_t *>(
+          profile_address + sizeof(setropts_extract_results_t) +
+          sizeof(setropts_segment_descriptor_t));
   char field_key[8];
   std::string racfu_field_key;
   char field_data[10025];  // we may want to make this dynamic using a VLA or
@@ -125,8 +126,8 @@ nlohmann::json post_process_setropts(
     if (field->field_length != 0) {
       // Post Process List Fields
       if (field_type == SETROPTS_FIELD_TYPE_LIST) {
-        list_field_data_pointer =
-            reinterpret_cast<char*>(field) + sizeof(setropts_field_descriptor_t);
+        list_field_data_pointer = reinterpret_cast<char *>(field) +
+                                  sizeof(setropts_field_descriptor_t);
         for (int j = 0; j < field->field_length / 9; j++) {
           process_setropts_field(field_data, list_field_data_pointer, 8);
           list_field_data.push_back(field_data);
@@ -136,9 +137,10 @@ nlohmann::json post_process_setropts(
         list_field_data.clear();
         // Post Process String & Number Fields
       } else {
-        process_setropts_field(
-            field_data, reinterpret_cast<char*>(field) + sizeof(setropts_field_descriptor_t),
-            field->field_length);
+        process_setropts_field(field_data,
+                               reinterpret_cast<char *>(field) +
+                                   sizeof(setropts_field_descriptor_t),
+                               field->field_length);
         // Number
         if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
           profile["profile"][segment_key][racfu_field_key] =
@@ -159,10 +161,8 @@ nlohmann::json post_process_setropts(
     } else {
       profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
-    field =
-        dynamic_cast<setropts_field_descriptor_t*>(field +
-                                        sizeof(setropts_field_descriptor_t) +
-                                        field->field_length);
+    field = dynamic_cast<setropts_field_descriptor_t *>(
+        field + sizeof(setropts_field_descriptor_t) + field->field_length);
   }
   return profile;
 }

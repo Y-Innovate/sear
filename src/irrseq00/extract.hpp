@@ -106,26 +106,28 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   args->ACEE = ACEE;          \
   args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
 
-#define SET_COMMON_ARG_POINTERS                                              \
-  arg_pointers->pWork_area = reinterpret_cast<char ZOS_PTR_32>(& args->RACF_work_area);       \
-  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
-  arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
-  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
-  arg_pointers->pRACF_rc = &(args->RACF_rc);                                 \
-  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
-  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                               \
-                                                                             \
-  arg_pointers->pFunction_code = &(args->function_code);                     \
-  /* Function specific parms between function code and profile name */       \
-  arg_pointers->pProfile_name = &(args->profile_name[0]);                    \
-  arg_pointers->pACEE = &(args->ACEE);                                       \
-  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
-  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                   \
-                                                                             \
-  /* Turn on the hight order bit of the last argument - marks the end of the \
-   */                                                                        \
-  /* argument list. */                                                       \
-  *(reinterpret_cast<uint32_t ZOS_PTR_32>(&arg_pointers->ppResult_buffer)) |= 0x80000000;
+#define SET_COMMON_ARG_POINTERS                                               \
+  arg_pointers->pWork_area =                                                  \
+      reinterpret_cast<char ZOS_PTR_32>(&args->RACF_work_area);               \
+  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                          \
+  arg_pointers->pSAF_rc = &(args->SAF_rc);                                    \
+  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                        \
+  arg_pointers->pRACF_rc = &(args->RACF_rc);                                  \
+  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                      \
+  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                                \
+                                                                              \
+  arg_pointers->pFunction_code = &(args->function_code);                      \
+  /* Function specific parms between function code and profile name */        \
+  arg_pointers->pProfile_name = &(args->profile_name[0]);                     \
+  arg_pointers->pACEE = &(args->ACEE);                                        \
+  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);      \
+  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                    \
+                                                                              \
+  /* Turn on the hight order bit of the last argument - marks the end of the  \
+   */                                                                         \
+  /* argument list. */                                                        \
+  *(reinterpret_cast<uint32_t ZOS_PTR_32>(&arg_pointers->ppResult_buffer)) |= \
+      0x80000000;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -368,8 +370,8 @@ const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
 extern "C" uint32_t callRadmin(char ZOS_PTR_32);
 
 char *extract(const char *profile_name, const char *class_name,
-              uint8_t function_code, char **raw_request, int *raw_request_length,
-              racfu_return_codes_t *return_codes);
+              uint8_t function_code, char **raw_request,
+              int *raw_request_length, racfu_return_codes_t *return_codes);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);
