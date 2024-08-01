@@ -107,7 +107,7 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
 
 #define SET_COMMON_ARG_POINTERS                                              \
-  arg_pointers->pWork_area = (char ZOS_PTR_32) & args->RACF_work_area;       \
+  arg_pointers->pWork_area = reinterpret_cast<char ZOS_PTR_32>(& args->RACF_work_area);       \
   arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
   arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
   arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
@@ -125,7 +125,7 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   /* Turn on the hight order bit of the last argument - marks the end of the \
    */                                                                        \
   /* argument list. */                                                       \
-  *((uint32_t ZOS_PTR_32)&arg_pointers->ppResult_buffer) |= 0x80000000;
+  *(reinterpret_cast<uint32_t ZOS_PTR_32>(&arg_pointers->ppResult_buffer)) |= 0x80000000;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 

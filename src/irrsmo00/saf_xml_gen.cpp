@@ -98,7 +98,7 @@ char* XmlGen::build_xml_string(nlohmann::json request, char* userid_buffer,
 
   // convert our c++ string to a char * buffer
   const int length = xml_buffer.length();
-  char* output_buffer = static_cast<char*>malloc(sizeof(char) * (length + 1));
+  char* output_buffer = static_cast<char*>(malloc(sizeof(char) * (length + 1)));
   strncpy(output_buffer, xml_buffer.c_str(), length + 1);
   convert_to_ebcdic(output_buffer, length);
 
