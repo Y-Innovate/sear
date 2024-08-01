@@ -29,6 +29,8 @@ ifeq ($(UNAME), OS/390)
 				-I $(KEY_MAP) \
 				-I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
+	CKFLGS		= \
+				--clang=ibm-clang++64 \
 
 	REQTEST		=
 else
@@ -38,6 +40,8 @@ else
 	CFLAGS  	= -g -Wall -std=c++11
 	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
 	LDFLAGS		= -shared -Wl -m64
+	CKFLGS		= \
+				--suppress='missingIncludeSystem'
 
 	REQTEST		= SMO64_TEST
 endif
@@ -70,12 +74,12 @@ check:
 		--std=c++11 \
 		--enable=all \
 		--suppress='*:*/externals/*' \
-		--suppress='missingIncludeSystem' \
 		--output-file=cppcheck/output.xml \
 		--checkers-report=cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=cppcheck \
 		--xml --xml-version=2 \
 		--force --verbose --check-level=exhaustive \
+		$(CKFLGS) \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
 		-I $(IRRSEQ00_SRC) \
