@@ -7,9 +7,9 @@
 char *extract(
     const char *profile_name,  // Required for everything except setropts
     const char *class_name,    // Only required for general resource profile
+    uint8_t function_code,     // Always required
     char **raw_request,        // Always required
     int *raw_request_length,   // Always required
-    uint8_t function_code,     // Always required
     racfu_return_codes_t *return_codes  // Always required
 ) {
   int rc;
