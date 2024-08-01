@@ -33,7 +33,7 @@ char *extract(
     // Call R_Admin
     rc = callRadmin(reinterpret_cast<char ZOS_PTR_32>(& arg_area_setropts->arg_pointers));
     setropts_extract_results_t *setropts_result_buffer =
-        dynamic_cast<setropts_extract_results_t*>(arg_area_setropts->args.pResult_buffer);
+        reinterpret_cast<setropts_extract_results_t*>(arg_area_setropts->args.pResult_buffer);
     result_buffer = reinterpret_cast<char*>(setropts_result_buffer);
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
@@ -66,7 +66,7 @@ char *extract(
     // Call R_Admin
     rc = callRadmin(reinterpret_cast<char ZOS_PTR_32>(& arg_area_generic->arg_pointers));
     generic_extract_parms_results_t *generic_result_buffer =
-        dynamic_cast<generic_extract_parms_results_t*>(
+        reinterpret_cast<generic_extract_parms_results_t*>(
             arg_area_generic->args.pResult_buffer);
     result_buffer = reinterpret_cast<char*>(generic_result_buffer);
     // Preserve Return & Reason Codes
@@ -110,7 +110,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments */
   /***************************************************************************/
   generic_extract_underbar_arg_area_t *arg_area;
-  arg_area = dynamic_cast<generic_extract_underbar_arg_area_t*>(ZOS_MALLOC_31(
+  arg_area = reinterpret_cast<generic_extract_underbar_arg_area_t*>(ZOS_MALLOC_31(
       sizeof(generic_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
@@ -163,7 +163,7 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments */
   /***************************************************************************/
   setropts_extract_underbar_arg_area_t *arg_area;
-  arg_area = dynamic_cast<setropts_extract_underbar_arg_area_t*>(ZOS_MALLOC_31(
+  arg_area = reinterpret_cast<setropts_extract_underbar_arg_area_t*>(ZOS_MALLOC_31(
       sizeof(setropts_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
