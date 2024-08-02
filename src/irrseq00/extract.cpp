@@ -33,10 +33,7 @@ char *extract(
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char ZOS_PTR_32>(&arg_area_setropts->arg_pointers));
-    setropts_extract_results_t *setropts_result_buffer =
-        reinterpret_cast<setropts_extract_results_t *>(
-            arg_area_setropts->args.pResult_buffer);
-    result_buffer = reinterpret_cast<char *>(setropts_result_buffer);
+    result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
     return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
@@ -68,10 +65,7 @@ char *extract(
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char ZOS_PTR_32>(&arg_area_generic->arg_pointers));
-    generic_extract_parms_results_t *generic_result_buffer =
-        reinterpret_cast<generic_extract_parms_results_t *>(
-            arg_area_generic->args.pResult_buffer);
-    result_buffer = reinterpret_cast<char *>(generic_result_buffer);
+    result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
     return_codes->racf_return_code = arg_area_generic->args.RACF_rc;

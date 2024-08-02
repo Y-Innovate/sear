@@ -4,11 +4,11 @@
 #include <stdbool.h>
 
 // Trait Types
-#define TRAIT_TYPE_ANY -1
-#define TRAIT_TYPE_BOOLEAN 0
-#define TRAIT_TYPE_STRING 1
-#define TRAIT_TYPE_INTEGER 2
-#define TRAIT_TYPE_REPEAT 3
+#define TRAIT_TYPE_ANY 0
+#define TRAIT_TYPE_BOOLEAN 1
+#define TRAIT_TYPE_STRING 2
+#define TRAIT_TYPE_INTEGER 3
+#define TRAIT_TYPE_REPEAT 4
 
 // Operators
 #define OPERATOR_ANY -1
