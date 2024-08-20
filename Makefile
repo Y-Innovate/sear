@@ -30,7 +30,7 @@ ifeq ($(UNAME), OS/390)
 				-I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= \
-				--clang=ibm-clang++64 \
+				--clang=ibm-clang++64 
 
 	REQTEST		=
 else
@@ -75,8 +75,8 @@ check:
 		--enable=all \
 		--suppress='*:*/externals/*' \
 		--output-file=artifacts/cppcheck/output.xml \
-		--checkers-report=cppcheck/checkers_report.txt \
-		--cppcheck-build-dir=cppcheck \
+		--checkers-report=artifacts/cppcheck/checkers_report.txt \
+		--cppcheck-build-dir=artifacts/cppcheck \
 		--xml --xml-version=2 \
 		--force \
 		--verbose \
