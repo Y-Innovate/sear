@@ -1,5 +1,4 @@
 * text eol=lf
 
 externals/* git-encoding=utf-8 zos-working-tree-encoding=utf-8 working-tree-encoding=utf-8
-* git-encoding=utf-8 zos-working-tree-encoding=ibm-1047 working-tree-encoding=utf-8 
 
