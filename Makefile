@@ -68,7 +68,7 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
-check:
+check: mkdirs
 	cppcheck \
 		--language=c++ \
 		--std=c++11 \
