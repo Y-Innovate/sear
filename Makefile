@@ -74,7 +74,7 @@ check:
 		--std=c++11 \
 		--enable=all \
 		--suppress='*:*/externals/*' \
-		--output-file=cppcheck/output.xml \
+		--output-file=artifacts/cppcheck/output.xml \
 		--checkers-report=cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=cppcheck \
 		--xml --xml-version=2 \

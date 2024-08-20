@@ -36,8 +36,14 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   int num_parms = 17;
   int fn = 1;
 
+  printf("User: %s of length %d\n", running_userid,
+         (unsigned char)strlen(running_userid));
+
   strncpy(running_userid_struct.running_userid, running_userid,
           running_userid_struct.running_userid_length);
+
+  printf("User: %s of length %d\n", running_userid_struct.running_userid,
+         running_userid_struct.running_userid_length);
 
   if (debug && (running_userid_struct.running_userid_length > 0)) {
     printf("Running under a userid!\n");

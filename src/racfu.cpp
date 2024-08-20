@@ -157,9 +157,13 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racf_rsn = 0;
   racfu_rc = 0;
 
+  printf("User: %s\n", running_userid);
+
   xml_request_string = generator->build_xml_string(
       full_request_json, running_userid, &irrsmo00_options, &result_buffer_size,
       &request_length, &racfu_rc, &debug_mode);
+
+  printf("User: %s\n", running_userid);
 
   if (racfu_rc != 0) {
     return_codes->racfu_return_code = racfu_rc;
@@ -172,6 +176,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
+
+  printf("User: %s\n", running_userid);
 
   return_codes->saf_return_code = saf_rc;
   return_codes->racf_return_code = racf_rc;
