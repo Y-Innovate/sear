@@ -68,7 +68,8 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
-check: mkdirs
+check:
+	mkdir -p artifacts/cppcheck
 	cppcheck \
 		--language=c++ \
 		--std=c++11 \
