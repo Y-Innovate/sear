@@ -17,13 +17,15 @@ void do_extract(const char *admin_type, const char *profile_name,
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
+                         const char *surrogate_userid,
                          nlohmann::json full_request_json,
                          racfu_result_t *results,
                          racfu_return_codes_t *return_codes);
 
 void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
-                  char *raw_result, int raw_result_length, char *raw_request,
+                  const char *surrogate_userid, char *raw_result,
+                  int raw_result_length, char *raw_request,
                   int raw_request_length, nlohmann::json profile_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
@@ -34,6 +36,7 @@ void racfu(racfu_result_t *result, char *request_json) {
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   const char *profile_name = NULL;
   const char *class_name = NULL;
+  const char *surrogate_userid = NULL;
   // {
   //     "operation": "add",
   //     "admin_type": "user",
@@ -44,26 +47,23 @@ void racfu(racfu_result_t *result, char *request_json) {
   // }
   // Extract
   operation = request["operation"].get<std::string>();
+  if (request.contains("profile_name")) {
+    profile_name = request["profile_name"].get<std::string>().c_str();
+  }
+  if (request.contains("class_name")) {
+    class_name = request["class_name"].get<std::string>().c_str();
+  }
   if (operation.compare("extract") == 0) {
-    if (request.contains("profile_name")) {
-      profile_name = request["profile_name"].get<std::string>().c_str();
-    }
-    if (request.contains("class_name")) {
-      class_name = request["class_name"].get<std::string>().c_str();
-    }
     do_extract(request["admin_type"].get<std::string>().c_str(), profile_name,
                class_name, result, &return_codes);
     // Add/Alter/Delete
   } else {
-    if (request.contains("profile_name")) {
-      profile_name = request["profile_name"].get<std::string>().c_str();
-    }
-    if (request.contains("class_name")) {
-      class_name = request["class_name"].get<std::string>().c_str();
+    if (request.contains("running_user_id")) {
+      surrogate_userid = request["running_user_id"].get<std::string>().c_str();
     }
     do_add_alter_delete(request["admin_type"].get<std::string>().c_str(),
-                        profile_name, class_name, operation.c_str(), request,
-                        result, &return_codes);
+                        profile_name, class_name, operation.c_str(),
+                        surrogate_userid, request, result, &return_codes);
   }
 }
 
@@ -106,8 +106,8 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Build Failure Result
   if (raw_result == NULL) {
-    build_result("extract", admin_type, profile_name, class_name, nullptr, 0,
-                 raw_request, raw_request_length, NULL, racfu_result,
+    build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
+                 0, raw_request, raw_request_length, NULL, racfu_result,
                  return_codes);
     return;
   }
@@ -127,15 +127,16 @@ void do_extract(const char *admin_type, const char *profile_name,
   }
 
   // Build Success Result
-  build_result("extract", admin_type, profile_name, class_name, raw_result,
-               raw_result_length, raw_request, raw_request_length, profile_json,
-               racfu_result, return_codes);
+  build_result("extract", admin_type, profile_name, class_name, NULL,
+               raw_result, raw_result_length, raw_request, raw_request_length,
+               profile_json, racfu_result, return_codes);
 
   return;
 }
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
+                         const char *surrogate_userid,
                          nlohmann::json full_request_json,
                          racfu_result_t *racfu_result,
                          racfu_return_codes_t *return_codes) {
@@ -157,27 +158,21 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racf_rsn = 0;
   racfu_rc = 0;
 
-  printf("User: %s\n", running_userid);
-
   xml_request_string = generator->build_xml_string(
       full_request_json, running_userid, &irrsmo00_options, &result_buffer_size,
       &request_length, &racfu_rc, &debug_mode);
 
-  printf("User: %s\n", running_userid);
-
   if (racfu_rc != 0) {
     return_codes->racfu_return_code = racfu_rc;
     build_result(operation, admin_type, profile_name, class_name,
-                 xml_request_string, request_length, nullptr, 0, NULL,
-                 racfu_result, return_codes);
+                 surrogate_userid, xml_request_string, request_length, nullptr,
+                 0, NULL, racfu_result, return_codes);
     return;
   }
 
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
-
-  printf("User: %s\n", running_userid);
 
   return_codes->saf_return_code = saf_rc;
   return_codes->racf_return_code = racf_rc;
@@ -196,15 +191,17 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   // Build Success Result
   build_result(operation, admin_type, profile_name, class_name,
-               xml_response_string, result_buffer_size, xml_request_string,
-               request_length, response_json, racfu_result, return_codes);
+               surrogate_userid, xml_response_string, result_buffer_size,
+               xml_request_string, request_length, response_json, racfu_result,
+               return_codes);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
 
 void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
-                  char *raw_result, int raw_result_length, char *raw_request,
+                  const char *surrogate_userid, char *raw_result,
+                  int raw_result_length, char *raw_request,
                   int raw_request_length, nlohmann::json profile_json,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes) {
@@ -244,6 +241,9 @@ void build_result(const char *operation, const char *admin_type,
   }
   if (class_name != NULL) {
     result_json["class_name"] = class_name;
+  }
+  if (strlen(surrogate_userid) != 0) {
+    result_json["surrogate_userid"] = surrogate_userid;
   }
 
   // Convert profile JSON to C string.
