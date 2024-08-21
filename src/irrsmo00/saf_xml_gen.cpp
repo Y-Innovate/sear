@@ -27,7 +27,7 @@ char* XmlGen::build_xml_string(nlohmann::json request, char* userid_buffer,
 
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
-  for (const auto& item : request.items()) {
+  for (auto& item : request.items()) {
     // requestData contains no Header information and is ignored
     if (item.key().compare("traits") == 0) {
       continue;
@@ -118,8 +118,7 @@ std::string XmlGen::replace_xml_chars(std::string data) {
   // Replace xml-substituted characters with their substitution strings
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
               apos = "&apos;";
-  std::size_t index;
-  for (int i = 0; i < data.length(); i++) {
+  for (std::size_t i = 0; i < data.length(); i++) {
     if (data[i] == '&') {
       data.replace(i, 1, amp, 0, amp.length());
       i += amp.length() - 1 - 1;
@@ -195,7 +194,7 @@ void XmlGen::build_request_data(std::string adminType,
 
   auto item = requestData.begin();
   while (!requestData.empty()) {
-    for (auto item = requestData.begin(); item != requestData.end();) {
+    for (item = requestData.begin(); item != requestData.end();) {
       if (!regex_match(item.key(), segment_trait_key_data,
                        segment_trait_key_regex))
         continue;

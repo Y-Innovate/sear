@@ -50,7 +50,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
 
   null_byte_fix(result_buffer, result_len);
 
-  if ((*saf_rc != 8) || (*racf_rc != 4000) ||
+  if (((*saf_rc != 8) || (*racf_rc != 4000)) ||
       ((*saf_rc == 8) && (*racf_rc == 4000) && (*racf_rsn > 100000000))) {
     return result_buffer;
   }
