@@ -15,7 +15,6 @@ char *extract(
   int rc;
 
   char *result_buffer;
-  // int result_buffer_length;
 
   /*************************************************************************/
   /* Setropts Extract                                                      */
@@ -28,7 +27,7 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request = reinterpret_cast<char *>(&arg_area_setropts->arg_pointers);
+    *raw_request = reinterpret_cast<char *>(arg_area_setropts);
     *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
     // Call R_Admin
     rc = callRadmin(
@@ -38,7 +37,6 @@ char *extract(
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
     return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
-    return_codes->racfu_return_code = rc;
     // Free Arg Area
     free(arg_area_setropts);
     /***************************************************************************/
@@ -60,7 +58,7 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request = reinterpret_cast<char *>(&arg_area_generic->arg_pointers);
+    *raw_request = reinterpret_cast<char *>(arg_area_generic);
     *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
     // Call R_Admin
     rc = callRadmin(
@@ -70,7 +68,6 @@ char *extract(
     return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
     return_codes->racf_return_code = arg_area_generic->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_generic->args.RACF_rsn;
-    return_codes->racfu_return_code = rc;
     // Free Arg Area
     free(arg_area_generic);
   }
@@ -78,8 +75,7 @@ char *extract(
   // Check Return Codes
   if (return_codes->saf_return_code != 0 ||
       return_codes->racf_return_code != 0 ||
-      return_codes->racf_reason_code != 0 ||
-      return_codes->racfu_return_code != 0) {
+      return_codes->racf_reason_code != 0 || rc != 0) {
     // Free Result Buffer & Return 'NULL' if not successful.
     free(result_buffer);
     return NULL;

@@ -6,6 +6,8 @@
 #include <string.h>
 
 typedef struct {
+  char *raw_request;
+  int raw_request_length;
   char *raw_result;
   int raw_result_length;
   char *result_json;
@@ -55,13 +57,24 @@ int main(int argc, char **argv) {
   racfu(&racfu_result, request_json);
   dlclose(lib_handle);
 
+  // Write Raw Request
+  char raw_request_file[] = "request.bin";
+  fp = fopen(raw_request_file, "wb");
+  if (fp == NULL) {
+    perror("");
+    printf("Unable to open '%s' for writing.\n", raw_request_file);
+    return 5;
+  }
+  fwrite(racfu_result.raw_request, racfu_result.raw_request_length, 1, fp);
+  fclose(fp);
+
   // Write Raw Result
   char raw_result_file[] = "result.bin";
   fp = fopen(raw_result_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for writing.\n", raw_result_file);
-    return 5;
+    return 6;
   }
   fwrite(racfu_result.raw_result, racfu_result.raw_result_length, 1, fp);
   fclose(fp);
@@ -72,7 +85,7 @@ int main(int argc, char **argv) {
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for wirting.\n", "result_json_file");
-    return 6;
+    return 7;
   }
   fwrite(racfu_result.result_json, strlen(racfu_result.result_json), 1, fp);
   fclose(fp);
