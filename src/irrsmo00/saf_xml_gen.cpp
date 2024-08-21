@@ -29,7 +29,7 @@ char* XmlGen::build_xml_string(nlohmann::json request, char* userid_buffer,
   // appropriate
   for (const auto& item : request.items()) {
     // requestData contains no Header information and is ignored
-    if (item.key().compare("request_traits") == 0) {
+    if (item.key().compare("traits") == 0) {
       continue;
     }
     // The following options dictate parameters to IRRSMO00 and are not
@@ -75,11 +75,10 @@ char* XmlGen::build_xml_string(nlohmann::json request, char* userid_buffer,
 
   build_attribute("requestid", adminType + "_request");
 
-  if ((request.contains("request_traits")) &&
-      (!request["request_traits"].empty())) {
+  if ((request.contains("traits")) && (!request["traits"].empty())) {
     build_end_nested_tag();
 
-    build_request_data(adminType, request["request_traits"]);
+    build_request_data(adminType, request["traits"]);
 
     // Close the admin object
     build_full_close_tag(adminType);

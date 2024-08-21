@@ -41,7 +41,7 @@ void racfu(racfu_result_t *result, char *request_json) {
   //     "operation": "add",
   //     "admin_type": "user",
   //     "profile_name": "SQUIDWRD",
-  //     "request_traits": {
+  //     "traits": {
   //        ...
   //     }
   // }

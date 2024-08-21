@@ -3,5 +3,5 @@
   "admin_type": "resource",
   "profile_name": "TESTING",
   "class_name": "ELIJTEST",
-  "request_traits": null
+  "traits": null
 }
