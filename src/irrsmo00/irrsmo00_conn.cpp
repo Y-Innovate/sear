@@ -7,18 +7,6 @@
 #include "saf_xml_gen.hpp"
 #include "saf_xml_parse.hpp"
 
-void null_byte_fix(char *str, unsigned int str_len) {
-  for (int i = 1; i < str_len; i++) {
-    if (str[i] == 0) {
-      if (str[i - 1] == 0x6E) {
-        break;
-      } else {
-        str[i] = 0x40;
-      }
-    }
-  }
-}
-
 char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int result_buffer_size, int irrsmo00_options,
                     int *saf_rc, int *racf_rc, int *racf_rsn, bool debug) {
@@ -48,8 +36,6 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
            reinterpret_cast<char *>(&running_userid_struct), acee, &result_len,
            result_buffer);
 
-  null_byte_fix(result_buffer, result_len);
-
   if (((*saf_rc != 8) || (*racf_rc != 4000)) ||
       ((*saf_rc == 8) && (*racf_rc == 4000) && (*racf_rsn > 100000000))) {
     return result_buffer;
@@ -74,6 +60,5 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
            reinterpret_cast<char *>(&running_userid_struct), acee, &result_len,
            result_buffer_ptr);
 
-  null_byte_fix(result_buffer_ptr, result_len);
   return full_result;
 }

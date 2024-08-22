@@ -34,8 +34,6 @@ void IRRSMO64(char *,               // Workarea
 /* Callable service prototypes */
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 
-void null_byte_fix(char *str, unsigned int str_len);
-
 char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int result_buffer_size, int irrsmo00_options,
                     int *saf_rc, int *racf_rc, int *racf_rsn, bool debug);
