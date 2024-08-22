@@ -39,17 +39,18 @@ char *extract(
     return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
     // Free Arg Area
     free(arg_area_setropts);
-    /***************************************************************************/
-    /* Generic Extract */
-    /*                                                                         */
-    /* Use For: */
-    /*   - User Extract */
-    /*   - Group Extract */
-    /*   - Group Connection Extract */
-    /*   - Resource Extract */
-    /*   - Data Set Extract */
-    /***************************************************************************/
-  } else {
+  }
+  /***************************************************************************/
+  /* Generic Extract                                                         */
+  /*                                                                         */
+  /* Use For:                                                                */
+  /*   - User Extract                                                        */
+  /*   - Group Extract                                                       */
+  /*   - Group Connection Extract                                            */
+  /*   - Resource Extract                                                    */
+  /*   - Data Set Extract                                                    */
+  /***************************************************************************/
+  else {
     // Build 31-bit Arg Area
     generic_extract_underbar_arg_area_t *arg_area_generic;
     arg_area_generic =
@@ -100,7 +101,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   }
 
   /***************************************************************************/
-  /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments */
+  /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
   /***************************************************************************/
   generic_extract_underbar_arg_area_t *arg_area;
   arg_area = reinterpret_cast<generic_extract_underbar_arg_area_t *>(
@@ -118,7 +119,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
       &args->profile_extract_parms;
 
   /***************************************************************************/
-  /* Set Extract Arguments */
+  /* Set Extract Arguments                                                   */
   /***************************************************************************/
   SET_COMMON_ARGS
   args->function_code = function_code;
@@ -141,9 +142,9 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   profile_extract_parms->profile_name_length = profile_name_length;
 
   /***************************************************************************/
-  /* Set Extract Argument Pointers */
+  /* Set Extract Argument Pointers                                           */
   /*                                                                         */
-  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK. */
+  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK.                  */
   /***************************************************************************/
   SET_COMMON_ARG_POINTERS
   arg_pointers->pProfile_extract_parms = profile_extract_parms;
@@ -153,7 +154,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   /***************************************************************************/
-  /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments */
+  /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
   /***************************************************************************/
   setropts_extract_underbar_arg_area_t *arg_area;
   arg_area = reinterpret_cast<setropts_extract_underbar_arg_area_t *>(
@@ -171,15 +172,15 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
       &args->setropts_extract_parms;
 
   /***************************************************************************/
-  /* Set Extract Arguments */
+  /* Set Extract Arguments                                                   */
   /***************************************************************************/
   SET_COMMON_ARGS
   args->function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
 
   /***************************************************************************/
-  /* Set Extract Argument Pointers */
+  /* Set Extract Argument Pointers                                           */
   /*                                                                         */
-  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK. */
+  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK.                  */
   /***************************************************************************/
   SET_COMMON_ARG_POINTERS
   arg_pointers->pSetropts_extract_parms = setropts_extract_parms;
