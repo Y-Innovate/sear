@@ -17,8 +17,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   unsigned int alet = 0;
   unsigned int acee = 0;
   char *result_buffer =
-      static_cast<char *>(malloc(sizeof(char) * result_buffer_size));
-  memset(result_buffer, 0, result_buffer_size);
+      static_cast<char *>(calloc(result_buffer_size, sizeof(char)));
   int request_xml_length = strlen(request_xml);
   int result_len = result_buffer_size;
   int num_parms = 17;
@@ -46,9 +45,8 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
     printf("Reallocating Buffer of Size: %d\n", new_result_buffer_size);
   }
   char *full_result =
-      static_cast<char *>(malloc(sizeof(char) * new_result_buffer_size));
+      static_cast<char *>(calloc(new_result_buffer_size, sizeof(char)));
   char *result_buffer_ptr;
-  memset(full_result, 0, new_result_buffer_size);
   strncpy(full_result, result_buffer, result_len);
   free(result_buffer);
   result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
