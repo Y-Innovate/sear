@@ -11,7 +11,7 @@ nlohmann::json XmlParse::build_json_string(char* xml_result_string,
                                            int* racfu_rc, bool debug) {
   std::string xml_buffer;
   char* xml_ascii_result =
-      static_cast<char*>(calloc(strlen(xml_result_string), sizeof(char)));
+      static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
