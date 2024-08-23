@@ -29,6 +29,7 @@ ifeq ($(UNAME), OS/390)
 				-I $(KEY_MAP) \
 				-I $(EXTERNALS)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
+	CKFLGS		= --clang=ibm-clang++64 
 
 	REQTEST		=
 else
@@ -38,6 +39,7 @@ else
 	CFLAGS  	= -g -Wall -std=c++11
 	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
 	LDFLAGS		= -shared -Wl -m64
+	CKFLGS		= --suppress='missingIncludeSystem'
 
 	REQTEST		= SMO64_TEST
 endif
@@ -63,6 +65,34 @@ dbg:
 	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
+
+check: export CLANG_CONFIG_PATH = ${PWD}/clang.cfg
+check:
+	mkdir -p artifacts/cppcheck
+	cppcheck \
+		--language=c++ \
+		--std=c++11 \
+		--enable=all \
+		--suppress='*:*/externals/*' \
+		--suppress='*:*openxl\*' \
+		--output-file=artifacts/cppcheck/output.xml \
+		--checkers-report=artifacts/cppcheck/checkers_report.txt \
+		--cppcheck-build-dir=artifacts/cppcheck \
+		--xml --xml-version=2 \
+		--force \
+		--verbose \
+		--check-level=exhaustive \
+		--inconclusive \
+		$(CKFLGS) \
+		-I $(SRC) \
+		-I $(IRRSMO00_SRC) \
+		-I $(IRRSEQ00_SRC) \
+		-I $(KEY_MAP) \
+		-I $(EXTERNALS) \
+		$(SRC)/*.cpp \
+		$(IRRSMO00_SRC)/*.cpp \
+		$(IRRSEQ00_SRC)/*.cpp \
+		$(KEY_MAP)/*.cpp 
 
 SMO64_TEST:	
 	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    

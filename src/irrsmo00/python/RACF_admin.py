@@ -5,7 +5,7 @@ import os
 import platform
 
 class racf_result_t(Structure):
-    _fields_ = [('raw_result', c_char_p),('raw_result_length', c_int), ('result_json',c_char_p)]
+    _fields_ = [('raw_request', c_char_p), ('raw_request_length', c_int), ('raw_result', c_char_p), ('raw_result_length', c_int), ('result_json',c_char_p)]
 
 class RACFAdmin:
     """Test class for Administration Interfaces"""

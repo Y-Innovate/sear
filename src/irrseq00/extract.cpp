@@ -5,15 +5,16 @@
 #include <string.h>
 
 char *extract(
-    const char *profile_name,           // Required for everything except setropts
-    const char *class_name,             // Only required for general resource profile
-    uint8_t function_code,              // Always required
+    const char *profile_name,  // Required for everything except setropts
+    const char *class_name,    // Only required for general resource profile
+    uint8_t function_code,     // Always required
+    char **raw_request,        // Always required
+    int *raw_request_length,   // Always required
     racfu_return_codes_t *return_codes  // Always required
 ) {
   int rc;
 
   char *result_buffer;
-  int result_buffer_length;
 
   /*************************************************************************/
   /* Setropts Extract                                                      */
@@ -22,19 +23,23 @@ char *extract(
     // Build 31-bit Arg Area
     setropts_extract_underbar_arg_area_t *arg_area_setropts;
     arg_area_setropts = build_setropts_extract_parms();
-    if (arg_area_setropts == NULL) { return NULL; }
+    if (arg_area_setropts == NULL) {
+      return NULL;
+    }
+    // Preserve the raw request data
+    *raw_request = reinterpret_cast<char *>(arg_area_setropts);
+    *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
     // Call R_Admin
-    rc = callRadmin((char ZOS_PTR_32) & arg_area_setropts->arg_pointers);
-    setropts_extract_results_t *setropts_result_buffer =
-        (setropts_extract_results_t *) arg_area_setropts->args.pResult_buffer;
-    result_buffer = (char *) setropts_result_buffer;
+    rc = callRadmin(
+        reinterpret_cast<char ZOS_PTR_32>(&arg_area_setropts->arg_pointers));
+    result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
     return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
-    return_codes->irrseq00_return_code = rc;
     // Free Arg Area
     free(arg_area_setropts);
+  }
   /***************************************************************************/
   /* Generic Extract                                                         */
   /*                                                                         */
@@ -45,36 +50,33 @@ char *extract(
   /*   - Resource Extract                                                    */
   /*   - Data Set Extract                                                    */
   /***************************************************************************/
-  } else {
+  else {
     // Build 31-bit Arg Area
     generic_extract_underbar_arg_area_t *arg_area_generic;
-    arg_area_generic = build_generic_extract_parms(
-        profile_name,
-        class_name,
-        function_code);
-    if (arg_area_generic == NULL) { return NULL; }
+    arg_area_generic =
+        build_generic_extract_parms(profile_name, class_name, function_code);
+    if (arg_area_generic == NULL) {
+      return NULL;
+    }
+    // Preserve the raw request data
+    *raw_request = reinterpret_cast<char *>(arg_area_generic);
+    *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
     // Call R_Admin
-    rc = callRadmin((char ZOS_PTR_32) & arg_area_generic->arg_pointers);
-    generic_extract_parms_results_t *generic_result_buffer =
-        (generic_extract_parms_results_t *)
-            arg_area_generic->args.pResult_buffer;
-    result_buffer = (char *)generic_result_buffer;
+    rc = callRadmin(
+        reinterpret_cast<char ZOS_PTR_32>(&arg_area_generic->arg_pointers));
+    result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
     return_codes->racf_return_code = arg_area_generic->args.RACF_rc;
     return_codes->racf_reason_code = arg_area_generic->args.RACF_rsn;
-    return_codes->irrseq00_return_code = rc;
     // Free Arg Area
     free(arg_area_generic);
   }
 
   // Check Return Codes
-  if (
-    return_codes->saf_return_code != 0
-    || return_codes->racf_return_code != 0
-    || return_codes->racf_reason_code != 0
-    || return_codes->irrseq00_return_code != 0
-  ) {
+  if (return_codes->saf_return_code != 0 ||
+      return_codes->racf_return_code != 0 ||
+      return_codes->racf_reason_code != 0 || rc != 0) {
     // Free Result Buffer & Return 'NULL' if not successful.
     free(result_buffer);
     return NULL;
@@ -85,9 +87,9 @@ char *extract(
 }
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    const char *profile_name,     // Required always.
-    const char *class_name,       // Required only for resource extract.
-    uint8_t function_code         // Required always.
+    const char *profile_name,  // Required always.
+    const char *class_name,    // Required only for resource extract.
+    uint8_t function_code      // Required always.
 ) {
   int profile_name_length;
   if (profile_name != NULL) {
@@ -102,8 +104,8 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
   /***************************************************************************/
   generic_extract_underbar_arg_area_t *arg_area;
-  arg_area = (generic_extract_underbar_arg_area_t *)
-      ZOS_MALLOC_31(sizeof(generic_extract_underbar_arg_area_t));
+  arg_area = reinterpret_cast<generic_extract_underbar_arg_area_t *>(
+      ZOS_MALLOC_31(sizeof(generic_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
         "Fatal - Unable to allocate space in 31-bit storage "
@@ -123,26 +125,19 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   args->function_code = function_code;
 
   // Copy profile name and class name.
-  memcpy(
-      args->profile_name,
-      profile_name,
-      profile_name_length);
-  // Encode profile name as IBM-1047.
-  #ifndef UNIT_TEST
+  memcpy(args->profile_name, profile_name, profile_name_length);
+// Encode profile name as IBM-1047.
+#ifndef UNIT_TEST
   __a2e_l(args->profile_name, profile_name_length);
-  #endif
-  if (class_name != NULL)
-  {
+#endif
+  if (class_name != NULL) {
     // Class name must be padded with blanks.
     memset(&profile_extract_parms->class_name, ' ', 8);
-    memcpy(
-        profile_extract_parms->class_name,
-        class_name,
-        class_name_length);
-    // Encode class name as IBM-1047.
-    #ifndef UNIT_TEST
+    memcpy(profile_extract_parms->class_name, class_name, class_name_length);
+// Encode class name as IBM-1047.
+#ifndef UNIT_TEST
     __a2e_l(profile_extract_parms->class_name, class_name_length);
-    #endif
+#endif
   }
   profile_extract_parms->profile_name_length = profile_name_length;
 
@@ -162,8 +157,8 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
   /***************************************************************************/
   setropts_extract_underbar_arg_area_t *arg_area;
-  arg_area = (setropts_extract_underbar_arg_area_t *)
-      ZOS_MALLOC_31(sizeof(setropts_extract_underbar_arg_area_t));
+  arg_area = reinterpret_cast<setropts_extract_underbar_arg_area_t *>(
+      ZOS_MALLOC_31(sizeof(setropts_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
         "Fatal - Unable to allocate space in 31-bit storage "
@@ -173,7 +168,8 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
 
   setropts_extract_args_t *args = &arg_area->args;
   setropts_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
-  setropts_extract_parms_t *setropts_extract_parms = &args->setropts_extract_parms;
+  setropts_extract_parms_t *setropts_extract_parms =
+      &args->setropts_extract_parms;
 
   /***************************************************************************/
   /* Set Extract Arguments                                                   */
