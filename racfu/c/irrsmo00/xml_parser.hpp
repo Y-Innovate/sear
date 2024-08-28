@@ -9,8 +9,8 @@
 std::string cast_hex_string(char* input);
 #endif /* XML_COMMON_LIB_H_ */
 
-// XmlParse Parses an XML String and forms a JSON String
-class XmlParse {
+// XmlParser Parses an XML String and forms a JSON String
+class XmlParser {
  private:
   void parse_header_attributes(nlohmann::json* input_json,
                                std::string header_string);

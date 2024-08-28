@@ -30,7 +30,7 @@ void build_result(const char *operation, const char *admin_type,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
 void racfu(racfu_result_t *result, char *request_json) {
-  nlohmann::json request;
+  nlohmann::json request, errors;
   std::string operation;
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
@@ -147,8 +147,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   bool debug_mode;
 
   nlohmann::json response_json;
-  XmlParse *parser = new XmlParse();
-  XmlGen *generator = new XmlGen();
+  XmlParser *parser = new XmlParser();
+  XmlGenerator *generator = new XmlGenerator();
 
   irrsmo00_options = 13;
   result_buffer_size = 10000;
@@ -159,8 +159,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racfu_rc = 0;
 
   xml_request_string = generator->build_xml_string(
-      full_request_json, running_userid, &irrsmo00_options, &result_buffer_size,
-      &request_length, &racfu_rc, &debug_mode);
+      admin_type, full_request_json, running_userid, &irrsmo00_options,
+      &result_buffer_size, &request_length, &racfu_rc, &debug_mode);
 
   if (racfu_rc != 0) {
     return_codes->racfu_return_code = racfu_rc;
