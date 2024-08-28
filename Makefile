@@ -4,14 +4,13 @@ ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
  
 # Library names
-SMO_CONN 		= irrsmo64_conn
 SMO_LIB 		= irrsmo64
 
 # Directory Paths
-SRC				= ${PWD}/src
-IRRSMO00_SRC	= ${PWD}/src/irrsmo00
-IRRSEQ00_SRC	= ${PWD}/src/irrseq00
-KEY_MAP			= ${PWD}/src/key_map
+SRC				= ${PWD}/racfu/c
+IRRSMO00_SRC	= ${PWD}/racfu/c/irrsmo00
+IRRSEQ00_SRC	= ${PWD}/racfu/c/irrseq00
+KEY_MAP			= ${PWD}/racfu/c/key_map
 IRRSMO64_TST	= ${PWD}/tests/irrsmo64
 EXTERNALS		= ${PWD}/externals
 

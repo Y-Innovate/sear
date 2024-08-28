@@ -1,7 +1,7 @@
-/* irrsmo00_conn.h */
+/* irrsmo00.h */
 
-#ifndef IRRSMO00_CONN_H_
-#define IRRSMO00_CONN_H_
+#ifndef IRRSMO00_H_
+#define IRRSMO00_H_
 
 #include <stdbool.h>
 
@@ -38,4 +38,4 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int result_buffer_size, int irrsmo00_options,
                     int *saf_rc, int *racf_rc, int *racf_rsn, bool debug);
 
-#endif /* IRRSMO00_CONN_H_ */
+#endif /* IRRSMO00_H_ */

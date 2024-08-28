@@ -6,10 +6,10 @@
 #include <string>
 
 #include "extract.hpp"
-#include "irrsmo00_conn.hpp"
+#include "irrsmo00.hpp"
 #include "post_process.hpp"
-#include "saf_xml_gen.hpp"
-#include "saf_xml_parse.hpp"
+#include "xml_generator.hpp"
+#include "xml_parser.hpp"
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *result,
@@ -211,7 +211,8 @@ void build_result(const char *operation, const char *admin_type,
        {{"saf_return_code", return_codes->saf_return_code},
         {"racf_return_code", return_codes->racf_return_code},
         {"racf_reason_code", return_codes->racf_reason_code},
-        {"racfu_return_code", return_codes->racfu_return_code}}}};
+        {"racfu_return_code", return_codes->racfu_return_code}}}
+  };
 
   // Convert '-1' to 'nullptr'
   if (return_codes->saf_return_code == -1) {
@@ -231,11 +232,13 @@ void build_result(const char *operation, const char *admin_type,
   }
 
   // Build Result JSON
-  nlohmann::json result_json = {{"operation", operation},
-                                {"admin_type", admin_type},
-                                {"profile_name", profile_name},
-                                {"result", profile_json},
-                                {"return_codes", return_code_json}};
+  nlohmann::json result_json = {
+      {   "operation",        operation},
+      {  "admin_type",       admin_type},
+      {"profile_name",     profile_name},
+      {      "result",     profile_json},
+      {"return_codes", return_code_json}
+  };
   if (profile_name == NULL) {
     result_json["profile_name"] = nullptr;
   }

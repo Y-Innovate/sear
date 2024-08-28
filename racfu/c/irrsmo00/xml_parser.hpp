@@ -1,7 +1,7 @@
 /* saf_xml.hpp */
 
-#ifndef XML_PARSE_LIB_H_
-#define XML_PARSE_LIB_H_
+#ifndef XML_PARSER_H_
+#define XML_PARSER_H_
 
 #ifndef XML_COMMON_LIB_H_
 #include "../../externals/nlohmann/json.hpp"
@@ -57,4 +57,4 @@ static const unsigned char EbcdicToAscii[256] = {
 };
 #endif /* __MVS__*/
 
-#endif /* XML_PARSE_LIB_H_ */
+#endif /* XML_PARSER_H_ */

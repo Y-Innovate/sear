@@ -1,7 +1,7 @@
 /* saf_xml.hpp */
 
-#ifndef XML_LIB_H_
-#define XML_LIB_H_
+#ifndef XML_GENERATOR_H_
+#define XML_GENERATOR_H_
 
 #ifndef XML_COMMON_LIB_H_
 #include "../../externals/nlohmann/json.hpp"
@@ -64,4 +64,4 @@ static const unsigned char AsciiToEbcdic[256] = {
 };
 #endif /* __MVS__*/
 
-#endif /* XML_LIB_H_ */
+#endif /* XML_GENERATOR_H_ */

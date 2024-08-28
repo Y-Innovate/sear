@@ -1,5 +1,3 @@
-#include "saf_xml_gen.hpp"
-
 #include <unistd.h>
 
 #include <iostream>
@@ -7,6 +5,7 @@
 #include <string>
 
 #include "key_map.hpp"
+#include "xml_generator.hpp"
 
 // Public Functions of XmlGen
 char* XmlGen::build_xml_string(nlohmann::json request, char* userid_buffer,
