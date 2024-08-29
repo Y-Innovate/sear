@@ -9,7 +9,8 @@
 #include "key_map.hpp"
 
 // Public Functions of XmlGenerator
-char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
+char* XmlGenerator::build_xml_string(const char* admin_type,
+                                     nlohmann::json request,
                                      nlohmann::json* errors,
                                      char* userid_buffer, int* irrsmo00_options,
                                      unsigned int* result_buffer_size,
@@ -25,22 +26,22 @@ char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
   build_attribute("xmlns:racf", "http://www.ibm.com/systems/zos/racf");
   build_end_nested_tag();
 
-  adminType = str(admin_type);
+  adminType = std::string(admin_type);
   build_open_tag(adminType);
 
   // The following options dictate parameters to IRRSMO00 and are not
   // built into XML
   if (request.contains("running_user_id")) {
     runningUserId = request["running_user_id"].get<std::string>();
-    request.erase("running_user_id")
+    request.erase("running_user_id");
   }
   if (request.contains("result_buffer_size")) {
     *result_buffer_size = request["result_buffer_size"].get<uint>();
-    request.erase("result_buffer_size")
+    request.erase("result_buffer_size");
   }
   if (request.contains("debug_mode")) {
     *debug = request["debug_mode"].get<bool>();
-    request.erase("debug_mode")
+    request.erase("debug_mode");
   }
 
   (*errors) = build_xml_head_attributes(adminType, request, irrsmo00_options);
@@ -57,7 +58,7 @@ char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
   if ((request.contains("traits")) && (!request["traits"].empty())) {
     build_end_nested_tag();
 
-    errors.merge_patch(build_request_data(adminType, request["traits"]));
+    (*errors).merge_patch(build_request_data(adminType, request["traits"]));
 
     // Close the admin object
     build_full_close_tag(adminType);
@@ -160,7 +161,7 @@ void XmlGenerator::build_single_trait(std::string tag, std::string operation,
   }
 }
 
-nlohmann::json XmlGenerator::build_xml_head_attributes(char* admin_type,
+nlohmann::json XmlGenerator::build_xml_head_attributes(std::string adminType,
                                                        nlohmann::json request,
                                                        int* irrsmo00_options) {
   // Obtain JSON Header information and Build into Admin Object where
@@ -218,7 +219,8 @@ void XmlGenerator::pull_attribute_add_to_header(
     std::string xml_key, nlohmann::json validation, bool required) {
   std::string val;
   if ((*request).contains(json_key)) {
-    val = std::tolower((*request)[json_key].get<std::string>());
+    val = (*request)[json_key].get<std::string>();
+    std::transform(val.begin(), val.end(), val.begin(), ::tolower);
     (*request).erase(json_key);
     if (validation.empty()) {
       build_attribute(xml_key, val);
@@ -259,8 +261,8 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
   // Builds the xml for request data (segment-trait information) passed in a
   // json object
   nlohmann::json errors;
-  std::string currentSegment = "", itemSegment, itemTrait, itemOperation,
-              translatedKey;
+  std::string currentSegment = "", itemSegment, itemTrait, itemOperation;
+  const char* translatedKey;
 
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
   std::smatch segment_trait_key_data;
@@ -293,7 +295,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
       if ((itemSegment.compare(currentSegment) == 0)) {
         // Build each individual trait
         int8_t operation = map_operations(itemOperation);
-        if (operation == OPERATION_BAD) {
+        if (operation == OPERATOR_BAD) {
           update_error_json(&errors, "badOperation", itemOperation);
           item = requestData.erase(item);
           continue;
@@ -303,7 +305,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         int8_t trait_type = map_trait_type(item.value());
         if (trait_type == TRAIT_TYPE_BAD) {
           update_error_json(&errors, "badTraitOrTraitType",
-                            json_value_to_string(item.value()));
+                            json_value_to_string(item.value(), &errors));
         }
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
                                      (itemSegment + ":" + itemTrait).c_str(),
@@ -312,11 +314,13 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
           update_error_json(&errors, "badSegmentTraitOperationCombination",
                             (itemSegment + ":" + itemTrait));
         }
-        std::string operation = (itemOperation.empty()) ? "set" : itemOperation;
+        std::string operation_str =
+            (itemOperation.empty()) ? "set" : itemOperation;
         std::string value = (item.value().is_boolean())
                                 ? ""
-                                : json_value_to_string(item.value());
-        build_single_trait(("racf:" + translatedKey), operation, value);
+                                : json_value_to_string(item.value(), &errors);
+        build_single_trait(("racf:" + std::string(translatedKey)),
+                           operation_str, value);
         item = requestData.erase(item);
 
       } else
@@ -332,18 +336,18 @@ int8_t XmlGenerator::map_operations(std::string operation) {
   if (operation.empty()) {
     return OPERATOR_ANY;
   }
-  if (std::tolower(operation).compare("set")) {
+  std::transform(operation.begin(), operation.end(), operation.begin(),
+                 ::tolower);
+  if (operation.compare("set")) {
     return OPERATOR_SET;
   }
-  if (std::tolower(operation).compare("add")) {
+  if (operation.compare("add")) {
     return OPERATOR_ADD;
   }
-  if (std::tolower(operation).compare("remove") ||
-      std::tolower(operation).compare("rem")) {
+  if (operation.compare("remove") || operation.compare("rem")) {
     return OPERATOR_REMOVE;
   }
-  if (std::tolower(operation).compare("delete") ||
-      std::tolower(operation).compare("del")) {
+  if (operation.compare("delete") || operation.compare("del")) {
     return OPERATOR_DELETE;
   }
   return OPERATOR_BAD;
@@ -375,13 +379,13 @@ std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
     std::string delimeter =
         ", ";  // May just be " " or just be ","; May need to test
     for (auto& item : trait.items()) {
-      if !(item.is_string()) {
+      if (!item.value().is_string()) {
         update_error_json(errors, "badTraitOrTraitType", trait.dump());
         return trait.dump();
       }
-      output_string += item.get<std::string>() + delimeter;
+      output_string += item.value().get<std::string>() + delimeter;
     }
-    for (int i = 0; i < strlen(delimeter); i++) {
+    for (int i = 0; i < delimeter.length(); i++) {
       output_string.pop_back();
     }
     return output_string;

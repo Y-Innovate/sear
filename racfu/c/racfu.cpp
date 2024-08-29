@@ -55,9 +55,10 @@ void racfu(racfu_result_t *result, char *request_json) {
     admin_type = "";
   }
   if (!errors.empty()) {
-    return_codes->racfu_return_code = 8;
-    build_result(operation, admin_type, profile_name, class_name, NULL, nullptr,
-                 0, nullptr, 0, errors, racfu_result, return_codes);
+    return_codes.racfu_return_code = 8;
+    build_result(operation.c_str(), admin_type.c_str(), profile_name,
+                 class_name, NULL, nullptr, 0, nullptr, 0, errors, result,
+                 &return_codes);
   }
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
@@ -113,7 +114,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   } else {
     return_codes->racfu_return_code = 8;
     update_error_json(&errors, "badHeaderValue",
-                      "admin_type:" + str(admin_type));
+                      "admin_type:" + std::string(admin_type));
   }
 
   // Do extract if function code is good.
@@ -182,7 +183,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racfu_rc = 0;
 
   xml_request_string = generator->build_xml_string(
-      admin_type, full_request_json, errors, running_userid, &irrsmo00_options,
+      admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
       &result_buffer_size, &request_length, &debug_mode);
 
   if (!errors.empty()) {
