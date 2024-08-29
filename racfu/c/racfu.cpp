@@ -31,7 +31,7 @@ void build_result(const char *operation, const char *admin_type,
 
 void racfu(racfu_result_t *result, char *request_json) {
   nlohmann::json request, errors;
-  std::string operation;
+  std::string operation, admin_type;
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   const char *profile_name = NULL;
@@ -46,7 +46,21 @@ void racfu(racfu_result_t *result, char *request_json) {
   //     }
   // }
   // Extract
+  if (!request.contains("operation")) {
+    update_error_json(&errors, "missingHeaderAttribute", "operation");
+    operation = "";
+  }
+  if (!request.contains("admin_type")) {
+    update_error_json(&errors, "missingHeaderAttribute", "admin_type");
+    admin_type = "";
+  }
+  if (!errors.empty()) {
+    return_codes->racfu_return_code = 8;
+    build_result(operation, admin_type, profile_name, class_name, NULL, nullptr,
+                 0, nullptr, 0, errors, racfu_result, return_codes);
+  }
   operation = request["operation"].get<std::string>();
+  admin_type = request["admin_type"].get<std::string>();
   if (request.contains("profile_name")) {
     profile_name = request["profile_name"].get<std::string>().c_str();
   }
@@ -54,16 +68,16 @@ void racfu(racfu_result_t *result, char *request_json) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
   if (operation.compare("extract") == 0) {
-    do_extract(request["admin_type"].get<std::string>().c_str(), profile_name,
-               class_name, result, &return_codes);
+    do_extract(admin_type.c_str(), profile_name, class_name, result,
+               &return_codes);
     // Add/Alter/Delete
   } else {
     if (request.contains("running_user_id")) {
       surrogate_userid = request["running_user_id"].get<std::string>().c_str();
     }
-    do_add_alter_delete(request["admin_type"].get<std::string>().c_str(),
-                        profile_name, class_name, operation.c_str(),
-                        surrogate_userid, request, result, &return_codes);
+    do_add_alter_delete(admin_type.c_str(), profile_name, class_name,
+                        operation.c_str(), surrogate_userid, request, result,
+                        &return_codes);
   }
 }
 
@@ -74,7 +88,14 @@ void do_extract(const char *admin_type, const char *profile_name,
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
   uint8_t function_code;
-  nlohmann::json profile_json;
+  nlohmann::json profile_json, errors;
+
+  if (class_name == NULL) {
+    update_error_json(&errors, "missingHeaderAttribute", "class_name");
+  }
+  if (profile_name == NULL) {
+    update_error_json(&errors, "missingHeaderAttribute", "profile_name");
+  }
 
   // Validate 'admin_type'
   if (strcmp(admin_type, "user") == 0) {
@@ -91,6 +112,8 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
     return_codes->racfu_return_code = 8;
+    update_error_json(&errors, "badHeaderValue",
+                      "admin_type:" + str(admin_type));
   }
 
   // Do extract if function code is good.
@@ -107,7 +130,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   // Build Failure Result
   if (raw_result == NULL) {
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
-                 0, raw_request, raw_request_length, NULL, racfu_result,
+                 0, raw_request, raw_request_length, errors, racfu_result,
                  return_codes);
     return;
   }
@@ -146,7 +169,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   unsigned int result_buffer_size, request_length;
   bool debug_mode;
 
-  nlohmann::json response_json;
+  nlohmann::json response_json, errors;
   XmlParser *parser = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
@@ -159,14 +182,15 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racfu_rc = 0;
 
   xml_request_string = generator->build_xml_string(
-      admin_type, full_request_json, running_userid, &irrsmo00_options,
-      &result_buffer_size, &request_length, &racfu_rc, &debug_mode);
+      admin_type, full_request_json, errors, running_userid, &irrsmo00_options,
+      &result_buffer_size, &request_length, &debug_mode);
 
-  if (racfu_rc != 0) {
+  if (!errors.empty()) {
+    racfu_rc = 8;
     return_codes->racfu_return_code = racfu_rc;
     build_result(operation, admin_type, profile_name, class_name,
-                 surrogate_userid, xml_request_string, request_length, nullptr,
-                 0, NULL, racfu_result, return_codes);
+                 surrogate_userid, nullptr, 0, xml_request_string,
+                 request_length, errors, racfu_result, return_codes);
     return;
   }
 

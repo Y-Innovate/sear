@@ -10,10 +10,11 @@
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
+                                     nlohmann::json* errors,
                                      char* userid_buffer, int* irrsmo00_options,
                                      unsigned int* result_buffer_size,
                                      unsigned int* request_length,
-                                     int* racfu_rc, bool* debug) {
+                                     bool* debug) {
   // Main body function that builds an xml string
   std::string adminType, runningUserId;
   nlohmann::json requestData;
@@ -42,7 +43,7 @@ char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
     request.erase("debug_mode")
   }
 
-  errors = build_xml_head_attributes(adminType, request, irrsmo00_options);
+  (*errors) = build_xml_head_attributes(adminType, request, irrsmo00_options);
 
   if (!runningUserId.empty()) {
     // Run this command as another user id
@@ -80,7 +81,6 @@ char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
   convert_to_ebcdic(output_buffer, length);
 
   *request_length = length;
-  *racfu_rc = 0;
 
   if (*debug) {
     // print information in debug mode
@@ -92,122 +92,6 @@ char* XmlGenerator::build_xml_string(char* admin_type, nlohmann::json request,
 }
 
 // Private Functions of XmlGenerator
-nlohmann::json XmlGenerator::build_xml_head_attributes(char* admin_type,
-                                                       nlohmann::json request,
-                                                       int* irrsmo00_options) {
-  // Obtain JSON Header information and Build into Admin Object where
-  // appropriate
-
-  std::string requestOperation, operation, run, override_str, profileName,
-      group, className, generic, volume;
-  nlohmann::json errors;
-
-  if (request.contains("operation")) {
-    requestOperation = std::tolower(request["operation"].get<std::string>());
-    operation = convert_operation(requestOperation, irrsmo00_options);
-    request.erase("operation");
-    if (operation.compare("") == 0) {
-      update_error_json(&errors, "badHeaderValue",
-                        "operation:" + requestOperation);
-    } else {
-      build_attribute("operation", operation);
-    }
-  } else {
-    update_error_json(&errors, "missingHeaderForOperation", "operation")
-  }
-  if (request.contains("run")) {
-    run = std::tolower(request["run"].get<std::string>());
-    request.erase("run");
-    if !((run.compare("yes") == 0) || (run.compare("no") == 0)) {
-      update_error_json(&errors, "badHeaderValue", "run:" + run);
-    } else {
-      build_attribute("run", run);
-    }
-  }
-  if (adminType.compare("systemsettings") == 0) {
-    goto final_validation;
-  }
-  if (request.contains("override")) {
-    override_str = std::tolower(request["override"].get<std::string>());
-    request.erase("override");
-    if !((override_str.compare("yes") == 0) ||
-         (override_str.compare("no") == 0) ||
-         (override_str.compare("force") == 0)) {
-      update_error_json(&errors, "badHeaderValue", "override:" + override_str);
-    } else {
-      build_attribute("override", override);
-    }
-  }
-  if (request.contains("profile_name")) {
-    profileName = std::tolower(request["profile_name"].get<std::string>());
-    request.erase("profile_name");
-    build_attribute("name", profileName);
-  } else {
-    update_error_json(&errors, "missingHeaderForOperation", "profile_name")
-  }
-  if ((adminType.compare("user") == 0) || (adminType.compare("group") == 0)) {
-    goto final_validation;
-  }
-  if (adminType.compare("groupconnection") == 0) {
-    if (request.contains("group")) {
-      group = std::tolower(request["group"].get<std::string>());
-      request.erase("group");
-      build_attribute("group", group);
-    } else {
-      update_error_json(&errors, "missingHeaderForOperation", "group")
-    }
-    goto final_validation;
-  }
-  if ((adminType.compare("resource") == 0) ||
-      (adminType.compare("permission") == 0)) {
-    if (request.contains("class_name")) {
-      className = std::tolower(request["class_name"].get<std::string>());
-      request.erase("class_name");
-      build_attribute("class_name", className);
-    } else {
-      update_error_json(&errors, "missingHeaderForOperation", "class_name")
-    }
-    if (adminType.compare("resource") == 0 ||
-        (className.compare("dataset") != 0)) {
-      goto final_validation;
-    }
-  }
-  if ((adminType.compare("dataset") == 0) ||
-      (adminType.compare("permission") == 0)) {
-    if (request.contains("volume")) {
-      volume = std::tolower(request["volume"].get<std::string>());
-      request.erase("volume");
-      build_attribute("volume", volume);
-    }
-    if (request.contains("generic")) {
-      generic = std::tolower(request["generic"].get<std::string>());
-      request.erase("generic");
-      if !((generic.compare("yes") == 0) || (generic.compare("no") == 0)) {
-        update_error_json(&errors, "badHeaderValue", "generic:" + generic);
-      } else {
-        build_attribute("generic", generic);
-      }
-    }
-    goto final_validation;
-  }
-  update_error_json(&errors, "badHeaderValue", "admin_type:" + adminType);
-  return errors;
-
-final_validation:
-  for (auto& item : header.items()) {
-    // Traits contain no Header information and is ignored
-    if (item.key().compare("traits") == 0) {
-      continue;
-    } else if (item.key().compare("admin_type") == 0) {
-      // The type of administrative object we are working with
-      continue;
-    }
-    // Anything else shouldn't be here
-    update_error_json(&errors, "badHeaderName", item.key());
-  }
-  return errors;
-}
-
 std::string XmlGenerator::replace_xml_chars(std::string data) {
   // Replace xml-substituted characters with their substitution strings
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
@@ -274,6 +158,100 @@ void XmlGenerator::build_single_trait(std::string tag, std::string operation,
     build_value(value);
     build_full_close_tag(tag);
   }
+}
+
+nlohmann::json XmlGenerator::build_xml_head_attributes(char* admin_type,
+                                                       nlohmann::json request,
+                                                       int* irrsmo00_options) {
+  // Obtain JSON Header information and Build into Admin Object where
+  // appropriate
+
+  std::string requestOperation, operation, run, override_str, profileName,
+      group, className, generic, volume;
+  nlohmann::json errors;
+  nlohmann::json yes_or_no = {"yes", "no"};
+  nlohmann::json yes_no_or_force = {"yes", "no", "force"};
+  nlohmann::json no_validation = {};
+
+  pull_attribute_add_to_header(&request, &errors, "operation", "operation",
+                               no_validation, true);
+  pull_attribute_add_to_header(&request, &errors, "run", "run", yes_or_no,
+                               false);
+  if (adminType.compare("systemsettings") == 0) {
+    return validate_remaining_request_attributes(request, errors);
+  }
+  pull_attribute_add_to_header(&request, &errors, "override", "override",
+                               yes_no_or_force, false);
+  pull_attribute_add_to_header(&request, &errors, "profile_name", "name",
+                               no_validation, true);
+  if ((adminType.compare("user") == 0) || (adminType.compare("group") == 0)) {
+    return validate_remaining_request_attributes(request, errors);
+  }
+  if (adminType.compare("groupconnection") == 0) {
+    pull_attribute_add_to_header(&request, &errors, "group", "group",
+                                 no_validation, true);
+    return validate_remaining_request_attributes(request, errors);
+  }
+  if ((adminType.compare("resource") == 0) ||
+      (adminType.compare("permission") == 0)) {
+    pull_attribute_add_to_header(&request, &errors, "class_name", "class",
+                                 no_validation, true);
+    if (adminType.compare("resource") == 0 ||
+        (className.compare("dataset") != 0)) {
+      return validate_remaining_request_attributes(request, errors);
+    }
+  }
+  if ((adminType.compare("dataset") == 0) ||
+      (adminType.compare("permission") == 0)) {
+    pull_attribute_add_to_header(&request, &errors, "volume", "volume",
+                                 no_validation, false);
+    pull_attribute_add_to_header(&request, &errors, "generic", "generic",
+                                 yes_or_no, false);
+    return validate_remaining_request_attributes(request, errors);
+  }
+  update_error_json(&errors, "badHeaderValue", "admin_type:" + adminType);
+  return errors;
+}
+
+void XmlGenerator::pull_attribute_add_to_header(
+    nlohmann::json* request, nlohmann::json* errors, std::string json_key,
+    std::string xml_key, nlohmann::json validation, bool required) {
+  std::string val;
+  if ((*request).contains(json_key)) {
+    val = std::tolower((*request)[json_key].get<std::string>());
+    (*request).erase(json_key);
+    if (validation.empty()) {
+      build_attribute(xml_key, val);
+    } else {
+      for (auto& item : validation.items()) {
+        if (val.compare(item.value()) == 0) {
+          build_attribute(xml_key, val);
+          return;
+        }
+      }
+      update_error_json(errors, "badHeaderValue", json_key + ":" + val);
+    }
+  } else {
+    if (required) {
+      update_error_json(errors, "missingHeaderAttribute", json_key);
+    }
+  }
+}
+
+nlohmann::json XmlGenerator::validate_remaining_request_attributes(
+    nlohmann::json request, nlohmann::json errors) {
+  for (auto& item : request.items()) {
+    // Traits contain no Header information and is ignored
+    if (item.key().compare("traits") == 0) {
+      continue;
+    } else if (item.key().compare("admin_type") == 0) {
+      // The type of administrative object we are working with
+      continue;
+    }
+    // Anything else shouldn't be here
+    update_error_json(&errors, "badHeaderName", item.key());
+  }
+  return errors;
 }
 
 nlohmann::json XmlGenerator::build_request_data(std::string adminType,

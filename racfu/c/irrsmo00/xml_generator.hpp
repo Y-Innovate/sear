@@ -14,10 +14,6 @@ class XmlGenerator {
  private:
   std::string xml_buffer;
   std::string replace_xml_chars(std::string data);
-  nlohmann::json build_xml_head_attributes(char *admin_type,
-                                           nlohmann::json request,
-                                           int *irrsmo00_options);
-  void build_open_tag(std::string tag);
   void build_attribute(std::string name, std::string value);
   void build_value(std::string value);
   void build_end_nested_tag();
@@ -25,6 +21,15 @@ class XmlGenerator {
   void build_close_tag_no_value();
   void build_single_trait(std::string tag, std::string operation,
                           std::string value);
+  nlohmann::json build_xml_head_attributes(char *admin_type,
+                                           nlohmann::json request,
+                                           int *irrsmo00_options);
+  void XmlGenerator::pull_attribute_add_to_header(
+      nlohmann::json *request, nlohmann::json *errors, std::string json_key,
+      std::string xml_key, nlohmann::json validation, bool required);
+  nlohmann::json XmlGenerator::validate_remaining_request_attributes(
+      nlohmann::json request,
+      nlohmann::json errors) void build_open_tag(std::string tag);
   nlohmann::json build_request_data(std::string adminType,
                                     nlohmann::json requestData);
   int8_t map_operations(std::string operation);
@@ -37,10 +42,10 @@ class XmlGenerator {
 
  public:
   char *build_xml_string(char *admin_type, nlohmann::json request,
-                         char *userid_buffer, int *irrsmo00_options,
+                         nlohmann::json *errors, char *userid_buffer,
+                         int *irrsmo00_options,
                          unsigned int *result_buffer_size,
-                         unsigned int *request_length, int *racfu_rc,
-                         bool *debug);
+                         unsigned int *request_length, bool *debug);
 };
 
 void update_error_json(nlohmann::json *errors, std::string error_type,
