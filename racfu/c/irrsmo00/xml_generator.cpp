@@ -175,28 +175,29 @@ nlohmann::json XmlGenerator::build_xml_head_attributes(std::string adminType,
   nlohmann::json no_validation = {};
 
   pull_attribute_add_to_header(&request, &errors, "operation", "operation",
-                               no_validation, true);
+                               no_validation, true, irrsmo00_options);
+
   pull_attribute_add_to_header(&request, &errors, "run", "run", yes_or_no,
-                               false);
+                               false, irrsmo00_options);
   if (adminType.compare("systemsettings") == 0) {
     return validate_remaining_request_attributes(request, errors);
   }
   pull_attribute_add_to_header(&request, &errors, "override", "override",
-                               yes_no_or_force, false);
+                               yes_no_or_force, false, irrsmo00_options);
   pull_attribute_add_to_header(&request, &errors, "profile_name", "name",
-                               no_validation, true);
+                               no_validation, true, irrsmo00_options);
   if ((adminType.compare("user") == 0) || (adminType.compare("group") == 0)) {
     return validate_remaining_request_attributes(request, errors);
   }
   if (adminType.compare("groupconnection") == 0) {
     pull_attribute_add_to_header(&request, &errors, "group", "group",
-                                 no_validation, true);
+                                 no_validation, true, irrsmo00_options);
     return validate_remaining_request_attributes(request, errors);
   }
   if ((adminType.compare("resource") == 0) ||
       (adminType.compare("permission") == 0)) {
     pull_attribute_add_to_header(&request, &errors, "class_name", "class",
-                                 no_validation, true);
+                                 no_validation, true, irrsmo00_options);
     if (adminType.compare("resource") == 0 ||
         (className.compare("dataset") != 0)) {
       return validate_remaining_request_attributes(request, errors);
@@ -205,9 +206,9 @@ nlohmann::json XmlGenerator::build_xml_head_attributes(std::string adminType,
   if ((adminType.compare("dataset") == 0) ||
       (adminType.compare("permission") == 0)) {
     pull_attribute_add_to_header(&request, &errors, "volume", "volume",
-                                 no_validation, false);
+                                 no_validation, false, irrsmo00_options);
     pull_attribute_add_to_header(&request, &errors, "generic", "generic",
-                                 yes_or_no, false);
+                                 yes_or_no, false, irrsmo00_options);
     return validate_remaining_request_attributes(request, errors);
   }
   update_error_json(&errors, "badHeaderValue", "admin_type:" + adminType);
@@ -216,14 +217,20 @@ nlohmann::json XmlGenerator::build_xml_head_attributes(std::string adminType,
 
 void XmlGenerator::pull_attribute_add_to_header(
     nlohmann::json* request, nlohmann::json* errors, std::string json_key,
-    std::string xml_key, nlohmann::json validation, bool required) {
+    std::string xml_key, nlohmann::json validation, bool required,
+    int* irrsmo00_options) {
   std::string val;
   if ((*request).contains(json_key)) {
     val = (*request)[json_key].get<std::string>();
     std::transform(val.begin(), val.end(), val.begin(), ::tolower);
     (*request).erase(json_key);
     if (validation.empty()) {
-      build_attribute(xml_key, val);
+      if (json_key.compare("operation") == 0) {
+        build_attribute(xml_key, convert_operation(val, irrsmo00_options));
+      } else {
+        build_attribute(xml_key, val);
+      }
+
     } else {
       for (auto& item : validation.items()) {
         if (val.compare(item.value()) == 0) {

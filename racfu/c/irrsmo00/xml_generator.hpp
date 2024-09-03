@@ -28,7 +28,8 @@ class XmlGenerator {
   void pull_attribute_add_to_header(nlohmann::json *request,
                                     nlohmann::json *errors,
                                     std::string json_key, std::string xml_key,
-                                    nlohmann::json validation, bool required);
+                                    nlohmann::json validation, bool required,
+                                    int *irrsmo00_options);
   nlohmann::json validate_remaining_request_attributes(nlohmann::json request,
                                                        nlohmann::json errors);
   nlohmann::json build_request_data(std::string adminType,

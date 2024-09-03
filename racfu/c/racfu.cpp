@@ -91,7 +91,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   uint8_t function_code;
   nlohmann::json profile_json, errors;
 
-  if (class_name == NULL) {
+  if ((class_name == NULL) && (strncmp(admin_type, "resource", 9))) {
     update_error_json(&errors, "missingHeaderAttribute", "class_name");
   }
   if (profile_name == NULL) {
