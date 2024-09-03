@@ -226,10 +226,15 @@ void XmlGenerator::pull_attribute_add_to_header(
     (*request).erase(json_key);
     if (validation.empty()) {
       if (json_key.compare("operation") == 0) {
-        build_attribute(xml_key, convert_operation(val, irrsmo00_options));
-      } else {
-        build_attribute(xml_key, val);
+        std::string operation_string;
+        operation_string = convert_operation(val, irrsmo00_options);
+        if (val.empty()) {
+          update_error_json(errors, "bad_header_value", json_key + ":" + val);
+          return;
+        }
+        val = operation_string();
       }
+      build_attribute(xml_key, val);
 
     } else {
       for (auto& item : validation.items()) {

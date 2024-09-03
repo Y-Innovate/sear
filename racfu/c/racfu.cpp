@@ -59,6 +59,7 @@ void racfu(racfu_result_t *result, char *request_json) {
     build_result(operation.c_str(), admin_type.c_str(), profile_name,
                  class_name, NULL, nullptr, 0, nullptr, 0, errors, result,
                  &return_codes);
+    return;
   }
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
@@ -115,6 +116,13 @@ void do_extract(const char *admin_type, const char *profile_name,
     return_codes->racfu_return_code = 8;
     update_error_json(&errors, "bad_header_value",
                       "admin_type:" + std::string(admin_type));
+  }
+
+  if (!errors.empty()) {
+    return_codes->racfu_return_code = 8;
+    build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
+                 0, nullptr, 0, errors, racfu_result, &return_codes);
+    return;
   }
 
   // Do extract if function code is good.
