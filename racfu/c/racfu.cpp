@@ -283,7 +283,7 @@ void build_result(const char *operation, const char *admin_type,
                             error_focus.value().get<std::string>() +
                             ". If you supplied this as part of your input "
                             "json, you may need to re-examine this item.";
-        result_json += error_message_str;
+        result_json["result"] += error_message_str;
       }
     }
   } else {
