@@ -280,10 +280,10 @@ void build_result(const char *operation, const char *admin_type,
       error_key_str = error_type.key();
       for (auto &error_focus : error_type.value().items()) {
         error_focus_str = error_focus.value().get<std::string>();
-        result_json += ("RACFu encountered a " + error_key_str +
+        result_json += {"RACFu encountered a " + error_key_str +
                         " error while working with " + error_focus_str +
                         ". If you supplied this as part of your input "
-                        "json, you may need to re-examine this item.");
+                        "json, you may need to re-examine this item."};
       }
     }
   } else {
