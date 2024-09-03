@@ -274,16 +274,16 @@ void build_result(const char *operation, const char *admin_type,
   }
 
   if (profile_json.contains("errors")) {
-    std::string error_key_str, error_focus_str;
-    result_json["result"] = {};
+    std::string error_message_str;
+    result_json["result"];
     for (auto &error_type : profile_json["errors"].items()) {
-      error_key_str = error_type.key();
       for (auto &error_focus : error_type.value().items()) {
-        error_focus_str = error_focus.value().get<std::string>();
-        result_json += {"RACFu encountered a " + error_key_str +
-                        " error while working with " + error_focus_str +
-                        ". If you supplied this as part of your input "
-                        "json, you may need to re-examine this item."};
+        error_message_str = "RACFu encountered a " + error_type.key() +
+                            " error while working with " +
+                            error_focus.value().get<std::string>() +
+                            ". If you supplied this as part of your input "
+                            "json, you may need to re-examine this item.";
+        result_json += error_message_str;
       }
     }
   } else {
