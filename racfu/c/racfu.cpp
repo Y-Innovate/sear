@@ -104,7 +104,7 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "resource") == 0) {
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-    if ((class_name == NULL)) {
+    if (class_name == NULL) {
       update_error_json(&errors, "missing_header_attribute", "class_name");
     }
   } else if (strcmp(admin_type, "data-set") == 0) {
@@ -274,16 +274,16 @@ void build_result(const char *operation, const char *admin_type,
   }
 
   if (profile_json.contains("errors")) {
-    std::string error_key, error_message;
+    std::string error_key_str, error_focus_str;
     result_json["result"] = {};
     for (auto &error_type : profile_json["errors"].items()) {
-      error_key = error_type.key();
-      for (auto &error_message : error_type.value().items()) {
-        error_message = error_message.value().get<std::string>();
-        result_json.push_back("RACFu encountered a " + error_key +
-                              " error while working with " + error_message +
-                              ". If you supplied this as part of your input "
-                              "json, you may need to re-examine this item.")
+      error_key_str = error_type.key();
+      for (auto &error_focus : error_type.value().items()) {
+        error_focus_str = error_focus.value().get<std::string>();
+        result_json += ("RACFu encountered a " + error_key_str +
+                        " error while working with " + error_focus_str +
+                        ". If you supplied this as part of your input "
+                        "json, you may need to re-examine this item.");
       }
     }
   } else {
