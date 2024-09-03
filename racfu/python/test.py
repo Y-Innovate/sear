@@ -13,3 +13,12 @@ def call_smo_from_file(file_name: str, debug: bool = False, buffer_size: int = 1
 print(call_smo_from_file("tests/sample_json/test_add_resource_surrogate.json"))
 print(call_smo_from_file("tests/sample_json/test_add_resource.json"))
 print(call_smo_from_file("tests/sample_json/test_delete_resource.json"))
+
+
+print(call_smo_from_file("tests/sample_json/test_extract_user.json"))
+print(call_smo_from_file("tests/sample_json/test_add_user.json"))
+print(call_smo_from_file("tests/sample_json/test_extract_user.json"))
+print(call_smo_from_file("tests/sample_json/test_alter_user.json"))
+print(call_smo_from_file("tests/sample_json/test_extract_user.json"))
+print(call_smo_from_file("tests/sample_json/test_delete_user.json"))
+print(call_smo_from_file("tests/sample_json/test_extract_user.json"))

@@ -1,0 +1,9 @@
+{
+  "operation": "alter",
+  "admin_type": "user",
+  "profile_name": "squidwrd",
+  "traits": {
+    "base:name": "Squidward",
+    "omvs:uid": 124578
+  }
+}
