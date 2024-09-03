@@ -211,7 +211,7 @@ nlohmann::json XmlGenerator::build_xml_head_attributes(std::string adminType,
                                  yes_or_no, false, irrsmo00_options);
     return validate_remaining_request_attributes(request, errors);
   }
-  update_error_json(&errors, "badHeaderValue", "admin_type:" + adminType);
+  update_error_json(&errors, "bad_header_value", "admin_type:" + adminType);
   return errors;
 }
 
@@ -238,11 +238,11 @@ void XmlGenerator::pull_attribute_add_to_header(
           return;
         }
       }
-      update_error_json(errors, "badHeaderValue", json_key + ":" + val);
+      update_error_json(errors, "bad_header_value", json_key + ":" + val);
     }
   } else {
     if (required) {
-      update_error_json(errors, "missingHeaderAttribute", json_key);
+      update_error_json(errors, "missing_header_attribute", json_key);
     }
   }
 }
@@ -258,7 +258,7 @@ nlohmann::json XmlGenerator::validate_remaining_request_attributes(
       continue;
     }
     // Anything else shouldn't be here
-    update_error_json(&errors, "badHeaderName", item.key());
+    update_error_json(&errors, "bad_header_name", item.key());
   }
   return errors;
 }
@@ -280,7 +280,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
       if (!regex_match(item.key(), segment_trait_key_data,
                        segment_trait_key_regex)) {
         // Track any entries that do not match proper syntax
-        update_error_json(&errors, "badStructure", item.key());
+        update_error_json(&errors, "bad_structure", item.key());
         item = requestData.erase(item);
         continue;
       }
@@ -303,7 +303,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         // Build each individual trait
         int8_t operation = map_operations(itemOperation);
         if (operation == OPERATOR_BAD) {
-          update_error_json(&errors, "badOperation", itemOperation);
+          update_error_json(&errors, "bad_operation", itemOperation);
           item = requestData.erase(item);
           continue;
         }
@@ -311,14 +311,14 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         // how to type that? Maybe the JSON object?
         int8_t trait_type = map_trait_type(item.value());
         if (trait_type == TRAIT_TYPE_BAD) {
-          update_error_json(&errors, "badTraitOrTraitType",
+          update_error_json(&errors, "bad_trait_or_trait_type",
                             json_value_to_string(item.value(), &errors));
         }
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
                                      (itemSegment + ":" + itemTrait).c_str(),
                                      trait_type, operation);
         if (translatedKey == NULL) {
-          update_error_json(&errors, "badSegmentTraitOperationCombination",
+          update_error_json(&errors, "bad_segment_trait_operation_combination",
                             (itemSegment + ":" + itemTrait));
         }
         std::string operation_str =
@@ -387,7 +387,7 @@ std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
         ", ";  // May just be " " or just be ","; May need to test
     for (auto& item : trait.items()) {
       if (!item.value().is_string()) {
-        update_error_json(errors, "badTraitOrTraitType", trait.dump());
+        update_error_json(errors, "bad_trait_or_trait_type", trait.dump());
         return trait.dump();
       }
       output_string += item.value().get<std::string>() + delimeter;
@@ -434,9 +434,12 @@ void XmlGenerator::convert_to_ebcdic(char* ascii_str, int length) {
 
 void update_error_json(nlohmann::json* errors, std::string error_type,
                        std::string error_data) {
-  if ((*errors).contains(error_type)) {
-    (*errors)[error_type].push_back(error_data);
+  if ((*errors).empty()) {
+    (*errors)["errors"] = {};
+  }
+  if ((*errors)["errors"].contains(error_type)) {
+    (*errors)["errors"][error_type].push_back(error_data);
   } else {
-    (*errors)[error_type] = {error_data};
+    (*errors)["errors"][error_type] = {error_data};
   }
 }

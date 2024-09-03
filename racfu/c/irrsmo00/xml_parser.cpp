@@ -63,7 +63,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    result_json["error_message"] = "Unable to parse result XML from IRRSMO00!";
+    result_json["errors"] = {"xml_error", {"Result XML from IRRSMO00"}};
     *racfu_rc = 4;
   }
 

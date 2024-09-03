@@ -47,11 +47,11 @@ void racfu(racfu_result_t *result, char *request_json) {
   // }
   // Extract
   if (!request.contains("operation")) {
-    update_error_json(&errors, "missingHeaderAttribute", "operation");
+    update_error_json(&errors, "missing_header_attribute", "operation");
     operation = "";
   }
   if (!request.contains("admin_type")) {
-    update_error_json(&errors, "missingHeaderAttribute", "admin_type");
+    update_error_json(&errors, "missing_header_attribute", "admin_type");
     admin_type = "";
   }
   if (!errors.empty()) {
@@ -91,11 +91,8 @@ void do_extract(const char *admin_type, const char *profile_name,
   uint8_t function_code;
   nlohmann::json profile_json, errors;
 
-  if ((class_name == NULL) && (strncmp(admin_type, "resource", 9))) {
-    update_error_json(&errors, "missingHeaderAttribute", "class_name");
-  }
   if (profile_name == NULL) {
-    update_error_json(&errors, "missingHeaderAttribute", "profile_name");
+    update_error_json(&errors, "missing_header_attribute", "profile_name");
   }
 
   // Validate 'admin_type'
@@ -107,13 +104,16 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "resource") == 0) {
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
+    if ((class_name == NULL)) {
+      update_error_json(&errors, "missing_header_attribute", "class_name");
+    }
   } else if (strcmp(admin_type, "data-set") == 0) {
     function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "setropts") == 0) {
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
     return_codes->racfu_return_code = 8;
-    update_error_json(&errors, "badHeaderValue",
+    update_error_json(&errors, "bad_header_value",
                       "admin_type:" + std::string(admin_type));
   }
 
@@ -261,7 +261,6 @@ void build_result(const char *operation, const char *admin_type,
       {   "operation",        operation},
       {  "admin_type",       admin_type},
       {"profile_name",     profile_name},
-      {      "result",     profile_json},
       {"return_codes", return_code_json}
   };
   if (profile_name == NULL) {
@@ -272,6 +271,23 @@ void build_result(const char *operation, const char *admin_type,
   }
   if (strlen(surrogate_userid) != 0) {
     result_json["surrogate_userid"] = surrogate_userid;
+  }
+
+  if (profile_json.contains("errors")) {
+    std::string error_key, error_message;
+    result_json["result"] = {};
+    for (auto &error_type : profile_json["errors"].items()) {
+      error_key = error_type.key();
+      for (auto &error_message : error_type.value().items()) {
+        error_message = error_message.value().get<std::string>();
+        result_json.push_back("RACFu encountered a " + error_key +
+                              " error while working with " + error_message +
+                              ". If you supplied this as part of your input "
+                              "json, you may need to re-examine this item.")
+      }
+    }
+  } else {
+    result_json["result"] = profile_json;
   }
 
   // Convert profile JSON to C string.
