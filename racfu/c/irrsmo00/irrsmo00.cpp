@@ -1,11 +1,11 @@
-#include "irrsmo00_conn.hpp"
+#include "irrsmo00.hpp"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "saf_xml_gen.hpp"
-#include "saf_xml_parse.hpp"
+#include "xml_generator.hpp"
+#include "xml_parser.hpp"
 
 char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int result_buffer_size, int irrsmo00_options,

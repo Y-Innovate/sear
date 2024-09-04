@@ -1,4 +1,4 @@
-#include "saf_xml_parse.hpp"
+#include "xml_parser.hpp"
 
 #include <unistd.h>
 
@@ -6,9 +6,9 @@
 #include <regex>
 #include <string>
 
-// Public Methods of XmlParse
-nlohmann::json XmlParse::build_json_string(char* xml_result_string,
-                                           int* racfu_rc, bool debug) {
+// Public Methods of XmlParser
+nlohmann::json XmlParser::build_json_string(char* xml_result_string,
+                                            int* racfu_rc, bool debug) {
   std::string xml_buffer;
   char* xml_ascii_result =
       static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
@@ -63,8 +63,7 @@ nlohmann::json XmlParse::build_json_string(char* xml_result_string,
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    result_json["error_message"] =
-        "XML PARSE ERROR: Could not match data to valid xml patterns!";
+    result_json["errors"] = {"xml_error", {"Result XML from IRRSMO00"}};
     *racfu_rc = 4;
   }
 
@@ -72,9 +71,9 @@ nlohmann::json XmlParse::build_json_string(char* xml_result_string,
   return result_json;
 }
 
-// Private Methods of XmlParse
-void XmlParse::parse_header_attributes(nlohmann::json* input_json,
-                                       std::string header_string) {
+// Private Methods of XmlParser
+void XmlParser::parse_header_attributes(nlohmann::json* input_json,
+                                        std::string header_string) {
   // Parse the header attributes of the XML for JSON information
   // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
   std::smatch attribute_key_value;
@@ -106,8 +105,8 @@ void XmlParse::parse_header_attributes(nlohmann::json* input_json,
            attribute_length + attribute_start_index + 1);
 };
 
-void XmlParse::parse_xml_tags(nlohmann::json* input_json,
-                              std::string input_xml_string) {
+void XmlParser::parse_xml_tags(nlohmann::json* input_json,
+                               std::string input_xml_string) {
   // Parse the outer layer of the XML (the tags) for attributes and tag names
   // with regex Ex:
   // <safreturncode>0</safreturncode><returncode>0</returncode><reasoncode>0</reasoncode><image>ADDUSER
@@ -150,9 +149,9 @@ void XmlParse::parse_xml_tags(nlohmann::json* input_json,
   }
 };
 
-void XmlParse::parse_xml_data(nlohmann::json* input_json,
-                              std::string data_within_outer_tags,
-                              std::string outer_tag) {
+void XmlParser::parse_xml_data(nlohmann::json* input_json,
+                               std::string data_within_outer_tags,
+                               std::string outer_tag) {
   // Parse data from within XML tags and add the values to the JSON
   if (data_within_outer_tags.find("<") == std::string::npos) {
     update_json(input_json, data_within_outer_tags, outer_tag);
@@ -165,8 +164,8 @@ void XmlParse::parse_xml_data(nlohmann::json* input_json,
   update_json(input_json, nested_json, outer_tag);
 }
 
-void XmlParse::update_json(nlohmann::json* input_json,
-                           nlohmann::json inner_data, std::string outer_tag) {
+void XmlParser::update_json(nlohmann::json* input_json,
+                            nlohmann::json inner_data, std::string outer_tag) {
   // Add specified information (inner_data) to the input_json JSON object
   // using the specified key (outer_tag)
   outer_tag = replace_xml_chars(outer_tag);
@@ -191,7 +190,8 @@ void XmlParse::update_json(nlohmann::json* input_json,
   }
 }
 
-void XmlParse::convert_to_ascii(char* ebcdic_str, char* ascii_str, int length) {
+void XmlParser::convert_to_ascii(char* ebcdic_str, char* ascii_str,
+                                 int length) {
 // Universal function to convert EBCDIC-1047 string to ascii in place
 #ifndef __MVS__
   for (int i = 0; i < length; i++) {
@@ -204,7 +204,7 @@ void XmlParse::convert_to_ascii(char* ebcdic_str, char* ascii_str, int length) {
 #endif  //__MVS__
 }
 
-std::string XmlParse::replace_xml_chars(std::string xml_data) {
+std::string XmlParser::replace_xml_chars(std::string xml_data) {
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
               apos = "&apos;";
   std::size_t index;
@@ -224,9 +224,10 @@ std::string XmlParse::replace_xml_chars(std::string xml_data) {
   return xml_data;
 }
 
-std::string XmlParse::replace_substring(std::string data, std::string substring,
-                                        std::string replacement,
-                                        std::size_t start) {
+std::string XmlParser::replace_substring(std::string data,
+                                         std::string substring,
+                                         std::string replacement,
+                                         std::size_t start) {
   std::size_t match;
   if ((data.length() - start) < substring.length()) {
     return data;

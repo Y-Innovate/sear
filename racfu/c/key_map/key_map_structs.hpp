@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 // Trait Types
+#define TRAIT_TYPE_BAD -1
 #define TRAIT_TYPE_ANY 0
 #define TRAIT_TYPE_BOOLEAN 1
 #define TRAIT_TYPE_STRING 2
@@ -11,11 +12,12 @@
 #define TRAIT_TYPE_REPEAT 4
 
 // Operators
-#define OPERATOR_ANY -1
-#define OPERATOR_SET 0
-#define OPERATOR_ADD 1
-#define OPERATOR_REMOVE 2
-#define OPERATOR_DELETE 3
+#define OPERATOR_BAD -1
+#define OPERATOR_ANY 0
+#define OPERATOR_SET 1
+#define OPERATOR_ADD 2
+#define OPERATOR_REMOVE 3
+#define OPERATOR_DELETE 4
 
 typedef struct {
   const bool set_allowed;     // Set a value
