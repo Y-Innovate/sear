@@ -232,7 +232,7 @@ void XmlGenerator::pull_attribute_add_to_header(
           update_error_json(errors, "bad_header_value", json_key + ":" + val);
           return;
         }
-        val = operation_string();
+        val = operation_string;
       }
       build_attribute(xml_key, val);
 

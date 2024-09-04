@@ -121,7 +121,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   if (!errors.empty()) {
     return_codes->racfu_return_code = 8;
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
-                 0, nullptr, 0, errors, racfu_result, &return_codes);
+                 0, nullptr, 0, errors, racfu_result, return_codes);
     return;
   }
 
