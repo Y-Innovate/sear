@@ -21,8 +21,9 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
               << cast_hex_string(xml_result_string) << "\n";
   }
 
-  convert_to_ascii(xml_result_string, xml_ascii_result,
-                   strlen(xml_result_string));
+  int xml_result_length = strlen(xml_result_string);
+  memcpy(xml_ascii_result, xml_result_string, xml_result_length);
+  __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
   if (debug) {
@@ -190,6 +191,7 @@ void XmlParser::update_json(nlohmann::json* input_json,
   }
 }
 
+/*
 void XmlParser::convert_to_ascii(char* ebcdic_str, char* ascii_str,
                                  int length) {
 // Universal function to convert EBCDIC-1047 string to ascii in place
@@ -203,6 +205,7 @@ void XmlParser::convert_to_ascii(char* ebcdic_str, char* ascii_str,
   __e2a_s(ascii_str);
 #endif  //__MVS__
 }
+*/
 
 std::string XmlParser::replace_xml_chars(std::string xml_data) {
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",

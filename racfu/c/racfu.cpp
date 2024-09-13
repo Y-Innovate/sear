@@ -29,7 +29,7 @@ void build_result(const char *operation, const char *admin_type,
                   int raw_request_length, nlohmann::json profile_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
-void racfu(racfu_result_t *result, char *request_json) {
+void racfu(racfu_result_t *result, const char *request_json) {
   nlohmann::json request, errors;
   std::string operation, admin_type;
   request = nlohmann::json::parse(request_json);
@@ -242,9 +242,9 @@ void build_result(const char *operation, const char *admin_type,
   nlohmann::json return_code_json = {
       {"return_codes",
        {{"saf_return_code", return_codes->saf_return_code},
-        {"racf_return_code", return_codes->racf_return_code},
-        {"racf_reason_code", return_codes->racf_reason_code},
-        {"racfu_return_code", return_codes->racfu_return_code}}}
+       {"racf_return_code", return_codes->racf_return_code},
+       {"racf_reason_code", return_codes->racf_reason_code},
+       {"racfu_return_code", return_codes->racfu_return_code}}}
   };
 
   // Convert '-1' to 'nullptr'
@@ -277,8 +277,10 @@ void build_result(const char *operation, const char *admin_type,
   if (class_name != NULL) {
     result_json["class_name"] = class_name;
   }
-  if (strlen(surrogate_userid) != 0) {
-    result_json["surrogate_userid"] = surrogate_userid;
+  if (surrogate_userid != NULL) {
+    if (strlen(surrogate_userid) != 0) {
+      result_json["surrogate_userid"] = surrogate_userid;
+    }
   }
 
   if (profile_json.contains("errors")) {

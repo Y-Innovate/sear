@@ -50,7 +50,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
     // Run this command as another user id
     const int userid_length = runningUserId.length();
     strncpy(userid_buffer, runningUserId.c_str(), userid_length);
-    convert_to_ebcdic(userid_buffer, userid_length);
+    __a2e_l(userid_buffer, userid_length);
   }
 
   build_attribute("requestid", adminType + "_request");
@@ -79,7 +79,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   const int length = xml_buffer.length();
   char* output_buffer = static_cast<char*>(malloc(sizeof(char) * (length + 1)));
   strncpy(output_buffer, xml_buffer.c_str(), length + 1);
-  convert_to_ebcdic(output_buffer, length);
+  __a2e_l(output_buffer, length);
 
   *request_length = length;
 
@@ -426,6 +426,7 @@ std::string XmlGenerator::convert_operation(std::string requestOperation,
   return "";
 }
 
+/*
 void XmlGenerator::convert_to_ebcdic(char* ascii_str, int length) {
 // Universal function to convert ascii string to EBCDIC-1047 in-place
 #ifndef __MVS__
@@ -436,6 +437,7 @@ void XmlGenerator::convert_to_ebcdic(char* ascii_str, int length) {
   __a2e_s(ascii_str);
 #endif  //__MVS__
 }
+*/
 
 void update_error_json(nlohmann::json* errors, std::string error_type,
                        std::string error_data) {

@@ -1,0 +1,14 @@
+{
+  "admin_type": "user",
+  "operation": "extract",
+  "profile_name": "SQUIDWRD",
+  "result": null,
+  "return_codes": {
+    "return_codes": {
+      "racf_reason_code": 4,
+      "racf_return_code": 4,
+      "racfu_return_code": 4,
+      "saf_return_code": 4
+    }
+  }
+}

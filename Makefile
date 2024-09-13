@@ -2,22 +2,20 @@ UNAME := $(shell uname)
 
 ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
- 
-# Library names
-SMO_LIB 		= irrsmo64
 
 # Directory Paths
 SRC				= ${PWD}/racfu/c
 IRRSMO00_SRC	= ${PWD}/racfu/c/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/c/irrseq00
 KEY_MAP			= ${PWD}/racfu/c/key_map
-IRRSMO64_TST	= ${PWD}/tests/irrsmo64
 EXTERNALS		= ${PWD}/externals
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
 	CC 			= ibm-clang
 	CXX 		= ibm-clang++
+
+	ZOSLIB		= 
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
@@ -27,20 +25,31 @@ ifeq ($(UNAME), OS/390)
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(EXTERNALS)
+	TFLAGS		= \
+				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
+				-I ${PWD} \
+				-I ${PWD}/tests/mock
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= --clang=ibm-clang++64 
-
-	REQTEST		=
 else
 	CC 			= clang
 	CXX 		= clang++
 
-	CFLAGS  	= -g -Wall -std=c++11
-	CPPFLAGS 	= -fpic -c -D_XOPEN_SOURCE_EXTENDED -std=c++11 -m64
-	LDFLAGS		= -shared -Wl -m64
-	CKFLGS		= --suppress='missingIncludeSystem'
+	ZOSLIB		= ${PWD}/tests/zoslib/*
 
-	REQTEST		= SMO64_TEST
+	CFLAGS		= \
+				-std=c++11 -D__ptr32= \
+				-I $(SRC) \
+				-I $(IRRSMO00_SRC) \
+				-I $(IRRSEQ00_SRC) \
+				-I $(KEY_MAP) \
+				-I $(EXTERNALS)
+	TFLAGS		= \
+				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
+				-I ${PWD} \
+				-I ${PWD}/tests/mock \
+				-I ${PWD}/tests/zoslib
+	CKFLGS		= --suppress='missingIncludeSystem'
 endif
 
 RM				= rm -rf
@@ -59,6 +68,20 @@ racfu: clean mkdirs
 		$(IRRSEQ00_SRC)/*.cpp \
 		$(KEY_MAP)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
+
+test: clean mkdirs
+	cd $(ARTIFACTS) \
+		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
+			${PWD}/tests/unity/unity.c \
+			${PWD}/tests/mock/* \
+			$(ZOSLIB) \
+			$(SRC)/*.cpp \
+			$(IRRSMO00_SRC)/*.cpp \
+			$(IRRSEQ00_SRC)/*.cpp \
+			$(KEY_MAP)/*.cpp \
+			${PWD}/tests/*.cpp \
+		&& $(CXX) $(LDFLAGS) *.o -o $(DIST)/test_runner
+	$(DIST)/test_runner
 
 dbg:
 	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
@@ -92,9 +115,6 @@ check:
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
 		$(KEY_MAP)/*.cpp 
-
-SMO64_TEST:	
-	$(CXX) -c $(IRRSMO64_TST)/$(SMO_LIB).cpp -o $(ARTIFACTS)/$(SMO_LIB).o    
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST)

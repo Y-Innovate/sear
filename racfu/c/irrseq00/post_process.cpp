@@ -4,6 +4,13 @@
 #include <stdio.h>
 #include <string.h>
 
+// Use ntohl() to convert 32-bit values from big endian to little endian.
+// use ntohs() to convert 16-bit values from big endian to little endian.
+// On z/OS these macros do nothing since "network order" and z/Architecture are
+// both big endian. This is only necessary for unit testing off platform.
+#define _POSIX_C_SOURCE 200112L
+#include <arpa/inet.h>
+
 #include <iostream>
 
 #include "key_map.hpp"
@@ -15,20 +22,23 @@ nlohmann::json post_process_generic(
   char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
 
   // Set Class Name
-  char profile_type[8];
+  char profile_type[9];
+  profile_type[8] = 0;  // add null terminator
   post_process_key(profile_type, generic_result_buffer->class_name, 8);
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
-  first_segment_offset += generic_result_buffer->profile_name_length;
+  first_segment_offset += ntohl(generic_result_buffer->profile_name_length);
   generic_segment_descriptor_t *segment =
       reinterpret_cast<generic_segment_descriptor_t *>(profile_address +
                                                        first_segment_offset);
-  char segment_key[8];
+  char segment_key[9];
+  segment_key[8] = 0;  // add null terminator
 
   // Field Variables
   generic_field_descriptor_t *field;
-  char field_key[8];
+  char field_key[9];
+  field_key[8] = 0;  // add null terminator
   std::string racfu_field_key;
   char racfu_field_type;
 
@@ -36,34 +46,35 @@ nlohmann::json post_process_generic(
   std::vector<nlohmann::json> repeat_group;
   int repeat_group_count;
   int repeat_group_element_count;
-  char repeat_field_key[8];
+  char repeat_field_key[9];
+  repeat_field_key[8] = 0;  // add null terminator
   std::string racfu_repeat_field_key;
   char racfu_repeat_field_type;
 
   // Post Process Segments
-  for (int i = 1; i <= generic_result_buffer->segment_count; i++) {
+  for (int i = 1; i <= ntohl(generic_result_buffer->segment_count); i++) {
     post_process_key(segment_key, segment->name, 8);
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     field = reinterpret_cast<generic_field_descriptor_t *>(
-        profile_address + segment->field_descriptor_offset);
-    for (int j = 1; j <= segment->field_count; j++) {
+        profile_address + ntohl(segment->field_descriptor_offset));
+    for (int j = 1; j <= ntohl(segment->field_count); j++) {
       racfu_field_key = post_process_field_key(field_key, profile_type,
                                                segment_key, field->name);
       racfu_field_type =
           get_racfu_trait_type(profile_type, segment_key, field_key);
       // Post Process Non-Repeat Fields
-      if (!(field->type & t_repeat_field_header)) {
+      if (!(ntohs(field->type) & t_repeat_field_header)) {
         process_generic_field(profile["profile"][segment_key][racfu_field_key],
                               field, field_key, profile_address,
                               racfu_field_type);
         // Post Process Repeat Fields
       } else {
-        repeat_group_count =
-            field->field_data_length_repeat_group_count.repeat_group_count;
+        repeat_group_count = ntohl(
+            field->field_data_length_repeat_group_count.repeat_group_count);
         repeat_group_element_count =
-            field->field_data_offset_repeat_group_element_count
-                .repeat_group_element_count;
+            ntohl(field->field_data_offset_repeat_group_element_count
+                      .repeat_group_element_count);
         // Post Process Each Repeat Group
         for (int k = 1; k <= repeat_group_count; k++) {
           repeat_group.push_back(nlohmann::json::object());
@@ -99,14 +110,16 @@ nlohmann::json post_process_setropts(
   setropts_segment_descriptor_t *segment =
       reinterpret_cast<setropts_segment_descriptor_t *>(
           profile_address + sizeof(setropts_extract_results_t));
-  char segment_key[8];
+  char segment_key[9];
+  segment_key[8] = 0;  // add null terminator
 
   // Field Variables
   setropts_field_descriptor_t *field =
       reinterpret_cast<setropts_field_descriptor_t *>(
           profile_address + sizeof(setropts_extract_results_t) +
           sizeof(setropts_segment_descriptor_t));
-  char field_key[8];
+  char field_key[9];
+  field_key[8] = 0;  // add null terminator
   std::string racfu_field_key;
   char field_data[10025];  // we may want to make this dynamic using a VLA or
                            // malloc()/calloc()
@@ -119,7 +132,7 @@ nlohmann::json post_process_setropts(
   profile["profile"][segment_key] = nlohmann::json::object();
 
   // Post Process Fields
-  for (int i = 1; i <= segment->field_count; i++) {
+  for (int i = 1; i <= ntohs(segment->field_count); i++) {
     racfu_field_key =
         post_process_field_key(field_key, "setropts", segment_key, field->name);
     field_type = get_setropts_field_type(field_key);
@@ -173,8 +186,8 @@ void process_generic_field(nlohmann::json &json_field,
   char field_data[1025];  // we may want to make this dynamic using a VLA or
                           // malloc()/calloc()
   // Post Process Boolean Fields
-  if (field->type & t_boolean_field) {
-    if (field->flags & f_boolean_field) {
+  if (ntohs(field->type) & t_boolean_field) {
+    if (ntohl(field->flags) & f_boolean_field) {
       json_field = true;
     } else {
       json_field = false;
@@ -182,12 +195,13 @@ void process_generic_field(nlohmann::json &json_field,
     // Post Process Generic Fields
   } else {
     int field_length =
-        field->field_data_length_repeat_group_count.field_data_length;
+        ntohl(field->field_data_length_repeat_group_count.field_data_length);
     memset(field_data, 0, field_length + 1);
     copy_and_encode_string(
         field_data,
-        profile_address + field->field_data_offset_repeat_group_element_count
-                              .field_data_offset,
+        profile_address +
+            ntohl(field->field_data_offset_repeat_group_element_count
+                      .field_data_offset),
         field_length);
     // Set Empty Fields to 'null'
     if (strcmp(field_data, "") == 0) {
@@ -242,9 +256,7 @@ void post_process_key(char *destination_key, const char *source_key,
 void copy_and_encode_string(char *destination_string, const char *source_string,
                             int length) {
   strncpy(destination_string, source_string, length);
-#ifndef UNIT_TEST
   __e2a_l(destination_string, length);
-#endif
 }
 
 void convert_to_lowercase(char *string, int length) {
