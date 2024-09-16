@@ -12,19 +12,22 @@
 // arg area should be the same on every platform
 #define TEST_GENERIC_ARG_AREA_SIZE 1362
 
+#define IRRSEQ00_REQUEST_SAMPLES "./tests/irrseq00/request_samples/"
+#define IRRSEQ00_RESULT_SAMPLES "./tests/irrseq00/result_samples/"
+
 // Request samples
 #define TEST_EXTRACT_USER_REQUEST_JSON \
-  "./tests/irrseq00/request_samples/test_extract_user_request.json"
+  IRRSEQ00_REQUEST_SAMPLES "test_extract_user_request.json"
 #define TEST_EXTRACT_USER_REQUEST_RAW \
-  "./tests/irrseq00/request_samples/test_extract_user_request.bin"
+  IRRSEQ00_REQUEST_SAMPLES "test_extract_user_request.bin"
 
 // Result samples
 #define TEST_EXTRACT_USER_RESULT_JSON \
-  "./tests/irrseq00/result_samples/test_extract_user_result.json"
+  IRRSEQ00_RESULT_SAMPLES "test_extract_user_result.json"
 #define TEST_EXTRACT_USER_RESULT_RAW \
-  "./tests/irrseq00/result_samples/test_extract_user_result.bin"
+  IRRSEQ00_RESULT_SAMPLES "test_extract_user_result.bin"
 #define TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON \
-  "./tests/irrseq00/result_samples/"                 \
+  IRRSEQ00_RESULT_SAMPLES                            \
   "test_extract_user_result_user_not_found.json"
 
 void check_arg_pointers(char *raw_request);

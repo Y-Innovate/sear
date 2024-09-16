@@ -157,6 +157,9 @@ void test_parse_extract_user_result_user_not_found(void) {
       get_json_sample(TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON);
 
   // Mock R_Admin result
+  // Note that there will be no result if the profile cannot be extracted
+  // and the return and reason codes will be set to indicate why the extract
+  // failed.
   r_admin_result_mock = NULL;
   r_admin_result_size_mock = 0;
   r_admin_rc_mock = -1;
