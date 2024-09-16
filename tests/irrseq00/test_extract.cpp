@@ -1,4 +1,4 @@
-#include "tests/test_extract.hpp"
+#include "tests/irrseq00/test_extract.hpp"
 
 #include <string.h>
 #include <sys/stat.h>
@@ -90,10 +90,8 @@ void check_arg_pointers(char *raw_request) {
 
 void test_generate_extract_user_request(void) {
   racfu_result_t result;
-  std::string request_json =
-      get_json_sample("./tests/request_samples/test_extract_user_request.json");
-  char *raw_request_expected =
-      get_raw_sample("./tests/request_sampleS/test_extract_user_request.bin");
+  std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
+  char *raw_request_expected = get_raw_sample(TEST_EXTRACT_USER_REQUEST_RAW);
 
   // Mock R_Admin result
   r_admin_result_mock = NULL;
@@ -124,16 +122,14 @@ void test_generate_extract_user_request(void) {
 
 void test_parse_extract_user_result(void) {
   racfu_result_t result;
-  std::string request_json =
-      get_json_sample("./tests/request_samples/test_extract_user_request.json");
+  std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
   std::string result_json_expected =
-      get_json_sample("./tests/result_samples/test_extract_user_result.json");
+      get_json_sample(TEST_EXTRACT_USER_RESULT_JSON);
 
   // Mock R_Admin result
-  r_admin_result_mock =
-      get_raw_sample("./tests/result_samples/test_extract_user_result.bin");
+  r_admin_result_mock = get_raw_sample(TEST_EXTRACT_USER_RESULT_RAW);
   struct stat st;
-  stat("./tests/result_samples/test_extract_user_result.bin", &st);
+  stat(TEST_EXTRACT_USER_RESULT_RAW, &st);
   r_admin_result_size_mock = st.st_size;
   r_admin_rc_mock = 0;
   r_admin_saf_rc_mock = 0;
@@ -156,10 +152,9 @@ void test_parse_extract_user_result(void) {
 
 void test_parse_extract_user_result_user_not_found(void) {
   racfu_result_t result;
-  std::string request_json =
-      get_json_sample("./tests/request_samples/test_extract_user_request.json");
-  std::string result_json_expected = get_json_sample(
-      "./tests/result_samples/test_extract_user_result_user_not_found.json");
+  std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
+  std::string result_json_expected =
+      get_json_sample(TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON);
 
   // Mock R_Admin result
   r_admin_result_mock = NULL;

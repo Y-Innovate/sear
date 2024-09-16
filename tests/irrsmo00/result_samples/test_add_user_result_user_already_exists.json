@@ -1,0 +1,38 @@
+{
+  "admin_type": "user",
+  "operation": "add",
+  "profile_name": "SQUIDWRD",
+  "result": {
+    "admin_type": "user",
+    "result": {
+      "commands": [
+        {
+          "image": "ADDUSER SQUIDWRD ",
+          "message": "IKJ56702I INVALID USERID, SQUIDWRD",
+          "reasoncode": "8",
+          "returncode": "16",
+          "safreturncode": "8"
+        },
+        {
+          "image": "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))",
+          "reasoncode": "0",
+          "returncode": "0",
+          "safreturncode": "0"
+        }
+      ],
+      "name": "SQUIDWRD",
+      "operation": "set",
+      "reasoncode": "0",
+      "requestid": "user_request",
+      "returncode": "4"
+    }
+  },
+  "return_codes": {
+    "return_codes": {
+      "racf_reason_code": 0,
+      "racf_return_code": 4,
+      "racfu_return_code": 0,
+      "saf_return_code": 4
+    }
+  }
+}

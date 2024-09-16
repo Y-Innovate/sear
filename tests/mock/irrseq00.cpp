@@ -24,6 +24,7 @@ uint32_t r_admin_racf_reason_mock = 0;
 #endif
 
 extern uint32_t callRadmin(char *__ptr32 arg_pointers) {
+  // Copy mock result to 31 bit memory.
   if (r_admin_result_mock != NULL) {
     char *__ptr32 result_buffer =
         (char *__ptr32)__malloc31(r_admin_result_size_mock);
@@ -33,11 +34,15 @@ extern uint32_t callRadmin(char *__ptr32 arg_pointers) {
           "for R_Admin result buffer mock.\n");
       exit(1);
     }
+    // Set result buffer pointer in the R_Admin arg area.
     char *__ptr32 *__ptr32 result_buffer_pointer =
         ((char *__ptr32 *__ptr32)arg_pointers) - 1;
     memcpy(result_buffer, r_admin_result_mock, r_admin_result_size_mock);
     *result_buffer_pointer = result_buffer;
   }
+  // Set mock return and reason codes.
+  // Use 'htonl()' to ensure return and reason codes are
+  // big endian when tests are run off platform.
   *(((uint32_t *__ptr32 *__ptr32)arg_pointers)[2]) = htonl(r_admin_saf_rc_mock);
   *(((uint32_t *__ptr32 *__ptr32)arg_pointers)[4]) =
       htonl(r_admin_racf_rc_mock);

@@ -9,6 +9,7 @@ IRRSMO00_SRC	= ${PWD}/racfu/c/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/c/irrseq00
 KEY_MAP			= ${PWD}/racfu/c/key_map
 EXTERNALS		= ${PWD}/externals
+TESTS			= ${PWD}/tests
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
@@ -28,14 +29,14 @@ ifeq ($(UNAME), OS/390)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
 				-I ${PWD} \
-				-I ${PWD}/tests/mock
+				-I $(TESTS)/mock
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= --clang=ibm-clang++64 
 else
 	CC 			= clang
 	CXX 		= clang++
 
-	ZOSLIB		= ${PWD}/tests/zoslib/*
+	ZOSLIB		= $(TESTS)/zoslib/*
 
 	CFLAGS		= \
 				-std=c++11 -D__ptr32= \
@@ -47,8 +48,8 @@ else
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
-				-I ${PWD}/tests/mock \
-				-I ${PWD}/tests/zoslib
+				-I $(TESTS)/mock \
+				-I $(TESTS)/zoslib
 	CKFLGS		= --suppress='missingIncludeSystem'
 endif
 
@@ -72,14 +73,16 @@ racfu: clean mkdirs
 test: clean mkdirs
 	cd $(ARTIFACTS) \
 		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
-			${PWD}/tests/unity/unity.c \
-			${PWD}/tests/mock/* \
+			$(TESTS)/unity/unity.c \
+			$(TESTS)/mock/*.cpp \
 			$(ZOSLIB) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
-			${PWD}/tests/*.cpp \
+			$(TESTS)/*.cpp \
+			$(TESTS)/irrsmo00/*.cpp \
+			$(TESTS)/irrseq00/*.cpp \
 		&& $(CXX) $(LDFLAGS) *.o -o $(DIST)/test_runner
 	$(DIST)/test_runner
 

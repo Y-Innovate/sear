@@ -1,6 +1,26 @@
 #ifndef _IRRSMO64_H_
 #define _IRRSMO64_H_
 
+#include <stdio.h>
+
+// These globals need to be defined differently depending
+// on where they are compiled since BINDER on z/OS
+// and off platform link editors (i.e., Mac/Linux)
+// resolve symbols differently.
+#ifndef __TOS_390__
+extern char *irrsmo64_result_mock;
+extern int irrsmo64_result_size_mock;
+extern int irrsmo64_saf_rc_mock;
+extern int irrsmo64_racf_rc_mock;
+extern int irrsmo64_racf_reason_mock;
+#else
+char *irrsmo64_result_mock = NULL;
+int irrsmo64_result_size_mock = 0;
+int irrsmo64_saf_rc_mock = 0;
+int irrsmo64_racf_rc_mock = 0;
+int irrsmo64_racf_reason_mock = 0;
+#endif
+
 typedef struct {
   unsigned char running_userid_length;
   char running_userid[8];
