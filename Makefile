@@ -36,7 +36,7 @@ else
 	CC 			= clang
 	CXX 		= clang++
 
-	ZOSLIB		= $(TESTS)/zoslib/*
+	ZOSLIB		= $(TESTS)/zoslib/*.c
 
 	CFLAGS		= \
 				-std=c++11 -D__ptr32= \

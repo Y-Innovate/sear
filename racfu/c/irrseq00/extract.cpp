@@ -5,7 +5,7 @@
 #include <string.h>
 
 // Use htonl() to convert 32-bit values from little endian to big endian.
-// use ntohs() to convert 16-bit values from big endian to little endian.
+// use ntohl() to convert 16-bit values from big endian to little endian.
 // On z/OS these macros do nothing since "network order" and z/Architecture are
 // both big endian. This is only necessary for unit testing off platform.
 #define _POSIX_C_SOURCE 200112L
