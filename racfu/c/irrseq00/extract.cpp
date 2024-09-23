@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Use htonl() to convert 32-bit values from little endian to big endian.
+// use ntohl() to convert 16-bit values from big endian to little endian.
+// On z/OS these macros do nothing since "network order" and z/Architecture are
+// both big endian. This is only necessary for unit testing off platform.
+#define _POSIX_C_SOURCE 200112L
+#include <arpa/inet.h>
+
 char *extract(
     const char *profile_name,  // Required for everything except setropts
     const char *class_name,    // Only required for general resource profile
@@ -12,7 +19,7 @@ char *extract(
     int *raw_request_length,   // Always required
     racfu_return_codes_t *return_codes  // Always required
 ) {
-  int rc;
+  uint32_t rc;
 
   char *result_buffer;
 
@@ -27,16 +34,17 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request = reinterpret_cast<char *>(arg_area_setropts);
     *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
+    preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
+                         raw_request, raw_request_length);
     // Call R_Admin
     rc = callRadmin(
-        reinterpret_cast<char ZOS_PTR_32>(&arg_area_setropts->arg_pointers));
+        reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code = arg_area_setropts->args.SAF_rc;
-    return_codes->racf_return_code = arg_area_setropts->args.RACF_rc;
-    return_codes->racf_reason_code = arg_area_setropts->args.RACF_rsn;
+    return_codes->saf_return_code = ntohl(arg_area_setropts->args.SAF_rc);
+    return_codes->racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
+    return_codes->racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_setropts);
   }
@@ -59,16 +67,17 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request = reinterpret_cast<char *>(arg_area_generic);
     *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
+    preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
+                         raw_request, raw_request_length);
     // Call R_Admin
     rc = callRadmin(
-        reinterpret_cast<char ZOS_PTR_32>(&arg_area_generic->arg_pointers));
+        reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code = arg_area_generic->args.SAF_rc;
-    return_codes->racf_return_code = arg_area_generic->args.RACF_rc;
-    return_codes->racf_reason_code = arg_area_generic->args.RACF_rsn;
+    return_codes->saf_return_code = ntohl(arg_area_generic->args.SAF_rc);
+    return_codes->racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
+    return_codes->racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_generic);
   }
@@ -105,13 +114,15 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   /***************************************************************************/
   generic_extract_underbar_arg_area_t *arg_area;
   arg_area = reinterpret_cast<generic_extract_underbar_arg_area_t *>(
-      ZOS_MALLOC_31(sizeof(generic_extract_underbar_arg_area_t)));
+      __malloc31(sizeof(generic_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
         "Fatal - Unable to allocate space in 31-bit storage "
         "for 'generic_extract_underbar_arg_area_t'.\n");
     return NULL;
   }
+  // Make sure buffer is clear.
+  memset(arg_area, 0, sizeof(generic_extract_underbar_arg_area_t));
 
   generic_extract_args_t *args = &arg_area->args;
   generic_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
@@ -126,20 +137,16 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
 
   // Copy profile name and class name.
   memcpy(args->profile_name, profile_name, profile_name_length);
-// Encode profile name as IBM-1047.
-#ifndef UNIT_TEST
+  // Encode profile name as IBM-1047.
   __a2e_l(args->profile_name, profile_name_length);
-#endif
   if (class_name != NULL) {
     // Class name must be padded with blanks.
     memset(&profile_extract_parms->class_name, ' ', 8);
     memcpy(profile_extract_parms->class_name, class_name, class_name_length);
-// Encode class name as IBM-1047.
-#ifndef UNIT_TEST
+    // Encode class name as IBM-1047.
     __a2e_l(profile_extract_parms->class_name, class_name_length);
-#endif
   }
-  profile_extract_parms->profile_name_length = profile_name_length;
+  profile_extract_parms->profile_name_length = htonl(profile_name_length);
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */
@@ -158,13 +165,15 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   /***************************************************************************/
   setropts_extract_underbar_arg_area_t *arg_area;
   arg_area = reinterpret_cast<setropts_extract_underbar_arg_area_t *>(
-      ZOS_MALLOC_31(sizeof(setropts_extract_underbar_arg_area_t)));
+      __malloc31(sizeof(setropts_extract_underbar_arg_area_t)));
   if (arg_area == NULL) {
     perror(
         "Fatal - Unable to allocate space in 31-bit storage "
         "for 'setropts_extract_underbar_arg_area_t'.\n");
     return NULL;
   }
+  // Make sure buffer is clear.
+  memset(arg_area, 0, sizeof(setropts_extract_underbar_arg_area_t));
 
   setropts_extract_args_t *args = &arg_area->args;
   setropts_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
@@ -186,4 +195,16 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   arg_pointers->pSetropts_extract_parms = setropts_extract_parms;
 
   return arg_area;
+}
+
+void preserve_raw_request(char *arg_area, char **raw_request,
+                          int *raw_request_length) {
+  *raw_request = static_cast<char *>(calloc(*raw_request_length, sizeof(char)));
+  if (raw_request == NULL) {
+    perror(
+        "Warn - Unable to allocate space to preserve the "
+        "raw request for profile extract.\n");
+    return;
+  }
+  memcpy(*raw_request, arg_area, *raw_request_length);
 }

@@ -1,18 +1,31 @@
-/* irrsmo00.h */
+#ifndef _IRRSMO64_H_
+#define _IRRSMO64_H_
 
-#ifndef IRRSMO00_H_
-#define IRRSMO00_H_
+#include <stdio.h>
 
-#include <stdbool.h>
-
-#include "racfu_result.h"
+// These globals need to be defined differently depending
+// on where they are compiled since BINDER on z/OS
+// and off platform link editors (i.e., Mac/Linux)
+// resolve symbols differently.
+#ifndef __TOS_390__
+extern char *irrsmo64_result_mock;
+extern int irrsmo64_result_size_mock;
+extern int irrsmo64_saf_rc_mock;
+extern int irrsmo64_racf_rc_mock;
+extern int irrsmo64_racf_reason_mock;
+#else
+char *irrsmo64_result_mock = NULL;
+int irrsmo64_result_size_mock = 0;
+int irrsmo64_saf_rc_mock = 0;
+int irrsmo64_racf_rc_mock = 0;
+int irrsmo64_racf_reason_mock = 0;
+#endif
 
 typedef struct {
   unsigned char running_userid_length;
   char running_userid[8];
 } running_userid_t;
 
-/* Prototype for IRRSMO64 */
 extern "C" {
 void IRRSMO64(char *,               // Workarea
               unsigned int, int *,  // safrc
@@ -31,14 +44,4 @@ void IRRSMO64(char *,               // Workarea
 );
 }
 
-// We need to ignore this pragma for unit tests since the
-// IRRSMO64 mock is compiled for XPLINK.
-#ifndef UNIT_TEST
-#pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
-
-char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int result_buffer_size, int irrsmo00_options,
-                    int *saf_rc, int *racf_rc, int *racf_rsn, bool debug);
-
-#endif /* IRRSMO00_H_ */

@@ -2,18 +2,9 @@
 #define __EXTRACT_H_
 
 #include <stdint.h>
-
-#include "racfu_result.h"
-
-#ifndef UNIT_TEST
 #include <unistd.h>
 
-#define ZOS_PTR_32 *__ptr32
-#define ZOS_MALLOC_31 __malloc31
-#else
-#define ZOS_PTR_32 *
-#define ZOS_MALLOC_31 malloc
-#endif
+#include "racfu_result.h"
 
 /*************************************************************************/
 /* Function Codes                                                        */
@@ -70,17 +61,17 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   /* extract function to perform */ \
   uint8_t function_code;
 
-#define COMMON_START_ARG_POINTERS     \
-  char ZOS_PTR_32 pWork_area;         \
-  /* return and reason code */        \
-  uint32_t ZOS_PTR_32 pALET_SAF_rc;   \
-  uint32_t ZOS_PTR_32 pSAF_rc;        \
-  uint32_t ZOS_PTR_32 pALET_RACF_rc;  \
-  uint32_t ZOS_PTR_32 pRACF_rc;       \
-  uint32_t ZOS_PTR_32 pALET_RACF_rsn; \
-  uint32_t ZOS_PTR_32 pRACF_rsn;      \
-  /* extract function to perform */   \
-  uint8_t ZOS_PTR_32 pFunction_code;
+#define COMMON_START_ARG_POINTERS   \
+  char *__ptr32 pWork_area;         \
+  /* return and reason code */      \
+  uint32_t *__ptr32 pALET_SAF_rc;   \
+  uint32_t *__ptr32 pSAF_rc;        \
+  uint32_t *__ptr32 pALET_RACF_rc;  \
+  uint32_t *__ptr32 pRACF_rc;       \
+  uint32_t *__ptr32 pALET_RACF_rsn; \
+  uint32_t *__ptr32 pRACF_rsn;      \
+  /* extract function to perform */ \
+  uint8_t *__ptr32 pFunction_code;
 
 #define COMMON_END_ARGS                           \
   /* Max of 247 + 1 for null terimnator */        \
@@ -89,15 +80,15 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   uint32_t ACEE;                                  \
   uint8_t result_buffer_subpool;                  \
   /* R_admin returns data here */                 \
-  char ZOS_PTR_32 pResult_buffer;
+  char *__ptr32 pResult_buffer;
 
-#define COMMON_END_ARG_POINTERS              \
-  char ZOS_PTR_32 pProfile_name;             \
-  /* Result area for the service */          \
-  uint32_t ZOS_PTR_32 pACEE;                 \
-  uint8_t ZOS_PTR_32 pResult_buffer_subpool; \
-  /* R_admin returns data here */            \
-  char ZOS_PTR_32 ZOS_PTR_32 ppResult_buffer;
+#define COMMON_END_ARG_POINTERS            \
+  char *__ptr32 pProfile_name;             \
+  /* Result area for the service */        \
+  uint32_t *__ptr32 pACEE;                 \
+  uint8_t *__ptr32 pResult_buffer_subpool; \
+  /* R_admin returns data here */          \
+  char *__ptr32 *__ptr32 ppResult_buffer;
 
 #define SET_COMMON_ARGS       \
   args->ALET_SAF_rc = ALET;   \
@@ -106,27 +97,27 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   args->ACEE = ACEE;          \
   args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
 
-#define SET_COMMON_ARG_POINTERS                                               \
-  arg_pointers->pWork_area =                                                  \
-      reinterpret_cast<char ZOS_PTR_32>(&args->RACF_work_area);               \
-  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                          \
-  arg_pointers->pSAF_rc = &(args->SAF_rc);                                    \
-  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                        \
-  arg_pointers->pRACF_rc = &(args->RACF_rc);                                  \
-  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                      \
-  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                                \
-                                                                              \
-  arg_pointers->pFunction_code = &(args->function_code);                      \
-  /* Function specific parms between function code and profile name */        \
-  arg_pointers->pProfile_name = &(args->profile_name[0]);                     \
-  arg_pointers->pACEE = &(args->ACEE);                                        \
-  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);      \
-  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                    \
-                                                                              \
-  /* Turn on the hight order bit of the last argument - marks the end of the  \
-   */                                                                         \
-  /* argument list. */                                                        \
-  *(reinterpret_cast<uint32_t ZOS_PTR_32>(&arg_pointers->ppResult_buffer)) |= \
+#define SET_COMMON_ARG_POINTERS                                              \
+  arg_pointers->pWork_area =                                                 \
+      reinterpret_cast<char *__ptr32>(&args->RACF_work_area);                \
+  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
+  arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
+  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
+  arg_pointers->pRACF_rc = &(args->RACF_rc);                                 \
+  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
+  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                               \
+                                                                             \
+  arg_pointers->pFunction_code = &(args->function_code);                     \
+  /* Function specific parms between function code and profile name */       \
+  arg_pointers->pProfile_name = &(args->profile_name[0]);                    \
+  arg_pointers->pACEE = &(args->ACEE);                                       \
+  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
+  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                   \
+                                                                             \
+  /* Turn on the hight order bit of the last argument - marks the end of the \
+   */                                                                        \
+  /* argument list. */                                                       \
+  *(reinterpret_cast<uint32_t *__ptr32>(&arg_pointers->ppResult_buffer)) |=  \
       0x80000000;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
@@ -167,7 +158,7 @@ typedef struct {
 
 typedef struct {
   COMMON_START_ARG_POINTERS
-  generic_extract_parms_results_t ZOS_PTR_32 pProfile_extract_parms;
+  generic_extract_parms_results_t *__ptr32 pProfile_extract_parms;
   COMMON_END_ARG_POINTERS
 } generic_extract_arg_pointers_t;
 
@@ -234,7 +225,7 @@ typedef struct {
 
 typedef struct {
   COMMON_START_ARG_POINTERS
-  setropts_extract_parms_t ZOS_PTR_32 pSetropts_extract_parms;
+  setropts_extract_parms_t *__ptr32 pSetropts_extract_parms;
   COMMON_END_ARG_POINTERS
 } setropts_extract_arg_pointers_t;
 
@@ -284,90 +275,91 @@ typedef struct {
 // setropts field.
 const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
     {"addcreat", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"adsp", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {    "adsp", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"applaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"audit", SETROPTS_FIELD_TYPE_LIST},
-    {"catdsns", SETROPTS_FIELD_TYPE_STRING},
-    {"classact", SETROPTS_FIELD_TYPE_LIST},
-    {"classtat", SETROPTS_FIELD_TYPE_LIST},
-    {"cmdviol", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {   "audit",    SETROPTS_FIELD_TYPE_LIST},
+    { "catdsns",  SETROPTS_FIELD_TYPE_STRING},
+    {"classact",    SETROPTS_FIELD_TYPE_LIST},
+    {"classtat",    SETROPTS_FIELD_TYPE_LIST},
+    { "cmdviol", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"compmode", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"egn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"erase", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {     "egn", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {   "erase", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"eraseall", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"erasesec", SETROPTS_FIELD_TYPE_STRING},
-    {"gencmd", SETROPTS_FIELD_TYPE_LIST},
-    {"generic", SETROPTS_FIELD_TYPE_LIST},
-    {"genlist", SETROPTS_FIELD_TYPE_LIST},
+    {"erasesec",  SETROPTS_FIELD_TYPE_STRING},
+    {  "gencmd",    SETROPTS_FIELD_TYPE_LIST},
+    { "generic",    SETROPTS_FIELD_TYPE_LIST},
+    { "genlist",    SETROPTS_FIELD_TYPE_LIST},
     {"genowner", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"global", SETROPTS_FIELD_TYPE_LIST},
-    {"grplist", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"history", SETROPTS_FIELD_TYPE_STRING},
-    {"inactive", SETROPTS_FIELD_TYPE_NUMBER},
+    {  "global",    SETROPTS_FIELD_TYPE_LIST},
+    { "grplist", SETROPTS_FIELD_TYPE_BOOLEAN},
+    { "history",  SETROPTS_FIELD_TYPE_STRING},
+    {"inactive",  SETROPTS_FIELD_TYPE_NUMBER},
     {"initstat", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"interval", SETROPTS_FIELD_TYPE_NUMBER},
+    {"interval",  SETROPTS_FIELD_TYPE_NUMBER},
     {"jesbatch", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"jesearly", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"jesnje", SETROPTS_FIELD_TYPE_STRING},
-    {"jesundef", SETROPTS_FIELD_TYPE_STRING},
-    {"jesxbm", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"kerblvl", SETROPTS_FIELD_TYPE_NUMBER},
-    {"list", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"logalwys", SETROPTS_FIELD_TYPE_LIST},
-    {"logdeflt", SETROPTS_FIELD_TYPE_LIST},
-    {"logfail", SETROPTS_FIELD_TYPE_LIST},
-    {"lognever", SETROPTS_FIELD_TYPE_LIST},
-    {"logsucc", SETROPTS_FIELD_TYPE_LIST},
-    {"minchang", SETROPTS_FIELD_TYPE_NUMBER},
+    {  "jesnje",  SETROPTS_FIELD_TYPE_STRING},
+    {"jesundef",  SETROPTS_FIELD_TYPE_STRING},
+    {  "jesxbm", SETROPTS_FIELD_TYPE_BOOLEAN},
+    { "kerblvl",  SETROPTS_FIELD_TYPE_NUMBER},
+    {    "list", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {"logalwys",    SETROPTS_FIELD_TYPE_LIST},
+    {"logdeflt",    SETROPTS_FIELD_TYPE_LIST},
+    { "logfail",    SETROPTS_FIELD_TYPE_LIST},
+    {"lognever",    SETROPTS_FIELD_TYPE_LIST},
+    { "logsucc",    SETROPTS_FIELD_TYPE_LIST},
+    {"minchang",  SETROPTS_FIELD_TYPE_NUMBER},
     {"mixdcase", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"mlactive", SETROPTS_FIELD_TYPE_STRING},
-    {"mlfs", SETROPTS_FIELD_TYPE_STRING},
-    {"mlipc", SETROPTS_FIELD_TYPE_STRING},
-    {"mlnames", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"mlquiet", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"mls", SETROPTS_FIELD_TYPE_STRING},
+    {"mlactive",  SETROPTS_FIELD_TYPE_STRING},
+    {    "mlfs",  SETROPTS_FIELD_TYPE_STRING},
+    {   "mlipc",  SETROPTS_FIELD_TYPE_STRING},
+    { "mlnames", SETROPTS_FIELD_TYPE_BOOLEAN},
+    { "mlquiet", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {     "mls",  SETROPTS_FIELD_TYPE_STRING},
     {"mlstable", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"model", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"modgdg", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {   "model", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {  "modgdg", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"modgroup", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"moduser", SETROPTS_FIELD_TYPE_BOOLEAN},
+    { "moduser", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"operaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"phrint", SETROPTS_FIELD_TYPE_NUMBER},
-    {"prefix", SETROPTS_FIELD_TYPE_STRING},
-    {"primlang", SETROPTS_FIELD_TYPE_STRING},
-    {"protall", SETROPTS_FIELD_TYPE_STRING},
-    {"pwdalg", SETROPTS_FIELD_TYPE_STRING},
-    {"pwdspec", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"raclist", SETROPTS_FIELD_TYPE_LIST},
-    {"realdsn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"retpd", SETROPTS_FIELD_TYPE_NUMBER},
-    {"revoke", SETROPTS_FIELD_TYPE_STRING},
-    {"rule1", SETROPTS_FIELD_TYPE_STRING},
-    {"rule2", SETROPTS_FIELD_TYPE_STRING},
-    {"rule3", SETROPTS_FIELD_TYPE_STRING},
-    {"rule4", SETROPTS_FIELD_TYPE_STRING},
-    {"rule5", SETROPTS_FIELD_TYPE_STRING},
-    {"rule6", SETROPTS_FIELD_TYPE_STRING},
-    {"rule7", SETROPTS_FIELD_TYPE_STRING},
-    {"rule8", SETROPTS_FIELD_TYPE_STRING},
-    {"rvarstfm", SETROPTS_FIELD_TYPE_STRING},
-    {"rvarstpw", SETROPTS_FIELD_TYPE_STRING},
-    {"rvarswfm", SETROPTS_FIELD_TYPE_STRING},
-    {"rvarswpw", SETROPTS_FIELD_TYPE_STRING},
-    {"saudit", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {  "phrint",  SETROPTS_FIELD_TYPE_NUMBER},
+    {  "prefix",  SETROPTS_FIELD_TYPE_STRING},
+    {"primlang",  SETROPTS_FIELD_TYPE_STRING},
+    { "protall",  SETROPTS_FIELD_TYPE_STRING},
+    {  "pwdalg",  SETROPTS_FIELD_TYPE_STRING},
+    { "pwdspec", SETROPTS_FIELD_TYPE_BOOLEAN},
+    { "raclist",    SETROPTS_FIELD_TYPE_LIST},
+    { "realdsn", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {   "retpd",  SETROPTS_FIELD_TYPE_NUMBER},
+    {  "revoke",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule1",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule2",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule3",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule4",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule5",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule6",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule7",  SETROPTS_FIELD_TYPE_STRING},
+    {   "rule8",  SETROPTS_FIELD_TYPE_STRING},
+    {"rvarstfm",  SETROPTS_FIELD_TYPE_STRING},
+    {"rvarstpw",  SETROPTS_FIELD_TYPE_STRING},
+    {"rvarswfm",  SETROPTS_FIELD_TYPE_STRING},
+    {"rvarswpw",  SETROPTS_FIELD_TYPE_STRING},
+    {  "saudit", SETROPTS_FIELD_TYPE_BOOLEAN},
     {"seclabct", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"seclang", SETROPTS_FIELD_TYPE_STRING},
-    {"sessint", SETROPTS_FIELD_TYPE_NUMBER},
+    { "seclang",  SETROPTS_FIELD_TYPE_STRING},
+    { "sessint",  SETROPTS_FIELD_TYPE_NUMBER},
     {"slabaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"slbysys", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"slevaudt", SETROPTS_FIELD_TYPE_STRING},
-    {"tapedsn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"terminal", SETROPTS_FIELD_TYPE_STRING},
-    {"warning", SETROPTS_FIELD_TYPE_NUMBER},
-    {"whenprog", SETROPTS_FIELD_TYPE_BOOLEAN}};
+    { "slbysys", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {"slevaudt",  SETROPTS_FIELD_TYPE_STRING},
+    { "tapedsn", SETROPTS_FIELD_TYPE_BOOLEAN},
+    {"terminal",  SETROPTS_FIELD_TYPE_STRING},
+    { "warning",  SETROPTS_FIELD_TYPE_NUMBER},
+    {"whenprog", SETROPTS_FIELD_TYPE_BOOLEAN}
+};
 
 // Glue code to call IRRSEQ00 assembler code.
-extern "C" uint32_t callRadmin(char ZOS_PTR_32);
+extern "C" uint32_t callRadmin(char *__ptr32);
 
 char *extract(const char *profile_name, const char *class_name,
               uint8_t function_code, char **raw_request,
@@ -377,5 +369,8 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
+
+void preserve_raw_request(char *arg_area, char **raw_request,
+                          int *raw_request_length);
 
 #endif

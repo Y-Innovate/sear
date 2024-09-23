@@ -4,7 +4,7 @@
 #include "racfu_result.h"
 
 extern "C" {
-void racfu(racfu_result_t *result, char *request_json);
+void racfu(racfu_result_t *result, const char *request_json);
 }
 
 #pragma export(racfu)
