@@ -2,7 +2,7 @@
 
 #include "racfu_result.h"
 
-extern void racfu(racfu_result_t* result, char* request_json);
+extern void racfu(racfu_result_t* result, const char* request_json);
 
 // Entry point to the call_RACFu() function
 static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
