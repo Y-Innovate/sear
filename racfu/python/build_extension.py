@@ -28,8 +28,15 @@ def build(setup_kwargs: dict):
                             "racfu/c/racfu.cpp",
                             "racfu/python/RACFU_py.c"
                             ],
-                        include_dirs=["racfu/c/irrseq00", "racfu/c/irrsmo00", "racfu/c/key_map", "racfu/c"],
-                        libraries = ["artifacts/irrseq00.o"],
+                        include_dirs=[
+                            "racfu/c/irrseq00",
+                            "racfu/c/irrsmo00",
+                            "racfu/c/key_map",
+                            "racfu/c",
+                            "externals"
+                            ],
+                        libraries = [
+                            "artifacts/irrseq00.o"],
                         extra_compile_args=["-o artifacts"
                         ],
                         extra_link_args=["-o dist/racfu.so"]
