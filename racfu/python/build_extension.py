@@ -8,20 +8,29 @@ from setuptools.command import build_ext
 
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
-    print('hello world')
-    os.system('touch test.txt')
+    os.system('as -mGOFF -I$(IRRSEQ00_SRC) -o artifacts/irrseq00.o racfu/c/irrseq00/irrseq00.s')
     if os.uname().sysname == "OS/390":
         # Build the real python extension on z/OS
+        os.environ["CC"] = "ibm-clang"
+        os.environ["CXX"] = "ibm-clang++"
         setup_kwargs.update(
             {
                 "ext_modules": [
                     Extension(
-                        "pyRACFu_core",
-                        sources=["pyRACFu/core/pyRACFu_core.c"],
-                        include_dirs=["../src"],
-                        libraries = ["../src/racfu_result.h"],
-                        extra_compile_args=[
+                        "RACFu_py",
+                        sources=[
+                            "racfu/c/irrseq00/extract.cpp",
+                            "racfu/c/irrseq00/post_process.cpp",
+                            "racfu/c/irrsmo00/irsmo00.cpp",
+                            "racfu/c/irrsmo00/xml_generator.cpp",
+                            "racfu/c/irrsmo00/xml_parser.cpp",
+                            "racfu/c/key_map/key_map.cpp",
+                            "racfu/c/racfu.cpp"],
+                        include_dirs=["racfu/c/irrseq00", "racfu/c/irrsmo00", "racfu/c/key_map", "racfu/c"],
+                        libraries = ["artifacts/irrseq00.o"],
+                        extra_compile_args=["-o artifacts"
                         ],
+                        extra_link_args=["-o dist/racfu.so"]
                     )
                 ],
                 "cmdclass": {"built_ext": build_ext},
@@ -34,10 +43,20 @@ def build(setup_kwargs: dict):
             {
                 "ext_modules": [
                     Extension(
-                        "pyRACFu_core",
-                        sources=["pyRACFu/core/pyRACFu_core.c"],
-                        include_dirs=["../src"],
-                        libraries = ["../src/racfu_result.h"],
+                        "RACFu_py",
+                        sources=[
+                            "racfu/c/irrseq00/extract.cpp",
+                            "racfu/c/irrseq00/post_process.cpp",
+                            "racfu/c/irrsmo00/irsmo00.cpp",
+                            "racfu/c/irrsmo00/xml_generator.cpp",
+                            "racfu/c/irrsmo00/xml_parser.cpp",
+                            "racfu/c/key_map/key_map.cpp",
+                            "racfu/c/racfu.cpp"],
+                        include_dirs=["racfu/c/irrseq00", "racfu/c/irrsmo00", "racfu/c/key_map", "racfu/c"],
+                        libraries = ["artifacts/irrseq00.o"],
+                        extra_compile_args=["-o artifacts"
+                        ],
+                        extra_link_args=["-o dist/racfu.so"]
                     )
                 ],
                 "cmdclass": {"built_ext": build_ext},

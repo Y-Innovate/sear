@@ -64,4 +64,4 @@ __pycache__/
 # Deliverables and Build Artifacts
 dist/
 artifacts/
-pyRACFu/build
+build/

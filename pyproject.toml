@@ -3,7 +3,7 @@
     requires = ["poetry-core>=1.9.0", "setuptools>=69"]
 
 [tool.poetry]
-    name="pyRACFu"
+    name="RACFu"
     version="1.0a1"
     description="Python interface to RACF using RACF Callable Services."
     license = "Apache-2.0"
@@ -17,11 +17,11 @@
         "Leonard J. Carcaramo Jr <lcarcaramo@ibm.com>",
         "Elijah Swift <elijah.swift@ibm.com>",
     ]
-    readme = "../README.md"
-    repository = "https://github.com/ambitus/pyracf"
-    documentation = "https://ambitus.github.io/pyracf/"
+    readme = "README.md"
+    repository = "https://github.ibm.com/lcarcaramo/racfu"
+    documentation = "https://github.ibm.com/lcarcaramo/racfu"
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Other",
@@ -36,7 +36,7 @@
     ]
 
 [tool.poetry.build]
-    script = "build_extension.py"
+    script = "racfu/python/build_extension.py"
     generate-setup-file = true
 
 [tool.poetry.dependencies]
