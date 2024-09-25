@@ -37,9 +37,6 @@ def build(setup_kwargs: dict):
                             ],
                         libraries = [
                             "artifacts/irrseq00.o"],
-                        extra_compile_args=["-o artifacts"
-                        ],
-                        extra_link_args=["-o dist/racfu.so"]
                     )
                 ],
                 "cmdclass": {"built_ext": build_ext},
