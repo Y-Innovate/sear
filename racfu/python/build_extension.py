@@ -21,7 +21,7 @@ def build(setup_kwargs: dict):
                         sources=[
                             "racfu/c/irrseq00/extract.cpp",
                             "racfu/c/irrseq00/post_process.cpp",
-                            "racfu/c/irrsmo00/irsmo00.cpp",
+                            "racfu/c/irrsmo00/irrsmo00.cpp",
                             "racfu/c/irrsmo00/xml_generator.cpp",
                             "racfu/c/irrsmo00/xml_parser.cpp",
                             "racfu/c/key_map/key_map.cpp",
