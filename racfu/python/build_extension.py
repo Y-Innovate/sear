@@ -25,7 +25,9 @@ def build(setup_kwargs: dict):
                             "racfu/c/irrsmo00/xml_generator.cpp",
                             "racfu/c/irrsmo00/xml_parser.cpp",
                             "racfu/c/key_map/key_map.cpp",
-                            "racfu/c/racfu.cpp"],
+                            "racfu/c/racfu.cpp",
+                            "racfu/python/RACFU_py.c"
+                            ],
                         include_dirs=["racfu/c/irrseq00", "racfu/c/irrsmo00", "racfu/c/key_map", "racfu/c"],
                         libraries = ["artifacts/irrseq00.o"],
                         extra_compile_args=["-o artifacts"

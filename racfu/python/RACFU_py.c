@@ -25,10 +25,13 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
 
   result_dictionary = PyBytes_FromString(result.result_json);
 
-  return_dictionary = Py_BuildValue(
-      "{s:y,s:B,s:O}", "raw_result", result.raw_result, "raw_result_length",
-      result.raw_result_length, "result_json", result_dictionary);
+  return_dictionary =
+      Py_BuildValue("{s:y,s:B,s:y,s:B,s:O}", "raw_request", result.raw_request,
+                    "raw_request_length", result.raw_request_length,
+                    "raw_result", result.raw_result, "raw_result_length",
+                    result.raw_result_length, "result_json", result_dictionary);
 
+  free(result.raw_request);
   free(result.raw_result);
   free(result.result_json);
 
@@ -45,19 +48,20 @@ static char call_RACFu_docs[] =
     "and RACFu itself.\n";
 
 // Method definition
-static PyMethodDef pyRACFu_core_methods[] = {
+static PyMethodDef RACFu_py_methods[] = {
     {"call_RACFu", (PyCFunction)call_RACFu, METH_VARARGS | METH_KEYWORDS,
      call_RACFu_docs},
-    {NULL}};
+    {NULL}
+};
 
 // Module definition
-static struct PyModuleDef pyRACFu_core_module_def = {
-    PyModuleDef_HEAD_INIT, "pyRACFu_core",
+static struct PyModuleDef RACFu_py_module_def = {
+    PyModuleDef_HEAD_INIT, "RACFu_py",
     "Thin connecting layer that allows pyRACFu to invoke RACFu directly.\n", -1,
-    pyRACFu_core_methods};
+    RACFu_py_methods};
 
 // Module initialization function
-PyMODINIT_FUNC PyInit_pyRACFu_core(void) {
+PyMODINIT_FUNC PyInit_RACFu_py(void) {
   Py_Initialize();
-  return PyModule_Create(&pyRACFu_core_module_def);
+  return PyModule_Create(&RACFu_py_module_def);
 }
