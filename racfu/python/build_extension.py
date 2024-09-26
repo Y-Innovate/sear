@@ -8,7 +8,7 @@ from setuptools.command import build_ext
 
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
-    os.system('as -mGOFF -I$(IRRSEQ00_SRC) -o artifacts/irrseq00.o racfu/c/irrseq00/irrseq00.s')
+    os.system('as -mGOFF -Iracfu/c/irrseq00 -o artifacts/irrseq00.o racfu/c/irrseq00/irrseq00.s')
     os.system('touch test.txt')
     os.system('touch artifacts/test2.txt')
     if os.uname().sysname == "OS/390":
