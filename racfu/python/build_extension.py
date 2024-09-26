@@ -8,11 +8,8 @@ from setuptools.command import build_ext
 
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
-    cwd = os.getcwd()
-    os.system(f"mkdir {os.path.join(cwd,'artifacts')}")
-    os.system(f"as -mGOFF -I{os.path.join(cwd,'racfu','c','irrseq00')} -o {os.path.join(cwd,'artifacts','irrseq00.o')} {os.path.join(cwd,'racfu','c','irrseq00','irrseq00.o')}")
-    os.system('touch test.txt')
-    os.system('touch artifacts/test2.txt')
+    os.system("mkdir artifacts")
+    os.system(f"as -mGOFF -I{os.path.join('racfu','c','irrseq00')} -o {os.path.join('artifacts','irrseq00.o')} {os.path.join('racfu','c','irrseq00','irrseq00.o')}")
     if os.uname().sysname == "OS/390":
         # Build the real python extension on z/OS
         os.environ["CC"] = "ibm-clang"
@@ -37,10 +34,9 @@ def build(setup_kwargs: dict):
                             "racfu/c/irrsmo00",
                             "racfu/c/key_map",
                             "racfu/c",
-                            "externals"
+                            "externals",
+                            "artifacts"
                             ],
-                        libraries = [
-                            os.path.join(cwd,'artifacts',"irrseq00.o")],
                         extra_link_args = [
                             "-m64",
                             "-Wl,-b,edit=no"
