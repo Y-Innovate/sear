@@ -6,7 +6,8 @@ extern void racfu(racfu_result_t* result, const char* request_json);
 
 // Entry point to the call_RACFu() function
 static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
-  PyObject *request_dictionary, *result_dictionary, *return_dictionary;
+  PyObject *request_dictionary_str, *request_dictionary, *result_dictionary,
+      *return_dictionary;
 
   static char* kwlist[] = {"request_dictionary", NULL};
 
@@ -16,20 +17,25 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
     return NULL;
   }
 
-  request_dictionary = PyObject_Str(request_dictionary);
+  printf("successfully parsed args!\n");
+  request_dictionary_str = PyObject_Str(request_dictionary);
+  printf("passed dictionary down?\n");
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
 
   racfu_result_t result;
 
+  printf("about to call racfu!\n");
   racfu(&result, request_as_string);
+  printf("successfully called racfu!\n");
 
   result_dictionary = PyBytes_FromString(result.result_json);
 
-  return_dictionary =
-      Py_BuildValue("{s:y,s:B,s:y,s:B,s:O}", "raw_request", result.raw_request,
-                    "raw_request_length", result.raw_request_length,
-                    "raw_result", result.raw_result, "raw_result_length",
-                    result.raw_result_length, "result_json", result_dictionary);
+  printf("about to call return!\n");
+  return_dictionary = Py_BuildValue(
+      "{s:y,s:B,s:y,s:B,s:s}", "raw_request", result.raw_request,
+      "raw_request_length", result.raw_request_length, "raw_result",
+      result.raw_result, "raw_result_length", result.raw_result_length,
+      "result_json", result.result_json);
 
   free(result.raw_request);
   free(result.raw_result);
