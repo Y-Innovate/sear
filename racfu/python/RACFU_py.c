@@ -9,11 +9,8 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
   PyObject *request_dictionary_str, *request_dictionary, *result_dictionary,
       *return_dictionary;
 
-  static char* kwlist[] = {"request_dictionary", NULL};
-
   printf("about to parse args!\n");
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", kwlist,
-                                   request_dictionary)) {
+  if (!PyArg_ParseTuple(args, "O", &request_dictionary)) {
     return NULL;
   }
 
