@@ -8,7 +8,9 @@ from setuptools.command import build_ext
 
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
-    os.system('as -mGOFF -Iracfu/c/irrseq00 -o artifacts/irrseq00.o racfu/c/irrseq00/irrseq00.s')
+    cwd = os.getcwd()
+    os.system(f"mkdir {os.path.join(cwd,'artifacts')}")
+    os.system(f"as -mGOFF -I{os.path.join(cwd,'racfu','c','irrseq00')} -o {os.path.join(cwd,'artifacts','irrseq00.o')} {os.path.join(cwd,'racfu','c','irrseq00','irrseq00.o')}")
     os.system('touch test.txt')
     os.system('touch artifacts/test2.txt')
     if os.uname().sysname == "OS/390":
@@ -38,7 +40,7 @@ def build(setup_kwargs: dict):
                             "externals"
                             ],
                         libraries = [
-                            "artifacts/irrseq00.o"],
+                            os.path.join(cwd,'artifacts',"irrseq00.o")],
                         extra_link_args = [
                             "-m64",
                             "-Wl,-b,edit=no"
