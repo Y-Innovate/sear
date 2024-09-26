@@ -18,6 +18,7 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
   request_dictionary_str = PyObject_Str(request_dictionary);
   printf("passed dictionary down?\n");
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
+  printf("Request String: %s\n", request_as_string);
 
   racfu_result_t result;
 
