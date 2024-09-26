@@ -38,6 +38,7 @@ def build(setup_kwargs: dict):
                             "artifacts"
                             ],
                         extra_link_args = [
+                            "artifacts/irrseq00.o",
                             "-m64",
                             "-Wl,-b,edit=no"
                         ]
