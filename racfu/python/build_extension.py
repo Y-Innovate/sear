@@ -9,6 +9,8 @@ from setuptools.command import build_ext
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
     os.system('as -mGOFF -I$(IRRSEQ00_SRC) -o artifacts/irrseq00.o racfu/c/irrseq00/irrseq00.s')
+    os.system('touch test.txt')
+    os.system('touch artifacts/test2.txt')
     if os.uname().sysname == "OS/390":
         # Build the real python extension on z/OS
         os.environ["CC"] = "ibm-clang"
@@ -38,7 +40,8 @@ def build(setup_kwargs: dict):
                         libraries = [
                             "artifacts/irrseq00.o"],
                         extra_link_args = [
-                            "-m64 -Wl,-b,edit=no"
+                            "-m64",
+                            "-Wl,-b,edit=no"
                         ]
                     )
                 ],
