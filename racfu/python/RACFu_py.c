@@ -8,19 +8,13 @@ extern void racfu(racfu_result_t* result, const char* request_json);
 static PyObject* call_RACFu(PyObject* self, PyObject* args) {
   PyObject *request_dictionary, *return_dictionary;
 
-  printf("no args to parse!\n");
   request_dictionary = PyObject_Str(args);
-  printf("passed dictionary down?\n");
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
-  printf("Request String: %s\n", request_as_string);
 
   racfu_result_t result;
 
-  printf("about to call racfu!\n");
   racfu(&result, request_as_string);
-  printf("successfully called racfu!\n");
 
-  printf("about to call return!\n");
   return_dictionary = Py_BuildValue(
       "{s:y,s:B,s:y,s:B,s:s}", "raw_request", result.raw_request,
       "raw_request_length", result.raw_request_length, "raw_result",

@@ -14,7 +14,7 @@ def call_smo_from_file(file_name: str, debug: bool = False, buffer_size: int = 1
 print(call_smo_from_file("tests/irrseq00/request_samples/test_extract_user_request.json"))
 print(call_smo_from_file("tests/irrsmo00/request_samples/test_add_user_request.json", debug=True))
 print(call_smo_from_file("tests/irrseq00/request_samples/test_extract_user_request.json"))
-print(call_smo_from_file("tests/irrsmo00/request_samples/test_lter_user_request.json", debug=True))
+print(call_smo_from_file("tests/irrsmo00/request_samples/test_alter_user_request.json", debug=True))
 print(call_smo_from_file("tests/irrseq00/request_samples/test_extract_user_request.json"))
 print(call_smo_from_file("tests/irrsmo00/request_samples/test_delete_user_request.json", debug=True))
 print(call_smo_from_file("tests/irrseq00/request_samples/test_extract_user_request.json"))
