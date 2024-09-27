@@ -20,4 +20,4 @@ class RACFAdmin:
         if self.__debug:
             print(response)
 
-        return response
+        return response['result_json']
