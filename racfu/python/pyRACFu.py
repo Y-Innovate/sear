@@ -14,7 +14,7 @@ class RACFAdmin:
         if not (self.__buffer_size == 10000):
             request_dict["result_buffer_size"] = self.__buffer_size
 
-        response = call_RACFu(request_dict)
+        response = call_RACFu(json.dumps(request_dict))
         response['result_json'] = json.loads(response['result_json'])
     
         if self.__debug:

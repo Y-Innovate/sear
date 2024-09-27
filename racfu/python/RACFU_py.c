@@ -5,17 +5,11 @@
 extern void racfu(racfu_result_t* result, const char* request_json);
 
 // Entry point to the call_RACFu() function
-static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
-  PyObject *request_dictionary_str, *request_dictionary, *result_dictionary,
-      *return_dictionary;
+static PyObject* call_RACFu(PyObject* self, PyObject* args) {
+  PyObject *request_dictionary, *request_dictionary, *return_dictionary;
 
-  printf("about to parse args!\n");
-  if (!PyArg_ParseTuple(args, "O", &request_dictionary)) {
-    return NULL;
-  }
-
-  printf("successfully parsed args!\n");
-  request_dictionary_str = PyObject_Str(request_dictionary);
+  printf("no args to parse!\n");
+  request_dictionary = PyObject_Str(args);
   printf("passed dictionary down?\n");
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
   printf("Request String: %s\n", request_as_string);
@@ -25,8 +19,6 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
   printf("about to call racfu!\n");
   racfu(&result, request_as_string);
   printf("successfully called racfu!\n");
-
-  result_dictionary = PyBytes_FromString(result.result_json);
 
   printf("about to call return!\n");
   return_dictionary = Py_BuildValue(
@@ -44,7 +36,7 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args, PyObject* kwargs) {
 
 // Method docstrings
 static char call_RACFu_docs[] =
-    "call_RACFu(request_dictionary: dict): Invokes RACFu with the specified "
+    "call_RACFu(request_json: string): Invokes RACFu with the specified "
     "json request."
     "Returns this information in a python dictionary. Included in this "
     "dictionary are "
@@ -53,16 +45,15 @@ static char call_RACFu_docs[] =
 
 // Method definition
 static PyMethodDef RACFu_py_methods[] = {
-    {"call_RACFu", (PyCFunction)call_RACFu, METH_VARARGS | METH_KEYWORDS,
-     call_RACFu_docs},
+    {"call_RACFu", (PyCFunction)call_RACFu, METH_O, call_RACFu_docs},
     {NULL}
 };
 
 // Module definition
 static struct PyModuleDef RACFu_py_module_def = {
     PyModuleDef_HEAD_INIT, "RACFu_py",
-    "Thin connecting layer that allows pyRACFu to invoke RACFu directly.\n", -1,
-    RACFu_py_methods};
+    "Thin connecting layer that allows python code to invoke RACFu directly.\n",
+    -1, RACFu_py_methods};
 
 // Module initialization function
 PyMODINIT_FUNC PyInit_RACFu_py(void) {

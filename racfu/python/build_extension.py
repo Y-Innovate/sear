@@ -27,7 +27,7 @@ def build(setup_kwargs: dict):
                             "racfu/c/irrsmo00/xml_parser.cpp",
                             "racfu/c/key_map/key_map.cpp",
                             "racfu/c/racfu.cpp",
-                            "racfu/python/RACFU_py.c"
+                            "racfu/python/RACFu_py.c"
                             ],
                         include_dirs=[
                             "racfu/c/irrseq00",
