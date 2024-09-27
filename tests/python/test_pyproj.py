@@ -2,14 +2,14 @@
 import json
 from pprint import pprint
 import os
-from RACFu import RACFAdmin
+from racfu import RACFu
 
 def call_smo_from_file(file_name: str, debug: bool = False, buffer_size: int = 10000):
-    test_admin = RACFAdmin(debug)
+    racfu_obj = RACFu(debug)
     file = open(file_name)
     data = json.load(file)
 
-    return test_admin.call_racf(data)
+    return racfu_obj.make_request(data).result
 
 extract_path = "tests/irrseq00/request_samples/"
 others_path = "tests/irrsmo00/request_samples/"

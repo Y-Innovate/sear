@@ -36,7 +36,7 @@
     ]
 
 [tool.poetry.build]
-    script = "racfu/python/build_extension.py"
+    script = "build_extension.py"
     generate-setup-file = true
 
 [tool.poetry.dependencies]
