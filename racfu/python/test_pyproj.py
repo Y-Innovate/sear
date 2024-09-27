@@ -2,7 +2,7 @@
 import json
 from pprint import pprint
 import os
-from pyRACFu import RACFAdmin
+from RACFu import RACFAdmin
 
 def call_smo_from_file(file_name: str, debug: bool = False, buffer_size: int = 10000):
     test_admin = RACFAdmin(debug)

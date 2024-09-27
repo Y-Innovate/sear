@@ -1,4 +1,3 @@
-#import cpyracf
 import json
 from ctypes import *
 import os
@@ -44,5 +43,3 @@ class RACFAdmin:
             print(json_res_string.decode("utf-8"))
 
         return json.loads(json_res_string.decode("utf-8"))
-    
-        #return cpyracf.call_irrsmo00_py(str(json.dumps()))
