@@ -30,12 +30,11 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args) {
 
 // Method docstrings
 static char call_RACFu_docs[] =
-    "call_RACFu(request_json: string): Invokes RACFu with the specified "
-    "json request."
+    "call_RACFu(self, request_json: string) -> dict: Invokes RACFu with "
+    "the specified json request."
     "Returns this information in a python dictionary. Included in this "
-    "dictionary are "
-    "return and reason codes from R_Admin and IRRSMO00 RACF Callable Services "
-    "and RACFu itself.\n";
+    "dictionary are return and reason codes from R_Admin and IRRSMO00 "
+    "RACF Callable Services and RACFu itself.\n";
 
 // Method definition
 static PyMethodDef RACFu_py_methods[] = {

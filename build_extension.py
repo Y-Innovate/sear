@@ -1,7 +1,8 @@
-"""Build pyRACFu_core Python extesion."""
+"""Build RACFu_py Python extension."""
 
 import os
 
+from glob import glob
 from setuptools import Extension
 from setuptools.command import build_ext
 
@@ -10,66 +11,29 @@ def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
     os.system("mkdir artifacts")
     os.system(f"as -mGOFF -I{os.path.join('racfu','c','irrseq00')} -o {os.path.join('artifacts','irrseq00.o')} {os.path.join('racfu','c','irrseq00','irrseq00.o')}")
-    if os.uname().sysname == "OS/390":
-        # Build the real python extension on z/OS
-        os.environ["CC"] = "ibm-clang"
-        os.environ["CXX"] = "ibm-clang++"
-        setup_kwargs.update(
-            {
-                "ext_modules": [
-                    Extension(
-                        "RACFu_py",
-                        sources=[
-                            "racfu/c/irrseq00/extract.cpp",
-                            "racfu/c/irrseq00/post_process.cpp",
-                            "racfu/c/irrsmo00/irrsmo00.cpp",
-                            "racfu/c/irrsmo00/xml_generator.cpp",
-                            "racfu/c/irrsmo00/xml_parser.cpp",
-                            "racfu/c/key_map/key_map.cpp",
-                            "racfu/c/racfu.cpp",
-                            "racfu/python/RACFu_py.c"
-                            ],
-                        include_dirs=[
-                            "racfu/c/irrseq00",
-                            "racfu/c/irrsmo00",
-                            "racfu/c/key_map",
-                            "racfu/c",
-                            "externals",
-                            "artifacts"
-                            ],
-                        extra_link_args = [
-                            "artifacts/irrseq00.o",
-                            "-m64",
-                            "-Wl,-b,edit=no"
-                        ]
-                    )
-                ],
-                "cmdclass": {"built_ext": build_ext},
-            }
-        )
-    else:
-        # Build the test python extension on non-z/OS
-        print("\n\n\n\n")
-        setup_kwargs.update(
-            {
-                "ext_modules": [
-                    Extension(
-                        "RACFu_py",
-                        sources=[
-                            "racfu/c/irrseq00/extract.cpp",
-                            "racfu/c/irrseq00/post_process.cpp",
-                            "racfu/c/irrsmo00/irsmo00.cpp",
-                            "racfu/c/irrsmo00/xml_generator.cpp",
-                            "racfu/c/irrsmo00/xml_parser.cpp",
-                            "racfu/c/key_map/key_map.cpp",
-                            "racfu/c/racfu.cpp"],
-                        include_dirs=["racfu/c/irrseq00", "racfu/c/irrsmo00", "racfu/c/key_map", "racfu/c"],
-                        libraries = ["artifacts/irrseq00.o"],
-                        extra_compile_args=["-o artifacts"
-                        ],
-                        extra_link_args=["-o dist/racfu.so"]
-                    )
-                ],
-                "cmdclass": {"built_ext": build_ext},
-            }
-        )
+    os.environ["CC"] = "ibm-clang"
+    os.environ["CXX"] = "ibm-clang++"
+    setup_kwargs.update(
+        {
+            "ext_modules": [
+                Extension(
+                    "RACFu_py",
+                    sources=(
+                        glob("racfu/c/**/*.cpp")+
+                        glob("racfu/**/*.cpp")+
+                        ["racfu/python/RACFu_py.c"]
+                        ),
+                    include_dirs=(
+                        glob("racfu/c/**/")+
+                        ["racfu/c","externals","artifacts"]
+                        ),
+                    extra_link_args = [
+                        "artifacts/irrseq00.o",
+                        "-m64",
+                        "-Wl,-b,edit=no"
+                    ]
+                )
+            ],
+            "cmdclass": {"built_ext": build_ext},
+        }
+    )

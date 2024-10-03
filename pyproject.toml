@@ -18,8 +18,8 @@
         "Elijah Swift <elijah.swift@ibm.com>",
     ]
     readme = "README.md"
-    repository = "https://github.ibm.com/lcarcaramo/racfu"
-    documentation = "https://github.ibm.com/lcarcaramo/racfu"
+    repository = "https://github.com/ambitus/racfu"
+    documentation = "https://ambitus.github.io/racfu/"
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
