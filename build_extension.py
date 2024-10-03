@@ -9,8 +9,6 @@ from setuptools.command import build_ext
 
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
-    os.system("mkdir artifacts")
-    os.system(f"as -mGOFF -I{os.path.join('racfu','c','irrseq00')} -o {os.path.join('artifacts','irrseq00.o')} {os.path.join('racfu','c','irrseq00','irrseq00.o')}")
     os.environ["CC"] = "ibm-clang"
     os.environ["CXX"] = "ibm-clang++"
     setup_kwargs.update(
@@ -28,9 +26,11 @@ def build(setup_kwargs: dict):
                         ["racfu/c","externals","artifacts"]
                         ),
                     extra_link_args = [
-                        "artifacts/irrseq00.o",
                         "-m64",
                         "-Wl,-b,edit=no"
+                    ],
+                    extra_objects = [
+                        "racfu/c/irrseq00.s"
                     ]
                 )
             ],
