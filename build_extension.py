@@ -6,11 +6,11 @@ from glob import glob
 from setuptools import Extension
 from setuptools.command import build_ext
 
-
 def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
     os.environ["CC"] = "ibm-clang"
     os.environ["CXX"] = "ibm-clang++"
+    os.system(f"as -mGOFF -I{os.path.join('racfu','c','irrseq00')} -o {os.path.join('racfu','c','irrseq00','irrseq00.o')} {os.path.join('racfu','c','irrseq00','irrseq00.s')}")
     setup_kwargs.update(
         {
             "ext_modules": [
@@ -30,7 +30,7 @@ def build(setup_kwargs: dict):
                         "-Wl,-b,edit=no"
                     ],
                     extra_objects = [
-                        "racfu/c/irrseq00/irrseq00.s"
+                        "racfu/c/irrseq00/irrseq00.o"
                     ]
                 )
             ],
