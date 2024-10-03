@@ -8,15 +8,21 @@ def call_smo_from_file(file_name: str, debug: bool = False):
     file = open(file_name)
     data = json.load(file)
 
-    return racfu(data, debug).result
+    result = racfu(data, debug).result
+
+    if debug:
+        pprint(f"{result.raw_request=}")
+        pprint(f"{result.raw_request=}")
+    
+    return result.result
 
 extract_path = "tests/irrseq00/request_samples/"
 others_path = "tests/irrsmo00/request_samples/"
 
 pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_add_user_request.json"))
+pprint(call_smo_from_file(others_path+"test_add_user_request.json",debug=True))
 pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_alter_user_request.json"))
+pprint(call_smo_from_file(others_path+"test_alter_user_request.json",debug=True))
 pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_delete_user_request.json"))
+pprint(call_smo_from_file(others_path+"test_delete_user_request.json",debug=True))
 pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))

@@ -1,8 +1,19 @@
+#define PY_SSIZE_T_CLEAN
+
 #include <Python.h>
 
 #include "racfu_result.h"
+#include <stdio.h>
+
 
 extern void racfu(racfu_result_t* result, const char* request_json);
+
+void print_hex_string(char *s, int len){
+  for(int i=0; i<len; i++){
+    printf("%02x", (unsigned int) *(s+i));
+  }
+  printf("\n");
+}
 
 // Entry point to the call_RACFu() function
 static PyObject* call_RACFu(PyObject* self, PyObject* args) {
@@ -15,10 +26,14 @@ static PyObject* call_RACFu(PyObject* self, PyObject* args) {
 
   racfu(&result, request_as_string);
 
+  printf("raw_request");
+  print_hex_string(result.raw_request, result.raw_request_length);
+  printf("raw_result");
+  print_hex_string(result.raw_result, result.raw_result_length);
+
   return_dictionary = Py_BuildValue(
-      "{s:y,s:B,s:y,s:B,s:s}", "raw_request", result.raw_request,
-      "raw_request_length", result.raw_request_length, "raw_result",
-      result.raw_result, "raw_result_length", result.raw_result_length,
+      "{s:y#,s:y#,s:s}", "raw_request", result.raw_request, result.raw_request_length,
+      "raw_result", result.raw_result, result.raw_result_length,
       "result_json", result.result_json);
 
   free(result.raw_request);
