@@ -30,7 +30,7 @@ def build(setup_kwargs: dict):
                         "-Wl,-b,edit=no"
                     ],
                     extra_objects = [
-                        "racfu/c/irrseq00.s"
+                        "racfu/c/irrseq00/irrseq00.s"
                     ]
                 )
             ],
