@@ -8,11 +8,11 @@ def call_smo_from_file(file_name: str, debug: bool = False):
     file = open(file_name)
     data = json.load(file)
 
-    result = racfu(data, debug).result
+    result = racfu(data, debug)
 
     if debug:
         pprint(f"{result.raw_request=}")
-        pprint(f"{result.raw_request=}")
+        pprint(f"{result.raw_result=}")
     
     return result.result
 
