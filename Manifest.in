@@ -1,1 +1,2 @@
-include externals/nlohmann/*
+include externals/nlohmann/*.hpp
+include externals/nlohmann/*.MIT
