@@ -23,12 +23,15 @@ def build(setup_kwargs: dict):
                         ),
                     include_dirs=(
                         glob("racfu/c/**/")+
-                        ["racfu/c","externals","artifacts"]
+                        ["racfu/c","externals"]
                         ),
                     extra_link_args = [
                         "-m64",
                         "-Wl,-b,edit=no"
                     ],
+                    libraries = [
+                        "externals"
+                    ]
                     extra_objects = [
                         "racfu/c/irrseq00/irrseq00.o"
                     ]
