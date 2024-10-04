@@ -30,7 +30,7 @@ def build(setup_kwargs: dict):
                         "-Wl,-b,edit=no"
                     ],
                     libraries = [
-                        "externals"
+                        "externals/nlohmann/json.hpp"
                     ],
                     extra_objects = [
                         "racfu/c/irrseq00/irrseq00.o"
