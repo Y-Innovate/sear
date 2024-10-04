@@ -31,7 +31,7 @@ def build(setup_kwargs: dict):
                     ],
                     libraries = [
                         "externals"
-                    ]
+                    ],
                     extra_objects = [
                         "racfu/c/irrseq00/irrseq00.o"
                     ]
