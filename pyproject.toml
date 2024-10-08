@@ -18,6 +18,9 @@
         "Elijah Swift <elijah.swift@ibm.com>",
     ]
     readme = "README.md"
+    include = [
+        { path = "externals", format = "sdist" }
+    ]
     repository = "https://github.com/ambitus/racfu"
     documentation = "https://ambitus.github.io/racfu/"
     classifiers=[
