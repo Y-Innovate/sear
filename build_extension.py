@@ -10,20 +10,20 @@ def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
     os.environ["CC"] = "ibm-clang"
     os.environ["CXX"] = "ibm-clang++"
-    os.system(f"as -mGOFF -I{os.path.join('racfu','c','irrseq00')} -o {os.path.join('racfu','c','irrseq00','irrseq00.o')} {os.path.join('racfu','c','irrseq00','irrseq00.s')}")
+    os.system(f"as -mGOFF -I{os.path.join('racfu','irrseq00')} -o {os.path.join('racfu','irrseq00','irrseq00.o')} {os.path.join('racfu','irrseq00','irrseq00.s')}")
     setup_kwargs.update(
         {
             "ext_modules": [
                 Extension(
                     "RACFu_py",
                     sources=(
-                        glob("racfu/c/**/*.cpp")+
                         glob("racfu/**/*.cpp")+
+                        glob("racfu/*.cpp")+
                         ["racfu/python/RACFu_py.c"]
                         ),
                     include_dirs=(
-                        glob("racfu/c/**/")+
-                        ["racfu/c","externals"]
+                        glob("racfu/**/")+
+                        ["racfu","externals"]
                         ),
                     extra_link_args = [
                         "-m64",
@@ -33,7 +33,7 @@ def build(setup_kwargs: dict):
                         "externals/nlohmann/json.hpp"
                     ],
                     extra_objects = [
-                        "racfu/c/irrseq00/irrseq00.o"
+                        "racfu/irrseq00/irrseq00.o"
                     ]
                 )
             ],
