@@ -19,7 +19,7 @@ def build(setup_kwargs: dict):
                     sources=(
                         glob("racfu/**/*.cpp")+
                         glob("racfu/*.cpp")+
-                        ["racfu/python/RACFu_py.c"]
+                        ["racfu_py/RACFu_py.c"]
                         ),
                     include_dirs=(
                         glob("racfu/**/")+

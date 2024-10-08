@@ -3,7 +3,7 @@
     requires = ["poetry-core>=1.9.0", "setuptools>=69"]
 
 [tool.poetry]
-    name="RACFu"
+    name="RACFu_py"
     version="1.0a1"
     description="Python interface to RACF using RACF Callable Services."
     license = "Apache-2.0"
