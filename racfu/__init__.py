@@ -1,3 +1,4 @@
-"""Make RACFu class available from package root."""
+"""Make RACFu function available from package root."""
 
 from .python.RACFu import racfu
+from .python.RACFu import RACFuResult
