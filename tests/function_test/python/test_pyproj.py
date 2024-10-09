@@ -4,21 +4,58 @@ from pprint import pprint
 import os
 from racfu import racfu
 
-def call_smo_from_file(file_name: str, debug: bool = False):
-    file = open(file_name)
-    data = json.load(file)
+test_user = "SQUIDWRD"
 
-    result = racfu(data, debug)
-    
-    return result.result
+irrseq00_request_failure = {
+  "operation": "extract",
+  "admin_type": "user",
+  "profile_name": "SQUIDWRD"
+}
 
-extract_path = "tests/irrseq00/request_samples/"
-others_path = "tests/irrsmo00/request_samples/"
+irrseq00_request_success = {
+  "operation": "extract",
+  "admin_type": "user",
+  "profile_name": f"{test_user}"
+}
 
-pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_add_user_request.json",debug=True))
-pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_alter_user_request.json",debug=True))
-pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
-pprint(call_smo_from_file(others_path+"test_delete_user_request.json",debug=True))
-pprint(call_smo_from_file(extract_path+"test_extract_user_request.json"))
+irrsmo00_request_failure = {
+  "operation": "delete",
+  "admin_type": "user",
+  "profile_name": "SQUIDWRD"
+}
+
+irrsmo00_request_success = {
+  "operation": "alter",
+  "admin_type": "user",
+  "profile_name": f"{test_user}",
+  "traits": {
+    "base:name": "Squilliam"
+  }
+}
+
+add_user_for_testing = {
+  "operation": "add",
+  "admin_type": "user",
+  "profile_name": "SQUIDWRD",
+  "traits": {
+    "base:name": "Squidward",
+    "omvs:uid": 24,
+    "omvs:home_directory": "/u/squidwrd"
+  }
+}
+
+print("IRRSEQ00 FAILURE")
+pprint(racfu(irrseq00_request_failure).result)
+print("IRRSMO00 FAILURE")
+pprint(racfu(irrsmo00_request_failure).result)
+
+#Temporary measure to allow function testing successes in current environment
+racfu(add_user_for_testing)
+
+print("IRRSEQ00 SUCCESS")
+pprint(racfu(irrseq00_request_success).result)
+print("IRRSMO00 SUCCESS")
+pprint(racfu(irrsmo00_request_success).result)
+
+#Temporary measure to allow function testing successes in current environment
+racfu(irrsmo00_request_failure)
