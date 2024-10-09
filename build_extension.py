@@ -10,7 +10,9 @@ def build(setup_kwargs: dict):
     """Python extension build entrypoint."""
     os.environ["CC"] = "ibm-clang"
     os.environ["CXX"] = "ibm-clang++"
-    os.system(f"as -mGOFF -I{os.path.join('racfu','irrseq00')} -o {os.path.join('racfu','irrseq00','irrseq00.o')} {os.path.join('racfu','irrseq00','irrseq00.s')}")
+    assemble_command = f"as -mGOFF -I{os.path.join('racfu','irrseq00')} -o {os.path.join('racfu','irrseq00','irrseq00.o')} {os.path.join('racfu','irrseq00','irrseq00.s')}"
+    print(assemble_command)
+    os.system(assemble_command)
     setup_kwargs.update(
         {
             "ext_modules": [
