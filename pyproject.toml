@@ -18,6 +18,9 @@
         "Elijah Swift <elijah.swift@ibm.com>",
     ]
     readme = "README.md"
+    packages = [
+        { include = "racfu", from = "racfu/python" },
+    ]
     include = [
         { path = "externals", format = "sdist" }
     ]
