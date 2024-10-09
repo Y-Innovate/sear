@@ -19,7 +19,7 @@
     ]
     readme = "README.md"
     packages = [
-        { include = "racfu", from = "racfu/python" },
+        { include = "*.py*", from = "racfu/python" },
     ]
     include = [
         { path = "externals", format = "sdist" }
