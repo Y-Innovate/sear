@@ -44,7 +44,7 @@
     ]
 
 [tool.poetry.build]
-    script = "build_extension.py"
+    script = "python/build_extension.py"
     generate-setup-file = true
 
 [tool.poetry.dependencies]
