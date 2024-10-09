@@ -19,9 +19,11 @@
     ]
     readme = "README.md"
     packages = [
-        { include = "*.py*", from = "racfu/python" },
+        {include = "racfu", from = "python"}
     ]
     include = [
+        { path = "racfu/**/*", format = "sdist" },
+        { path = "racfu/*", format = "sdist" },
         { path = "externals", format = "sdist" }
     ]
     repository = "https://github.com/ambitus/racfu"

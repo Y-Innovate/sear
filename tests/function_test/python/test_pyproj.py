@@ -2,7 +2,7 @@
 import json
 from pprint import pprint
 import os
-from racfu import racfu
+from racfu_py import racfu
 
 def call_smo_from_file(file_name: str, debug: bool = False):
     file = open(file_name)
