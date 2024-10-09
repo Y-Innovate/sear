@@ -14,7 +14,8 @@ def assemble(asm_file: str, asm_directory: str):
     os.system(make_artifacts)
 
     library_file = asm_file.split(".")[0]+".o"
-    assemble_command = f"as -mGOFF -I{asm_directory} -o {os.path.join('artifacts',library_file)} {os.path.join(asm_directory,asm_file)}"
+    cwd = os.getcwd()
+    assemble_command = f"as -mGOFF -I{os.path.join(cwd, asm_directory)} -o {os.path.join(cwd, 'artifacts', library_file)} {os.path.join(cwd, asm_directory, asm_file)}"
     print(assemble_command)
     os.system(assemble_command)
 
