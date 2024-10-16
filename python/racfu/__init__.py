@@ -1,4 +1,4 @@
-"""Make RACFu function available from package root."""
+"""Make racfu function available from package root."""
 
-from .RACFu import racfu
-from .RACFu import RACFuResult
+from .racfu import racfu
+from .racfu import racfuResult
