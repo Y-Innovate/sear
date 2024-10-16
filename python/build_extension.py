@@ -8,7 +8,7 @@ from setuptools.command import build_ext
 
 def assemble(asm_file: str, asm_directory: str):
     """Python extension assembling underlying objects"""
-    print(f"Assembling module {asm_file} from directory {asm_directory}")
+    print(f"assembling {asm_directory}/{asm_file}")
     make_artifacts = "mkdir artifacts"
     print(make_artifacts)
     os.system(make_artifacts)
