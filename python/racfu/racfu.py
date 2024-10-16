@@ -1,5 +1,5 @@
 import json
-import python.racfu.racfu_py as racfu_py
+import racfu_py
 
 class racfuResult:
     def __init__(
