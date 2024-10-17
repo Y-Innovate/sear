@@ -43,9 +43,6 @@ def build(setup_kwargs: dict):
                         "-m64",
                         "-Wl,-b,edit=no"
                     ],
-                    libraries = [
-                        "externals/nlohmann/json.hpp"
-                    ],
                     extra_objects = [
                         "artifacts/irrseq00.o"
                     ]

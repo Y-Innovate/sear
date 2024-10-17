@@ -3,7 +3,15 @@
 
 #include "racfu_result.h"
 
-extern void racfu(racfu_result_t *result, const char *request_json);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void racfu(racfu_result_t *result, const char *request_json);
+
+#ifdef __cplusplus
+}
+#endif
 
 #pragma export(racfu)
 
