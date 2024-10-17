@@ -29,7 +29,7 @@ def build(setup_kwargs: dict):
         {
             "ext_modules": [
                 Extension(
-                    "_racfu",
+                    "racfu._C",
                     sources=(
                         glob("racfu/**/*.cpp")+
                         glob("racfu/*.cpp")+

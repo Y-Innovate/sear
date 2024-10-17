@@ -2,7 +2,7 @@
 
 #include <Python.h>
 
-#include "racfu.hpp"
+#include "racfu.h"
 
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args) {
@@ -28,19 +28,19 @@ static PyObject* call_racfu(PyObject* self, PyObject* args) {
 }
 
 // Method definition
-static PyMethodDef _racfu_methods[] = {
+static PyMethodDef _C_methods[] = {
     {"call_racfu", (PyCFunction)call_racfu, METH_O,
      "Python interface to RACF administration APIs"},
     {NULL}
 };
 
 // Module definition
-static struct PyModuleDef _racfu_module_def = {
-    PyModuleDef_HEAD_INIT, "_racfu",
-    "Python interface to RACF administration APIs", -1, _racfu_methods};
+static struct PyModuleDef _C_module_def = {
+    PyModuleDef_HEAD_INIT, "_C", "Python interface to RACF administration APIs",
+    -1, _C_methods};
 
 // Module initialization function
-PyMODINIT_FUNC PyInit__racfu(void) {
+PyMODINIT_FUNC PyInit__C(void) {
   Py_Initialize();
-  return PyModule_Create(&_racfu_module_def);
+  return PyModule_Create(&_C_module_def);
 }

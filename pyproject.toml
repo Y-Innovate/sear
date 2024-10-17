@@ -26,6 +26,9 @@
         { path = "racfu/*", format = "sdist" },
         { path = "externals", format = "sdist" }
     ]
+    exclude = [
+        "externals/.clang-format"
+    ]
     repository = "https://github.com/ambitus/racfu"
     documentation = "https://ambitus.github.io/racfu/"
     classifiers=[
