@@ -1,4 +1,4 @@
-"""Build racfu_py Python extension."""
+"""Build _racfu Python extension."""
 
 import os
 
@@ -29,11 +29,10 @@ def build(setup_kwargs: dict):
         {
             "ext_modules": [
                 Extension(
-                    "racfu_py",
+                    "_racfu",
                     sources=(
                         glob("racfu/**/*.cpp")+
-                        glob("racfu/*.cpp")+
-                        ["python/racfu/racfu_py.c"]
+                        glob("racfu/*.cpp")
                         ),
                     include_dirs=(
                         glob("racfu/**/")+

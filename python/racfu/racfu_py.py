@@ -1,5 +1,5 @@
 import json
-import racfu_py
+import _racfu
 
 class racfuResult:
     def __init__(
@@ -20,7 +20,7 @@ def racfu(request_dict: dict, debug_mode: bool = False) -> dict:
     if debug_mode:
         request_dict["debug_mode"] = True
 
-    response = racfu_py.call_racfu(json.dumps(request_dict))
+    response = _racfu.call_racfu(json.dumps(request_dict))
     
     result = racfuResult(
         request = request_dict,

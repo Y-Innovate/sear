@@ -38,19 +38,19 @@ static char call_racfu_docs[] =
     "RACF Callable Services and racfu itself.\n";
 
 // Method definition
-static PyMethodDef racfu_py_methods[] = {
+static PyMethodDef _racfu_methods[] = {
     {"call_racfu", (PyCFunction)call_racfu, METH_O, call_racfu_docs},
     {NULL}
 };
 
 // Module definition
-static struct PyModuleDef racfu_py_module_def = {
-    PyModuleDef_HEAD_INIT, "racfu_py",
+static struct PyModuleDef _racfu_module_def = {
+    PyModuleDef_HEAD_INIT, "_racfu",
     "Thin connecting layer that allows python code to invoke racfu directly.\n",
-    -1, racfu_py_methods};
+    -1, _racfu_methods};
 
 // Module initialization function
-PyMODINIT_FUNC PyInit_racfu_py(void) {
+PyMODINIT_FUNC PyInit__racfu(void) {
   Py_Initialize();
-  return PyModule_Create(&racfu_py_module_def);
+  return PyModule_Create(&_racfu_module_def);
 }
