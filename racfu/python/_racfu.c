@@ -2,9 +2,7 @@
 
 #include <Python.h>
 
-#include "racfu_result.h"
-
-extern void racfu(racfu_result_t* result, const char* request_json);
+#include "racfu.hpp"
 
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args) {
@@ -29,25 +27,17 @@ static PyObject* call_racfu(PyObject* self, PyObject* args) {
   return return_dictionary;
 }
 
-// Method docstrings
-static char call_racfu_docs[] =
-    "call_racfu(self, request_json: string) -> dict: Invokes racfu with "
-    "the specified json request."
-    "Returns this information in a python dictionary. Included in this "
-    "dictionary are return and reason codes from R_Admin and IRRSMO00 "
-    "RACF Callable Services and racfu itself.\n";
-
 // Method definition
 static PyMethodDef _racfu_methods[] = {
-    {"call_racfu", (PyCFunction)call_racfu, METH_O, call_racfu_docs},
+    {"call_racfu", (PyCFunction)call_racfu, METH_O,
+     "Python interface to RACF administration APIs"},
     {NULL}
 };
 
 // Module definition
 static struct PyModuleDef _racfu_module_def = {
     PyModuleDef_HEAD_INIT, "_racfu",
-    "Thin connecting layer that allows python code to invoke racfu directly.\n",
-    -1, _racfu_methods};
+    "Python interface to RACF administration APIs", -1, _racfu_methods};
 
 // Module initialization function
 PyMODINIT_FUNC PyInit__racfu(void) {

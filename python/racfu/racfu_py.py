@@ -1,7 +1,7 @@
 import json
 import _racfu
 
-class racfuResult:
+class SecurityResult:
     def __init__(
             self,
             request: dict,
@@ -22,7 +22,7 @@ def racfu(request_dict: dict, debug_mode: bool = False) -> dict:
 
     response = _racfu.call_racfu(json.dumps(request_dict))
     
-    result = racfuResult(
+    result = SecurityResult(
         request = request_dict,
         raw_request = response["raw_request"],
         raw_result = response["raw_result"],

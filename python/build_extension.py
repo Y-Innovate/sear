@@ -32,7 +32,8 @@ def build(setup_kwargs: dict):
                     "_racfu",
                     sources=(
                         glob("racfu/**/*.cpp")+
-                        glob("racfu/*.cpp")
+                        glob("racfu/*.cpp")+
+                        ["racfu/python/_racfu.c"]
                         ),
                     include_dirs=(
                         glob("racfu/**/")+
