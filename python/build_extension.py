@@ -8,14 +8,20 @@ from setuptools.command import build_ext
 
 def assemble(asm_file: str, asm_directory: str):
     """Python extension assembling underlying objects"""
-    print(f"assembling {asm_directory}/{asm_file}")
-    make_artifacts = "mkdir artifacts"
-    print(make_artifacts)
-    os.system(make_artifacts)
-
-    library_file = asm_file.split(".")[0]+".o"
     cwd = os.getcwd()
-    assemble_command = f"as -mGOFF -I{os.path.join(cwd, asm_directory)} -o {os.path.join(cwd, 'artifacts', library_file)} {os.path.join(cwd, asm_directory, asm_file)}"
+    include_path = os.path.join(cwd, asm_directory)
+    source_path = os.path.join(os.path.join(cwd, asm_directory, asm_file))
+    obj_dir = os.path.join(cwd, "artifacts")
+    obj_file = asm_file.split(".")[0]+".o"
+    obj_path = os.path.join(obj_dir, obj_file)
+
+    print(f"assembling {source_path}")
+
+    mkdir_command = f"mkdir {obj_dir}"
+    print(mkdir_command)
+    os.system(mkdir_command)
+
+    assemble_command = f"as -mGOFF -I{include_path} -o {obj_path} {source_path}"
     print(assemble_command)
     os.system(assemble_command)
 
