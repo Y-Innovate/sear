@@ -15,18 +15,12 @@ class SecurityResult:
         self.result = result       
 
     
-def racfu(request_dict: dict, debug_mode: bool = False) -> dict:
-    """Calls racfu"""
-    if debug_mode:
-        request_dict["debug_mode"] = True
-
+def racfu(request_dict: dict) -> dict:
+    """Call racfu"""
     response = call_racfu(json.dumps(request_dict))
-    
-    result = SecurityResult(
+    return SecurityResult(
         request = request_dict,
         raw_request = response["raw_request"],
         raw_result = response["raw_result"],
         result = json.loads(response['result_json'])
     )
-
-    return result

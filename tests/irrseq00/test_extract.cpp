@@ -3,7 +3,7 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "racfu/c/racfu.h"
+#include "racfu/racfu.h"
 #include "tests/mock/irrseq00.hpp"
 #include "tests/unit_test_utilities.hpp"
 #include "tests/unity/unity.h"
