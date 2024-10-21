@@ -37,7 +37,6 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
     where = ["python"]
     include = ["racfu"]
-    exclude = ["externals/.clang-format"]
 
 [project.urls]
     Repository = "https://github.com/ambitus/racfu"

@@ -1,0 +1,5 @@
+graft externals
+graft artifacts
+include racfu/**/*.hpp
+include racfu/*.h
+exclude externals/.clang-format
