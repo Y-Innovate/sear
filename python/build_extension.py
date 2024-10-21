@@ -2,26 +2,32 @@
 
 import os
 
+from pathlib import Path
 from glob import glob
 from setuptools import Extension
 from setuptools.command import build_ext
 
 def assemble(asm_file: str, asm_directory: str):
     """Python extension assembling underlying objects"""
-    cwd = os.getcwd()
-    include_path = os.path.join(cwd, asm_directory)
-    source_path = os.path.join(os.path.join(cwd, asm_directory, asm_file))
-    obj_dir = os.path.join(cwd, "artifacts")
     obj_file = asm_file.split(".")[0]+".o"
-    obj_path = os.path.join(obj_dir, obj_file)
+    cwd = Path.cwd()
+    source_file = cwd / asm_directory / asm_file
+    obj_file = cwd / "artifacts" / obj_file
 
-    print(f"assembling {source_path}")
+    if obj_file.exists():
+        print(f"using existing object {obj_file}")
+        return
 
-    mkdir_command = f"mkdir {obj_dir}"
-    print(mkdir_command)
-    os.system(mkdir_command)
+    print(f"assembling {source_file}")
 
-    assemble_command = f"as -mGOFF -I{include_path} -o {obj_path} {source_path}"
+    if not obj_file.parents[0].is_dir():
+        if obj_file.parents[0].exists():
+            raise Exception(f'local "artifacts" file exists but is not a directory; cannot use this for {source_file} assembly')
+        mkdir_command = f"mkdir {obj_file.parents[0]}"
+        print(mkdir_command)
+        os.system(mkdir_command)
+
+    assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
     os.system(assemble_command)
 
