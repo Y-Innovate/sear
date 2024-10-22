@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from glob import glob
 from setuptools import Extension, setup
+from setuptools.command.build_ext import build_ext
 
 def assemble(asm_file: str, asm_directory: str):
     """Python extension assembling underlying objects"""
@@ -31,6 +32,13 @@ def assemble(asm_file: str, asm_directory: str):
     os.system(assemble_command)
 
 
+class build_and_asm_ext(build_ext):
+    def run(self):
+        os.environ["CC"] = "ibm-clang"
+        os.environ["CXX"] = "ibm-clang++"
+        assemble("irrseq00.s", os.path.join('racfu','irrseq00'))
+        super().run()
+
 def main():
     """Python extension build entrypoint."""
     setup_args ={
@@ -54,11 +62,9 @@ def main():
                         "artifacts/irrseq00.o"
                     ]
                 )
-            ]
+            ],
+            "cmdclass": {"build_ext": build_and_asm_ext}
     }
-    os.environ["CC"] = "ibm-clang"
-    os.environ["CXX"] = "ibm-clang++"
-    assemble("irrseq00.s", os.path.join('racfu','irrseq00'))
     setup(**setup_args)
 
 if __name__ == "__main__":
