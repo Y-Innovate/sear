@@ -1,5 +1,5 @@
 graft externals
 include racfu/**/*.hpp
-include racfu/**/*.s
+include racfu/irrseq00/*
 include racfu/*.h
 exclude externals/.clang-format
