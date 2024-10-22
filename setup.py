@@ -29,7 +29,9 @@ def assemble(asm_file: str, asm_directory: str):
 
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
-    os.system(assemble_command)
+    status = os.system(assemble_command)
+    if status > 0:
+        raise Exception(f'non-zero RC returned from {source_file} assembly')
 
 
 class build_and_asm_ext(build_ext):
