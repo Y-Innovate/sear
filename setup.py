@@ -36,11 +36,14 @@ class build_and_asm_ext(build_ext):
     def run(self):
         os.environ["CC"] = "ibm-clang"
         os.environ["CXX"] = "ibm-clang++"
-        assemble("irrseq00.s", os.path.join('racfu','irrseq00'))
+        racfu_source_path = Path("racfu")
+        assemble("irrseq00.s", racfu_source_path / 'irrseq00')
         super().run()
 
 def main():
     """Python extension build entrypoint."""
+    cwd = Path.cwd()
+    assembled_object_path = cwd / "artifacts" / "irrseq00.o"
     setup_args ={
         "ext_modules": [
                 Extension(
@@ -59,7 +62,7 @@ def main():
                         "-Wl,-b,edit=no"
                     ],
                     extra_objects = [
-                        "artifacts/irrseq00.o"
+                        f"{assembled_object_path}"
                     ]
                 )
             ],
