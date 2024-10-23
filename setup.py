@@ -27,9 +27,14 @@ def assemble(asm_file: str, asm_directory: str):
         print(mkdir_command)
         os.system(mkdir_command)
 
+    chtag_command = f"chtag -t -c UTF-8 {source_file}"
+    print(chtag_command)
+    os.system(chtag_command)
+
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
     status = os.system(assemble_command)
+
     if status > 0:
         raise Exception(f'non-zero RC returned from {source_file} assembly')
 
