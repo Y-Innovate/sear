@@ -15,19 +15,17 @@ def assemble(asm_file: str, asm_directory: str):
     obj_file = cwd / "artifacts" / obj_file
 
     if obj_file.exists():
-        print(f"using existing object {obj_file}")
         return
 
     print(f"assembling {source_file}")
 
     if not obj_file.parents[0].is_dir():
-        if obj_file.parents[0].exists():
-            raise Exception(f'local "artifacts" file exists but is not a directory; cannot use this for {source_file} assembly')
         mkdir_command = f"mkdir {obj_file.parents[0]}"
         print(mkdir_command)
         os.system(mkdir_command)
 
-    chtag_command = f"chtag -t -c UTF-8 {source_file}"
+    #Temporary workaround that did not work
+    chtag_command = f"chtag -t -c IBM-1047 {source_file}"
     print(chtag_command)
     os.system(chtag_command)
 
