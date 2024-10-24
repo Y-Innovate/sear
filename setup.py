@@ -1,6 +1,7 @@
 """Build _racfu Python extension."""
 
 import os
+import subprocess
 
 from pathlib import Path
 from glob import glob
@@ -22,15 +23,11 @@ def assemble(asm_file: str, asm_directory: str):
     if not obj_file.parents[0].is_dir():
         mkdir_command = f"mkdir {obj_file.parents[0]}"
         print(mkdir_command)
-        os.system(mkdir_command)
+        subprocess.run(mkdir_command.split(" "))
 
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
-    status = os.system(assemble_command)
-
-    if status > 0:
-        raise Exception(f'non-zero RC returned from {source_file} assembly')
-
+    subprocess.run(assemble_command.split(" "))
 
 class build_and_asm_ext(build_ext):
     def run(self):
