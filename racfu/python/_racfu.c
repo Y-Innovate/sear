@@ -6,7 +6,7 @@
 
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args) {
-  PyObject *request_dictionary, *return_dictionary;
+  PyObject *request_dictionary, *result_dictionary;
 
   request_dictionary = PyObject_Str(args);
   const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
@@ -15,7 +15,7 @@ static PyObject* call_racfu(PyObject* self, PyObject* args) {
 
   racfu(&result, request_as_string);
 
-  return_dictionary = Py_BuildValue(
+  result_dictionary = Py_BuildValue(
       "{s:y#,s:y#,s:s}", "raw_request", result.raw_request,
       result.raw_request_length, "raw_result", result.raw_result,
       result.raw_result_length, "result_json", result.result_json);
@@ -24,7 +24,7 @@ static PyObject* call_racfu(PyObject* self, PyObject* args) {
   free(result.raw_result);
   free(result.result_json);
 
-  return return_dictionary;
+  return result_dictionary;
 }
 
 // Method definition
