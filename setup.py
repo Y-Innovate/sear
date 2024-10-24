@@ -24,11 +24,6 @@ def assemble(asm_file: str, asm_directory: str):
         print(mkdir_command)
         os.system(mkdir_command)
 
-    #Temporary workaround that did not work
-    chtag_command = f"chtag -t -c IBM-1047 {source_file}"
-    print(chtag_command)
-    os.system(chtag_command)
-
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
     status = os.system(assemble_command)
