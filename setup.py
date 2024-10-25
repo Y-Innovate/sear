@@ -23,11 +23,11 @@ def assemble(asm_file: str, asm_directory: str):
     if not obj_file.parents[0].is_dir():
         mkdir_command = f"mkdir {obj_file.parents[0]}"
         print(mkdir_command)
-        subprocess.run(mkdir_command.split(" "))
+        subprocess.run(mkdir_command, shell=True, check=True)
 
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
-    subprocess.run(assemble_command.split(" "))
+    subprocess.run(assemble_command, shell=True, check=True)
 
 class build_and_asm_ext(build_ext):
     def run(self):
