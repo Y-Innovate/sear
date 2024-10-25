@@ -1,4 +1,4 @@
-#include "racfu.hpp"
+#include "racfu.h"
 
 #include <stdint.h>
 
@@ -204,7 +204,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   }
 
   xml_response_string =
-      call_irrsmo00(xml_request_string, running_userid, result_buffer_size,
+      call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
 
   return_codes->saf_return_code = saf_rc;
@@ -242,9 +242,9 @@ void build_result(const char *operation, const char *admin_type,
   nlohmann::json return_code_json = {
       {"return_codes",
        {{"saf_return_code", return_codes->saf_return_code},
-       {"racf_return_code", return_codes->racf_return_code},
-       {"racf_reason_code", return_codes->racf_reason_code},
-       {"racfu_return_code", return_codes->racfu_return_code}}}
+        {"racf_return_code", return_codes->racf_return_code},
+        {"racf_reason_code", return_codes->racf_reason_code},
+        {"racfu_return_code", return_codes->racfu_return_code}}}
   };
 
   // Convert '-1' to 'nullptr'

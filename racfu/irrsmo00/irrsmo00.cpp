@@ -8,7 +8,7 @@
 #include "xml_parser.hpp"
 
 char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int result_buffer_size, int irrsmo00_options,
+                    unsigned int *result_buffer_size, int irrsmo00_options,
                     int *saf_rc, int *racf_rc, int *racf_rsn, bool debug) {
   char work_area[1024];
   char req_handle[64] = {0};
@@ -17,9 +17,9 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   unsigned int alet = 0;
   unsigned int acee = 0;
   char *result_buffer =
-      static_cast<char *>(calloc(result_buffer_size, sizeof(char)));
+      static_cast<char *>(calloc(*result_buffer_size, sizeof(char)));
   int request_xml_length = strlen(request_xml);
-  int result_len = result_buffer_size;
+  int result_len = *result_buffer_size;
   int num_parms = 17;
   int fn = 1;
 
@@ -37,6 +37,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
 
   if (((*saf_rc != 8) || (*racf_rc != 4000)) ||
       ((*saf_rc == 8) && (*racf_rc == 4000) && (*racf_rsn > 100000000))) {
+    *result_buffer_size = result_len;
     return result_buffer;
   }
 
@@ -50,6 +51,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   strncpy(full_result, result_buffer, result_len);
   free(result_buffer);
   result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
+  *result_buffer_size = result_len;
   result_len = *racf_rsn;
 
   // Call IRRSMO64 Again with the appropriate buffer size
@@ -58,5 +60,6 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
            reinterpret_cast<char *>(&running_userid_struct), acee, &result_len,
            result_buffer_ptr);
 
+  *result_buffer_size += result_len;
   return full_result;
 }
