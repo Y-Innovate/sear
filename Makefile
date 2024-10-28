@@ -4,10 +4,10 @@ ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
 
 # Directory Paths
-SRC				= ${PWD}/racfu/c
-IRRSMO00_SRC	= ${PWD}/racfu/c/irrsmo00
-IRRSEQ00_SRC	= ${PWD}/racfu/c/irrseq00
-KEY_MAP			= ${PWD}/racfu/c/key_map
+SRC				= ${PWD}/racfu
+IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
+IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
+KEY_MAP			= ${PWD}/racfu/key_map
 EXTERNALS		= ${PWD}/externals
 TESTS			= ${PWD}/tests
 

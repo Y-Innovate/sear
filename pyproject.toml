@@ -1,27 +1,26 @@
 [build-system]
-    build-backend = "poetry.core.masonry.api"
-    requires = ["poetry-core>=1.9.0", "setuptools>=69"]
+requires = ["setuptools >= 75.2.0"]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry]
-    name="pyRACFu"
+[project]
+    name="racfu"
     version="1.0a1"
-    description="Python interface to RACF using RACF Callable Services."
-    license = "Apache-2.0"
+    requires-python = ">= 3.10"
     authors = [
-        "Joe Bostian <jbostian@ibm.com>",
-        "Frank De Gilio <degilio@us.ibm.com>",
-        "Leonard J. Carcaramo Jr <lcarcaramo@ibm.com>",
-        "Elijah Swift <elijah.swift@ibm.com>",
+        { name = "Joe Bostian", email = "jbostian@ibm.com" },
+        { name = "Frank De Gilio", email = "degilio@us.ibm.com" },
+        { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
+        { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
     ]
     maintainers = [
-        "Leonard J. Carcaramo Jr <lcarcaramo@ibm.com>",
-        "Elijah Swift <elijah.swift@ibm.com>",
+        { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
+        { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
     ]
-    readme = "../README.md"
-    repository = "https://github.com/ambitus/pyracf"
-    documentation = "https://ambitus.github.io/pyracf/"
+    description="Python interface to RACF using RACF Callable Services."
+    readme = "README.md"
+    license = {text = "Apache-2.0"}
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Other",
@@ -35,22 +34,25 @@
         "Topic :: System :: Systems Administration",
     ]
 
-[tool.poetry.build]
-    script = "build_extension.py"
-    generate-setup-file = true
+[tool.setuptools.packages.find]
+    where = ["python"]
+    include = ["racfu"]
 
-[tool.poetry.dependencies]
-    python = ">=3.10"
+[project.urls]
+    Repository = "https://github.com/ambitus/racfu"
+    Documentation = "https://ambitus.github.io/racfu/"
 
-[tool.poetry.group.dev.dependencies]
-    isort = ">=5.13.2"
-    pre-commit = ">=3.6.0"
-    black = ">=24.1.1"
-    flake8 = ">=7.0.0"
-    pylint = ">=3.0.3"
-    coverage = ">=7.4.1"
-    wheel = ">=0.42.0"
-    ebcdic = ">=1.1.1"
+[project.optional-dependencies]
+    dev = [
+        "isort >= 5.13.2",
+        "pre-commit >= 3.6.0",
+        "black >= 24.1.1",
+        "flake8 >= 7.0.0",
+        "pylint >= 3.0.3",
+        "coverage >= 7.4.1",
+        "wheel >= 0.42.0",
+        "ebcdic >= 1.1.1",
+    ]
 
 [tool.isort]
     profile = "black"

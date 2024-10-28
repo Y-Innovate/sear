@@ -1,0 +1,3 @@
+""" Thin connecting layer that allows python code to invoke racfu directly. """
+
+def call_racfu(self, request_json: str) -> dict: ...
