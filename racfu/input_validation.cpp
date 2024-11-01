@@ -1,7 +1,6 @@
 #include "input_validation.hpp"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include <nlohmann/json.hpp>
 #include <string>

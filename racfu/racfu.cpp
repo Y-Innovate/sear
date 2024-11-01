@@ -1,7 +1,6 @@
 #include "racfu.h"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include <nlohmann/json.hpp>
 #include <string>

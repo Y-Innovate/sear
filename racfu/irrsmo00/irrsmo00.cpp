@@ -1,6 +1,5 @@
 #include "irrsmo00.hpp"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
