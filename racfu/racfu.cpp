@@ -1,11 +1,13 @@
 #include "racfu.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
 
 #include "extract.hpp"
+#include "input_validation.hpp"
 #include "irrsmo00.hpp"
 #include "post_process.hpp"
 #include "xml_generator.hpp"
@@ -31,7 +33,7 @@ void build_result(const char *operation, const char *admin_type,
 
 void racfu(racfu_result_t *result, const char *request_json) {
   nlohmann::json request, errors;
-  std::string operation, admin_type;
+  std::string operation = "", admin_type = "";
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   const char *profile_name = NULL;
@@ -46,14 +48,7 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  if (!request.contains("operation")) {
-    update_error_json(&errors, "missing_header_attribute", "operation");
-    operation = "";
-  }
-  if (!request.contains("admin_type")) {
-    update_error_json(&errors, "missing_header_attribute", "admin_type");
-    admin_type = "";
-  }
+  validate_header_attributes(request, &errors);
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name,
@@ -92,10 +87,6 @@ void do_extract(const char *admin_type, const char *profile_name,
   uint8_t function_code;
   nlohmann::json profile_json, errors;
 
-  if (profile_name == NULL) {
-    update_error_json(&errors, "missing_header_attribute", "profile_name");
-  }
-
   // Validate 'admin_type'
   if (strcmp(admin_type, "user") == 0) {
     function_code = USER_EXTRACT_FUNCTION_CODE;
@@ -105,24 +96,12 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "resource") == 0) {
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-    if (class_name == NULL) {
-      update_error_json(&errors, "missing_header_attribute", "class_name");
-    }
   } else if (strcmp(admin_type, "data-set") == 0) {
     function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "setropts") == 0) {
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
     return_codes->racfu_return_code = 8;
-    update_error_json(&errors, "bad_header_value",
-                      "admin_type:" + std::string(admin_type));
-  }
-
-  if (!errors.empty()) {
-    return_codes->racfu_return_code = 8;
-    build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
-                 0, nullptr, 0, errors, racfu_result, return_codes);
-    return;
   }
 
   // Do extract if function code is good.
@@ -194,15 +173,6 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
       &result_buffer_size, &request_length, &debug_mode);
 
-  if (!errors.empty()) {
-    racfu_rc = 8;
-    return_codes->racfu_return_code = racfu_rc;
-    build_result(operation, admin_type, profile_name, class_name,
-                 surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, errors, racfu_result, return_codes);
-    return;
-  }
-
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
@@ -268,11 +238,12 @@ void build_result(const char *operation, const char *admin_type,
   nlohmann::json result_json = {
       {   "operation",        operation},
       {  "admin_type",       admin_type},
-      {"profile_name",     profile_name},
       {"return_codes", return_code_json}
   };
   if (profile_name == NULL) {
     result_json["profile_name"] = nullptr;
+  } else {
+    result_json["profile_name"] = profile_name;
   }
   if (class_name != NULL) {
     result_json["class_name"] = class_name;
@@ -285,17 +256,8 @@ void build_result(const char *operation, const char *admin_type,
 
   if (profile_json.contains("errors")) {
     std::string error_message_str;
-    result_json["result"];
-    for (auto &error_type : profile_json["errors"].items()) {
-      for (auto &error_focus : error_type.value().items()) {
-        error_message_str = "RACFu encountered a " + error_type.key() +
-                            " error while working with " +
-                            error_focus.value().get<std::string>() +
-                            ". If you supplied this as part of your input "
-                            "json, you may need to re-examine this item.";
-        result_json["result"] += error_message_str;
-      }
-    }
+    result_json["result"] = format_error_json(profile_json["errors"]);
+
   } else {
     result_json["result"] = profile_json;
   }

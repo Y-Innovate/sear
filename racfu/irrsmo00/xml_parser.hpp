@@ -22,7 +22,6 @@ class XmlParser {
   std::string replace_xml_chars(std::string xml_data);
   std::string replace_substring(std::string data, std::string substring,
                                 std::string replacement, std::size_t start);
-  void convert_to_ascii(char* ebcdic_str, char* ascii_str, int length);
 
  public:
   nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc,
