@@ -27,7 +27,7 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json profile_json,
+                  int raw_request_length, nlohmann::json response_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
 void racfu(racfu_result_t *result, const char *request_json) {
@@ -172,6 +172,14 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
       &result_buffer_size, &request_length, &debug_mode);
 
+  if (!errors.empty()) {
+    return_codes->racfu_return_code = 8;
+    build_result(operation, admin_type, profile_name, class_name,
+                 surrogate_userid, nullptr, 0, xml_request_string,
+                 request_length, errors, racfu_result, return_codes);
+    return;
+  }
+
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
@@ -204,7 +212,7 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json profile_json,
+                  int raw_request_length, nlohmann::json response_json,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes) {
   // Build Return Code JSON
@@ -253,12 +261,11 @@ void build_result(const char *operation, const char *admin_type,
     }
   }
 
-  if (profile_json.contains("errors")) {
-    std::string error_message_str;
-    result_json["result"] = format_error_json(profile_json["errors"]);
+  if (response_json.contains("errors")) {
+    result_json["result"] = format_error_json(response_json["errors"]);
 
   } else {
-    result_json["result"] = profile_json;
+    result_json["result"] = response_json;
   }
 
   // Convert profile JSON to C string.

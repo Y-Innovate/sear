@@ -198,7 +198,7 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
 nlohmann::json format_error_json(nlohmann::json errors) {
   std::string error_message_str;
   nlohmann::json output = {"errors", {}}, error_data;
-  for (auto& error : errors.items()) {
+  for (auto& error : errors["errors"].items()) {
     error_data = error.value()["error_data"];
     switch (error.value()["error_code"].get<uint>()) {
       case BAD_HEADER_VALUE:
@@ -253,6 +253,9 @@ nlohmann::json format_error_json(nlohmann::json errors) {
                             "' is not a valid operation for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() + "'";
+        break;
+      case XML_PARSE_ERROR:
+        error_message_str = "could not parse XML from IRRSMO00";
         break;
       default:
         error_message_str = "An unknown error has occurred";

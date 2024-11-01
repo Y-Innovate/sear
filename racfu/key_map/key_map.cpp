@@ -56,7 +56,7 @@ const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key) {
   const trait_key_mapping_t *key_mapping =
       get_key_mapping(profile_type, segment, NULL, racfu_key, TRAIT_TYPE_ANY,
-                      OPERATOR_ANY, true);
+                      OPERATOR_ANY, false);
   if (key_mapping == NULL) {
     return TRAIT_TYPE_BAD;
   }

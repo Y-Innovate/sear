@@ -6,6 +6,8 @@
 #include <regex>
 #include <string>
 
+#include "input_validation.hpp"
+
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
                                             int* racfu_rc, bool debug) {
@@ -64,7 +66,10 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    result_json["errors"] = {"xml_error", {"Result XML from IRRSMO00"}};
+    result_json["errors"] = {
+        {"error_code", XML_PARSE_ERROR},
+        {"error_data",              ""}
+    };
     *racfu_rc = 4;
   }
 

@@ -59,7 +59,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   if ((request.contains("traits")) && (!request["traits"].empty())) {
     build_end_nested_tag();
 
-    (*errors).merge_patch(build_request_data(adminType, request["traits"]));
+    (*errors) = build_request_data(adminType, request["traits"]);
 
     // Close the admin object
     build_full_close_tag(adminType);
