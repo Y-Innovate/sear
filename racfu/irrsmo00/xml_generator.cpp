@@ -6,7 +6,7 @@
 #include <regex>
 #include <string>
 
-#include "input_validation.hpp"
+#include "error_validation.hpp"
 #include "key_map.hpp"
 
 // Public Functions of XmlGenerator

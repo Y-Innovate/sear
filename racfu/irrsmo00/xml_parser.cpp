@@ -6,7 +6,7 @@
 #include <regex>
 #include <string>
 
-#include "input_validation.hpp"
+#include "error_validation.hpp"
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
