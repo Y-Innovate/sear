@@ -230,7 +230,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
       if (!regex_match(item.key(), segment_trait_key_data,
                        segment_trait_key_regex)) {
         // Track any entries that do not match proper syntax
-        update_error_json(&errors, "bad_structure", item.key());
+        update_error_json(&errors, BAD_TRAIT_STRUCTURE, {"trait", item.key()});
         item = requestData.erase(item);
         continue;
       }
@@ -253,29 +253,53 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         // Build each individual trait
         int8_t operation = map_operations(itemOperation);
         if (operation == OPERATOR_BAD) {
-          update_error_json(&errors, "bad_operation", itemOperation);
+          update_error_json(&errors, BAD_OPERATION,
+                            {"operation", itemOperation});
           item = requestData.erase(item);
           continue;
         }
         // I'm going to want to use item here rather than itemTrait. Not sure
         // how to type that? Maybe the JSON object?
         int8_t trait_type = map_trait_type(item.value());
-        if (trait_type == TRAIT_TYPE_BAD) {
-          update_error_json(&errors, "bad_trait_or_trait_type",
-                            json_value_to_string(item.value(), &errors));
+        char expected_type =
+            get_racf_trait_type(adminType.c_str(), itemSegment.c_str(),
+                                (itemSegment + ":" + itemTrait).c_str());
+        if (expected_type == TRAIT_TYPE_BAD) {
+          update_error_json(
+              &errors, BAD_SEGMENT_TRAIT_COMBO,
+              {
+                  {"segment", itemSegment},
+                  {  "trait",   itemTrait}
+          });
+          continue;
+        }
+        if (trait_type != expected_type) {
+          update_error_json(
+              &errors, BAD_TRAIT_DATA_TYPE,
+              {
+                  {        "trait",    item.key()},
+                  {"required_type", expected_type}
+          });
+          continue;
         }
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
                                      (itemSegment + ":" + itemTrait).c_str(),
                                      trait_type, operation);
         if (translatedKey == NULL) {
-          update_error_json(&errors, "bad_segment_trait_operation_combination",
-                            (itemSegment + ":" + itemTrait));
+          update_error_json(&errors, BAD_TRAIT_OPERATION_COMBO,
+                            {
+                                {"operation", itemOperation},
+                                {  "segment",   itemSegment},
+                                {    "trait",     itemTrait}
+          });
+          continue;
         }
         std::string operation_str =
             (itemOperation.empty()) ? "set" : itemOperation;
-        std::string value = (item.value().is_boolean())
-                                ? ""
-                                : json_value_to_string(item.value(), &errors);
+        std::string value =
+            (item.value().is_boolean())
+                ? ""
+                : json_value_to_string(item.value(), expected_type, &errors);
         build_single_trait(("racf:" + std::string(translatedKey)),
                            operation_str, value);
         item = requestData.erase(item);
@@ -295,16 +319,16 @@ int8_t XmlGenerator::map_operations(std::string operation) {
   }
   std::transform(operation.begin(), operation.end(), operation.begin(),
                  ::tolower);
-  if (operation.compare("set")) {
+  if (operation.compare("set") == 0) {
     return OPERATOR_SET;
   }
-  if (operation.compare("add")) {
+  if (operation.compare("add") == 0) {
     return OPERATOR_ADD;
   }
-  if (operation.compare("remove") || operation.compare("rem")) {
+  if ((operation.compare("remove") == 0) || (operation.compare("rem") == 0)) {
     return OPERATOR_REMOVE;
   }
-  if (operation.compare("delete") || operation.compare("del")) {
+  if ((operation.compare("delete") == 0) || (operation.compare("del") == 0)) {
     return OPERATOR_DELETE;
   }
   return OPERATOR_BAD;
@@ -317,16 +341,17 @@ int8_t XmlGenerator::map_trait_type(const nlohmann::json& trait) {
   if (trait.is_string() || trait.is_array()) {
     return TRAIT_TYPE_STRING;
   }
-  if (trait.is_number()) {
-    return TRAIT_TYPE_INTEGER;
+  if (trait.is_number_unsigned()) {
+    return TRAIT_TYPE_UNSIGNED;
   }
-  if (trait.is_object()) {
+  if (trait.is_object() || trait.is_number()) {
     return TRAIT_TYPE_BAD;
   }
   return TRAIT_TYPE_ANY;
 }
 
 std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
+                                               char expected_type,
                                                nlohmann::json* errors) {
   if (trait.is_string()) {
     return trait.get<std::string>();
@@ -337,7 +362,12 @@ std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
         ", ";  // May just be " " or just be ","; May need to test
     for (auto& item : trait.items()) {
       if (!item.value().is_string()) {
-        update_error_json(errors, "bad_trait_or_trait_type", trait.dump());
+        update_error_json(
+            errors, BAD_TRAIT_DATA_TYPE,
+            {
+                {        "trait",    item.key()},
+                {"required_type", expected_type}
+        });
         return trait.dump();
       }
       output_string += item.value().get<std::string>() + delimeter;

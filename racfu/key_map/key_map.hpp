@@ -7,7 +7,8 @@
 #include "key_map_user.hpp"
 
 const key_mapping_t KEY_MAP[] = {
-    {"user", segment_count(USER_SEGMENT_KEY_MAP), USER_SEGMENT_KEY_MAP}};
+    {"user", segment_count(USER_SEGMENT_KEY_MAP), USER_SEGMENT_KEY_MAP}
+};
 
 const char *get_racfu_key(const char *profile_type, const char *segment,
                           const char *racf_key);
