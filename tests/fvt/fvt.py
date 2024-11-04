@@ -1,22 +1,21 @@
 from racfu import racfu
 import json
 import os
+import getpass
 
 # This user shouldn't exist
-if "RACFU_FVT_USERID" in os.environ:
-  test_user = os.environ["RACU_FVT_USERID"]
-else:
+if "RACFU_FVT_USERID" not in os.environ:
   print(
     "The 'RACFU_FVT_USERID' environment variable must be set "
     + "to a z/OS userid that does NOT exist on the system.")
   exit(1)
 
-# This request will fail, but it demonstrates that 
+# This request may fail, but regardless, it demonstrates that 
 # we can make a request to IRRSEQ00 and get a result back.
 extract_request = {
   "admin_type": "user",
   "operation": "extract",
-  "profile_name": test_user
+  "profile_name": getpass.getuser()
 }
 
 # This request will fail, but it demonstrates that
@@ -24,7 +23,7 @@ extract_request = {
 delete_request = {
   "admin_type": "user",
   "operation": "delete",
-  "profile_name": test_user,
+  "profile_name": os.environ["RACFU_FVT_USERID"],
 }
 
 print("Extract Test (IRRSEQ00):")
