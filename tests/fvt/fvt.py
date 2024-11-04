@@ -21,19 +21,16 @@ extract_request = {
 
 # This request will fail, but it demonstrates that
 # we can make a request to IRRSMO00 and get a result back.
-alter_request = {
+delete_request = {
   "admin_type": "user",
-  "operation": "alter",
+  "operation": "delete",
   "profile_name": test_user,
-  "traits": {
-    "base:name": "Squilliam"
-  }
 }
 
 print("Extract Test (IRRSEQ00):")
 result = racfu(extract_request)
 print(json.dumps(result.result, indent=2))
 
-print("Alter Test (IRRSMO00):")
-result = racfu(alter_request)
+print("Delete Test (IRRSMO00):")
+result = racfu(delete_request)
 print(json.dumps(result.result, indent=2))

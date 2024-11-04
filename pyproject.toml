@@ -43,4 +43,4 @@ build-backend = "setuptools.build_meta"
     include = ["racfu"]
 
 [tool.setuptools.package-data]
-    . = ['NOTICES.txt']
+    racfu = ['NOTICES.txt']
