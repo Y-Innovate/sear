@@ -48,8 +48,8 @@ If you want to write code, a good way to get started is by looking at the issues
 ### pre-commit Hooks
 To ensure `clang-format` and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
 
-* Install `pre-commit`: https://pre-commit.com/
-* Setup Precommit Hooks:
+* Install [`pre-commit`](https://pre-commit.com/)
+* Setup **pre-commit Hooks**:
 
   ```shell
   pre-commit install
@@ -113,7 +113,7 @@ When contributing to RACFu, think about the following:
 * Make any necessary updates to `README.md`.
 * Make any necessary updates to the gitHub pages documentation in the `gh-pages` branch _(Pull requests should be opened against the `gh-pages-dev` branch)_.
 * Add any necessary test cases to `/tests`.
-* Ensure that you have __pre-commit Hooks__ setup to ensure that `clang-format` and the **unit tests** are run against the code for every commit you make.
+* Ensure that you have __pre-commit Hooks__ setup to ensure that `clang-format` and **unit tests** are run against the code for every commit you make.
 * Run unit test suite by running `make test`.
 * Run functional verification tests by running `make fvt`.
 * Run `cppcheck` static code analysis cans by running `make scan`
