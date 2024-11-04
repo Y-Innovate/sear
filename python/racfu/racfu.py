@@ -16,7 +16,6 @@ class SecurityResult:
 
     
 def racfu(request_dict: dict) -> dict:
-    """Call racfu"""
     response = call_racfu(json.dumps(request_dict))
     return SecurityResult(
         request = request_dict,

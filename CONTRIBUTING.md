@@ -25,6 +25,8 @@ The following are a set of guidelines to help you contribute.
 
 * [Style Guidelines](#style-guidelines)
 
+* [Static Code Analysis](#static-code-analysis)
+
 * [Contribution checklist](#contribution-checklist)
 
 * [Found a bug?](#found-a-bug)
@@ -35,14 +37,6 @@ The following are a set of guidelines to help you contribute.
 >
 > :warning: _All contributions must be accompanied by a [Developer Certification of Origin (DCO) signoff](https://github.com/openmainframeproject/tsc/blob/master/process/contribution_guidelines.md#developer-certificate-of-origin)._
 
-RACFu is focused on making it easy for people to managed z/OS security definitions. It is not focused on providing in the moment RACF decisions.
-
-Contributions should be focused not only in creating functionality but also creating something that provides abstraction from the underlying interface.
-
-The ultimate goal is provide something that is intuitive to a security professional without forcing a deep understanding of z/OS and RACF infrastructure.
-
-At the same time the code should provide a map to someone who is interested in the underlying infrastructure. As such the code becomes more than a functional tool, it becomes an educational tool for those interested in exploring it.
-
 ## Ways to Contribute
 
 There are many ways to contribute to the project. You can write code, work on the documentation, provide tests, report bugs or provide suggestions for improvement.
@@ -52,33 +46,30 @@ There are many ways to contribute to the project. You can write code, work on th
 If you want to write code, a good way to get started is by looking at the issues section of the repository. Look for the **Good First Issue** tag. Good First Issues are great as a first contribution.
 
 ### pre-commit Hooks
-To ensure that **code formatters _(clang-format)_**, **linters _(N/A)_**, and **unit tests** are always run against your code on **every commit** set up the **pre-commit hooks**.
-
-> :warning: _The python distribution of RACFu uses Poetry as it's **build backend**. After installing Poetry, ensure that the install location of Poetry is added to the `$PATH` **environment variable** if it is not already._
-* [Install Poetry](https://python-poetry.org/docs/#installation)
-
-* Install dependencies
-  ```shell
-  poetry install --no-root
-  ```
+To ensure `clang-format`, `cppcheck`, and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
 
 ### Adding New Functionality
 
-If you have a new functionality that can be added to the package, open a GitHub pull request against the `dev` branch with your changes. In the PR, make sure to clearly document the new functionality including why it is valuable.
+If you have new functionality that can be added to the package, open a GitHub pull request against the `dev` branch with your changes. In the PR, make sure to clearly document the new functionality including why it is valuable.
 
 ### Testing
 
-The main way to test RACFu is to write **unit tests** in the [`tests`](tests) folder which **mock** the real **IRRSMO00 API** and **IRRSEQ00 API** to enable **request generation** and **response parsing** logic to be validated in a **fast** and **automated** way. The unit test suite can be run by just running `make test`. It is also recommended to do manual tests on a **z/OS system** for **new functionality** and **bug fixes** to test the real calls to **IRRSMO00** and **IRRSEQ00**.
+The main way to test RACFu is to write **unit tests** in the [`tests`](tests) folder which **mock** the real **IRRSMO00** and **IRRSEQ00** RACF callable services to enable **request generation** and **response parsing** logic to be validated in a **fast** and **automated** way. The unit test suite can be run by just running `make test`. It is also recommended to do manual tests on a **z/OS system** for **new functionality** and **bug fixes** to test the real calls to **IRRSMO00** and **IRRSEQ00**.
 
 * **Unit Tests:**
 
   > :bulb: _See the [Unity Unit Testing For C](https://www.throwtheswitch.org/unity) documentation for more details on writing test cases._
 
-  > :white_check_mark: _In order to facilitate development and unit testing, the real **API calls** to **IRRSMO00** and **IRRSEQ00** have been mocked in [`tests/mock`](tests/mock), and implementations of some **z/OS specific C/C++ Runtime Library functions** are provided in [`tests/zoslib`](tests/zoslib) to enable the RACFu unit test suite to more or less be run on any 64-bit POSIX system where the `clang` compiler is installed. This ensures that development and testing can be done when contributors do not have access to a z/OS system, and also enables faster iteration since contributors can just run `make test` on their workstation without needing to copy the files to a z/OS system to run the unit tests._
+  > :white_check_mark: _In order to facilitate development and unit testing, the real **API calls** to **IRRSMO00** and **IRRSEQ00** have been mocked in [`tests/mock`](tests/mock). Additionally, implementations of some **z/OS specific C/C++ Runtime Library functions** are provided in [`tests/zoslib`](tests/zoslib) to enable the RACFu unit test suite to more or less be run on any 64-bit POSIX system where the `clang` compiler is installed. This ensures that development and testing can be done when contributors do not have access to a z/OS system, and also enables faster iteration since contributors can just run `make test` on their workstation without needing to copy the files to a z/OS system to run the unit tests._
 
   * Unit tests should be placed in the **subfolder** corresponding to the **RACF callable service** you are creating a test for. The focus of these tests is to validate the **generation of requests** to and **parsing of responses** from the **IRRSMO00** and **IRRSEQ00** callable services, and more genenerally testing various code paths in the RACFu code. There are directories called `request_samples` and `response_samples` in the [`tests/irrseq00`](tests/irrseq00) and [`tests/irrsmo00`](tests/irrseq00) test folders to put request and response samples. All **raw request samples** and **raw response samples** for a given callable service should end in the `.bin`. `get_raw_sample()` and `get_json_sample()` are defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) to facilitate the loading of request and response samples in test cases.
 
     > _**Example:** A test case for verifying that RACFu can parse the result of an **extract user request** should be placed in the [`test_extract.cpp`](tests/irrseq00/test_extract.cpp) unit test module within the [`irrseq00`](tests/irrseq00) subfolder. A **JSON request** sample containing the parameters for a **profile extract request** should be created in the [`irrseq00/request_samples`](tests/irrseq00/request_samples). A **raw response** sample that contains the **mocked** result of the profile extract request and the corresponding expected **post-processed JSON response** should be created in the [`irrseq00/result_samples`](tests/irrseq00/result_samples). Request/response samples should be loaded in the unit test case using the `get_raw_sample()` and `get_json_sample()` functions defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) [`irrseq00.hpp`](tests/mock/irrseq00.hpp) provides all of the necessary **global varibales** for mocking the result of requests made to `callRadmin()`._
+
+* **Functional Verification Test:**
+  > :warning: _Ensure that the `RACFU_FVT_USERID` environment variable is set to a z/OS userid that doesn't exist on the system where the functional verifification tests are being run prior to running `make fvt`._
+
+  * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of RACFu from your branch/fork on a z/OS system and run `make fvt`. 
 
 ### Fixing Bugs
 
@@ -86,7 +77,7 @@ If you fix a bug, open a GitHub pull request against the `dev` branch with the f
 
 ### Adding or Fixing Documentation
 
-If any updates need to be made to the pyRACF documentation, open a GitHub pull request against the `gh-pages-dev` branch with your changes. This may include updates to document new functionality or updates to correct errors or mistakes in the existing documentation.
+If any updates need to be made to the RACFu documentation, open a GitHub pull request against the `gh-pages-dev` branch with your changes. This may include updates to document new functionality or updates to correct errors or mistakes in the existing documentation.
 
 ### Branch Naming Conventions
 
@@ -101,20 +92,24 @@ Code branches should use the following naming conventions:
 
 :bulb: _These steps can be done automatically using the [pre-commit Hooks](#pre-commit-hooks)._
 
-* The use of `clang-format` is required.
-* Require `cppcheck`?
+The use of the `clang-format` code formatter is required.
+
+## Static Code Analysis
+
+`cppcheck` will be run against all code contributions. It is recommended to run `cppcheck` against the code before making contributions to ensure that your contributions don't inadvertently introduce any vulnerabilities or other significant issues. You can run `cppcheck` by running `make check`.
 
 ## Contribution checklist
 
-When contributing to pyRACF, think about the following:
+When contributing to RACFu, think about the following:
 
 * Make any necessary updates to `pyproject.toml`.
 * Make any necessary updates to `README.md`.
 * Make any necessary updates to the gitHub pages documentation in the `gh-pages` branch _(Pull requests should be opened against the `gh-pages-dev` branch)_.
 * Add any necessary test cases to `/tests`.
 * Ensure that you have __pre-commit Hooks__ setup to ensure that `clang-format` is run against the code for every commit you make.
-* Run unit test suite by executing `make test`.
-* Function test/FVT requirement???
+* Run unit test suite by running `make test`.
+* Run functional verification tests by running `make fvt`.
+* Run `cppcheck` static code analysis cans by running `make scan`
 
 ## Found a bug?
 
