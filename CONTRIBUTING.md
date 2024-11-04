@@ -46,7 +46,7 @@ There are many ways to contribute to the project. You can write code, work on th
 If you want to write code, a good way to get started is by looking at the issues section of the repository. Look for the **Good First Issue** tag. Good First Issues are great as a first contribution.
 
 ### pre-commit Hooks
-To ensure `clang-format`, `cppcheck`, and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
+To ensure `clang-format` and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
 
 ### Adding New Functionality
 
@@ -56,7 +56,7 @@ If you have new functionality that can be added to the package, open a GitHub pu
 
 The main way to test RACFu is to write **unit tests** in the [`tests`](tests) folder which **mock** the real **IRRSMO00** and **IRRSEQ00** RACF callable services to enable **request generation** and **response parsing** logic to be validated in a **fast** and **automated** way. The unit test suite can be run by just running `make test`. It is also recommended to do manual tests on a **z/OS system** for **new functionality** and **bug fixes** to test the real calls to **IRRSMO00** and **IRRSEQ00**.
 
-* **Unit Tests:**
+* **Unit Tests**
 
   > :bulb: _See the [Unity Unit Testing For C](https://www.throwtheswitch.org/unity) documentation for more details on writing test cases._
 
@@ -66,7 +66,7 @@ The main way to test RACFu is to write **unit tests** in the [`tests`](tests) fo
 
     > _**Example:** A test case for verifying that RACFu can parse the result of an **extract user request** should be placed in the [`test_extract.cpp`](tests/irrseq00/test_extract.cpp) unit test module within the [`irrseq00`](tests/irrseq00) subfolder. A **JSON request** sample containing the parameters for a **profile extract request** should be created in the [`irrseq00/request_samples`](tests/irrseq00/request_samples). A **raw response** sample that contains the **mocked** result of the profile extract request and the corresponding expected **post-processed JSON response** should be created in the [`irrseq00/result_samples`](tests/irrseq00/result_samples). Request/response samples should be loaded in the unit test case using the `get_raw_sample()` and `get_json_sample()` functions defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) [`irrseq00.hpp`](tests/mock/irrseq00.hpp) provides all of the necessary **global varibales** for mocking the result of requests made to `callRadmin()`._
 
-* **Functional Verification Test:**
+* **Functional Verification Tests**
   > :warning: _Ensure that the `RACFU_FVT_USERID` environment variable is set to a z/OS userid that doesn't exist on the system where the functional verifification tests are being run prior to running `make fvt`._
 
   * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of RACFu from your branch/fork on a z/OS system and run `make fvt`. 

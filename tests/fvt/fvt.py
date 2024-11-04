@@ -8,7 +8,7 @@ if "RACFU_FVT_USERID" in os.environ:
 else:
   print(
     "The 'RACFU_FVT_USERID' environment variable must be set "
-    + "to a z/OS userid that doesn't exist on the system.")
+    + "to a z/OS userid that does NOT exist on the system.")
   exit(1)
 
 # This request will fail, but it demonstrates that 
