@@ -1,7 +1,15 @@
 repos:
-- repo: https://github.com/pre-commit/mirrors-clang-format
-  rev: v14.0.6
-  hooks:
-  - id: clang-format
-    files: \.(cpp|hpp|c|h)
-    exclude: ^externals/|^tests/unity/
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v14.0.6
+    hooks:
+      - id: clang-format
+        files: \.(cpp|hpp|c|h)
+        exclude: ^externals/|^tests/unity/
+  - repo: local
+    hooks:
+      - id: unit-test
+        name: unit-test
+        entry: make test
+        language: system
+        pass_filenames: false
+        always_run: true
