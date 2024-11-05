@@ -2,11 +2,12 @@
 
 import os
 import subprocess
-
-from pathlib import Path
 from glob import glob
+from pathlib import Path
+
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
+
 
 def assemble(asm_file: str, asm_directory: str):
     """Python extension assembling underlying objects"""

@@ -1,2 +1,1 @@
-from .racfu import racfu
-from .racfu import SecurityResult
+from .racfu import SecurityResult, racfu

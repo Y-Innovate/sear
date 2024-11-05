@@ -1,6 +1,6 @@
-# Contributing to pyRACF
+# Contributing to RACFu
 
-Thank you for taking the time to contribute to pyRACF!
+Thank you for taking the time to contribute to RACFu!
 The following are a set of guidelines to help you contribute.
 
 **Table Of Contents**
@@ -48,7 +48,7 @@ If you want to write code, a good way to get started is by looking at the issues
 ### pre-commit Hooks
 To ensure `clang-format` and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
 
-* Install [`pre-commit`](https://pre-commit.com/)
+* Install [`pre-commit`](https://pre-commit.com/).
 * Setup **pre-commit Hooks**:
 
   ```shell

@@ -1,5 +1,7 @@
 import json
+
 from racfu._C import call_racfu
+
 
 class SecurityResult:
     def __init__(

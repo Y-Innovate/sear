@@ -1,7 +1,8 @@
-from racfu import racfu
+import getpass
 import json
 import os
-import getpass
+
+from racfu import racfu
 
 # This user shouldn't exist
 if "RACFU_FVT_USERID" not in os.environ:
