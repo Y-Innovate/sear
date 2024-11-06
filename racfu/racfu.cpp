@@ -1,6 +1,7 @@
 #include "racfu.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -47,7 +48,10 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
+  // printf("%s\n", request.dump().c_str());
   validate_parameters(request, &errors);
+  // printf("%s\n", request.dump().c_str());
+  // printf("%s\n", errors.dump().c_str());
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name,
@@ -55,8 +59,11 @@ void racfu(racfu_result_t *result, const char *request_json) {
                  &return_codes);
     return;
   }
+  // printf("%s\n", request.dump().c_str());
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
+  // printf("admin type: %s   | operation: %s  \n", admin_type.c_str(),
+  //        operation.c_str());
   if (request.contains("profile_name")) {
     profile_name = request["profile_name"].get<std::string>().c_str();
   }

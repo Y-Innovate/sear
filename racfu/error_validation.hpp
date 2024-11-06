@@ -5,13 +5,12 @@
 
 #include "racfu.h"
 
-#define BAD_HEADER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
-#define REQUIRED_HEADER_ATTRIBUTE \
-  2  // "'operation' is a required parameter field'""
-#define MISSING_HEADER_ATTRIBUTE \
+#define BAD_PARAMETER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
+#define REQUIRED_PARAMETER 2   // "'operation' is a required parameter field'""
+#define MISSING_PARAMETER \
   3  // "'class_name' is a required field for the 'resource' 'admin_type'"
-#define BAD_HEADER_NAME 4       // "'junk' is not a valid parameter field"
-#define BAD_HEADER_DATA_TYPE 5  // "'admin_type' must be a string value"
+#define BAD_PARAMETER_NAME 4       // "'junk' is not a valid parameter field"
+#define BAD_PARAMETER_DATA_TYPE 5  // "'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE \
   6  //"'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>'
      // format"
@@ -24,10 +23,9 @@
 
 void validate_parameters(nlohmann::json request, nlohmann::json* errors);
 
-void remove_parameter_and_validate(nlohmann::json* request,
-                                   nlohmann::json* errors, std::string json_key,
-                                   nlohmann::json validation,
-                                   std::string admin_type, bool required);
+void validate_parameter(nlohmann::json* request, nlohmann::json* errors,
+                        std::string json_key, nlohmann::json validation,
+                        std::string admin_type, bool required, bool remove);
 
 void validate_remaining_request_attributes(nlohmann::json request,
                                            nlohmann::json* errors,

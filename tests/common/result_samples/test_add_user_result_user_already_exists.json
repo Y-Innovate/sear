@@ -8,10 +8,10 @@
       "commands": [
         {
           "image": "ADDUSER SQUIDWRD ",
-          "message": "ICH01024I User SQUIDWRD is defined as PROTECTED.",
-          "reasoncode": "0",
-          "returncode": "0",
-          "safreturncode": "0"
+          "message": "IKJ56702I INVALID USERID, SQUIDWRD",
+          "reasoncode": "8",
+          "returncode": "16",
+          "safreturncode": "8"
         },
         {
           "image": "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))",
@@ -24,15 +24,15 @@
       "operation": "set",
       "reasoncode": "0",
       "requestid": "user_request",
-      "returncode": "0"
+      "returncode": "4"
     }
   },
   "return_codes": {
     "return_codes": {
       "racf_reason_code": 0,
-      "racf_return_code": 0,
+      "racf_return_code": 4,
       "racfu_return_code": 0,
-      "saf_return_code": 0
+      "saf_return_code": 4
     }
   }
 }
