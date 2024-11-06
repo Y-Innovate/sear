@@ -8,10 +8,10 @@ static const trait_key_mapping_t *get_key_mapping(
     const char *segment,       // The segment      (i.e., 'omvs')
     const char *racf_key,      // The RACF key     (i.e., 'program')
     const char *racfu_key,     // The RACFu key    (i.e., 'omvs:default_shell')
-    int8_t trait_type,      // The trait type   (i.e.,  'TRAIT_TYPE_UNSIGNED')
-    int8_t trait_operator,  // The operator     (i.e.,  'OPERATOR_SET')
-    bool extract);          // Set to 'true' to get the RACFu Key
-                            // Set to 'false' to get the RACF Key
+    int8_t trait_type,         // The trait type   (i.e.,  'TRAIT_TYPE_UINT')
+    int8_t trait_operator,     // The operator     (i.e.,  'OPERATOR_SET')
+    bool extract);             // Set to 'true' to get the RACFu Key
+                               // Set to 'false' to get the RACF Key
 
 static bool check_trait_type(int8_t actual, int8_t expected);
 

@@ -130,7 +130,6 @@ void XmlGenerator::build_open_tag(std::string tag) {
 void XmlGenerator::build_attribute(std::string name, std::string value) {
   // Ex: " operation=set"
   name = replace_xml_chars(name);
-  std::transform(value.begin(), value.end(), value.begin(), ::tolower);
   value = replace_xml_chars(value);
   xml_buffer.append(" " + name + "=\"" + value + "\"");
 }
@@ -342,7 +341,7 @@ int8_t XmlGenerator::map_trait_type(const nlohmann::json& trait) {
     return TRAIT_TYPE_STRING;
   }
   if (trait.is_number_unsigned()) {
-    return TRAIT_TYPE_UNSIGNED;
+    return TRAIT_TYPE_UINT;
   }
   if (trait.is_object() || trait.is_number()) {
     return TRAIT_TYPE_BAD;

@@ -60,7 +60,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:group_connection_connects",  "cinitct",
-     TRAIT_TYPE_UNSIGNED, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:group_connection_last_connect_date",  "cljdate",
@@ -196,7 +196,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:password_change_interval",  "passint",
-     TRAIT_TYPE_UNSIGNED, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:password", "password",
@@ -212,7 +212,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:passphrase_change_interval",   "phrint",
-     TRAIT_TYPE_UNSIGNED, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:passphrase_enveloped",   "pphenv",
@@ -287,7 +287,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
 const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
     {
      "omvs:max_address_space_size",   "assize",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:auto_uid",  "autouid",
@@ -295,11 +295,11 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
      },
     {
      "omvs:max_cpu_time",  "cputime",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:max_files_per_process", "fileproc",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:home_directory",     "home",
@@ -311,11 +311,11 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
      },
     {
      "omvs:max_file_mapping_pages", "mmaparea",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:max_processes", "procuser",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:default_shell",  "program",
@@ -331,11 +331,11 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
      },
     {
      "omvs:max_threads",  "threads",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:uid",      "uid",
-     TRAIT_TYPE_UNSIGNED,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      }
 };
 
@@ -362,7 +362,7 @@ const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
      },
     {
      "tso:max_region_size",  "maxsize",
-     TRAIT_TYPE_UNSIGNED, {true, false, false, true},
+     TRAIT_TYPE_UINT, {true, false, false, true},
      },
     {
      "tso:message_class", "msgclass",
@@ -378,7 +378,7 @@ const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
      },
     {
      "tso:default_region_size",     "size",
-     TRAIT_TYPE_UNSIGNED, {true, false, false, true},
+     TRAIT_TYPE_UINT, {true, false, false, true},
      },
     {
      "tso:sysout_class", "sysoutcl",

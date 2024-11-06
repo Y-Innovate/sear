@@ -7,10 +7,10 @@
 
 #define BAD_HEADER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
 #define REQUIRED_HEADER_ATTRIBUTE \
-  2  // "'operation' is a required header field'""
+  2  // "'operation' is a required parameter field'""
 #define MISSING_HEADER_ATTRIBUTE \
   3  // "'class_name' is a required field for the 'resource' 'admin_type'"
-#define BAD_HEADER_NAME 4       // "'junk' is not a valid header field"
+#define BAD_HEADER_NAME 4       // "'junk' is not a valid parameter field"
 #define BAD_HEADER_DATA_TYPE 5  // "'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE \
   6  //"'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>'
@@ -22,15 +22,16 @@
   10                        //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 11  // "could not parse XML returned from IRRSMO00"
 
-void validate_header_attributes(nlohmann::json request, nlohmann::json* errors);
+void validate_parameters(nlohmann::json request, nlohmann::json* errors);
 
-void remove_header_and_validate(nlohmann::json* request, nlohmann::json* errors,
-                                std::string json_key, nlohmann::json validation,
-                                std::string admin_type, bool required);
+void remove_parameter_and_validate(nlohmann::json* request,
+                                   nlohmann::json* errors, std::string json_key,
+                                   nlohmann::json validation,
+                                   std::string admin_type, bool required);
 
-void validate_remaining_request_headers(nlohmann::json request,
-                                        nlohmann::json* errors,
-                                        bool traits_allowed);
+void validate_remaining_request_attributes(nlohmann::json request,
+                                           nlohmann::json* errors,
+                                           bool traits_allowed);
 
 void update_error_json(nlohmann::json* errors, int8_t error_type,
                        nlohmann::json error_data);

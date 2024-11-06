@@ -47,7 +47,7 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  validate_header_attributes(request, &errors);
+  validate_parameters(request, &errors);
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name,
