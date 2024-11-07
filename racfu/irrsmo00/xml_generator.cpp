@@ -229,7 +229,10 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
       if (!regex_match(item.key(), segment_trait_key_data,
                        segment_trait_key_regex)) {
         // Track any entries that do not match proper syntax
-        update_error_json(&errors, BAD_TRAIT_STRUCTURE, {"trait", item.key()});
+        update_error_json(&errors, BAD_TRAIT_STRUCTURE,
+                          {
+                              {"trait", item.key()}
+        });
         item = requestData.erase(item);
         continue;
       }
@@ -253,7 +256,9 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         int8_t operation = map_operations(itemOperation);
         if (operation == OPERATOR_BAD) {
           update_error_json(&errors, BAD_OPERATION,
-                            {"operation", itemOperation});
+                            {
+                                {"operation", itemOperation}
+          });
           item = requestData.erase(item);
           continue;
         }
@@ -270,6 +275,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                   {"segment", itemSegment},
                   {  "trait",   itemTrait}
           });
+          item = requestData.erase(item);
           continue;
         }
         if (trait_type != expected_type) {
@@ -279,6 +285,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                   {        "trait",    item.key()},
                   {"required_type", expected_type}
           });
+          item = requestData.erase(item);
           continue;
         }
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
@@ -291,6 +298,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                                 {  "segment",   itemSegment},
                                 {    "trait",     itemTrait}
           });
+          item = requestData.erase(item);
           continue;
         }
         std::string operation_str =

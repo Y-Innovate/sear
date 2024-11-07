@@ -1,7 +1,6 @@
 #include "error_validation.hpp"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
@@ -109,7 +108,6 @@ void validate_parameter(nlohmann::json* request, nlohmann::json* errors,
                         {
                             {"parameter", json_key}
       });
-      // printf("bad parm data type!\n");
       return;
     }
     val = (*request)[json_key].get<std::string>();
@@ -210,12 +208,9 @@ nlohmann::json format_error_json(nlohmann::json errors) {
   nlohmann::json error_data, output = {
                                  {"errors", {}}
   };
-  // printf("%s\n", errors.dump().c_str());
   for (int i = 0; i < errors.size(); i++) {
-    // printf("%s\n", errors[i].dump().c_str());
     if (!errors[i]["error_data"].empty()) {
       error_data = errors[i]["error_data"];
-      // printf("%s\n", error_data.dump().c_str());
     }
     switch (errors[i]["error_code"].get<uint>()) {
       case BAD_PARAMETER_VALUE:
@@ -253,7 +248,7 @@ nlohmann::json format_error_json(nlohmann::json errors) {
         break;
       case BAD_TRAIT_DATA_TYPE:
         error_message_str =
-            "'" + error_data["trait"].get<std::string>() + "' must use a '" +
+            "'" + error_data["trait"].get<std::string>() + "' must use " +
             decode_data_type(error_data["required_type"].get<uint>()) +
             "' value";
         break;
@@ -269,25 +264,24 @@ nlohmann::json format_error_json(nlohmann::json errors) {
                             error_data["trait"].get<std::string>() + "'";
         break;
       case XML_PARSE_ERROR:
-        error_message_str = "could not parse XML from IRRSMO00";
+        error_message_str = "could not parse XML returned from IRRSMO00";
         break;
       default:
         error_message_str = "An unknown error has occurred";
     }
     output["errors"] += error_message_str;
   }
-  // printf("%s\n", output.dump().c_str());
   return output;
 }
 
 std::string decode_data_type(uint data_type_code) {
   switch (data_type_code) {
     case TRAIT_TYPE_BOOLEAN:
-      return "boolean";
+      return "a 'boolean";
     case TRAIT_TYPE_UINT:
-      return "unsigned";
+      return "an 'unsigned integer";
     case TRAIT_TYPE_STRING:
-      return "string";
+      return "a 'string";
     default:
       return "any data type";
   }

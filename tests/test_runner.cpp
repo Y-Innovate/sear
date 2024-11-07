@@ -16,10 +16,13 @@ int main(void) {
   RUN_TEST(test_parse_parameters_missing_error);
   RUN_TEST(test_parse_parameters_nonstring_error);
 
-  // Add
+  // IRRSMO00
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_add_user_result_user_already_exists);
+  RUN_TEST(test_parse_add_user_parameter_errors);
+  RUN_TEST(test_parse_add_user_trait_errors);
+  RUN_TEST(test_parse_alter_user_no_xml_data);
 
   // Profile Extract
   RUN_TEST(test_generate_extract_user_request);

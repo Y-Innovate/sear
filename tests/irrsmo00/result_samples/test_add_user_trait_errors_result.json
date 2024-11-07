@@ -1,0 +1,22 @@
+{
+  "admin_type": "user",
+  "operation": "add",
+  "profile_name": "SQUIDWRD",
+  "result": {
+    "errors": [
+      "'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>' format",
+      "'junkop' is not a valid trait operation",
+      "'omvs:junk' is not a valid trait",
+      "'omvs:uid' must use an 'unsigned integer' value",
+      "'remove' is not a valid operation for 'base:owner'"
+    ]
+  },
+  "return_codes": {
+    "return_codes": {
+      "racf_reason_code": null,
+      "racf_return_code": null,
+      "racfu_return_code": 8,
+      "saf_return_code": null
+    }
+  }
+}
