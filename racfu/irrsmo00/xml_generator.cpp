@@ -6,8 +6,8 @@
 #include <regex>
 #include <string>
 
-#include "error_validation.hpp"
 #include "key_map.hpp"
+#include "parameter_validation.hpp"
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(const char* admin_type,
