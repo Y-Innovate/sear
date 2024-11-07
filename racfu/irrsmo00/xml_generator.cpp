@@ -265,7 +265,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         // I'm going to want to use item here rather than itemTrait. Not sure
         // how to type that? Maybe the JSON object?
         int8_t trait_type = map_trait_type(item.value());
-        char expected_type =
+        int8_t expected_type =
             get_racf_trait_type(adminType.c_str(), itemSegment.c_str(),
                                 (itemSegment + ":" + itemTrait).c_str());
         if (expected_type == TRAIT_TYPE_BAD) {
