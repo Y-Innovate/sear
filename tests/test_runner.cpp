@@ -1,4 +1,5 @@
 #include "irrseq00.hpp"
+#include "tests/common/test_common_errors.hpp"
 #include "tests/irrseq00/test_extract.hpp"
 #include "tests/irrsmo00/test_add.hpp"
 #include "tests/unity/unity.h"
@@ -9,6 +10,11 @@ void tearDown(void) {}
 
 int main(void) {
   UNITY_BEGIN();
+
+  // Common
+  RUN_TEST(test_parse_parameters_junk_error);
+  RUN_TEST(test_parse_parameters_missing_error);
+  RUN_TEST(test_parse_parameters_nonstring_error);
 
   // Add
   RUN_TEST(test_generate_add_user_request);

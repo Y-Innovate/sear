@@ -1,4 +1,4 @@
-#include "tests/irrsmo00/test_common_errors.hpp"
+#include "tests/common/test_common_errors.hpp"
 
 #include <string.h>
 #include <sys/stat.h>
@@ -19,8 +19,6 @@ void test_parse_parameters_junk_error(void) {
   racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-  TEST_ASSERT_EQUAL_INT32(expected_racfu_rc,
-                          result.result_json.return_codes->racfu_return_code);
 
   free(result.raw_request);
   free(result.raw_result);
@@ -38,8 +36,6 @@ void test_parse_parameters_missing_error(void) {
   racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-  TEST_ASSERT_EQUAL_INT32(expected_racfu_rc,
-                          result.result_json.return_codes->racfu_return_code);
 
   free(result.raw_request);
   free(result.raw_result);
@@ -57,8 +53,6 @@ void test_parse_parameters_nonstring_error(void) {
   racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-  TEST_ASSERT_EQUAL_INT32(expected_racfu_rc,
-                          result.result_json.return_codes->racfu_return_code);
 
   free(result.raw_request);
   free(result.raw_result);

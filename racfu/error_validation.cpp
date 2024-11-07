@@ -17,21 +17,25 @@ void validate_parameters(nlohmann::json request, nlohmann::json* errors) {
   nlohmann::json valid_operations = {"add", "alter", "extract", "delete"};
   nlohmann::json valid_extract_admin_types = {
       "user", "group", "group-connection", "resource", "data-set", "setropts"};
+  nlohmann::json valid_admin_types = {
+      "user",     "group",    "group-connection", "resource",
+      "data-set", "setropts", "permission"};
   nlohmann::json no_validation = {};
 
   validate_parameter(&request, errors, "operation", valid_operations,
                      admin_type, true, false);
-  validate_parameter(&request, errors, "admin_type", no_validation, admin_type,
-                     true, false);
+  validate_parameter(&request, errors, "admin_type", valid_admin_types,
+                     admin_type, true, false);
 
   if (!(errors)->empty()) {
     // Not enough information to validate other parameters
     return;
   }
-  printf("%s\n", request.dump().c_str());
+
   admin_type = request["admin_type"].get<std::string>();
   operation = request["operation"].get<std::string>();
   request.erase("operation");
+
   if (operation.compare("extract") == 0) {
     // Call will go to IRRSEQ00
     validate_parameter(&request, errors, "admin_type",
@@ -105,6 +109,7 @@ void validate_parameter(nlohmann::json* request, nlohmann::json* errors,
                         {
                             {"parameter", json_key}
       });
+      // printf("bad parm data type!\n");
       return;
     }
     val = (*request)[json_key].get<std::string>();
@@ -190,7 +195,7 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
       {"error_code", error_type},
       {"error_data", error_data}
   };
-  if (error_type == XML_PARSE_ERROR) {
+  if (error_type >= XML_PARSE_ERROR) {
     (*errors).push_back(error_json);
     return;
   }
@@ -231,11 +236,11 @@ nlohmann::json format_error_json(nlohmann::json errors) {
         break;
       case BAD_PARAMETER_NAME:
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
-                            "' must be a string value";
+                            "' is not a valid parameter";
         break;
       case BAD_PARAMETER_DATA_TYPE:
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
-                            "' is not a valid parameter";
+                            "' must be a string value";
         break;
       case BAD_TRAIT_STRUCTURE:
         error_message_str = "'" + error_data["trait"].get<std::string>() +

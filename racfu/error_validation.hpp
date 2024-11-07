@@ -18,8 +18,8 @@
 #define BAD_TRAIT_DATA_TYPE 8      // "'omvs:uid' must be an 'integer' value"
 #define BAD_SEGMENT_TRAIT_COMBO 9  // "'omvs:junk' is not a valid trait"
 #define BAD_TRAIT_OPERATION_COMBO \
-  10                        //"'remove' is not a valid operation for 'omvs:uid'"
-#define XML_PARSE_ERROR 11  // "could not parse XML returned from IRRSMO00"
+  10  //"'remove' is not a valid operation for 'omvs:uid'"
+#define XML_PARSE_ERROR 101  // "could not parse XML returned from IRRSMO00"
 
 void validate_parameters(nlohmann::json request, nlohmann::json* errors);
 

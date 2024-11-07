@@ -6,19 +6,19 @@
 
 // Request samples
 #define TEST_PARMS_JUNK_REQUEST_JSON \
-  COMMON_REQUEST_SAMPLES "test_parameters_junk.json"
+  COMMON_REQUEST_SAMPLES "test_parameters_junk_request.json"
 #define TEST_PARMS_NONSTRING_REQUEST_JSON \
-  COMMON_REQUEST_SAMPLES "test_parameters_nonstring.json"
+  COMMON_REQUEST_SAMPLES "test_parameters_nonstring_request.json"
 #define TEST_PARMS_MISSING_REQUEST_JSON \
-  COMMON_REQUEST_SAMPLES "test_parameters_missing.json"
+  COMMON_REQUEST_SAMPLES "test_parameters_missing_request.json"
 
 // Result samples
 #define TEST_PARMS_JUNK_RESULT_JSON \
-  COMMON_RESULT_SAMPLES "test_parameters_junk.json"
+  COMMON_RESULT_SAMPLES "test_parameters_junk_result.json"
 #define TEST_PARMS_NONSTRING_RESULT_JSON \
-  COMMON_RESULT_SAMPLES "test_parameters_nonstring.json"
+  COMMON_RESULT_SAMPLES "test_parameters_nonstring_result.json"
 #define TEST_PARMS_MISSING_RESULT_JSON \
-  COMMON_RESULT_SAMPLES "test_parameters_missing.json"
+  COMMON_RESULT_SAMPLES "test_parameters_missing_result.json"
 
 void test_parse_parameters_junk_error(void);
 void test_parse_parameters_missing_error(void);
