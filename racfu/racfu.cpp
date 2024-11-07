@@ -47,7 +47,7 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  validate_parameters(request, &errors, &operation, &admin_type,
+  validate_parameters(&request, &errors, &operation, &admin_type,
                       &profile_name_str, &class_name_str);
   if (!profile_name_str.empty()) {
     profile_name = profile_name_str.c_str();
@@ -62,6 +62,7 @@ void racfu(racfu_result_t *result, const char *request_json) {
                  &return_codes);
     return;
   }
+
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
   if (request.contains("profile_name")) {
@@ -269,8 +270,7 @@ void build_result(const char *operation, const char *admin_type,
   }
 
   if (response_json.contains("errors")) {
-    result_json["result"] = format_error_json(response_json["errors"]);
-
+    result_json["result"] = format_error_json(&response_json["errors"]);
   } else {
     result_json["result"] = response_json;
   }

@@ -6,10 +6,11 @@
 
 #include "key_map.hpp"
 
-void validate_parameters(nlohmann::json request, nlohmann::json* errors,
+void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
                          std::string* operation, std::string* admin_type,
                          std::string* profile_name, std::string* class_name) {
-  // Obtain JSON Header information and Validate as appropriate
+  // Obtain JSON Parameter information and Validate as appropriate
+  nlohmann::json checked_parameters = nlohmann::json::array();
 
   // Json arrays of valid values for different parameters
   nlohmann::json yes_or_no{"yes", "no"};
@@ -23,102 +24,113 @@ void validate_parameters(nlohmann::json request, nlohmann::json* errors,
   nlohmann::json no_validation = nlohmann::json::object();
 
   // Validate parameters that are always necessary first
-  if (validate_parameter(&request, errors, "operation", valid_operations,
-                         *admin_type, true, false) == 0) {
-    *admin_type = request["admin_type"].get<std::string>();
+  if (validate_parameter(request, errors, "operation", &valid_operations,
+                         *admin_type, true) == 0) {
+    *admin_type = (*request)["admin_type"].get<std::string>();
   }
-  if (validate_parameter(&request, errors, "admin_type",
-                         valid_non_extract_admin_types, *admin_type, true,
-                         false) == 0) {
-    *operation = request["operation"].get<std::string>();
-    request.erase("operation");
+  if (validate_parameter(request, errors, "admin_type",
+                         &valid_non_extract_admin_types, *admin_type,
+                         true) == 0) {
+    *operation = (*request)["operation"].get<std::string>();
   }
   if (!(errors)->empty()) {
     // Not enough information to validate other parameters
     return;
   }
+  checked_parameters.push_back("operation");
   if (*operation == "extract") {
     // Call will go to IRRSEQ00 for EXTRACT operations
-    validate_parameter(&request, errors, "admin_type",
-                       valid_extract_admin_types, *admin_type, true, true);
+    validate_parameter(request, errors, "admin_type",
+                       &valid_extract_admin_types, *admin_type, true);
     if (*admin_type != "setropts") {
-      if (validate_parameter(&request, errors, "profile_name", no_validation,
-                             (*admin_type), true, false) == 0) {
-        *profile_name = request["profile_name"].get<std::string>();
-        request.erase("profile_name");
+      if (validate_parameter(request, errors, "profile_name", &no_validation,
+                             *admin_type, true) == 0) {
+        *profile_name = (*request)["profile_name"].get<std::string>();
       }
+      checked_parameters.push_back("profile_name");
       if (*admin_type == "resource") {
-        if (validate_parameter(&request, errors, "class_name", no_validation,
-                               *admin_type, true, false) == 0) {
-          *class_name = request["class_name"].get<std::string>();
-          request.erase("class_name");
+        if (validate_parameter(request, errors, "class_name", &no_validation,
+                               *admin_type, true) == 0) {
+          *class_name = (*request)["class_name"].get<std::string>();
         }
+        checked_parameters.push_back("class_name");
       }
     }
-    validate_supplemental_parameters(request, errors, false);
+    validate_supplemental_parameters(request, errors, &checked_parameters,
+                                     false);
     return;
   }
   // Call will go to IRRSMO00 for NON-EXTRACT operations
   // Each operation has required or allowed parameters, these checks are made in
   // order to validate that every required parameter is specified and optional
   // parameters are only used for supported operations and admin types
-  validate_parameter(&request, errors, "run", yes_or_no, (*admin_type), false,
-                     true);
+  validate_parameter(request, errors, "run", &yes_or_no, (*admin_type), false);
+  checked_parameters.push_back("run");
   if (*admin_type == "setropts") {
     // SETROPTS only requires 'admin_type' and 'operation' and allows 'run'
-    validate_supplemental_parameters(request, errors, true);
+    validate_supplemental_parameters(request, errors, &checked_parameters,
+                                     true);
     return;
   }
-  validate_parameter(&request, errors, "override", yes_no_or_force, *admin_type,
-                     false, true);
-  if (validate_parameter(&request, errors, "profile_name", no_validation,
-                         *admin_type, true, false) == 0) {
-    *profile_name = request["profile_name"].get<std::string>();
-    request.erase("profile_name");
+  validate_parameter(request, errors, "override", &yes_no_or_force, *admin_type,
+                     false);
+  checked_parameters.push_back("override");
+  if (validate_parameter(request, errors, "profile_name", &no_validation,
+                         *admin_type, true) == 0) {
+    *profile_name = (*request)["profile_name"].get<std::string>();
   }
+  checked_parameters.push_back("profile_name");
   if ((*admin_type == "user") || (*admin_type == "group")) {
     // USER and GROUP also allow 'override' and require 'profile_name'
-    validate_supplemental_parameters(request, errors, true);
+    validate_supplemental_parameters(request, errors, &checked_parameters,
+                                     true);
     return;
   }
   if (*admin_type == "group-connection") {
     // GROUP-CONNECTION also requires 'goup' but no other admin types do
-    validate_parameter(&request, errors, "group", no_validation, *admin_type,
-                       true, true);
-    validate_supplemental_parameters(request, errors, true);
+    validate_parameter(request, errors, "group", &no_validation, *admin_type,
+                       true);
+    checked_parameters.push_back("group");
+    validate_supplemental_parameters(request, errors, &checked_parameters,
+                                     true);
     return;
   }
   if ((*admin_type == "resource") || (*admin_type == "permission")) {
     // RESOURCE and PERMISSION also require 'class_name' but DATA-SET does not
-    if (validate_parameter(&request, errors, "class_name", no_validation,
-                           *admin_type, true, false) == 0) {
-      *class_name = request["class_name"].get<std::string>();
-      request.erase("class_name");
+    if (validate_parameter(request, errors, "class_name", &no_validation,
+                           *admin_type, true) == 0) {
+      *class_name = (*request)["class_name"].get<std::string>();
     } else {
-      validate_supplemental_parameters(request, errors, true);
+      validate_supplemental_parameters(request, errors, &checked_parameters,
+                                       true);
       return;
     }
+    checked_parameters.push_back("class_name");
     if ((*admin_type == "resource") || (*class_name != "dataset")) {
       // RESOURCE and PERMISSION (for non DATASET class) do not support any
       // additional parameters
-      validate_supplemental_parameters(request, errors, true);
+      validate_supplemental_parameters(request, errors, &checked_parameters,
+                                       true);
       return;
     }
   }
   if ((*admin_type == "data-set") || (*admin_type == "permission")) {
     // DATA-SET and PERMISSION (for DATASET class) allow for 'volume' and
     // 'generic' parameters
-    validate_parameter(&request, errors, "volume", no_validation, *admin_type,
-                       false, true);
-    validate_parameter(&request, errors, "generic", yes_or_no, *admin_type,
-                       false, true);
-    validate_supplemental_parameters(request, errors, true);
+    validate_parameter(request, errors, "volume", &no_validation, *admin_type,
+                       false);
+    checked_parameters.push_back("volume");
+    validate_parameter(request, errors, "generic", &yes_or_no, *admin_type,
+                       false);
+    checked_parameters.push_back("generic");
+    validate_supplemental_parameters(request, errors, &checked_parameters,
+                                     true);
   }
 }
 
 uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
-                           std::string json_key, nlohmann::json valid_values,
-                           std::string admin_type, bool required, bool remove) {
+                           std::string json_key, nlohmann::json* valid_values,
+                           std::string admin_type, bool required) {
   if (!(*request).contains(json_key) && required && admin_type.empty()) {
     // Required Parameter for ALL Admin Types
     update_error_json(errors, REQUIRED_PARAMETER,
@@ -147,16 +159,10 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
                           {"parameter", json_key},
                           {"data_type", "string"}
     });
-    if (remove) {
-      (*request).erase(json_key);
-    }
     return BAD_PARAMETER_DATA_TYPE;
   }
   std::string val = (*request)[json_key].get<std::string>();
   std::transform(val.begin(), val.end(), val.begin(), ::tolower);
-  if (remove) {
-    (*request).erase(json_key);
-  }
   if (val.empty()) {
     // Parameter key is present but has no value
     update_error_json(errors, BAD_PARAMETER_VALUE,
@@ -166,10 +172,10 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
     });
     return BAD_PARAMETER_VALUE;
   }
-  if (valid_values.empty()) {
+  if (valid_values->empty()) {
     return 0;  // Parameter has no validation and is present
   }
-  for (const auto& item : valid_values.items()) {
+  for (const auto& item : valid_values->items()) {
     if (val.compare(item.value()) == 0) {
       return 0;  // Parameter meets validation rules
     }
@@ -183,14 +189,19 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
   return BAD_PARAMETER_VALUE;
 }
 
-void validate_supplemental_parameters(nlohmann::json request,
+void validate_supplemental_parameters(nlohmann::json* request,
                                       nlohmann::json* errors,
+                                      nlohmann::json* checked_parameters,
                                       bool traits_allowed) {
-  nlohmann::json supplemental_parameters = {
-      "running_user_id", "result_buffer_size", "debug_mode", "admin_type"};
-  for (const auto& item : request.items()) {
+  nlohmann::json stable_parameters{"running_user_id", "result_buffer_size",
+                                   "debug_mode", "admin_type"};
+  checked_parameters->insert(checked_parameters->end(),
+                             stable_parameters.begin(),
+                             stable_parameters.end());
+
+  for (const auto& item : request->items()) {
     if ((item.key() == "traits") && traits_allowed) {
-      if (!request["traits"].is_structured()) {
+      if (!(*request)["traits"].is_structured()) {
         update_error_json(errors, BAD_PARAMETER_DATA_TYPE,
                           nlohmann::json{
                               {"parameter", "traits"},
@@ -200,7 +211,7 @@ void validate_supplemental_parameters(nlohmann::json request,
       continue;
     }
     bool found_match = false;
-    for (const auto& allowed : supplemental_parameters.items()) {
+    for (const auto& allowed : checked_parameters->items()) {
       if (item.key().compare(allowed.value()) == 0) {
         found_match = true;
         continue;
@@ -225,8 +236,9 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
       {"error_code", error_type},
       {"error_data", error_data}
   };
+
   if (error_type >= XML_PARSE_ERROR) {
-    (*errors).push_back(error_json);
+    errors->push_back(error_json);
     return;
   }
   if ((*errors).empty()) {
@@ -235,16 +247,16 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
   (*errors)["errors"].push_back(error_json);
 }
 
-nlohmann::json format_error_json(nlohmann::json errors) {
+nlohmann::json format_error_json(nlohmann::json* errors) {
   std::string error_message_str;
   nlohmann::json error_data, output = {
                                  {"errors", {}}
   };
-  for (int i = 0; i < errors.size(); i++) {
-    if (!errors[i]["error_data"].empty()) {
-      error_data = errors[i]["error_data"];
+  for (int i = 0; i < errors->size(); i++) {
+    if (!(*errors)[i]["error_data"].empty()) {
+      error_data = (*errors)[i]["error_data"];
     }
-    switch (errors[i]["error_code"].get<uint>()) {
+    switch ((*errors)[i]["error_code"].get<uint>()) {
       case BAD_PARAMETER_VALUE:
         error_message_str = "'" +
                             error_data["parameter_value"].get<std::string>() +

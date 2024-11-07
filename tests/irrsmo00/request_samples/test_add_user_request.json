@@ -2,6 +2,7 @@
   "operation": "add",
   "admin_type": "user",
   "profile_name": "SQUIDWRD",
+  "debug_mode": true,
   "traits": {
     "base:name": "Squidward",
     "omvs:uid": 24,
