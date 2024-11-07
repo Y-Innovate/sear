@@ -1,8 +1,9 @@
 #ifndef _IRRSEQ00_H_
 #define _IRRSEQ00_H_
 
-#include <stdint.h>
 #include <stdio.h>
+
+#include <cstdint>
 
 // These globals need to be defined differently depending
 // on where they are compiled since BINDER on z/OS

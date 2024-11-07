@@ -1,8 +1,7 @@
 #ifndef __RACFU_PARAMETER_VALIDATION_H_
 #define __RACFU_PARAMETER_VALIDATION_H_
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
 

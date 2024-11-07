@@ -79,7 +79,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 
 // Private Methods of XmlParser
 void XmlParser::parse_parameters(nlohmann::json* input_json,
-                                 std::string parameter_string) {
+                                 const std::string& parameter_string) {
   // Parse the parameter attributes of the XML for JSON information
   // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
   std::smatch attribute_key_value;

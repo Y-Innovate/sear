@@ -59,7 +59,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   if ((request.contains("traits")) && (!request["traits"].empty())) {
     build_end_nested_tag();
 
-    (*errors) = build_request_data(adminType, request["traits"]);
+    *errors = build_request_data(adminType, request["traits"]);
 
     // Close the admin object
     build_full_close_tag(adminType);
@@ -176,31 +176,28 @@ void XmlGenerator::build_xml_head_attributes(std::string adminType,
   if (request.contains("run")) {
     build_attribute("run", request["run"].get<std::string>());
   }
-  if (adminType.compare("systemsettings") == 0) {
+  if (adminType == "systemsettings") {
     return;
   }
   if (request.contains("override")) {
     build_attribute("override", request["override"].get<std::string>());
   }
   build_attribute("name", request["profile_name"].get<std::string>());
-  if ((adminType.compare("user") == 0) || (adminType.compare("group") == 0)) {
+  if ((adminType == "user") || (adminType == "group")) {
     return;
   }
-  if (adminType.compare("groupconnection") == 0) {
+  if (adminType == "groupconnection") {
     build_attribute("group", request["group"].get<std::string>());
     return;
   }
-  if ((adminType.compare("resource") == 0) ||
-      (adminType.compare("permission") == 0)) {
+  if ((adminType == "resource") || (adminType == "permission")) {
     className = request["class"].get<std::string>();
     build_attribute("class", className);
-    if (adminType.compare("resource") == 0 ||
-        (className.compare("dataset") != 0)) {
+    if (adminType == "resource" || (className != "dataset")) {
       return;
     }
   }
-  if ((adminType.compare("dataset") == 0) ||
-      (adminType.compare("permission") == 0)) {
+  if ((adminType == "dataset") || (adminType == "permission")) {
     if (request.contains("volume")) {
       build_attribute("volume", request["volume"].get<std::string>());
     }
@@ -230,7 +227,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                        segment_trait_key_regex)) {
         // Track any entries that do not match proper syntax
         update_error_json(&errors, BAD_TRAIT_STRUCTURE,
-                          {
+                          nlohmann::json{
                               {"trait", item.key()}
         });
         item = requestData.erase(item);
@@ -256,7 +253,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         int8_t operation = map_operations(itemOperation);
         if (operation == OPERATOR_BAD) {
           update_error_json(&errors, BAD_OPERATION,
-                            {
+                            nlohmann::json{
                                 {"operation", itemOperation}
           });
           item = requestData.erase(item);
@@ -271,7 +268,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         if (expected_type == TRAIT_TYPE_BAD) {
           update_error_json(
               &errors, BAD_SEGMENT_TRAIT_COMBO,
-              {
+              nlohmann::json{
                   {"segment", itemSegment},
                   {  "trait",   itemTrait}
           });
@@ -281,7 +278,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
         if (trait_type != expected_type) {
           update_error_json(
               &errors, BAD_TRAIT_DATA_TYPE,
-              {
+              nlohmann::json{
                   {        "trait",    item.key()},
                   {"required_type", expected_type}
           });
@@ -293,7 +290,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                                      trait_type, operation);
         if (translatedKey == NULL) {
           update_error_json(&errors, BAD_TRAIT_OPERATION_COMBO,
-                            {
+                            nlohmann::json{
                                 {"operation", itemOperation},
                                 {  "segment",   itemSegment},
                                 {    "trait",     itemTrait}
@@ -326,16 +323,16 @@ int8_t XmlGenerator::map_operations(std::string operation) {
   }
   std::transform(operation.begin(), operation.end(), operation.begin(),
                  ::tolower);
-  if (operation.compare("set") == 0) {
+  if (operation == "set") {
     return OPERATOR_SET;
   }
-  if (operation.compare("add") == 0) {
+  if (operation == "add") {
     return OPERATOR_ADD;
   }
-  if ((operation.compare("remove") == 0) || (operation.compare("rem") == 0)) {
+  if ((operation == "remove") || (operation == "rem")) {
     return OPERATOR_REMOVE;
   }
-  if ((operation.compare("delete") == 0) || (operation.compare("del") == 0)) {
+  if ((operation == "delete") || (operation == "del")) {
     return OPERATOR_DELETE;
   }
   return OPERATOR_BAD;
@@ -367,11 +364,11 @@ std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
     std::string output_string = "";
     std::string delimeter =
         ", ";  // May just be " " or just be ","; May need to test
-    for (auto& item : trait.items()) {
+    for (const auto& item : trait.items()) {
       if (!item.value().is_string()) {
         update_error_json(
             errors, BAD_TRAIT_DATA_TYPE,
-            {
+            nlohmann::json{
                 {        "trait",    item.key()},
                 {"required_type", expected_type}
         });
@@ -392,17 +389,17 @@ std::string XmlGenerator::convert_operation(std::string requestOperation,
   // Converts the designated function to the correct IRRSMO00 operation and
   // adjusts IRRSMO00 options as necessary (alter operations require the
   // PRECHECK attribute)
-  if (requestOperation.compare("add") == 0) {
+  if (requestOperation == "add") {
     return "set";
   }
-  if (requestOperation.compare("alter") == 0) {
+  if (requestOperation == "alter") {
     *irrsmo00_options = 15;
     return "set";
   }
-  if (requestOperation.compare("delete") == 0) {
+  if (requestOperation == "delete") {
     return "del";
   }
-  if (requestOperation.compare("extract") == 0) {
+  if (requestOperation == "extract") {
     return "listdata";
   }
   return "";
@@ -413,13 +410,13 @@ std::string XmlGenerator::convert_admin_type(std::string admin_type) {
   // definitions. group-connection to groupconnection, setropts to
   // systemsettings and data-set to dataset. All other admin types should be
   // unchanged
-  if (admin_type.compare("group-connection") == 0) {
+  if (admin_type == "group-connection") {
     return "groupconnection";
   }
-  if (admin_type.compare("setropts") == 0) {
+  if (admin_type == "setropts") {
     return "systemsettings";
   }
-  if (admin_type.compare("data-set") == 0) {
+  if (admin_type == "data-set") {
     return "dataset";
   }
   return admin_type;

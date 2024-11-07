@@ -1,7 +1,6 @@
 #include "racfu.h"
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -71,7 +70,7 @@ void racfu(racfu_result_t *result, const char *request_json) {
   if (request.contains("class_name")) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
-  if (operation.compare("extract") == 0) {
+  if (operation == "extract") {
     do_extract(admin_type.c_str(), profile_name, class_name, result,
                &return_codes);
     // Add/Alter/Delete

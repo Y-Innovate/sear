@@ -1,7 +1,8 @@
 #include "key_map.hpp"
 
 #include <stdio.h>
-#include <string.h>
+
+#include <cstring>
 
 static const trait_key_mapping_t *get_key_mapping(
     const char *profile_type,  // The profile type (i.e., 'user')

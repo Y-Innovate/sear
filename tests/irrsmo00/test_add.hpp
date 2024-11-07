@@ -15,9 +15,10 @@
   IRRSMO00_REQUEST_SAMPLES "test_add_user_trait_errors_request.json"
 #define TEST_ALTER_USER_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "test_alter_user_request.json"
-#define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON                  \
-  IRRSMO00_REQUEST_SAMPLES "test_alter_user_traits_not_json_error_request." \
-                           "json"
+#define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                 \
+      "test_alter_user_traits_not_json_error_request."     \
+      "json"
 
 // Result samples
 #define TEST_ADD_USER_RESULT_JSON \
@@ -39,12 +40,12 @@
 #define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "test_alter_user_traits_not_json_error_result.json"
 
-void test_generate_add_user_request(void);
-void test_parse_add_user_result(void);
-void test_parse_add_user_result_user_already_exists(void);
-void test_parse_add_user_parameter_errors(void);
-void test_parse_add_user_trait_errors(void);
-void test_parse_alter_user_no_xml_data_error(void);
-void test_parse_alter_user_traits_not_json_error(void);
+void test_generate_add_user_request();
+void test_parse_add_user_result();
+void test_parse_add_user_result_user_already_exists();
+void test_parse_add_user_parameter_errors();
+void test_parse_add_user_trait_errors();
+void test_parse_alter_user_no_xml_data_error();
+void test_parse_alter_user_traits_not_json_error();
 
 #endif

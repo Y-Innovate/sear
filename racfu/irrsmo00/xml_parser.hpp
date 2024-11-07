@@ -13,7 +13,7 @@ std::string cast_hex_string(char* input);
 class XmlParser {
  private:
   void parse_parameters(nlohmann::json* input_json,
-                        std::string parameter_string);
+                        const std::string& parameter_string);
   void parse_xml_tags(nlohmann::json* input_json, std::string body_string);
   void parse_xml_data(nlohmann::json* input_json, std::string inner_data,
                       std::string outer_tag);

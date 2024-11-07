@@ -20,8 +20,8 @@
 #define TEST_PARMS_MISSING_RESULT_JSON \
   COMMON_RESULT_SAMPLES "test_parameters_missing_result.json"
 
-void test_parse_parameters_junk_error(void);
-void test_parse_parameters_missing_error(void);
-void test_parse_parameters_nonstring_error(void);
+void test_parse_parameters_junk_error();
+void test_parse_parameters_missing_error();
+void test_parse_parameters_nonstring_error();
 
 #endif

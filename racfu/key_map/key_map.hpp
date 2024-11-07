@@ -1,7 +1,7 @@
 #ifndef __KEY_MAP_H_
 #define __KEY_MAP_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "key_map_structs.hpp"
 #include "key_map_user.hpp"

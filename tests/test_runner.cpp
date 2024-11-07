@@ -4,11 +4,11 @@
 #include "tests/irrsmo00/test_add.hpp"
 #include "tests/unity/unity.h"
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-int main(void) {
+int main() {
   UNITY_BEGIN();
 
   // Common

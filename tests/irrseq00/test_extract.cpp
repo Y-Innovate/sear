@@ -1,7 +1,8 @@
 #include "tests/irrseq00/test_extract.hpp"
 
-#include <string.h>
 #include <sys/stat.h>
+
+#include <cstring>
 
 #include "racfu/racfu.h"
 #include "tests/mock/irrseq00.hpp"
@@ -88,7 +89,7 @@ void check_arg_pointers(char *raw_request) {
   TEST_ASSERT_EQUAL_UINT64(0x80000001, arg_pointer[13] - arg_pointer[12]);
 }
 
-void test_generate_extract_user_request(void) {
+void test_generate_extract_user_request() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
   char *raw_request_expected = get_raw_sample(TEST_EXTRACT_USER_REQUEST_RAW);
@@ -120,7 +121,7 @@ void test_generate_extract_user_request(void) {
   free(result.result_json);
 }
 
-void test_parse_extract_user_result(void) {
+void test_parse_extract_user_result() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
   std::string result_json_expected =
@@ -150,7 +151,7 @@ void test_parse_extract_user_result(void) {
   free(result.result_json);
 }
 
-void test_parse_extract_user_result_user_not_found(void) {
+void test_parse_extract_user_result_user_not_found() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
   std::string result_json_expected =

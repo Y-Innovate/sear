@@ -4,9 +4,10 @@
 #include <unistd.h>
 
 #ifdef __ptr32
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <cstdint>
 
 static const unsigned char ASCII_TO_EBCDIC[256] = {
     0x0,  0x1,  0x2,  0x3,  0x37, 0x2d, 0x2e, 0x2f, 0x16, 0x5,  0x15, 0xb,

@@ -1,14 +1,15 @@
 #include "tests/common/test_parameter_validation.hpp"
 
-#include <string.h>
 #include <sys/stat.h>
+
+#include <cstring>
 
 #include "racfu/racfu.h"
 #include "racfu/racfu_result.h"
 #include "tests/unit_test_utilities.hpp"
 #include "tests/unity/unity.h"
 
-void test_parse_parameters_junk_error(void) {
+void test_parse_parameters_junk_error() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_PARMS_JUNK_REQUEST_JSON);
   std::string result_json_expected =
@@ -23,7 +24,7 @@ void test_parse_parameters_junk_error(void) {
   free(result.result_json);
 }
 
-void test_parse_parameters_missing_error(void) {
+void test_parse_parameters_missing_error() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_PARMS_MISSING_REQUEST_JSON);
   std::string result_json_expected =
@@ -38,7 +39,7 @@ void test_parse_parameters_missing_error(void) {
   free(result.result_json);
 }
 
-void test_parse_parameters_nonstring_error(void) {
+void test_parse_parameters_nonstring_error() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_PARMS_NONSTRING_REQUEST_JSON);
   std::string result_json_expected =
