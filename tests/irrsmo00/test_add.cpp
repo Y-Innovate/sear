@@ -128,7 +128,7 @@ void test_parse_add_user_trait_errors(void) {
   free(result.result_json);
 }
 
-void test_parse_alter_user_no_xml_data(void) {
+void test_parse_alter_user_no_xml_data_error(void) {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_ALTER_USER_REQUEST_JSON);
   std::string result_json_expected =
@@ -149,6 +149,22 @@ void test_parse_alter_user_no_xml_data(void) {
 
   // Cleanup
   free(irrsmo64_result_mock);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void test_parse_alter_user_traits_not_json_error(void) {
+  racfu_result_t result;
+  std::string request_json =
+      get_json_sample(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON);
+  std::string result_json_expected =
+      get_json_sample(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON);
+
+  racfu(&result, request_json.c_str());
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
   free(result.raw_request);
   free(result.raw_result);

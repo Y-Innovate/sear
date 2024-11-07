@@ -1,3 +1,6 @@
+#ifndef __RACFU_PARAMETER_VALIDATION_H_
+#define __RACFU_PARAMETER_VALIDATION_H_
+
 #include <stdint.h>
 
 #include <nlohmann/json.hpp>
@@ -21,15 +24,17 @@
   10  //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 101  // "could not parse XML returned from IRRSMO00"
 
-void validate_parameters(nlohmann::json request, nlohmann::json* errors);
+void validate_parameters(nlohmann::json request, nlohmann::json* errors,
+                         std::string* operation, std::string* admin_type,
+                         std::string* profile_name, std::string* class_name);
 
-void validate_parameter(nlohmann::json* request, nlohmann::json* errors,
-                        std::string json_key, nlohmann::json validation,
-                        std::string admin_type, bool required, bool remove);
+uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
+                           std::string json_key, nlohmann::json valid_values,
+                           std::string admin_type, bool required, bool remove);
 
-void validate_remaining_request_attributes(nlohmann::json request,
-                                           nlohmann::json* errors,
-                                           bool traits_allowed);
+void validate_supplemental_parameters(nlohmann::json request,
+                                      nlohmann::json* errors,
+                                      bool traits_allowed);
 
 void update_error_json(nlohmann::json* errors, int8_t error_type,
                        nlohmann::json error_data);
@@ -37,3 +42,5 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
 nlohmann::json format_error_json(nlohmann::json errors);
 
 std::string decode_data_type(uint data_type_code);
+
+#endif

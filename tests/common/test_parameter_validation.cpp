@@ -1,4 +1,4 @@
-#include "tests/common/test_common_errors.hpp"
+#include "tests/common/test_parameter_validation.hpp"
 
 #include <string.h>
 #include <sys/stat.h>

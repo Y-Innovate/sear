@@ -7,177 +7,217 @@
 
 #include "key_map.hpp"
 
-void validate_parameters(nlohmann::json request, nlohmann::json* errors) {
+void validate_parameters(nlohmann::json request, nlohmann::json* errors,
+                         std::string* operation, std::string* admin_type,
+                         std::string* profile_name, std::string* class_name) {
   // Obtain JSON Header information and Validate as appropriate
 
-  std::string operation = "", admin_type = "", className;
+  // Json arrays of valid values for different parameters
   nlohmann::json yes_or_no = {"yes", "no"};
   nlohmann::json yes_no_or_force = {"yes", "no", "force"};
   nlohmann::json valid_operations = {"add", "alter", "extract", "delete"};
   nlohmann::json valid_extract_admin_types = {
       "user", "group", "group-connection", "resource", "data-set", "setropts"};
-  nlohmann::json valid_admin_types = {
+  nlohmann::json valid_non_extract_admin_types = {
       "user",     "group",    "group-connection", "resource",
       "data-set", "setropts", "permission"};
   nlohmann::json no_validation = {};
 
-  validate_parameter(&request, errors, "operation", valid_operations,
-                     admin_type, true, false);
-  validate_parameter(&request, errors, "admin_type", valid_admin_types,
-                     admin_type, true, false);
-
+  // Validate parameters that are always necessary first
+  if (validate_parameter(&request, errors, "operation", valid_operations,
+                         (*admin_type), true, false) == 0) {
+    (*admin_type) = request["admin_type"].get<std::string>();
+  }
+  if (validate_parameter(&request, errors, "admin_type",
+                         valid_non_extract_admin_types, (*admin_type), true,
+                         false) == 0) {
+    (*operation) = request["operation"].get<std::string>();
+    request.erase("operation");
+  }
   if (!(errors)->empty()) {
     // Not enough information to validate other parameters
     return;
   }
-
-  admin_type = request["admin_type"].get<std::string>();
-  operation = request["operation"].get<std::string>();
-  request.erase("operation");
-
-  if (operation.compare("extract") == 0) {
-    // Call will go to IRRSEQ00
+  if ((*operation).compare("extract") == 0) {
+    // Call will go to IRRSEQ00 for EXTRACT operations
     validate_parameter(&request, errors, "admin_type",
-                       valid_extract_admin_types, admin_type, true, true);
-    if (admin_type.compare("setropts") != 0) {
-      validate_parameter(&request, errors, "profile_name", no_validation,
-                         admin_type, true, true);
-      if (admin_type.compare("resource") == 0) {
-        validate_parameter(&request, errors, "class_name", no_validation,
-                           admin_type, true, true);
+                       valid_extract_admin_types, (*admin_type), true, true);
+    if ((*admin_type).compare("setropts") != 0) {
+      if (validate_parameter(&request, errors, "profile_name", no_validation,
+                             (*admin_type), true, false) == 0) {
+        (*profile_name) = request["profile_name"].get<std::string>();
+        request.erase("profile_name");
+      }
+      if ((*admin_type).compare("resource") == 0) {
+        if (validate_parameter(&request, errors, "class_name", no_validation,
+                               (*admin_type), true, false) == 0) {
+          (*class_name) = request["class_name"].get<std::string>();
+          request.erase("class_name");
+        }
       }
     }
-    validate_remaining_request_attributes(request, errors, false);
+    validate_supplemental_parameters(request, errors, false);
     return;
   }
-  validate_parameter(&request, errors, "run", yes_or_no, admin_type, false,
+  // Call will go to IRRSMO00 for NON-EXTRACT operations
+  // Each operation has required or allowed parameters, these checks are made in
+  // order to validate that every required parameter is specified and optional
+  // parameters are only used for supported operations and admin types
+  validate_parameter(&request, errors, "run", yes_or_no, (*admin_type), false,
                      true);
-  if (admin_type.compare("setropts") == 0) {
-    validate_remaining_request_attributes(request, errors, true);
+  if ((*admin_type).compare("setropts") == 0) {
+    // SETROPTS only requires 'admin_type' and 'operation' and allows 'run'
+    validate_supplemental_parameters(request, errors, true);
     return;
   }
-  validate_parameter(&request, errors, "override", yes_no_or_force, admin_type,
-                     false, true);
-  validate_parameter(&request, errors, "profile_name", no_validation,
-                     admin_type, true, true);
-  if ((admin_type.compare("user") == 0) || (admin_type.compare("group") == 0)) {
-    validate_remaining_request_attributes(request, errors, true);
+  validate_parameter(&request, errors, "override", yes_no_or_force,
+                     (*admin_type), false, true);
+  if (validate_parameter(&request, errors, "profile_name", no_validation,
+                         (*admin_type), true, false) == 0) {
+    (*profile_name) = request["profile_name"].get<std::string>();
+    request.erase("profile_name");
+  }
+  if (((*admin_type).compare("user") == 0) ||
+      ((*admin_type).compare("group") == 0)) {
+    // USER and GROUP also allow 'override' and require 'profile_name'
+    validate_supplemental_parameters(request, errors, true);
     return;
   }
-  if (admin_type.compare("group-connection") == 0) {
-    validate_parameter(&request, errors, "group", no_validation, admin_type,
+  if ((*admin_type).compare("group-connection") == 0) {
+    // GROUP-CONNECTION also requires 'goup' but no other admin types do
+    validate_parameter(&request, errors, "group", no_validation, (*admin_type),
                        true, true);
-    validate_remaining_request_attributes(request, errors, true);
+    validate_supplemental_parameters(request, errors, true);
     return;
   }
-  if ((admin_type.compare("resource") == 0) ||
-      (admin_type.compare("permission") == 0)) {
-    validate_parameter(&request, errors, "class_name", no_validation,
-                       admin_type, true, true);
-    if (admin_type.compare("resource") == 0 ||
-        (className.compare("data-set") != 0)) {
-      validate_remaining_request_attributes(request, errors, true);
+  if (((*admin_type).compare("resource") == 0) ||
+      ((*admin_type).compare("permission") == 0)) {
+    // RESOURCE and PERMISSION also require 'class_name' but DATA-SET does not
+    if (validate_parameter(&request, errors, "class_name", no_validation,
+                           (*admin_type), true, false) == 0) {
+      (*class_name) = request["class_name"].get<std::string>();
+      request.erase("class_name");
+    } else {
+      validate_supplemental_parameters(request, errors, true);
+      return;
+    }
+    if ((*admin_type).compare("resource") == 0 ||
+        ((*class_name).compare("dataset") != 0)) {
+      // RESOURCE and PERMISSION (for non DATASET class) do not support any
+      // additional parameters
+      validate_supplemental_parameters(request, errors, true);
       return;
     }
   }
-  if ((admin_type.compare("data-set") == 0) ||
-      (admin_type.compare("permission") == 0)) {
-    validate_parameter(&request, errors, "volume", no_validation, admin_type,
+  if (((*admin_type).compare("data-set") == 0) ||
+      ((*admin_type).compare("permission") == 0)) {
+    // DATA-SET and PERMISSION (for DATASET class) allow for 'volume' and
+    // 'generic' parameters
+    validate_parameter(&request, errors, "volume", no_validation, (*admin_type),
                        false, true);
-    validate_parameter(&request, errors, "generic", yes_or_no, admin_type,
+    validate_parameter(&request, errors, "generic", yes_or_no, (*admin_type),
                        false, true);
-    validate_remaining_request_attributes(request, errors, true);
+    validate_supplemental_parameters(request, errors, true);
     return;
   }
-  update_error_json(
-      errors, BAD_PARAMETER_VALUE,
-      {
-          {      "parameter", "admin_type"},
-          {"parameter_value",   admin_type}
-  });
   return;
 }
 
-void validate_parameter(nlohmann::json* request, nlohmann::json* errors,
-                        std::string json_key, nlohmann::json validation,
-                        std::string admin_type, bool required, bool remove) {
+uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
+                           std::string json_key, nlohmann::json valid_values,
+                           std::string admin_type, bool required, bool remove) {
   std::string val;
-  if ((*request).contains(json_key)) {
-    if (!(*request)[json_key].is_string()) {
-      update_error_json(errors, BAD_PARAMETER_DATA_TYPE,
-                        {
-                            {"parameter", json_key}
-      });
-      return;
-    }
-    val = (*request)[json_key].get<std::string>();
-    std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+  if (!(*request).contains(json_key) && required && admin_type.empty()) {
+    // Required Parameter for ALL Admin Types
+    update_error_json(errors, REQUIRED_PARAMETER,
+                      {
+                          {"parameter", json_key}
+    });
+    return REQUIRED_PARAMETER;
+  }
+  if (!(*request).contains(json_key) && required) {
+    // Required Parameter for passed Admin Type
+    update_error_json(errors, MISSING_PARAMETER,
+                      {
+                          { "parameter",   json_key},
+                          {"admin_type", admin_type}
+    });
+    return MISSING_PARAMETER;
+  }
+  if (!(*request).contains(json_key)) {
+    // Parameter is not required and not present
+    return 0;
+  }
+  if (!(*request)[json_key].is_string()) {
+    // Parameter needs to be a string
+    update_error_json(errors, BAD_PARAMETER_DATA_TYPE,
+                      {
+                          {"parameter", json_key},
+                          {"data_type", "string"}
+    });
     if (remove) {
       (*request).erase(json_key);
     }
-    if (validation.empty()) {
-      if (val.empty()) {
-        update_error_json(
-            errors, BAD_PARAMETER_VALUE,
-            {
-                {      "parameter", json_key},
-                {"parameter_value",      val}
-        });
-        return;
-      }
-
-    } else {
-      for (auto& item : validation.items()) {
-        if (val.compare(item.value()) == 0) {
-          return;
-        }
-      }
-      update_error_json(errors, BAD_PARAMETER_VALUE,
-                        {
-                            {      "parameter", json_key},
-                            {"parameter_value",      val}
-      });
-    }
-  } else {
-    if (required) {
-      if (admin_type.empty()) {
-        update_error_json(errors, REQUIRED_PARAMETER,
-                          {
-                              {"parameter", json_key}
-        });
-      } else {
-        update_error_json(
-            errors, MISSING_PARAMETER,
-            {
-                { "parameter",   json_key},
-                {"admin_type", admin_type}
-        });
-      }
+    return BAD_PARAMETER_DATA_TYPE;
+  }
+  val = (*request)[json_key].get<std::string>();
+  std::transform(val.begin(), val.end(), val.begin(), ::tolower);
+  if (remove) {
+    (*request).erase(json_key);
+  }
+  if (val.empty()) {
+    // Parameter key is present but has no value
+    update_error_json(errors, BAD_PARAMETER_VALUE,
+                      {
+                          {      "parameter", json_key},
+                          {"parameter_value",      val}
+    });
+    return BAD_PARAMETER_VALUE;
+  }
+  if (valid_values.empty()) {
+    return 0;  // Parameter has no validation and is present
+  }
+  for (auto& item : valid_values.items()) {
+    if (val.compare(item.value()) == 0) {
+      return 0;  // Parameter meets validation rules
     }
   }
+  // Parameter value does not meet validation rules
+  update_error_json(errors, BAD_PARAMETER_VALUE,
+                    {
+                        {      "parameter", json_key},
+                        {"parameter_value",      val}
+  });
+  return BAD_PARAMETER_VALUE;
 }
 
-void validate_remaining_request_attributes(nlohmann::json request,
-                                           nlohmann::json* errors,
-                                           bool traits_allowed) {
+void validate_supplemental_parameters(nlohmann::json request,
+                                      nlohmann::json* errors,
+                                      bool traits_allowed) {
   nlohmann::json supplemental_parameters = {
       "running_user_id", "result_buffer_size", "debug_mode", "admin_type"};
   for (auto& item : request.items()) {
-    // Traits contain no Header information and is ignored
     if ((item.key().compare("traits") == 0) && traits_allowed) {
-      continue;
-    } else {
-      bool found_match = false;
-      for (auto& allowed : supplemental_parameters.items()) {
-        if (item.key().compare(allowed.value()) == 0) {
-          found_match = true;
-          continue;
-        }
+      if (!request["traits"].is_structured()) {
+        update_error_json(errors, BAD_PARAMETER_DATA_TYPE,
+                          {
+                              {"parameter", "traits"},
+                              {"data_type",   "json"}
+        });
       }
-      if (found_match) {
+      continue;
+    }
+    bool found_match = false;
+    for (auto& allowed : supplemental_parameters.items()) {
+      if (item.key().compare(allowed.value()) == 0) {
+        found_match = true;
         continue;
       }
     }
+    if (found_match) {
+      continue;
+    }
+
     // Anything else shouldn't be here
     update_error_json(errors, BAD_PARAMETER_NAME,
                       {
@@ -234,8 +274,9 @@ nlohmann::json format_error_json(nlohmann::json errors) {
                             "' is not a valid parameter";
         break;
       case BAD_PARAMETER_DATA_TYPE:
-        error_message_str = "'" + error_data["parameter"].get<std::string>() +
-                            "' must be a string value";
+        error_message_str =
+            "'" + error_data["parameter"].get<std::string>() + "' must be a " +
+            error_data["data_type"].get<std::string>() + " value";
         break;
       case BAD_TRAIT_STRUCTURE:
         error_message_str = "'" + error_data["trait"].get<std::string>() +
@@ -248,7 +289,7 @@ nlohmann::json format_error_json(nlohmann::json errors) {
         break;
       case BAD_TRAIT_DATA_TYPE:
         error_message_str =
-            "'" + error_data["trait"].get<std::string>() + "' must use " +
+            "'" + error_data["trait"].get<std::string>() + "' must be " +
             decode_data_type(error_data["required_type"].get<uint>()) +
             "' value";
         break;

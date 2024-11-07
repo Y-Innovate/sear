@@ -1,11 +1,10 @@
 {
   "admin_type": "user",
-  "operation": "add",
-  "profile_name": null,
+  "operation": "alter",
+  "profile_name": "SQUIDWRD",
   "result": {
     "errors": [
-      "'profile_name' is a required parameter for the 'user' 'admin_type'",
-      "'junk' is not a valid parameter"
+      "'traits' must be a json value"
     ]
   },
   "return_codes": {

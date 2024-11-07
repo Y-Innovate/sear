@@ -1,5 +1,5 @@
-#ifndef __TEST_COMMON_ERRORS_H_
-#define __TEST_COMMON_ERRORS_H_
+#ifndef __TEST_PARAMETER_VALIDATION_H_
+#define __TEST_PARAMETER_VALIDATION_H_
 
 #define COMMON_REQUEST_SAMPLES "./tests/common/request_samples/"
 #define COMMON_RESULT_SAMPLES "./tests/common/result_samples/"

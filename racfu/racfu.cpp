@@ -32,7 +32,8 @@ void build_result(const char *operation, const char *admin_type,
 
 void racfu(racfu_result_t *result, const char *request_json) {
   nlohmann::json request, errors;
-  std::string operation = "", admin_type = "";
+  std::string operation = "", admin_type = "", profile_name_str = "",
+              class_name_str = "";
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   const char *profile_name = NULL;
@@ -47,7 +48,14 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  validate_parameters(request, &errors);
+  validate_parameters(request, &errors, &operation, &admin_type,
+                      &profile_name_str, &class_name_str);
+  if (!profile_name_str.empty()) {
+    profile_name = profile_name_str.c_str();
+  }
+  if (!class_name_str.empty()) {
+    class_name = class_name_str.c_str();
+  }
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name,
