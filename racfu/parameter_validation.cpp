@@ -164,7 +164,7 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
   std::string val = (*request)[json_key].get<std::string>();
   std::transform(val.begin(), val.end(), val.begin(), ::tolower);
   if (val.empty()) {
-    // Parameter key is present but has no value
+    // Parameter key is present but value is an empty string
     update_error_json(errors, BAD_PARAMETER_VALUE,
                       nlohmann::json{
                           {      "parameter", json_key},
