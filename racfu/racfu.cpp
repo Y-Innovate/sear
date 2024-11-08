@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "errors.hpp"
 #include "extract.hpp"
 #include "irrsmo00.hpp"
 #include "parameter_validation.hpp"
@@ -32,12 +33,12 @@ void build_result(const char *operation, const char *admin_type,
 
 void racfu(racfu_result_t *result, const char *request_json) {
   nlohmann::json request, errors;
-  std::string operation = "", admin_type = "", profile_name_str = "",
-              class_name_str = "";
+  std::string operation = "", admin_type = "", profile_name = "",
+              class_name = "";
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
-  const char *profile_name = NULL;
-  const char *class_name = NULL;
+  const char *profile_name_ptr = NULL;
+  const char *class_name_ptr = NULL;
   const char *surrogate_userid = NULL;
   // {
   //     "operation": "add",
@@ -48,18 +49,18 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  validate_parameters(&request, &errors, &operation, &admin_type,
-                      &profile_name_str, &class_name_str);
-  if (!profile_name_str.empty()) {
-    profile_name = profile_name_str.c_str();
+  validate_parameters(&request, &errors, &operation, &admin_type, &profile_name,
+                      &class_name);
+  if (!profile_name.empty()) {
+    profile_name_ptr = profile_name.c_str();
   }
-  if (!class_name_str.empty()) {
-    class_name = class_name_str.c_str();
+  if (!class_name.empty()) {
+    class_name_ptr = class_name.c_str();
   }
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
-    build_result(operation.c_str(), admin_type.c_str(), profile_name,
-                 class_name, NULL, nullptr, 0, nullptr, 0, errors, result,
+    build_result(operation.c_str(), admin_type.c_str(), profile_name_ptr,
+                 class_name_ptr, NULL, nullptr, 0, nullptr, 0, errors, result,
                  &return_codes);
     return;
   }
@@ -73,14 +74,14 @@ void racfu(racfu_result_t *result, const char *request_json) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
   if (operation == "extract") {
-    do_extract(admin_type.c_str(), profile_name, class_name, result,
+    do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
                &return_codes);
     // Add/Alter/Delete
   } else {
     if (request.contains("running_user_id")) {
       surrogate_userid = request["running_user_id"].get<std::string>().c_str();
     }
-    do_add_alter_delete(admin_type.c_str(), profile_name, class_name,
+    do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, request, result,
                         &return_codes);
   }

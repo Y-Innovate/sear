@@ -7,7 +7,7 @@
 #include <string>
 
 #include "key_map.hpp"
-#include "parameter_validation.hpp"
+#include "trait_validation.hpp"
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(const char* admin_type,
@@ -59,7 +59,10 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   if ((request.contains("traits")) && (!request["traits"].empty())) {
     build_end_nested_tag();
 
-    *errors = build_request_data(adminType, request["traits"]);
+    validate_traits(admin_type, &request["traits"], errors);
+    if (errors->empty()) {
+      build_request_data(adminType, request["traits"]);
+    }
 
     // Close the admin object
     build_full_close_tag(adminType);
@@ -223,16 +226,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
   auto item = requestData.begin();
   while (!requestData.empty()) {
     for (item = requestData.begin(); item != requestData.end();) {
-      if (!regex_match(item.key(), segment_trait_key_data,
-                       segment_trait_key_regex)) {
-        // Track any entries that do not match proper syntax
-        update_error_json(&errors, BAD_TRAIT_STRUCTURE,
-                          nlohmann::json{
-                              {"trait", item.key()}
-        });
-        item = requestData.erase(item);
-        continue;
-      }
+      regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex);
       if (segment_trait_key_data[3] == "") {
         itemOperation = "";
         itemSegment = segment_trait_key_data[2];
@@ -251,59 +245,17 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
       if ((itemSegment.compare(currentSegment) == 0)) {
         // Build each individual trait
         int8_t operation = map_operations(itemOperation);
-        if (operation == OPERATOR_BAD) {
-          update_error_json(&errors, BAD_OPERATION,
-                            nlohmann::json{
-                                {"operation", itemOperation}
-          });
-          item = requestData.erase(item);
-          continue;
-        }
-        // I'm going to want to use item here rather than itemTrait. Not sure
-        // how to type that? Maybe the JSON object?
+        // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
-        int8_t expected_type =
-            get_racf_trait_type(adminType.c_str(), itemSegment.c_str(),
-                                (itemSegment + ":" + itemTrait).c_str());
-        if (expected_type == TRAIT_TYPE_BAD) {
-          update_error_json(
-              &errors, BAD_SEGMENT_TRAIT_COMBO,
-              nlohmann::json{
-                  {"segment", itemSegment},
-                  {  "trait",   itemTrait}
-          });
-          item = requestData.erase(item);
-          continue;
-        }
-        if (trait_type != expected_type) {
-          update_error_json(
-              &errors, BAD_TRAIT_DATA_TYPE,
-              nlohmann::json{
-                  {        "trait",    item.key()},
-                  {"required_type", expected_type}
-          });
-          item = requestData.erase(item);
-          continue;
-        }
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
                                      (itemSegment + ":" + itemTrait).c_str(),
                                      trait_type, operation);
-        if (translatedKey == NULL) {
-          update_error_json(&errors, BAD_TRAIT_OPERATION_COMBO,
-                            nlohmann::json{
-                                {"operation", itemOperation},
-                                {  "segment",   itemSegment},
-                                {    "trait",     itemTrait}
-          });
-          item = requestData.erase(item);
-          continue;
-        }
         std::string operation_str =
             (itemOperation.empty()) ? "set" : itemOperation;
         std::string value =
             (item.value().is_boolean())
                 ? ""
-                : json_value_to_string(item.value(), expected_type, &errors);
+                : json_value_to_string(item.value(), trait_type, &errors);
         build_single_trait(("racf:" + std::string(translatedKey)),
                            operation_str, value);
         item = requestData.erase(item);
@@ -315,73 +267,6 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
     currentSegment = "";
   }
   return errors;
-}
-
-int8_t XmlGenerator::map_operations(std::string operation) {
-  if (operation.empty()) {
-    return OPERATOR_ANY;
-  }
-  std::transform(operation.begin(), operation.end(), operation.begin(),
-                 ::tolower);
-  if (operation == "set") {
-    return OPERATOR_SET;
-  }
-  if (operation == "add") {
-    return OPERATOR_ADD;
-  }
-  if ((operation == "remove") || (operation == "rem")) {
-    return OPERATOR_REMOVE;
-  }
-  if ((operation == "delete") || (operation == "del")) {
-    return OPERATOR_DELETE;
-  }
-  return OPERATOR_BAD;
-}
-
-int8_t XmlGenerator::map_trait_type(const nlohmann::json& trait) {
-  if (trait.is_boolean() || trait.is_null()) {
-    return TRAIT_TYPE_BOOLEAN;
-  }
-  if (trait.is_string() || trait.is_array()) {
-    return TRAIT_TYPE_STRING;
-  }
-  if (trait.is_number_unsigned()) {
-    return TRAIT_TYPE_UINT;
-  }
-  if (trait.is_object() || trait.is_number()) {
-    return TRAIT_TYPE_BAD;
-  }
-  return TRAIT_TYPE_ANY;
-}
-
-std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait,
-                                               char expected_type,
-                                               nlohmann::json* errors) {
-  if (trait.is_string()) {
-    return trait.get<std::string>();
-  }
-  if (trait.is_array()) {
-    std::string output_string = "";
-    std::string delimeter =
-        ", ";  // May just be " " or just be ","; May need to test
-    for (const auto& item : trait.items()) {
-      if (!item.value().is_string()) {
-        update_error_json(
-            errors, BAD_TRAIT_DATA_TYPE,
-            nlohmann::json{
-                {        "trait",    item.key()},
-                {"required_type", expected_type}
-        });
-        return trait.dump();
-      }
-      output_string += item.value().get<std::string>() + delimeter;
-    }
-    for (int i = 0; i < delimeter.length(); i++) {
-      output_string.pop_back();
-    }
-    return output_string;
-  }
-  return trait.dump();
 }
 
 std::string XmlGenerator::convert_operation(std::string requestOperation,

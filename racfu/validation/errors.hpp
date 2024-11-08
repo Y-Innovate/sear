@@ -1,11 +1,9 @@
-#ifndef __RACFU_PARAMETER_VALIDATION_H_
-#define __RACFU_PARAMETER_VALIDATION_H_
+#ifndef __RACFU_ERRORS_H_
+#define __RACFU_ERRORS_H_
 
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
-
-#include "racfu.h"
 
 #define BAD_PARAMETER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
 #define REQUIRED_PARAMETER 2   // "'operation' is a required parameter""
@@ -22,19 +20,6 @@
 #define BAD_TRAIT_OPERATION_COMBO \
   10  //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 101  // "could not parse XML returned from IRRSMO00"
-
-void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
-                         std::string* operation, std::string* admin_type,
-                         std::string* profile_name, std::string* class_name);
-
-uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
-                           std::string json_key, nlohmann::json* valid_values,
-                           std::string admin_type, bool required);
-
-void validate_supplemental_parameters(nlohmann::json* request,
-                                      nlohmann::json* errors,
-                                      nlohmann::json* checked_parameters,
-                                      bool traits_allowed);
 
 void update_error_json(nlohmann::json* errors, int8_t error_type,
                        nlohmann::json error_data);

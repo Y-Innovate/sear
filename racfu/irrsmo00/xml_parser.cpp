@@ -6,7 +6,7 @@
 #include <regex>
 #include <string>
 
-#include "parameter_validation.hpp"
+#include "errors.hpp"
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
@@ -33,8 +33,8 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
   }
 
-  // Regular expression designed to match the parameter, generic body, and
-  // closing tags of the xml
+  // Regular expression designed to match the header attributes, generic body,
+  // and closing tags of the xml
   std::regex full_xml_regex{
       R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"};
   std::smatch useful_xml_substrings;
@@ -78,28 +78,28 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 }
 
 // Private Methods of XmlParser
-void XmlParser::parse_xml_header_attributes(
-    nlohmann::json* input_json, const std::string& parameter_string) {
-  // Parse the parameter attributes of the XML for JSON information
+void XmlParser::parse_xml_header_attributes(nlohmann::json* input_json,
+                                            const std::string& header_string) {
+  // Parse the header attributes of the XML for JSON information
   // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
   std::smatch attribute_key_value;
   std::regex attribute_regex{R"~(([a-z]*)="([^ ]*)")~"};
 
   std::string::size_type attribute_length = -1, attribute_start_index = 0,
-                         parameter_string_length;
-  std::string remaining_parameter_string, attribute_string, attribute_key,
+                         header_string_length;
+  std::string remaining_header_string, attribute_string, attribute_key,
       attribute_value;
 
-  parameter_string_length = parameter_string.length();
+  header_string_length = header_string.length();
   do {
     // Loop through XML attributes and add them to the input_json JSON
     // object
     attribute_start_index += attribute_length + 1;
-    remaining_parameter_string = parameter_string.substr(
-        attribute_start_index, parameter_string_length - attribute_start_index);
-    attribute_length = remaining_parameter_string.find(' ');
+    remaining_header_string = header_string.substr(
+        attribute_start_index, header_string_length - attribute_start_index);
+    attribute_length = remaining_header_string.find(' ');
     attribute_string =
-        parameter_string.substr(attribute_start_index, attribute_length);
+        header_string.substr(attribute_start_index, attribute_length);
 
     if (regex_match(attribute_string, attribute_key_value, attribute_regex)) {
       // Ex: 1) name 2) SQUIDWRD
