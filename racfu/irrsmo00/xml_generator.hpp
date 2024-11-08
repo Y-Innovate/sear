@@ -22,8 +22,9 @@ class XmlGenerator {
   void build_close_tag_no_value();
   void build_single_trait(std::string tag, std::string operation,
                           std::string value);
-  void build_xml_head_attributes(std::string adminType, nlohmann::json request,
-                                 int *irrsmo00_options);
+  void build_xml_header_attributes(std::string adminType,
+                                   nlohmann::json request,
+                                   int *irrsmo00_options);
   nlohmann::json build_request_data(std::string adminType,
                                     nlohmann::json requestData);
   int8_t map_operations(std::string operation);

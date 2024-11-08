@@ -51,7 +51,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     admin_xml_attrs = useful_xml_substrings[2];
     admin_xml_body = useful_xml_substrings[3];
 
-    parse_parameters(&result, admin_xml_attrs);
+    parse_xml_header_attributes(&result, admin_xml_attrs);
 
     // Erase the profile close tag as it messes up later regex parsing
     admin_close_tag = R"(</)" + admin_type + ">";
@@ -78,8 +78,8 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 }
 
 // Private Methods of XmlParser
-void XmlParser::parse_parameters(nlohmann::json* input_json,
-                                 const std::string& parameter_string) {
+void XmlParser::parse_xml_header_attributes(
+    nlohmann::json* input_json, const std::string& parameter_string) {
   // Parse the parameter attributes of the XML for JSON information
   // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
   std::smatch attribute_key_value;

@@ -45,7 +45,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
     request.erase("debug_mode");
   }
 
-  build_xml_head_attributes(adminType, request, irrsmo00_options);
+  build_xml_header_attributes(adminType, request, irrsmo00_options);
 
   if (!runningUserId.empty()) {
     // Run this command as another user id
@@ -162,9 +162,9 @@ void XmlGenerator::build_single_trait(std::string tag, std::string operation,
   }
 }
 
-void XmlGenerator::build_xml_head_attributes(std::string adminType,
-                                             nlohmann::json request,
-                                             int* irrsmo00_options) {
+void XmlGenerator::build_xml_header_attributes(std::string adminType,
+                                               nlohmann::json request,
+                                               int* irrsmo00_options) {
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
 

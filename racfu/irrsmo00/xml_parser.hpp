@@ -12,8 +12,8 @@ std::string cast_hex_string(char* input);
 // XmlParser Parses an XML String and forms a JSON String
 class XmlParser {
  private:
-  void parse_parameters(nlohmann::json* input_json,
-                        const std::string& parameter_string);
+  void parse_xml_header_attributes(nlohmann::json* input_json,
+                                   const std::string& parameter_string);
   void parse_xml_tags(nlohmann::json* input_json, std::string body_string);
   void parse_xml_data(nlohmann::json* input_json, std::string inner_data,
                       std::string outer_tag);

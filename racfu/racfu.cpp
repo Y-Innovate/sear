@@ -26,7 +26,8 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json response_json,
+                  int raw_request_length,
+                  nlohmann::json intermediate_result_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
 void racfu(racfu_result_t *result, const char *request_json) {
@@ -164,7 +165,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   unsigned int result_buffer_size, request_length;
   bool debug_mode;
 
-  nlohmann::json response_json, errors;
+  nlohmann::json intermediate_result_json, errors;
   XmlParser *parser = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
@@ -196,7 +197,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   return_codes->racf_return_code = racf_rc;
   return_codes->racf_reason_code = racf_rsn;
 
-  response_json =
+  intermediate_result_json =
       parser->build_json_string(xml_response_string, &racfu_rc, debug_mode);
 
   return_codes->racfu_return_code = racfu_rc;
@@ -210,8 +211,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   // Build Success Result
   build_result(operation, admin_type, profile_name, class_name,
                surrogate_userid, xml_response_string, result_buffer_size,
-               xml_request_string, request_length, response_json, racfu_result,
-               return_codes);
+               xml_request_string, request_length, intermediate_result_json,
+               racfu_result, return_codes);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
@@ -220,7 +221,8 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json response_json,
+                  int raw_request_length,
+                  nlohmann::json intermediate_result_json,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes) {
   // Build Return Code JSON
@@ -269,10 +271,11 @@ void build_result(const char *operation, const char *admin_type,
     }
   }
 
-  if (response_json.contains("errors")) {
-    result_json["result"] = format_error_json(&response_json["errors"]);
+  if (intermediate_result_json.contains("errors")) {
+    result_json["result"] =
+        format_error_json(&intermediate_result_json["errors"]);
   } else {
-    result_json["result"] = response_json;
+    result_json["result"] = intermediate_result_json;
   }
 
   // Convert profile JSON to C string.
