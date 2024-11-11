@@ -38,7 +38,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits,
     itemTrait = segment_trait_key_data[4];
 
     // Get passed operation and validate it
-    int8_t operation = map_operations(itemOperation);
+    int8_t operation = map_operation(itemOperation);
     if (operation == OPERATOR_BAD) {
       update_error_json(errors, BAD_OPERATION,
                         nlohmann::json{
@@ -59,7 +59,9 @@ void validate_traits(std::string adminType, nlohmann::json* traits,
       });
       continue;
     }
-    // Validate the type of the passed data matches the expected TRAIT_TYPE
+    validate_json_value_to_string(item, expected_type, errors);
+    // Ensure that the type of data provided for the trait matches the expected
+    // TRAIT_TYPE
     if (trait_type != expected_type) {
       update_error_json(
           errors, BAD_TRAIT_DATA_TYPE,
@@ -86,52 +88,12 @@ void validate_traits(std::string adminType, nlohmann::json* traits,
   }
 }
 
-int8_t map_operations(std::string operation) {
-  if (operation.empty()) {
-    return OPERATOR_ANY;
-  }
-  std::transform(operation.begin(), operation.end(), operation.begin(),
-                 ::tolower);
-  if (operation == "set") {
-    return OPERATOR_SET;
-  }
-  if (operation == "add") {
-    return OPERATOR_ADD;
-  }
-  if (operation == "remove") {
-    return OPERATOR_REMOVE;
-  }
-  if (operation == "delete") {
-    return OPERATOR_DELETE;
-  }
-  return OPERATOR_BAD;
-}
-
-int8_t map_trait_type(const nlohmann::json& trait) {
-  if (trait.is_boolean() || trait.is_null()) {
-    return TRAIT_TYPE_BOOLEAN;
-  }
-  if (trait.is_string() || trait.is_array()) {
-    return TRAIT_TYPE_STRING;
-  }
-  if (trait.is_number_unsigned()) {
-    return TRAIT_TYPE_UINT;
-  }
-  if (trait.is_object() || trait.is_number()) {
-    return TRAIT_TYPE_BAD;
-  }
-  return TRAIT_TYPE_ANY;
-}
-
-std::string json_value_to_string(const nlohmann::json& trait,
-                                 char expected_type, nlohmann::json* errors) {
+void validate_json_value_to_string(const nlohmann::json& trait,
+                                   char expected_type, nlohmann::json* errors) {
   if (trait.is_string()) {
-    return trait.get<std::string>();
+    return;
   }
   if (trait.is_array()) {
-    std::string output_string = "";
-    std::string delimeter =
-        ", ";  // May just be " " or just be ","; May need to test
     for (const auto& item : trait.items()) {
       if (!item.value().is_string()) {
         update_error_json(
@@ -140,14 +102,8 @@ std::string json_value_to_string(const nlohmann::json& trait,
                 {        "trait",    item.key()},
                 {"required_type", expected_type}
         });
-        return trait.dump();
+        return;
       }
-      output_string += item.value().get<std::string>() + delimeter;
     }
-    for (int i = 0; i < delimeter.length(); i++) {
-      output_string.pop_back();
-    }
-    return output_string;
   }
-  return trait.dump();
 }

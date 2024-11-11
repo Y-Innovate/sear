@@ -88,7 +88,7 @@ test: clean mkdirs
 			$(TESTS)/*.cpp \
 			$(TESTS)/irrsmo00/*.cpp \
 			$(TESTS)/irrseq00/*.cpp \
-			$(TESTS)/common/*.cpp \
+			$(TESTS)/validation/*.cpp \
 		&& $(CXX) $(LDFLAGS) *.o -o $(DIST)/test_runner
 	$(DIST)/test_runner
 

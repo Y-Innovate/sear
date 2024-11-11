@@ -17,8 +17,8 @@
   IRRSMO00_REQUEST_SAMPLES "test_alter_user_request.json"
 #define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                                 \
-      "test_alter_user_traits_not_json_error_request."     \
-      "json"
+  "test_alter_user_traits_not_json_error_request."         \
+  "json"
 
 // Result samples
 #define TEST_ADD_USER_RESULT_JSON \

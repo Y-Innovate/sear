@@ -140,3 +140,40 @@ static bool check_trait_operator(int8_t trait_operator,
       return false;
   }
 }
+
+int8_t map_operation(std::string operation) {
+  if (operation.empty()) {
+    return OPERATOR_ANY;
+  }
+  std::transform(operation.begin(), operation.end(), operation.begin(),
+                 ::tolower);
+  if (operation == "set") {
+    return OPERATOR_SET;
+  }
+  if (operation == "add") {
+    return OPERATOR_ADD;
+  }
+  if (operation == "remove") {
+    return OPERATOR_REMOVE;
+  }
+  if (operation == "delete") {
+    return OPERATOR_DELETE;
+  }
+  return OPERATOR_BAD;
+}
+
+int8_t map_trait_type(const nlohmann::json &trait) {
+  if (trait.is_boolean() || trait.is_null()) {
+    return TRAIT_TYPE_BOOLEAN;
+  }
+  if (trait.is_string() || trait.is_array()) {
+    return TRAIT_TYPE_STRING;
+  }
+  if (trait.is_number_unsigned()) {
+    return TRAIT_TYPE_UINT;
+  }
+  if (trait.is_object() || trait.is_number()) {
+    return TRAIT_TYPE_BAD;
+  }
+  return TRAIT_TYPE_ANY;
+}

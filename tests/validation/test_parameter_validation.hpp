@@ -1,8 +1,8 @@
 #ifndef __TEST_PARAMETER_VALIDATION_H_
 #define __TEST_PARAMETER_VALIDATION_H_
 
-#define COMMON_REQUEST_SAMPLES "./tests/common/request_samples/"
-#define COMMON_RESULT_SAMPLES "./tests/common/result_samples/"
+#define COMMON_REQUEST_SAMPLES "./tests/validation/request_samples/"
+#define COMMON_RESULT_SAMPLES "./tests/validation/result_samples/"
 
 // Request samples
 #define TEST_PARMS_JUNK_REQUEST_JSON \

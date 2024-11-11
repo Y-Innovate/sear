@@ -244,7 +244,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
 
       if ((itemSegment.compare(currentSegment) == 0)) {
         // Build each individual trait
-        int8_t operation = map_operations(itemOperation);
+        int8_t operation = map_operation(itemOperation);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
         translatedKey = get_racf_key(adminType.c_str(), itemSegment.c_str(),
@@ -252,10 +252,9 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                                      trait_type, operation);
         std::string operation_str =
             (itemOperation.empty()) ? "set" : itemOperation;
-        std::string value =
-            (item.value().is_boolean())
-                ? ""
-                : json_value_to_string(item.value(), trait_type, &errors);
+        std::string value = (item.value().is_boolean())
+                                ? ""
+                                : json_value_to_string(item.value());
         build_single_trait(("racf:" + std::string(translatedKey)),
                            operation_str, value);
         item = requestData.erase(item);
@@ -305,4 +304,23 @@ std::string XmlGenerator::convert_admin_type(std::string admin_type) {
     return "dataset";
   }
   return admin_type;
+}
+
+std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait) {
+  if (trait.is_string()) {
+    return trait.get<std::string>();
+  }
+  if (trait.is_array()) {
+    std::string output_string = "";
+    std::string delimeter =
+        ", ";  // May just be " " or just be ","; May need to test
+    for (const auto& item : trait.items()) {
+      output_string += item.value().get<std::string>() + delimeter;
+    }
+    for (int i = 0; i < delimeter.length(); i++) {
+      output_string.pop_back();
+    }
+    return output_string;
+  }
+  return trait.dump();
 }

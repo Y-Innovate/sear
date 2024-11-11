@@ -4,7 +4,7 @@
 #define XML_PARSER_H_
 
 #ifndef XML_COMMON_LIB_H_
-#include "../../externals/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 std::string cast_hex_string(char* input);
 #endif /* XML_COMMON_LIB_H_ */

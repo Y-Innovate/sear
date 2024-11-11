@@ -1,8 +1,8 @@
 #include "irrseq00.hpp"
-#include "tests/common/test_parameter_validation.hpp"
 #include "tests/irrseq00/test_extract.hpp"
 #include "tests/irrsmo00/test_add.hpp"
 #include "tests/unity/unity.h"
+#include "tests/validation/test_parameter_validation.hpp"
 
 void setUp() {}
 

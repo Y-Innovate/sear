@@ -4,7 +4,7 @@
 #define XML_GENERATOR_H_
 
 #ifndef XML_COMMON_LIB_H_
-#include "../../externals/nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 
 std::string cast_hex_string(char *input);
 #endif /* XML_COMMON_LIB_H_ */
@@ -30,6 +30,7 @@ class XmlGenerator {
   std::string convert_operation(std::string requestOperation,
                                 int *irrsmo00_options);
   std::string convert_admin_type(std::string admin_type);
+  std::string json_value_to_string(const nlohmann::json &trait);
 
  public:
   char *build_xml_string(const char *admin_type, nlohmann::json request,
