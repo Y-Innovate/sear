@@ -8,7 +8,7 @@
 #define BAD_PARAMETER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
 #define REQUIRED_PARAMETER 2   // "'operation' is a required parameter""
 #define MISSING_PARAMETER \
-  3  // "'class_name' is a required parameter for the 'resource' admin_type"
+  3  // "'class_name' is a required parameter for the 'resource' admin type"
 #define BAD_PARAMETER_NAME 4       // "'junk' is not a valid parameter"
 #define BAD_PARAMETER_DATA_TYPE 5  // "'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE \

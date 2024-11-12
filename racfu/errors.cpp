@@ -47,7 +47,7 @@ nlohmann::json format_error_json(nlohmann::json* errors) {
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
                             "' is a required parameter for the '" +
                             error_data["admin_type"].get<std::string>() +
-                            "' admin_type";
+                            "' admin type";
         break;
       case BAD_PARAMETER_NAME:
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
