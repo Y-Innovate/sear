@@ -4,7 +4,7 @@
   "profile_name": null,
   "result": {
     "errors": [
-      "'profile_name' is a required parameter for the 'user' 'admin_type'",
+      "'profile_name' is a required parameter for the 'user' admin_type",
       "'junk' is not a valid parameter"
     ]
   },

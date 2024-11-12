@@ -47,7 +47,7 @@ nlohmann::json format_error_json(nlohmann::json* errors) {
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
                             "' is a required parameter for the '" +
                             error_data["admin_type"].get<std::string>() +
-                            "' 'admin_type'";
+                            "' admin_type";
         break;
       case BAD_PARAMETER_NAME:
         error_message_str = "'" + error_data["parameter"].get<std::string>() +
@@ -85,7 +85,7 @@ nlohmann::json format_error_json(nlohmann::json* errors) {
                             error_data["trait"].get<std::string>() + "'";
         break;
       case XML_PARSE_ERROR:
-        error_message_str = "could not parse XML returned from IRRSMO00";
+        error_message_str = "Unable to parse XML returned by IRRSMO00";
         break;
       default:
         error_message_str = "An unknown error has occurred";

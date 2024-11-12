@@ -8,7 +8,7 @@
 #define BAD_PARAMETER_VALUE 1  // "'junk' is not a valid value for 'admin_type'"
 #define REQUIRED_PARAMETER 2   // "'operation' is a required parameter""
 #define MISSING_PARAMETER \
-  3  // "'class_name' is a required parameter for the 'resource' 'admin_type'"
+  3  // "'class_name' is a required parameter for the 'resource' admin_type"
 #define BAD_PARAMETER_NAME 4       // "'junk' is not a valid parameter"
 #define BAD_PARAMETER_DATA_TYPE 5  // "'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE \
@@ -19,7 +19,7 @@
 #define BAD_SEGMENT_TRAIT_COMBO 9  // "'omvs:junk' is not a valid trait"
 #define BAD_TRAIT_OPERATION_COMBO \
   10  //"'remove' is not a valid operation for 'omvs:uid'"
-#define XML_PARSE_ERROR 101  // "could not parse XML returned from IRRSMO00"
+#define XML_PARSE_ERROR 101  // "Unable to parse XML returned by IRRSMO00"
 
 void update_error_json(nlohmann::json* errors, int8_t error_type,
                        nlohmann::json error_data);

@@ -4,7 +4,7 @@
   "profile_name": "SQUIDWRD",
   "result": {
     "errors": [
-      "could not parse XML returned from IRRSMO00"
+      "Unable to parse XML returned by IRRSMO00"
     ]
   },
   "return_codes": {
