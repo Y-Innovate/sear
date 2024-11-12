@@ -1,4 +1,1 @@
-"""Make racfu function available from package root."""
-
-from .racfu import racfu
-from .racfu import SecurityResult
+from .racfu import SecurityResult, racfu

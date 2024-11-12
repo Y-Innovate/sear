@@ -1,5 +1,7 @@
 import json
+
 from racfu._C import call_racfu
+
 
 class SecurityResult:
     def __init__(
@@ -16,7 +18,6 @@ class SecurityResult:
 
     
 def racfu(request_dict: dict) -> dict:
-    """Call racfu"""
     response = call_racfu(json.dumps(request_dict))
     return SecurityResult(
         request = request_dict,

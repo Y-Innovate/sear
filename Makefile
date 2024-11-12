@@ -92,6 +92,9 @@ test: clean mkdirs
 		&& $(CXX) $(LDFLAGS) *.o -o $(DIST)/test_runner
 	$(DIST)/test_runner
 
+fvt: 
+	python3 $(TESTS)/fvt/fvt.py
+
 dbg:
 	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
 		-o $(DIST)/debug \

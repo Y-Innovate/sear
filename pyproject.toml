@@ -34,38 +34,13 @@ build-backend = "setuptools.build_meta"
         "Topic :: System :: Systems Administration",
     ]
 
-[tool.setuptools.packages.find]
-    where = ["python"]
-    include = ["racfu"]
-
 [project.urls]
     Repository = "https://github.com/ambitus/racfu"
     Documentation = "https://ambitus.github.io/racfu/"
 
-[project.optional-dependencies]
-    dev = [
-        "isort >= 5.13.2",
-        "pre-commit >= 3.6.0",
-        "black >= 24.1.1",
-        "flake8 >= 7.0.0",
-        "pylint >= 3.0.3",
-        "coverage >= 7.4.1",
-        "wheel >= 0.42.0",
-        "ebcdic >= 1.1.1",
-    ]
+[tool.setuptools.packages.find]
+    where = ["python"]
+    include = ["racfu"]
 
-[tool.isort]
-    profile = "black"
-
-[tool.pylint.FORMAT]
-    max-args = 6
-    max-returns = 7
-    max-attributes = 10
-
-[tool.pylint.'MESSAGES CONTROL']
-    disable = """
-        too-few-public-methods,
-        too-many-public-methods,
-        import-error,
-        pointless-statement
-    """
+[tool.setuptools.package-data]
+    racfu = ['NOTICES.txt']
