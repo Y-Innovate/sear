@@ -1,8 +1,8 @@
 #include "irrsmo00.hpp"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+#include <cstring>
 
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"

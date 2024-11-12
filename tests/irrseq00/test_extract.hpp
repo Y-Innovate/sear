@@ -32,8 +32,8 @@
 
 void check_arg_pointers(char *raw_request);
 
-void test_generate_extract_user_request(void);
-void test_parse_extract_user_result(void);
-void test_parse_extract_user_result_user_not_found(void);
+void test_generate_extract_user_request();
+void test_parse_extract_user_result();
+void test_parse_extract_user_result_user_not_found();
 
 #endif

@@ -2,18 +2,28 @@
 #include "tests/irrseq00/test_extract.hpp"
 #include "tests/irrsmo00/test_add.hpp"
 #include "tests/unity/unity.h"
+#include "tests/validation/test_parameter_validation.hpp"
 
-void setUp(void) {}
+void setUp() {}
 
-void tearDown(void) {}
+void tearDown() {}
 
-int main(void) {
+int main() {
   UNITY_BEGIN();
 
-  // Add
+  // Common
+  RUN_TEST(test_parse_parameters_junk_error);
+  RUN_TEST(test_parse_parameters_missing_error);
+  RUN_TEST(test_parse_parameters_nonstring_error);
+
+  // IRRSMO00
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_add_user_result_user_already_exists);
+  RUN_TEST(test_parse_add_user_parameter_errors);
+  RUN_TEST(test_parse_add_user_trait_errors);
+  RUN_TEST(test_parse_alter_user_no_xml_data_error);
+  RUN_TEST(test_parse_alter_user_traits_not_json_error);
 
   // Profile Extract
   RUN_TEST(test_generate_extract_user_request);

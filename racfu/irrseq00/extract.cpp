@@ -2,7 +2,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
+#include <cstring>
 
 // Use htonl() to convert 32-bit values from little endian to big endian.
 // use ntohl() to convert 16-bit values from big endian to little endian.

@@ -6,6 +6,8 @@
 #include <regex>
 #include <string>
 
+#include "errors.hpp"
+
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
                                             int* racfu_rc, bool debug) {
@@ -31,8 +33,8 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
   }
 
-  // Regular expression designed to match the header, generic body, and
-  // closing tags of the xml
+  // Regular expression designed to match the header attributes, generic body,
+  // and closing tags of the xml
   std::regex full_xml_regex{
       R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"};
   std::smatch useful_xml_substrings;
@@ -49,7 +51,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     admin_xml_attrs = useful_xml_substrings[2];
     admin_xml_body = useful_xml_substrings[3];
 
-    parse_header_attributes(&result, admin_xml_attrs);
+    parse_xml_header_attributes(&result, admin_xml_attrs);
 
     // Erase the profile close tag as it messes up later regex parsing
     admin_close_tag = R"(</)" + admin_type + ">";
@@ -64,7 +66,10 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    result_json["errors"] = {"xml_error", {"Result XML from IRRSMO00"}};
+    update_error_json(&result_json["errors"], XML_PARSE_ERROR,
+                      {
+                          {"xml_data", xml_buffer}
+    });
     *racfu_rc = 4;
   }
 
@@ -73,8 +78,8 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 }
 
 // Private Methods of XmlParser
-void XmlParser::parse_header_attributes(nlohmann::json* input_json,
-                                        std::string header_string) {
+void XmlParser::parse_xml_header_attributes(nlohmann::json* input_json,
+                                            const std::string& header_string) {
   // Parse the header attributes of the XML for JSON information
   // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
   std::smatch attribute_key_value;
@@ -190,22 +195,6 @@ void XmlParser::update_json(nlohmann::json* input_json,
     (*input_json)[outer_tag + "s"].push_back(inner_data);
   }
 }
-
-/*
-void XmlParser::convert_to_ascii(char* ebcdic_str, char* ascii_str,
-                                 int length) {
-// Universal function to convert EBCDIC-1047 string to ascii in place
-#ifndef __MVS__
-  for (int i = 0; i < length; i++) {
-    *(ascii_str + i) = EbcdicToAscii[(unsigned char)*(ebcdic_str + i)];
-  }
-#else
-  // If we are on z/OS, we use the built in e2a function for this
-  strncpy(ascii_str, ebcdic_str, length);
-  __e2a_s(ascii_str);
-#endif  //__MVS__
-}
-*/
 
 std::string XmlParser::replace_xml_chars(std::string xml_data) {
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",

@@ -1,12 +1,13 @@
 #include "racfu.h"
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "errors.hpp"
 #include "extract.hpp"
 #include "irrsmo00.hpp"
+#include "parameter_validation.hpp"
 #include "post_process.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
@@ -26,16 +27,18 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json profile_json,
+                  int raw_request_length,
+                  nlohmann::json intermediate_result_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
 void racfu(racfu_result_t *result, const char *request_json) {
   nlohmann::json request, errors;
-  std::string operation, admin_type;
+  std::string operation = "", admin_type = "", profile_name = "",
+              class_name = "";
   request = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
-  const char *profile_name = NULL;
-  const char *class_name = NULL;
+  const char *profile_name_ptr = NULL;
+  const char *class_name_ptr = NULL;
   const char *surrogate_userid = NULL;
   // {
   //     "operation": "add",
@@ -46,21 +49,22 @@ void racfu(racfu_result_t *result, const char *request_json) {
   //     }
   // }
   // Extract
-  if (!request.contains("operation")) {
-    update_error_json(&errors, "missing_header_attribute", "operation");
-    operation = "";
+  validate_parameters(&request, &errors, &operation, &admin_type, &profile_name,
+                      &class_name);
+  if (!profile_name.empty()) {
+    profile_name_ptr = profile_name.c_str();
   }
-  if (!request.contains("admin_type")) {
-    update_error_json(&errors, "missing_header_attribute", "admin_type");
-    admin_type = "";
+  if (!class_name.empty()) {
+    class_name_ptr = class_name.c_str();
   }
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
-    build_result(operation.c_str(), admin_type.c_str(), profile_name,
-                 class_name, NULL, nullptr, 0, nullptr, 0, errors, result,
+    build_result(operation.c_str(), admin_type.c_str(), profile_name_ptr,
+                 class_name_ptr, NULL, nullptr, 0, nullptr, 0, errors, result,
                  &return_codes);
     return;
   }
+
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
   if (request.contains("profile_name")) {
@@ -69,15 +73,15 @@ void racfu(racfu_result_t *result, const char *request_json) {
   if (request.contains("class_name")) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
-  if (operation.compare("extract") == 0) {
-    do_extract(admin_type.c_str(), profile_name, class_name, result,
+  if (operation == "extract") {
+    do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
                &return_codes);
     // Add/Alter/Delete
   } else {
     if (request.contains("running_user_id")) {
       surrogate_userid = request["running_user_id"].get<std::string>().c_str();
     }
-    do_add_alter_delete(admin_type.c_str(), profile_name, class_name,
+    do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, request, result,
                         &return_codes);
   }
@@ -92,10 +96,6 @@ void do_extract(const char *admin_type, const char *profile_name,
   uint8_t function_code;
   nlohmann::json profile_json, errors;
 
-  if (profile_name == NULL) {
-    update_error_json(&errors, "missing_header_attribute", "profile_name");
-  }
-
   // Validate 'admin_type'
   if (strcmp(admin_type, "user") == 0) {
     function_code = USER_EXTRACT_FUNCTION_CODE;
@@ -105,24 +105,12 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "resource") == 0) {
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-    if (class_name == NULL) {
-      update_error_json(&errors, "missing_header_attribute", "class_name");
-    }
   } else if (strcmp(admin_type, "data-set") == 0) {
     function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "setropts") == 0) {
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
     return_codes->racfu_return_code = 8;
-    update_error_json(&errors, "bad_header_value",
-                      "admin_type:" + std::string(admin_type));
-  }
-
-  if (!errors.empty()) {
-    return_codes->racfu_return_code = 8;
-    build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
-                 0, nullptr, 0, errors, racfu_result, return_codes);
-    return;
   }
 
   // Do extract if function code is good.
@@ -178,7 +166,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   unsigned int result_buffer_size, request_length;
   bool debug_mode;
 
-  nlohmann::json response_json, errors;
+  nlohmann::json intermediate_result_json, errors;
   XmlParser *parser = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
@@ -195,8 +183,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       &result_buffer_size, &request_length, &debug_mode);
 
   if (!errors.empty()) {
-    racfu_rc = 8;
-    return_codes->racfu_return_code = racfu_rc;
+    return_codes->racfu_return_code = 8;
     build_result(operation, admin_type, profile_name, class_name,
                  surrogate_userid, nullptr, 0, xml_request_string,
                  request_length, errors, racfu_result, return_codes);
@@ -211,7 +198,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   return_codes->racf_return_code = racf_rc;
   return_codes->racf_reason_code = racf_rsn;
 
-  response_json =
+  intermediate_result_json =
       parser->build_json_string(xml_response_string, &racfu_rc, debug_mode);
 
   return_codes->racfu_return_code = racfu_rc;
@@ -225,8 +212,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   // Build Success Result
   build_result(operation, admin_type, profile_name, class_name,
                surrogate_userid, xml_response_string, result_buffer_size,
-               xml_request_string, request_length, response_json, racfu_result,
-               return_codes);
+               xml_request_string, request_length, intermediate_result_json,
+               racfu_result, return_codes);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
@@ -235,7 +222,8 @@ void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length, nlohmann::json profile_json,
+                  int raw_request_length,
+                  nlohmann::json intermediate_result_json,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes) {
   // Build Return Code JSON
@@ -268,11 +256,12 @@ void build_result(const char *operation, const char *admin_type,
   nlohmann::json result_json = {
       {   "operation",        operation},
       {  "admin_type",       admin_type},
-      {"profile_name",     profile_name},
       {"return_codes", return_code_json}
   };
   if (profile_name == NULL) {
     result_json["profile_name"] = nullptr;
+  } else {
+    result_json["profile_name"] = profile_name;
   }
   if (class_name != NULL) {
     result_json["class_name"] = class_name;
@@ -283,21 +272,11 @@ void build_result(const char *operation, const char *admin_type,
     }
   }
 
-  if (profile_json.contains("errors")) {
-    std::string error_message_str;
-    result_json["result"];
-    for (auto &error_type : profile_json["errors"].items()) {
-      for (auto &error_focus : error_type.value().items()) {
-        error_message_str = "RACFu encountered a " + error_type.key() +
-                            " error while working with " +
-                            error_focus.value().get<std::string>() +
-                            ". If you supplied this as part of your input "
-                            "json, you may need to re-examine this item.";
-        result_json["result"] += error_message_str;
-      }
-    }
+  if (intermediate_result_json.contains("errors")) {
+    result_json["result"] =
+        format_error_json(&intermediate_result_json["errors"]);
   } else {
-    result_json["result"] = profile_json;
+    result_json["result"] = intermediate_result_json;
   }
 
   // Convert profile JSON to C string.

@@ -1,0 +1,19 @@
+{
+  "admin_type": "user",
+  "operation": "add",
+  "profile_name": null,
+  "result": {
+    "errors": [
+      "'profile_name' is a required parameter for the 'user' admin type",
+      "'junk' is not a valid parameter"
+    ]
+  },
+  "return_codes": {
+    "return_codes": {
+      "racf_reason_code": null,
+      "racf_return_code": null,
+      "racfu_return_code": 8,
+      "saf_return_code": null
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "admin_type": "user",
+  "operation": "alter",
+  "profile_name": "SQUIDWRD",
+  "result": {
+    "errors": [
+      "Unable to parse XML returned by IRRSMO00"
+    ]
+  },
+  "return_codes": {
+    "return_codes": {
+      "racf_reason_code": 16,
+      "racf_return_code": 200,
+      "racfu_return_code": 4,
+      "saf_return_code": 8
+    }
+  }
+}

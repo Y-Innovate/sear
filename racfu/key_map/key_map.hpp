@@ -1,13 +1,15 @@
 #ifndef __KEY_MAP_H_
 #define __KEY_MAP_H_
 
-#include <stdint.h>
+#include <cstdint>
+#include <nlohmann/json.hpp>
 
 #include "key_map_structs.hpp"
 #include "key_map_user.hpp"
 
 const key_mapping_t KEY_MAP[] = {
-    {"user", segment_count(USER_SEGMENT_KEY_MAP), USER_SEGMENT_KEY_MAP}};
+    {"user", segment_count(USER_SEGMENT_KEY_MAP), USER_SEGMENT_KEY_MAP}
+};
 
 const char *get_racfu_key(const char *profile_type, const char *segment,
                           const char *racf_key);
@@ -21,5 +23,8 @@ const char get_racfu_trait_type(const char *profile_type, const char *segment,
 
 const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key);
+
+int8_t map_operation(std::string operation);
+int8_t map_trait_type(const nlohmann::json &trait);
 
 #endif

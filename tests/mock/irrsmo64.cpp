@@ -1,7 +1,8 @@
 #include "irrsmo64.hpp"
 
 #include <stdlib.h>
-#include <string.h>
+
+#include <cstring>
 
 // These globals need to be defined differently depending
 // on where they are compiled since BINDER on z/OS

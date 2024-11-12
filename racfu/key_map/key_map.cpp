@@ -1,14 +1,15 @@
 #include "key_map.hpp"
 
 #include <stdio.h>
-#include <string.h>
+
+#include <cstring>
 
 static const trait_key_mapping_t *get_key_mapping(
     const char *profile_type,  // The profile type (i.e., 'user')
     const char *segment,       // The segment      (i.e., 'omvs')
     const char *racf_key,      // The RACF key     (i.e., 'program')
     const char *racfu_key,     // The RACFu key    (i.e., 'omvs:default_shell')
-    int8_t trait_type,         // The trait type   (i.e.,  'TRAIT_TYPE_INTEGER')
+    int8_t trait_type,         // The trait type   (i.e.,  'TRAIT_TYPE_UINT')
     int8_t trait_operator,     // The operator     (i.e.,  'OPERATOR_SET')
     bool extract);             // Set to 'true' to get the RACFu Key
                                // Set to 'false' to get the RACF Key
@@ -47,7 +48,7 @@ const char get_racfu_trait_type(const char *profile_type, const char *segment,
       get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_ANY,
                       OPERATOR_ANY, true);
   if (key_mapping == NULL) {
-    return -1;
+    return TRAIT_TYPE_BAD;
   }
   return key_mapping->trait_type;
 }
@@ -56,9 +57,9 @@ const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key) {
   const trait_key_mapping_t *key_mapping =
       get_key_mapping(profile_type, segment, NULL, racfu_key, TRAIT_TYPE_ANY,
-                      OPERATOR_ANY, true);
+                      OPERATOR_ANY, false);
   if (key_mapping == NULL) {
-    return -1;
+    return TRAIT_TYPE_BAD;
   }
   return key_mapping->trait_type;
 }
@@ -138,4 +139,41 @@ static bool check_trait_operator(int8_t trait_operator,
     default:
       return false;
   }
+}
+
+int8_t map_operation(std::string operation) {
+  if (operation.empty()) {
+    return OPERATOR_ANY;
+  }
+  std::transform(operation.begin(), operation.end(), operation.begin(),
+                 ::tolower);
+  if (operation == "set") {
+    return OPERATOR_SET;
+  }
+  if (operation == "add") {
+    return OPERATOR_ADD;
+  }
+  if (operation == "remove") {
+    return OPERATOR_REMOVE;
+  }
+  if (operation == "delete") {
+    return OPERATOR_DELETE;
+  }
+  return OPERATOR_BAD;
+}
+
+int8_t map_trait_type(const nlohmann::json &trait) {
+  if (trait.is_boolean() || trait.is_null()) {
+    return TRAIT_TYPE_BOOLEAN;
+  }
+  if (trait.is_string() || trait.is_array()) {
+    return TRAIT_TYPE_STRING;
+  }
+  if (trait.is_number_unsigned()) {
+    return TRAIT_TYPE_UINT;
+  }
+  if (trait.is_object() || trait.is_number()) {
+    return TRAIT_TYPE_BAD;
+  }
+  return TRAIT_TYPE_ANY;
 }

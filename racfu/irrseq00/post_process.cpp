@@ -2,7 +2,8 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <string.h>
+
+#include <cstring>
 
 // Use ntohl() to convert 32-bit values from big endian to little endian.
 // use ntohs() to convert 16-bit values from big endian to little endian.
@@ -207,7 +208,7 @@ void process_generic_field(nlohmann::json &json_field,
     if (strcmp(field_data, "") == 0) {
       json_field = nullptr;
       // Cast Integer Fields
-    } else if (racfu_field_type == TRAIT_TYPE_INTEGER) {
+    } else if (racfu_field_type == TRAIT_TYPE_UINT) {
       json_field = strtol(field_data, NULL, 10);
       // Treat All Other Fields as Strings
     } else {
