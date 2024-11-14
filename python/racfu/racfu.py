@@ -17,8 +17,8 @@ class SecurityResult:
         self.result = result       
 
     
-def racfu(request_dict: dict) -> dict:
-    response = call_racfu(json.dumps(request_dict))
+def racfu(request_dict: dict, debug: bool = False) -> dict:
+    response = call_racfu(json.dumps(request_dict), debug=debug)
     return SecurityResult(
         request = request_dict,
         raw_request = response["raw_request"],

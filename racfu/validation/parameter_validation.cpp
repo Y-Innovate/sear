@@ -193,8 +193,7 @@ void validate_supplemental_parameters(nlohmann::json* request,
                                       nlohmann::json* errors,
                                       nlohmann::json* checked_parameters,
                                       bool traits_allowed) {
-  nlohmann::json stable_parameters{"running_user_id", "result_buffer_size",
-                                   "debug_mode", "admin_type"};
+  nlohmann::json stable_parameters{"run_as_user_id", "admin_type"};
   checked_parameters->insert(checked_parameters->end(),
                              stable_parameters.begin(),
                              stable_parameters.end());

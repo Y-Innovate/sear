@@ -35,9 +35,8 @@ class XmlGenerator {
  public:
   char *build_xml_string(const char *admin_type, nlohmann::json request,
                          nlohmann::json *errors, char *userid_buffer,
-                         int *irrsmo00_options,
-                         unsigned int *result_buffer_size,
-                         unsigned int *request_length, bool *debug);
+                         int *irrsmo00_options, unsigned int *request_length,
+                         bool *debug);
 };
 
 #endif

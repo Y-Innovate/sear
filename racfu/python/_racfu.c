@@ -1,19 +1,26 @@
 #define PY_SSIZE_T_CLEAN
 
 #include <Python.h>
+#include <stdbool.h>
 
 #include "racfu.h"
 
 // Entry point to the call_racfu() function
-static PyObject* call_racfu(PyObject* self, PyObject* args) {
-  PyObject *request_dictionary, *result_dictionary;
+static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
+  PyObject* result_dictionary;
+  const char* request_as_string;
+  bool debug = false;
 
-  request_dictionary = PyObject_Str(args);
-  const char* request_as_string = PyUnicode_AsUTF8(request_dictionary);
+  static char* kwlist[] = {"request_dictionary", "debug", NULL};
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|b", kwlist,
+                                   &request_as_string, &debug)) {
+    return NULL;
+  }
 
   racfu_result_t result;
 
-  racfu(&result, request_as_string);
+  racfu(&result, request_as_string, debug);
 
   result_dictionary = Py_BuildValue(
       "{s:y#,s:y#,s:s}", "raw_request", result.raw_request,
@@ -29,7 +36,7 @@ static PyObject* call_racfu(PyObject* self, PyObject* args) {
 
 // Method definition
 static PyMethodDef _C_methods[] = {
-    {"call_racfu", (PyCFunction)call_racfu, METH_O,
+    {"call_racfu", (PyCFunction)call_racfu, METH_VARARGS | METH_KEYWORDS,
      "Python interface to RACF administration APIs"},
     {NULL}
 };

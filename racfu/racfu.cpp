@@ -14,14 +14,14 @@
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *result,
-                racfu_return_codes_t *return_codes);
+                racfu_return_codes_t *return_codes, bool debug);
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
                          const char *surrogate_userid,
                          nlohmann::json full_request_json,
                          racfu_result_t *results,
-                         racfu_return_codes_t *return_codes);
+                         racfu_return_codes_t *return_codes, bool debug);
 
 void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
@@ -31,7 +31,7 @@ void build_result(const char *operation, const char *admin_type,
                   nlohmann::json intermediate_result_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes);
 
-void racfu(racfu_result_t *result, const char *request_json) {
+void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   nlohmann::json request, errors;
   std::string operation = "", admin_type = "", profile_name = "",
               class_name = "";
@@ -75,21 +75,21 @@ void racfu(racfu_result_t *result, const char *request_json) {
   }
   if (operation == "extract") {
     do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
-               &return_codes);
+               &return_codes, debug);
     // Add/Alter/Delete
   } else {
-    if (request.contains("running_user_id")) {
-      surrogate_userid = request["running_user_id"].get<std::string>().c_str();
+    if (request.contains("run_as_user_id")) {
+      surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
     }
     do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, request, result,
-                        &return_codes);
+                        &return_codes, debug);
   }
 }
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *racfu_result,
-                racfu_return_codes_t *return_codes) {
+                racfu_return_codes_t *return_codes, bool debug) {
   char *raw_result = NULL;
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
@@ -159,12 +159,11 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *surrogate_userid,
                          nlohmann::json full_request_json,
                          racfu_result_t *racfu_result,
-                         racfu_return_codes_t *return_codes) {
+                         racfu_return_codes_t *return_codes, bool debug) {
   char running_userid[8] = {0};
   char *xml_response_string, *xml_request_string;
   int irrsmo00_options, saf_rc, racf_rc, racf_rsn, racfu_rc;
   unsigned int result_buffer_size, request_length;
-  bool debug_mode;
 
   nlohmann::json intermediate_result_json, errors;
   XmlParser *parser = new XmlParser();
@@ -172,7 +171,6 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   irrsmo00_options = 13;
   result_buffer_size = 10000;
-  debug_mode = false;
   saf_rc = 0;
   racf_rc = 0;
   racf_rsn = 0;
@@ -180,7 +178,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   xml_request_string = generator->build_xml_string(
       admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
-      &result_buffer_size, &request_length, &debug_mode);
+      &request_length, &debug);
 
   if (!errors.empty()) {
     return_codes->racfu_return_code = 8;
@@ -192,14 +190,14 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
-                    irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug_mode);
+                    irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug);
 
   return_codes->saf_return_code = saf_rc;
   return_codes->racf_return_code = racf_rc;
   return_codes->racf_reason_code = racf_rsn;
 
   intermediate_result_json =
-      parser->build_json_string(xml_response_string, &racfu_rc, debug_mode);
+      parser->build_json_string(xml_response_string, &racfu_rc, debug);
 
   return_codes->racfu_return_code = racfu_rc;
 

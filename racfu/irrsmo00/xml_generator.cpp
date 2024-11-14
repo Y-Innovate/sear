@@ -14,7 +14,6 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
                                      nlohmann::json request,
                                      nlohmann::json* errors,
                                      char* userid_buffer, int* irrsmo00_options,
-                                     unsigned int* result_buffer_size,
                                      unsigned int* request_length,
                                      bool* debug) {
   // Main body function that builds an xml string
@@ -32,13 +31,9 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   // The following options dictate parameters to IRRSMO00 and are not
   // built into XML
-  if (request.contains("running_user_id")) {
-    runningUserId = request["running_user_id"].get<std::string>();
-    request.erase("running_user_id");
-  }
-  if (request.contains("result_buffer_size")) {
-    *result_buffer_size = request["result_buffer_size"].get<uint>();
-    request.erase("result_buffer_size");
+  if (request.contains("run_as_user_id")) {
+    runningUserId = request["run_as_user_id"].get<std::string>();
+    request.erase("run_as_user_id");
   }
   if (request.contains("debug_mode")) {
     *debug = request["debug_mode"].get<bool>();
