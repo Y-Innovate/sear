@@ -2,11 +2,11 @@
 
 #include <unistd.h>
 
-#include <iostream>
 #include <regex>
 #include <string>
 
 #include "errors.hpp"
+#include "logger.hpp"
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
@@ -19,8 +19,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   // Codes
   if (debug) {
     // print information in debug mode
-    std::cout << "XML Result string (Ebcdic): " << std::hex
-              << cast_hex_string(xml_result_string) << "\n";
+    log("Raw EBCDIC Result XML hex dump:", cast_hex_string(xml_result_string));
   }
 
   int xml_result_length = strlen(xml_result_string);
@@ -30,7 +29,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 
   if (debug) {
     // print information in debug mode
-    std::cout << "XML Result string (Ascii): " << xml_buffer << "\n";
+    log("Decoded Result XML:", xml_buffer);
   }
 
   // Regular expression designed to match the header attributes, generic body,
@@ -231,23 +230,3 @@ std::string XmlParser::replace_substring(std::string data,
   data.replace(match, substring.length(), replacement);
   return data;
 }
-
-#ifndef XML_COMMON_LIB_H_
-// Functions common to both XML libraries
-
-std::string cast_hex_string(char* input) {
-  // Cast data to hex so that small strings of hex values can be printed to
-  // represent EBCDIC data
-  std::string output = "{ ";
-  char buff[5];
-  for (int i = 0; i < strlen(input); i++) {
-    if (i > 0) {
-      output += ", ";
-    }
-    std::snprintf(buff, 5, "0x%02x", (unsigned char)*(input + i));
-    output += buff;
-  }
-  output += " }";
-  return output;
-}
-#endif /* XML_COMMON_LIB_H_ */

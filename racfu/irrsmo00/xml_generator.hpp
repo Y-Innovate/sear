@@ -1,13 +1,7 @@
-/* saf_xml.hpp */
-
 #ifndef XML_GENERATOR_H_
 #define XML_GENERATOR_H_
 
-#ifndef XML_COMMON_LIB_H_
 #include <nlohmann/json.hpp>
-
-std::string cast_hex_string(char *input);
-#endif /* XML_COMMON_LIB_H_ */
 
 // XmlGenerator Generates an XML String from a JSON string
 class XmlGenerator {

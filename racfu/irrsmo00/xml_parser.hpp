@@ -1,13 +1,7 @@
-/* saf_xml.hpp */
-
 #ifndef XML_PARSER_H_
 #define XML_PARSER_H_
 
-#ifndef XML_COMMON_LIB_H_
 #include <nlohmann/json.hpp>
-
-std::string cast_hex_string(char* input);
-#endif /* XML_COMMON_LIB_H_ */
 
 // XmlParser Parses an XML String and forms a JSON String
 class XmlParser {

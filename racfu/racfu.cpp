@@ -7,6 +7,7 @@
 #include "errors.hpp"
 #include "extract.hpp"
 #include "irrsmo00.hpp"
+#include "logger.hpp"
 #include "parameter_validation.hpp"
 #include "post_process.hpp"
 #include "xml_generator.hpp"
@@ -29,7 +30,8 @@ void build_result(const char *operation, const char *admin_type,
                   int raw_result_length, char *raw_request,
                   int raw_request_length,
                   nlohmann::json intermediate_result_json,
-                  racfu_result_t *result, racfu_return_codes_t *return_codes);
+                  racfu_result_t *result, racfu_return_codes_t *return_codes,
+                  bool debug);
 
 void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   nlohmann::json request, errors;
@@ -49,6 +51,9 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   //     }
   // }
   // Extract
+  if (debug) {
+    log("Validating parameters...");
+  }
   validate_parameters(&request, &errors, &operation, &admin_type, &profile_name,
                       &class_name);
   if (!profile_name.empty()) {
@@ -61,8 +66,11 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name_ptr,
                  class_name_ptr, NULL, nullptr, 0, nullptr, 0, errors, result,
-                 &return_codes);
+                 &return_codes, debug);
     return;
+  }
+  if (debug) {
+    log("Done");
   }
 
   operation = request["operation"].get<std::string>();
@@ -74,12 +82,18 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
   if (operation == "extract") {
+    if (debug) {
+      log("Extract operation, entering IRRSEQ00 Path");
+    }
     do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
                &return_codes, debug);
     // Add/Alter/Delete
   } else {
     if (request.contains("run_as_user_id")) {
       surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
+    }
+    if (debug) {
+      log("Non-Extract operation, entering IRRSMO00 Path");
     }
     do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, request, result,
@@ -113,6 +127,10 @@ void do_extract(const char *admin_type, const char *profile_name,
     return_codes->racfu_return_code = 8;
   }
 
+  if (debug) {
+    log("Calling RACF through IRRSEQ00...");
+  }
+
   // Do extract if function code is good.
   if (return_codes->racfu_return_code == -1) {
     raw_result = extract(profile_name, class_name, function_code, &raw_request,
@@ -124,12 +142,20 @@ void do_extract(const char *admin_type, const char *profile_name,
     }
   }
 
+  if (debug) {
+    log("Done");
+  }
+
   // Build Failure Result
   if (raw_result == NULL) {
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
                  0, raw_request, raw_request_length, errors, racfu_result,
-                 return_codes);
+                 return_codes, debug);
     return;
+  }
+
+  if (debug) {
+    log("Post processing result...");
   }
 
   // Post Process Generic Result
@@ -146,10 +172,13 @@ void do_extract(const char *admin_type, const char *profile_name,
     profile_json = post_process_setropts(setropts_result_buffer);
   }
 
+  if (debug) {
+    log("Done");
+  }
   // Build Success Result
   build_result("extract", admin_type, profile_name, class_name, NULL,
                raw_result, raw_result_length, raw_request, raw_request_length,
-               profile_json, racfu_result, return_codes);
+               profile_json, racfu_result, return_codes, debug);
 
   return;
 }
@@ -184,13 +213,22 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
     return_codes->racfu_return_code = 8;
     build_result(operation, admin_type, profile_name, class_name,
                  surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, errors, racfu_result, return_codes);
+                 request_length, errors, racfu_result, return_codes, debug);
     return;
+  }
+
+  if (debug) {
+    log("Successfully generated and encoded XML string.");
+    log("Calling RACF through IRRSMO00...");
   }
 
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
                     irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug);
+
+  if (debug) {
+    log("Done");
+  }
 
   return_codes->saf_return_code = saf_rc;
   return_codes->racf_return_code = racf_rc;
@@ -200,6 +238,10 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       parser->build_json_string(xml_response_string, &racfu_rc, debug);
 
   return_codes->racfu_return_code = racfu_rc;
+
+  if (debug) {
+    log("Successfully decoded and parsed XML string.");
+  }
 
   delete generator;
   delete parser;
@@ -211,7 +253,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   build_result(operation, admin_type, profile_name, class_name,
                surrogate_userid, xml_response_string, result_buffer_size,
                xml_request_string, request_length, intermediate_result_json,
-               racfu_result, return_codes);
+               racfu_result, return_codes, debug);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
@@ -223,8 +265,13 @@ void build_result(const char *operation, const char *admin_type,
                   int raw_request_length,
                   nlohmann::json intermediate_result_json,
                   racfu_result_t *racfu_result,
-                  racfu_return_codes_t *return_codes) {
+                  racfu_return_codes_t *return_codes, bool debug) {
   // Build Return Code JSON
+
+  if (debug) {
+    log("Building result structure...");
+  }
+
   nlohmann::json return_code_json = {
       {"return_codes",
        {{"saf_return_code", return_codes->saf_return_code},
@@ -289,6 +336,10 @@ void build_result(const char *operation, const char *admin_type,
   racfu_result->raw_request = raw_request;
   racfu_result->raw_request_length = raw_request_length;
   racfu_result->result_json = result_json_string;
+
+  if (debug) {
+    log("Done");
+  }
 
   return;
 }

@@ -1,5 +1,3 @@
-/* irrsmo00.h */
-
 #ifndef IRRSMO00_H_
 #define IRRSMO00_H_
 

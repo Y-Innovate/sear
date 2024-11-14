@@ -2,11 +2,11 @@
 
 #include <unistd.h>
 
-#include <iostream>
 #include <regex>
 #include <string>
 
 #include "key_map.hpp"
+#include "logger.hpp"
 #include "trait_validation.hpp"
 
 // Public Functions of XmlGenerator
@@ -34,10 +34,6 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   if (request.contains("run_as_user_id")) {
     runningUserId = request["run_as_user_id"].get<std::string>();
     request.erase("run_as_user_id");
-  }
-  if (request.contains("debug_mode")) {
-    *debug = request["debug_mode"].get<bool>();
-    request.erase("debug_mode");
   }
 
   build_xml_header_attributes(adminType, request, irrsmo00_options);
@@ -71,7 +67,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   if (*debug) {
     // print information in debug mode
-    std::cout << "XML Request string (Ascii): " << xml_buffer << "\n";
+    log("Request XML:", xml_buffer);
   }
 
   // convert our c++ string to a char * buffer
@@ -84,8 +80,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   if (*debug) {
     // print information in debug mode
-    std::cout << std::hex << "XML Request string (Ebcdic): " << std::hex
-              << cast_hex_string(output_buffer) << "\n";
+    log("EBCDIC encoded Request XML hex dump:", cast_hex_string(output_buffer));
   }
 
   return output_buffer;
