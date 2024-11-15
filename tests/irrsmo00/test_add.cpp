@@ -23,7 +23,7 @@ void test_generate_add_user_request() {
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);
@@ -52,7 +52,7 @@ void test_parse_add_user_result() {
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
@@ -83,7 +83,7 @@ void test_parse_add_user_result_user_already_exists() {
   irrsmo64_racf_rc_mock = 4;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
@@ -104,7 +104,7 @@ void test_parse_add_user_parameter_errors() {
   std::string result_json_expected =
       get_json_sample(TEST_ADD_USER_PARAMETER_ERRORS_RESULT_JSON);
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -120,7 +120,7 @@ void test_parse_add_user_trait_errors() {
   std::string result_json_expected =
       get_json_sample(TEST_ADD_USER_TRAIT_ERRORS_RESULT_JSON);
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -144,7 +144,7 @@ void test_parse_alter_user_no_xml_data_error() {
   irrsmo64_racf_rc_mock = 200;
   irrsmo64_racf_reason_mock = 16;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -163,7 +163,7 @@ void test_parse_alter_user_traits_not_json_error() {
   std::string result_json_expected =
       get_json_sample(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON);
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str());
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
