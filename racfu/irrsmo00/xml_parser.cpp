@@ -159,7 +159,8 @@ void XmlParser::parse_xml_data(nlohmann::json* input_json,
                                std::string outer_tag) {
   // Parse data from within XML tags and add the values to the JSON
   if (data_within_outer_tags.find("<") == std::string::npos) {
-    update_json(input_json, data_within_outer_tags, outer_tag);
+    nlohmann::json data_as_json = data_within_outer_tags;
+    update_json(input_json, data_as_json, outer_tag);
     return;
   }
   // If we did not return, there is another xml tag within this data (nested)
@@ -170,7 +171,7 @@ void XmlParser::parse_xml_data(nlohmann::json* input_json,
 }
 
 void XmlParser::update_json(nlohmann::json* input_json,
-                            nlohmann::json inner_data, std::string outer_tag) {
+                            nlohmann::json& inner_data, std::string outer_tag) {
   // Add specified information (inner_data) to the input_json JSON object
   // using the specified key (outer_tag)
   outer_tag = replace_xml_chars(outer_tag);

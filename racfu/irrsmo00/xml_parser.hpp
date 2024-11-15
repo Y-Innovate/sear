@@ -11,7 +11,7 @@ class XmlParser {
   void parse_xml_tags(nlohmann::json* input_json, std::string body_string);
   void parse_xml_data(nlohmann::json* input_json, std::string inner_data,
                       std::string outer_tag);
-  void update_json(nlohmann::json* input_json, nlohmann::json inner_data,
+  void update_json(nlohmann::json* input_json, nlohmann::json& inner_data,
                    std::string outer_tag);
   std::string replace_xml_chars(std::string xml_data);
   std::string replace_substring(std::string data, std::string substring,

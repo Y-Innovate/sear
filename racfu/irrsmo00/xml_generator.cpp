@@ -11,7 +11,7 @@
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(const char* admin_type,
-                                     nlohmann::json request,
+                                     nlohmann::json* request,
                                      nlohmann::json* errors,
                                      char* userid_buffer, int* irrsmo00_options,
                                      unsigned int* request_length,
@@ -31,9 +31,9 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   // The following options dictate parameters to IRRSMO00 and are not
   // built into XML
-  if (request.contains("run_as_user_id")) {
-    runningUserId = request["run_as_user_id"].get<std::string>();
-    request.erase("run_as_user_id");
+  if (request->contains("run_as_user_id")) {
+    runningUserId = (*request)["run_as_user_id"].get<std::string>();
+    request->erase("run_as_user_id");
   }
 
   build_xml_header_attributes(adminType, request, irrsmo00_options);
@@ -47,12 +47,12 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   build_attribute("requestid", adminType + "_request");
 
-  if ((request.contains("traits")) && (!request["traits"].empty())) {
+  if ((request->contains("traits")) && (!(*request)["traits"].empty())) {
     build_end_nested_tag();
 
-    validate_traits(admin_type, &request["traits"], errors);
+    validate_traits(admin_type, &((*request)["traits"]), errors);
     if (errors->empty()) {
-      build_request_data(adminType, request["traits"]);
+      build_request_data(adminType, &((*request)["traits"]));
     }
 
     // Close the admin object
@@ -156,46 +156,46 @@ void XmlGenerator::build_single_trait(std::string tag, std::string operation,
 }
 
 void XmlGenerator::build_xml_header_attributes(std::string adminType,
-                                               nlohmann::json request,
+                                               nlohmann::json* request,
                                                int* irrsmo00_options) {
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
 
   std::string className, operation;
 
-  operation = convert_operation(request["operation"].get<std::string>(),
+  operation = convert_operation((*request)["operation"].get<std::string>(),
                                 irrsmo00_options);
   build_attribute("operation", operation);
-  if (request.contains("run")) {
-    build_attribute("run", request["run"].get<std::string>());
+  if (request->contains("run")) {
+    build_attribute("run", (*request)["run"].get<std::string>());
   }
   if (adminType == "systemsettings") {
     return;
   }
-  if (request.contains("override")) {
-    build_attribute("override", request["override"].get<std::string>());
+  if (request->contains("override")) {
+    build_attribute("override", (*request)["override"].get<std::string>());
   }
-  build_attribute("name", request["profile_name"].get<std::string>());
+  build_attribute("name", (*request)["profile_name"].get<std::string>());
   if ((adminType == "user") || (adminType == "group")) {
     return;
   }
   if (adminType == "groupconnection") {
-    build_attribute("group", request["group"].get<std::string>());
+    build_attribute("group", (*request)["group"].get<std::string>());
     return;
   }
   if ((adminType == "resource") || (adminType == "permission")) {
-    className = request["class"].get<std::string>();
+    className = (*request)["class"].get<std::string>();
     build_attribute("class", className);
     if (adminType == "resource" || (className != "dataset")) {
       return;
     }
   }
   if ((adminType == "dataset") || (adminType == "permission")) {
-    if (request.contains("volume")) {
-      build_attribute("volume", request["volume"].get<std::string>());
+    if (request->contains("volume")) {
+      build_attribute("volume", (*request)["volume"].get<std::string>());
     }
-    if (request.contains("generic")) {
-      build_attribute("generic", request["generic"].get<std::string>());
+    if (request->contains("generic")) {
+      build_attribute("generic", (*request)["generic"].get<std::string>());
     }
     return;
   }
@@ -203,7 +203,7 @@ void XmlGenerator::build_xml_header_attributes(std::string adminType,
 }
 
 nlohmann::json XmlGenerator::build_request_data(std::string adminType,
-                                                nlohmann::json requestData) {
+                                                nlohmann::json* requestData) {
   // Builds the xml for request data (segment-trait information) passed in a
   // json object
   nlohmann::json errors;
@@ -213,9 +213,9 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
   std::smatch segment_trait_key_data;
 
-  auto item = requestData.begin();
-  while (!requestData.empty()) {
-    for (item = requestData.begin(); item != requestData.end();) {
+  auto item = requestData->begin();
+  while (!requestData->empty()) {
+    for (item = requestData->begin(); item != requestData->end();) {
       regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex);
       if (segment_trait_key_data[3] == "") {
         itemOperation = "";
@@ -247,7 +247,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
                                 : json_value_to_string(item.value());
         build_single_trait(("racf:" + std::string(translatedKey)),
                            operation_str, value);
-        item = requestData.erase(item);
+        item = requestData->erase(item);
 
       } else
         item++;
