@@ -11,7 +11,7 @@ static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
   const char* request_as_string;
   bool debug = false;
 
-  static char* kwlist[] = {"request_dictionary", "debug", NULL};
+  static char* kwlist[] = {"request", "debug", NULL};
 
   if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|b", kwlist,
                                    &request_as_string, &debug)) {
