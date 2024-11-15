@@ -31,6 +31,10 @@ std::string cast_hex_string(char* input, int buffer_len) {
   char buff[HEX_CHAR_SIZE - 1];
   int running_pad_len = 0;
 
+  if (input == nullptr) {
+    return "NULL";
+  }
+
   if (buffer_len == 0) {
     buffer_len = strlen(input);
   }

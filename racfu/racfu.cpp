@@ -151,20 +151,20 @@ void do_extract(const char *admin_type, const char *profile_name,
     generic_extract_parms_results_t *generic_result_buffer =
         reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
     raw_result_length = generic_result_buffer->result_buffer_length;
-    /*if (debug) {
+    if (debug) {
       log("Raw result from IRRSEQ00:",
-          cast_hex_string(raw_result, raw_result_length));
-    }*/
+          cast_hex_string(raw_result, ntohl(raw_result_length)));
+    }
     profile_json = post_process_generic(generic_result_buffer);
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
         reinterpret_cast<setropts_extract_results_t *>(raw_result);
     raw_result_length = setropts_result_buffer->result_buffer_length;
-    /*if (debug) {
+    if (debug) {
       log("Raw result from IRRSEQ00:",
-          cast_hex_string(raw_result, raw_result_length));
-    }*/
+          cast_hex_string(raw_result, ntohl(raw_result_length)));
+    }
     profile_json = post_process_setropts(setropts_result_buffer);
   }
 
