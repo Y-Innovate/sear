@@ -1,5 +1,7 @@
 #include "tests/irrseq00/test_extract.hpp"
 
+#define _POSIX_C_SOURCE 200112L
+#include <arpa/inet.h>
 #include <sys/stat.h>
 
 #include <cstring>
