@@ -15,7 +15,7 @@ void test_parse_parameters_junk_error() {
   std::string result_json_expected =
       get_json_sample(TEST_PARMS_JUNK_RESULT_JSON);
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -30,7 +30,7 @@ void test_parse_parameters_missing_error() {
   std::string result_json_expected =
       get_json_sample(TEST_PARMS_MISSING_RESULT_JSON);
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -45,7 +45,7 @@ void test_parse_parameters_nonstring_error() {
   std::string result_json_expected =
       get_json_sample(TEST_PARMS_NONSTRING_RESULT_JSON);
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 

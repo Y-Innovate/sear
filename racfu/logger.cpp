@@ -7,24 +7,7 @@
 #include <iostream>
 #include <string>
 
-void log(std::string message, std::string body) {
-#ifdef isatty
-  std::string racfu_header = "racfu:";
-  if (isatty(fileno(stdout))) {
-    racfu_header = YELLOW_COLOR + racfu_header + NO_COLOR;
-  }
-#else
-  std::string racfu_header = YELLOW_COLOR + std::string("racfu:") + NO_COLOR;
-#endif
-  std::cout << racfu_header << " " << message << "\n";
-  if (body != "") {
-    for (size_t i = 0; i < body.length(); i += MAX_LINE_LENGTH) {
-      std::cout << body.substr(i, MAX_LINE_LENGTH) << "\n";
-    }
-  }
-}
-
-std::string cast_hex_string(char* input, int buffer_len) {
+std::string Logger::cast_hex_string(char* input, int buffer_len) {
   // Cast data to hex so that small strings and buffers of hex values can be
   // printed to represent EBCDIC data
   std::string output = "";
@@ -57,4 +40,20 @@ std::string cast_hex_string(char* input, int buffer_len) {
   }
 
   return output;
+}
+
+void Logger::log_debug(std::string message, std::string body) {
+  if (!debug) {
+    return;
+  }
+  std::string racfu_header = "racfu:";
+  if (isatty(fileno(stdout))) {
+    racfu_header = YELLOW_COLOR + racfu_header + NO_COLOR;
+  }
+  std::cout << racfu_header << " " << message << "\n";
+  if (body != "") {
+    for (size_t i = 0; i < body.length(); i += MAX_LINE_LENGTH) {
+      std::cout << body.substr(i, MAX_LINE_LENGTH) << "\n";
+    }
+  }
 }

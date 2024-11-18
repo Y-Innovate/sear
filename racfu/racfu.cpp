@@ -1,5 +1,8 @@
 #include "racfu.h"
 
+#define _POSIX_C_SOURCE 200112L
+#include <arpa/inet.h>
+
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <string>
@@ -15,14 +18,15 @@
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *result,
-                racfu_return_codes_t *return_codes, bool debug);
+                racfu_return_codes_t *return_codes, Logger *racfu_logger_p);
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
                          const char *surrogate_userid,
                          nlohmann::json *full_request_json,
                          racfu_result_t *results,
-                         racfu_return_codes_t *return_codes, bool debug);
+                         racfu_return_codes_t *return_codes,
+                         Logger *racfu_logger_p);
 
 void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
@@ -31,9 +35,10 @@ void build_result(const char *operation, const char *admin_type,
                   int raw_request_length,
                   nlohmann::json *intermediate_result_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes,
-                  bool debug);
+                  Logger *racfu_logger_p);
 
 void racfu(racfu_result_t *result, const char *request_json, bool debug) {
+  Logger racfu_logger = Logger(debug);
   nlohmann::json request, errors;
   std::string operation = "", admin_type = "", profile_name = "",
               class_name = "";
@@ -51,9 +56,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   //     }
   // }
   // Extract
-  if (debug) {
-    log("Validating parameters...");
-  }
+  racfu_logger.log_debug(MSG_VALIDATING_PARAMETERS);
   validate_parameters(&request, &errors, &operation, &admin_type, &profile_name,
                       &class_name);
   if (!profile_name.empty()) {
@@ -66,12 +69,10 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
     return_codes.racfu_return_code = 8;
     build_result(operation.c_str(), admin_type.c_str(), profile_name_ptr,
                  class_name_ptr, NULL, nullptr, 0, nullptr, 0, &errors, result,
-                 &return_codes, debug);
+                 &return_codes, &racfu_logger);
     return;
   }
-  if (debug) {
-    log("Done");
-  }
+  racfu_logger.log_debug(MSG_DONE);
 
   operation = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
@@ -82,28 +83,24 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
     class_name = request["class_name"].get<std::string>().c_str();
   }
   if (operation == "extract") {
-    if (debug) {
-      log("Extract operation, entering IRRSEQ00 Path");
-    }
+    racfu_logger.log_debug(MSG_SEQ_PATH);
     do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
-               &return_codes, debug);
+               &return_codes, &racfu_logger);
     // Add/Alter/Delete
   } else {
     if (request.contains("run_as_user_id")) {
       surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
     }
-    if (debug) {
-      log("Non-Extract operation, entering IRRSMO00 Path");
-    }
+    racfu_logger.log_debug(MSG_SMO_PATH);
     do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, &request, result,
-                        &return_codes, debug);
+                        &return_codes, &racfu_logger);
   }
 }
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *racfu_result,
-                racfu_return_codes_t *return_codes, bool debug) {
+                racfu_return_codes_t *return_codes, Logger *racfu_logger_p) {
   char *raw_result = NULL;
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
@@ -130,7 +127,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   // Do extract if function code is good.
   if (return_codes->racfu_return_code == -1) {
     raw_result = extract(profile_name, class_name, function_code, &raw_request,
-                         &raw_request_length, return_codes, debug);
+                         &raw_request_length, return_codes, racfu_logger_p);
     if (raw_result == NULL) {
       return_codes->racfu_return_code = 4;
     } else {
@@ -142,7 +139,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   if (raw_result == NULL) {
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
                  0, raw_request, raw_request_length, &errors, racfu_result,
-                 return_codes, debug);
+                 return_codes, racfu_logger_p);
     return;
   }
 
@@ -151,30 +148,27 @@ void do_extract(const char *admin_type, const char *profile_name,
     generic_extract_parms_results_t *generic_result_buffer =
         reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
     raw_result_length = generic_result_buffer->result_buffer_length;
-    if (debug) {
-      log("Raw result from IRRSEQ00:",
-          cast_hex_string(raw_result, ntohl(raw_result_length)));
-    }
+    racfu_logger_p->log_debug(
+        MSG_RESULT_SEQ_GENERIC,
+        racfu_logger_p->cast_hex_string(raw_result, ntohl(raw_result_length)));
     profile_json = post_process_generic(generic_result_buffer);
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
         reinterpret_cast<setropts_extract_results_t *>(raw_result);
     raw_result_length = setropts_result_buffer->result_buffer_length;
-    if (debug) {
-      log("Raw result from IRRSEQ00:",
-          cast_hex_string(raw_result, ntohl(raw_result_length)));
-    }
+    racfu_logger_p->log_debug(
+        MSG_RESULT_SEQ_SETROPTS,
+        racfu_logger_p->cast_hex_string(raw_result, ntohl(raw_result_length)));
     profile_json = post_process_setropts(setropts_result_buffer);
   }
 
-  if (debug) {
-    log("IRRSEQ00 result post-processed");
-  }
+  racfu_logger_p->log_debug(MSG_SEQ_POST_PROCESS);
+
   // Build Success Result
   build_result("extract", admin_type, profile_name, class_name, NULL,
                raw_result, raw_result_length, raw_request, raw_request_length,
-               &profile_json, racfu_result, return_codes, debug);
+               &profile_json, racfu_result, return_codes, racfu_logger_p);
 
   return;
 }
@@ -184,7 +178,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *surrogate_userid,
                          nlohmann::json *full_request_json,
                          racfu_result_t *racfu_result,
-                         racfu_return_codes_t *return_codes, bool debug) {
+                         racfu_return_codes_t *return_codes,
+                         Logger *racfu_logger_p) {
   char running_userid[8] = {0};
   char *xml_response_string, *xml_request_string;
   int irrsmo00_options, saf_rc, racf_rc, racf_rsn, racfu_rc;
@@ -203,41 +198,33 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   xml_request_string = generator->build_xml_string(
       admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
-      &request_length, &debug);
+      &request_length, racfu_logger_p);
 
   if (!errors.empty()) {
     return_codes->racfu_return_code = 8;
     build_result(operation, admin_type, profile_name, class_name,
                  surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, &errors, racfu_result, return_codes, debug);
+                 request_length, &errors, racfu_result, return_codes,
+                 racfu_logger_p);
     return;
   }
 
-  if (debug) {
-    log("Successfully generated and encoded XML string.");
-    log("Calling RACF through IRRSMO00...");
-  }
+  racfu_logger_p->log_debug(MSG_CALLING_SMO);
 
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, &result_buffer_size,
-                    irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn, debug);
+                    irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn);
 
-  if (debug) {
-    log("Done");
-  }
+  racfu_logger_p->log_debug(MSG_DONE);
 
   return_codes->saf_return_code = saf_rc;
   return_codes->racf_return_code = racf_rc;
   return_codes->racf_reason_code = racf_rsn;
 
   intermediate_result_json =
-      parser->build_json_string(xml_response_string, &racfu_rc, debug);
+      parser->build_json_string(xml_response_string, &racfu_rc, racfu_logger_p);
 
   return_codes->racfu_return_code = racfu_rc;
-
-  if (debug) {
-    log("Successfully decoded and parsed XML string.");
-  }
 
   delete generator;
   delete parser;
@@ -249,7 +236,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   build_result(operation, admin_type, profile_name, class_name,
                surrogate_userid, xml_response_string, result_buffer_size,
                xml_request_string, request_length, &intermediate_result_json,
-               racfu_result, return_codes, debug);
+               racfu_result, return_codes, racfu_logger_p);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
@@ -261,12 +248,10 @@ void build_result(const char *operation, const char *admin_type,
                   int raw_request_length,
                   nlohmann::json *intermediate_result_json,
                   racfu_result_t *racfu_result,
-                  racfu_return_codes_t *return_codes, bool debug) {
+                  racfu_return_codes_t *return_codes, Logger *racfu_logger_p) {
   // Build Return Code JSON
 
-  if (debug) {
-    log("Building result structure...");
-  }
+  racfu_logger_p->log_debug(MSG_BUILD_RESULT);
 
   nlohmann::json return_code_json = {
       {"return_codes",
@@ -333,9 +318,7 @@ void build_result(const char *operation, const char *admin_type,
   racfu_result->raw_request_length = raw_request_length;
   racfu_result->result_json = result_json_string;
 
-  if (debug) {
-    log("Done");
-  }
+  racfu_logger_p->log_debug(MSG_DONE);
 
   return;
 }

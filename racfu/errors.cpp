@@ -95,7 +95,7 @@ nlohmann::json format_error_json(nlohmann::json* errors) {
   return output;
 }
 
-std::string decode_data_type(uint data_type_code) {
+std::string decode_data_type(uint8_t data_type_code) {
   switch (data_type_code) {
     case TRAIT_TYPE_BOOLEAN:
       return "a 'boolean";

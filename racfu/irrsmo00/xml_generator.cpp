@@ -15,7 +15,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
                                      nlohmann::json* errors,
                                      char* userid_buffer, int* irrsmo00_options,
                                      unsigned int* request_length,
-                                     bool* debug) {
+                                     Logger* racfu_logger_p) {
   // Main body function that builds an xml string
   std::string adminType, runningUserId;
   nlohmann::json requestData;
@@ -40,6 +40,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   if (!runningUserId.empty()) {
     // Run this command as another user id
+    racfu_logger_p->log_debug(MSG_RUN_AS_USER + runningUserId);
     const int userid_length = runningUserId.length();
     strncpy(userid_buffer, runningUserId.c_str(), userid_length);
     __a2e_l(userid_buffer, userid_length);
@@ -50,10 +51,14 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
   if ((request->contains("traits")) && (!(*request)["traits"].empty())) {
     build_end_nested_tag();
 
+    racfu_logger_p->log_debug(MSG_VALIDATING_TRAITS);
     validate_traits(admin_type, &((*request)["traits"]), errors);
     if (errors->empty()) {
       build_request_data(adminType, &((*request)["traits"]));
+    } else {
+      return nullptr;
     }
+    racfu_logger_p->log_debug(MSG_DONE);
 
     // Close the admin object
     build_full_close_tag(adminType);
@@ -65,10 +70,7 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
     build_close_tag_no_value();
   }
 
-  if (*debug) {
-    // print information in debug mode
-    log("Request XML:", xml_buffer);
-  }
+  racfu_logger_p->log_debug(MSG_REQUEST_SMO_ASCII, xml_buffer);
 
   // convert our c++ string to a char * buffer
   const int length = xml_buffer.length();
@@ -78,10 +80,8 @@ char* XmlGenerator::build_xml_string(const char* admin_type,
 
   *request_length = length;
 
-  if (*debug) {
-    // print information in debug mode
-    log("EBCDIC encoded Request XML hex dump:", cast_hex_string(output_buffer));
-  }
+  racfu_logger_p->log_debug(MSG_REQUEST_SMO_EBCDIC,
+                            racfu_logger_p->cast_hex_string(output_buffer));
 
   return output_buffer;
 }

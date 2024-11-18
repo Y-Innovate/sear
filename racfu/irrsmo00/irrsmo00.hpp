@@ -37,6 +37,6 @@ void IRRSMO64(char *,               // Workarea
 
 char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int *result_buffer_size, int irrsmo00_options,
-                    int *saf_rc, int *racf_rc, int *racf_rsn, bool debug);
+                    int *saf_rc, int *racf_rc, int *racf_rsn);
 
 #endif /* IRRSMO00_H_ */

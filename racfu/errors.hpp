@@ -26,6 +26,6 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
 
 nlohmann::json format_error_json(nlohmann::json* errors);
 
-std::string decode_data_type(uint data_type_code);
+std::string decode_data_type(uint8_t data_type_code);
 
 #endif

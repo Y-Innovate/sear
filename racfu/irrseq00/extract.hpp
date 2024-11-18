@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
+#include "logger.hpp"
 #include "racfu_result.h"
 
 /*************************************************************************/
@@ -364,7 +365,7 @@ extern "C" uint32_t callRadmin(char *__ptr32);
 char *extract(const char *profile_name, const char *class_name,
               uint8_t function_code, char **raw_request,
               int *raw_request_length, racfu_return_codes_t *return_codes,
-              bool debug);
+              Logger *racfu_logger_p);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);

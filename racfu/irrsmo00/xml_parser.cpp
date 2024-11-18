@@ -10,27 +10,23 @@
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
-                                            int* racfu_rc, bool debug) {
+                                            int* racfu_rc,
+                                            Logger* racfu_logger_p) {
   std::string xml_buffer;
   char* xml_ascii_result =
       static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
-  if (debug) {
-    // print information in debug mode
-    log("Raw EBCDIC Result XML hex dump:", cast_hex_string(xml_result_string));
-  }
+  racfu_logger_p->log_debug(MSG_RESULT_SMO_EBCDIC,
+                            racfu_logger_p->cast_hex_string(xml_result_string));
 
   int xml_result_length = strlen(xml_result_string);
   memcpy(xml_ascii_result, xml_result_string, xml_result_length);
   __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
-  if (debug) {
-    // print information in debug mode
-    log("Decoded Result XML:", xml_buffer);
-  }
+  racfu_logger_p->log_debug(MSG_RESULT_SMO_ASCII, xml_buffer);
 
   // Regular expression designed to match the header attributes, generic body,
   // and closing tags of the xml
