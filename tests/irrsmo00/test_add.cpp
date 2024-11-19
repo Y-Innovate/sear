@@ -23,7 +23,7 @@ void test_generate_add_user_request() {
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), true);
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);
@@ -129,6 +129,33 @@ void test_parse_add_user_trait_errors() {
   free(result.result_json);
 }
 
+void test_parse_add_user_no_xml_data_error() {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(TEST_ADD_USER_REQUEST_JSON);
+  std::string result_json_expected =
+      get_json_sample(TEST_ADD_USER_NO_RESPONSE_RESULT_JSON);
+
+  // Mock IRRSMO64 result
+  irrsmo64_result_mock = NULL;
+  // struct stat st;
+  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
+  // irrsmo64_result_size_mock = st.st_size;
+  irrsmo64_saf_rc_mock = 8;
+  irrsmo64_racf_rc_mock = 200;
+  irrsmo64_racf_reason_mock = 16;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+
+  // Cleanup
+  free(irrsmo64_result_mock);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
 void test_parse_alter_user_no_xml_data_error() {
   racfu_result_t result;
   std::string request_json = get_json_sample(TEST_ALTER_USER_REQUEST_JSON);
@@ -140,9 +167,9 @@ void test_parse_alter_user_no_xml_data_error() {
   // struct stat st;
   // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
   // irrsmo64_result_size_mock = st.st_size;
-  irrsmo64_saf_rc_mock = 8;
-  irrsmo64_racf_rc_mock = 200;
-  irrsmo64_racf_reason_mock = 16;
+  irrsmo64_saf_rc_mock = 4;
+  irrsmo64_racf_rc_mock = 4;
+  irrsmo64_racf_reason_mock = 0;
 
   racfu(&result, request_json.c_str(), false);
 

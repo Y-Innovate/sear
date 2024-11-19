@@ -35,6 +35,8 @@
   IRRSMO00_RESULT_SAMPLES "test_add_user_parameter_errors_result.json"
 #define TEST_ADD_USER_TRAIT_ERRORS_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "test_add_user_trait_errors_result.json"
+#define TEST_ADD_USER_NO_RESPONSE_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES "test_add_user_no_response_result.json"
 #define TEST_ALTER_USER_NO_RESPONSE_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "test_alter_user_no_response_result.json"
 #define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON \
@@ -45,6 +47,7 @@ void test_parse_add_user_result();
 void test_parse_add_user_result_user_already_exists();
 void test_parse_add_user_parameter_errors();
 void test_parse_add_user_trait_errors();
+void test_parse_add_user_no_xml_data_error();
 void test_parse_alter_user_no_xml_data_error();
 void test_parse_alter_user_traits_not_json_error();
 

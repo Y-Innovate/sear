@@ -25,6 +25,7 @@ void update_error_json(nlohmann::json* errors, int8_t error_type,
 
 nlohmann::json format_error_json(nlohmann::json* errors) {
   std::string error_message_str;
+  std::string optional_str = "";
   nlohmann::json error_data, output = {
                                  {"errors", {}}
   };
@@ -83,6 +84,16 @@ nlohmann::json format_error_json(nlohmann::json* errors) {
                             "' is not a valid operation for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() + "'";
+        break;
+      case BAD_ALTER_TARGET:
+        error_message_str = "'" + error_data["name"].get<std::string>() +
+                            "' must exist in the '" +
+                            error_data["class"].get<std::string>() +
+                            "' class before targeting with 'alter'";
+        break;
+      case BAD_ALTER_TARGET_NO_CLASS:
+        error_message_str = "'" + error_data["name"].get<std::string>() +
+                            "' must exist before targeting with 'alter'";
         break;
       case XML_PARSE_ERROR:
         error_message_str = "Unable to parse XML returned by IRRSMO00";

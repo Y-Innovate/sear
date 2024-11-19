@@ -23,7 +23,7 @@ void do_extract(const char *admin_type, const char *profile_name,
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
-                         const char *surrogate_userid,
+                         const char *surrogate_userid, bool check_first,
                          nlohmann::json *full_request_json,
                          racfu_result_t *results,
                          racfu_return_codes_t *return_codes, Logger *logger_p);
@@ -47,6 +47,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   const char *profile_name_ptr = NULL;
   const char *class_name_ptr = NULL;
   const char *surrogate_userid = NULL;
+  bool check_first = false;
   // {
   //     "operation": "add",
   //     "admin_type": "user",
@@ -92,9 +93,12 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
       surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
     }
     logger.debug(MSG_SMO_PATH);
+    check_first = ((operation == "alter") &&
+                   ((admin_type == "group") || (admin_type == "user") ||
+                    (admin_type == "data-set") || (admin_type == "resource")));
     do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
-                        operation.c_str(), surrogate_userid, &request, result,
-                        &return_codes, &logger);
+                        operation.c_str(), surrogate_userid, check_first,
+                        &request, result, &return_codes, &logger);
   }
 }
 
@@ -175,7 +179,7 @@ void do_extract(const char *admin_type, const char *profile_name,
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
-                         const char *surrogate_userid,
+                         const char *surrogate_userid, bool check_first,
                          nlohmann::json *full_request_json,
                          racfu_result_t *racfu_result,
                          racfu_return_codes_t *return_codes, Logger *logger_p) {
@@ -184,7 +188,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   int irrsmo00_options, saf_rc, racf_rc, racf_rsn, racfu_rc;
   unsigned int result_buffer_size, request_length;
 
-  nlohmann::json intermediate_result_json, errors;
+  nlohmann::json intermediate_result_json, errors{};
   XmlParser *parser = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
@@ -206,6 +210,36 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
                  request_length, &errors, racfu_result, return_codes, logger_p);
     return;
   }
+
+  if (check_first) {
+    logger_p->debug(MSG_SMO_VALIDATE_EXIST);
+    if (!does_profile_exist(std::string(admin_type), std::string(profile_name),
+                            class_name, running_userid)) {
+      if (class_name == NULL) {
+        update_error_json(&errors, BAD_ALTER_TARGET_NO_CLASS,
+                          nlohmann::json{
+                              {"name", std::string(profile_name)}
+        });
+      } else {
+        update_error_json(&errors, BAD_ALTER_TARGET,
+                          nlohmann::json{
+                              { "name", std::string(profile_name)},
+                              {"class",   std::string(class_name)}
+        });
+      }
+
+      logger_p->debug(MSG_SMO_VALIDATE_EXIST);
+    }
+  }
+
+  if (!errors.empty()) {
+    return_codes->racfu_return_code = 8;
+    build_result(operation, admin_type, profile_name, class_name,
+                 surrogate_userid, nullptr, 0, xml_request_string,
+                 request_length, &errors, racfu_result, return_codes, logger_p);
+    return;
+  }
+  logger_p->debug(MSG_DONE);
 
   logger_p->debug(MSG_CALLING_SMO);
 

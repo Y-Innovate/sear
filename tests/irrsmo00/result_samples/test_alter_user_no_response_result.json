@@ -4,15 +4,15 @@
   "profile_name": "SQUIDWRD",
   "result": {
     "errors": [
-      "Unable to parse XML returned by IRRSMO00"
+      "'SQUIDWRD' must exist before targeting with 'alter'"
     ]
   },
   "return_codes": {
     "return_codes": {
-      "racf_reason_code": 16,
-      "racf_return_code": 200,
-      "racfu_return_code": 4,
-      "saf_return_code": 8
+      "racf_reason_code": null,
+      "racf_return_code": null,
+      "racfu_return_code": 8,
+      "saf_return_code": null
     }
   }
 }

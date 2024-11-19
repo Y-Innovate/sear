@@ -7,6 +7,12 @@
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
+#ifdef UNIT_TEST
+#include "zoslib.h"
+#else
+#include <unistd.h>
+#endif
+
 char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int *result_buffer_size, int irrsmo00_options,
                     int *saf_rc, int *racf_rc, int *racf_rsn) {
@@ -56,4 +62,45 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
 
   *result_buffer_size += result_len;
   return full_result;
+}
+
+bool does_profile_exist(std::string admin_type, std::string profile_name,
+                        const char *class_name, char *running_userid) {
+  int irrsmo00_options, saf_rc = 0, racf_rc = 0, racf_rsn = 0;
+  unsigned int result_buffer_size, request_length;
+  std::string xml_buffer;
+
+  if (admin_type == "resource") {
+    xml_buffer =
+        R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
+        admin_type + R"( name=")" + profile_name + R"(" class=")" + class_name +
+        R"("operation="listdata" requestid=")" + admin_type +
+        R"(Request"/></securityrequest>)";
+  } else {
+    xml_buffer =
+        R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
+        admin_type + R"( name=")" + profile_name +
+        R"(" operation="listdata" requestid=")" + admin_type +
+        R"(Request"/></securityrequest>)";
+  }
+
+  irrsmo00_options = 13;
+  result_buffer_size = 10000;
+
+  // convert our c++ string to a char * buffer
+  const int length = xml_buffer.length();
+  char *request_buffer =
+      static_cast<char *>(malloc(sizeof(char) * (length + 1)));
+  strncpy(request_buffer, xml_buffer.c_str(), length + 1);
+  __a2e_l(request_buffer, length);
+
+  call_irrsmo00(request_buffer, running_userid, &result_buffer_size,
+                irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn);
+
+  free(request_buffer);
+
+  if ((racf_rc > 0) || (saf_rc > 0)) {
+    return false;
+  }
+  return true;
 }

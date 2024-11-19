@@ -22,6 +22,7 @@ int main() {
   RUN_TEST(test_parse_add_user_result_user_already_exists);
   RUN_TEST(test_parse_add_user_parameter_errors);
   RUN_TEST(test_parse_add_user_trait_errors);
+  RUN_TEST(test_parse_add_user_no_xml_data_error);
   RUN_TEST(test_parse_alter_user_no_xml_data_error);
   RUN_TEST(test_parse_alter_user_traits_not_json_error);
 

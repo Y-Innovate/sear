@@ -18,7 +18,10 @@
 #define BAD_TRAIT_DATA_TYPE 8      // "'omvs:uid' must be an 'integer' value"
 #define BAD_SEGMENT_TRAIT_COMBO 9  // "'omvs:junk' is not a valid trait"
 #define BAD_TRAIT_OPERATION_COMBO \
-  10  //"'remove' is not a valid operation for 'omvs:uid'"
+  10  //"'junk' must exist in the 'garbage' class before targeting with 'alter'"
+#define BAD_ALTER_TARGET 11  //"'junk' must exist before targeting with 'alter'"
+#define BAD_ALTER_TARGET_NO_CLASS \
+  12  //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 101  // "Unable to parse XML returned by IRRSMO00"
 
 void update_error_json(nlohmann::json* errors, int8_t error_type,
