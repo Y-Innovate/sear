@@ -31,7 +31,8 @@ ifeq ($(UNAME), OS/390)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
 				-I ${PWD} \
-				-I $(TESTS)/mock
+				-I $(TESTS)/mock \
+				-I $(TESTS)/zoslib
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= --clang=ibm-clang++64 
 else

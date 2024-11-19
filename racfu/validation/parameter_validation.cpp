@@ -16,6 +16,8 @@ void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
   nlohmann::json yes_or_no{"yes", "no"};
   nlohmann::json yes_no_or_force{"yes", "no", "force"};
   nlohmann::json valid_operations{"add", "alter", "extract", "delete"};
+  nlohmann::json valid_setropts_operations{"alter", "extract"};
+  nlohmann::json valid_no_add_operations{"alter", "extract", "delete"};
   nlohmann::json valid_extract_admin_types{
       "user", "group", "group-connection", "resource", "data-set", "setropts"};
   nlohmann::json valid_non_extract_admin_types{
@@ -68,12 +70,13 @@ void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
   checked_parameters.push_back("run");
   if (*admin_type == "setropts") {
     // SETROPTS only requires 'admin_type' and 'operation' and allows 'run'
+    // SETROPTS only supports 'alter' and 'extract' operations
+    validate_parameter(request, errors, "operation", &valid_setropts_operations,
+                       *admin_type, true);
     validate_supplemental_parameters(request, errors, &checked_parameters,
                                      true);
     return;
   }
-  validate_parameter(request, errors, "override", &yes_no_or_force, *admin_type,
-                     false);
   checked_parameters.push_back("override");
   if (validate_parameter(request, errors, "profile_name", &no_validation,
                          *admin_type, true) == 0) {
@@ -88,12 +91,20 @@ void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
   }
   if (*admin_type == "group-connection") {
     // GROUP-CONNECTION also requires 'goup' but no other admin types do
+    // GROUP-CONNECTION only supports 'alter', 'delete' and 'extract' operations
+    validate_parameter(request, errors, "operation", &valid_no_add_operations,
+                       *admin_type, true);
     validate_parameter(request, errors, "group", &no_validation, *admin_type,
                        true);
     checked_parameters.push_back("group");
     validate_supplemental_parameters(request, errors, &checked_parameters,
                                      true);
     return;
+  }
+  if (*admin_type == "permission") {
+    // PERMISSION only supports 'alter', 'delete' and 'extract' operations
+    validate_parameter(request, errors, "operation", &valid_no_add_operations,
+                       *admin_type, true);
   }
   if ((*admin_type == "resource") || (*admin_type == "permission")) {
     // RESOURCE and PERMISSION also require 'class_name' but DATA-SET does not

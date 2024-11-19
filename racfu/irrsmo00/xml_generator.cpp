@@ -168,17 +168,17 @@ void XmlGenerator::build_xml_header_attributes(std::string adminType,
 
   std::string className, operation;
 
-  operation = convert_operation((*request)["operation"].get<std::string>(),
-                                irrsmo00_options);
+  operation = (*request)["operation"].get<std::string>();
+  if (operation == "add") {
+    build_attribute("override", "no");
+  }
+  operation = convert_operation(operation, irrsmo00_options);
   build_attribute("operation", operation);
   if (request->contains("run")) {
     build_attribute("run", (*request)["run"].get<std::string>());
   }
   if (adminType == "systemsettings") {
     return;
-  }
-  if (request->contains("override")) {
-    build_attribute("override", (*request)["override"].get<std::string>());
   }
   build_attribute("name", (*request)["profile_name"].get<std::string>());
   if ((adminType == "user") || (adminType == "group")) {
@@ -266,9 +266,10 @@ nlohmann::json XmlGenerator::build_request_data(std::string adminType,
 std::string XmlGenerator::convert_operation(std::string requestOperation,
                                             int* irrsmo00_options) {
   // Converts the designated function to the correct IRRSMO00 operation and
-  // adjusts IRRSMO00 options as necessary (alter operations require the
-  // PRECHECK attribute)
+  // adjusts IRRSMO00 options as necessary (alter and add operations require
+  // the PRECHECK attribute)
   if (requestOperation == "add") {
+    *irrsmo00_options = 15;
     return "set";
   }
   if (requestOperation == "alter") {

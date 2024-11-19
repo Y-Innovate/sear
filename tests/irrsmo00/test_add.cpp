@@ -23,7 +23,7 @@ void test_generate_add_user_request() {
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), true);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);
