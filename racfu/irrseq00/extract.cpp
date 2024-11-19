@@ -6,6 +6,7 @@
 #include <cstring>
 
 #include "logger.hpp"
+#include "messages.h"
 
 // Use htonl() to convert 32-bit values from little endian to big endian.
 // use ntohl() to convert 16-bit values from big endian to little endian.
@@ -21,7 +22,7 @@ char *extract(
     char **raw_request,        // Always required
     int *raw_request_length,   // Always required
     racfu_return_codes_t *return_codes,  // Always required,
-    Logger *racfu_logger_p) {
+    Logger *logger_p) {
   uint32_t rc;
 
   char *result_buffer;
@@ -38,20 +39,20 @@ char *extract(
     }
     // Preserve the raw request data
     *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
-    racfu_logger_p->log_debug(
+    logger_p->debug(
         MSG_REQUEST_SEQ_SETROPTS,
-        racfu_logger_p->cast_hex_string(
-            reinterpret_cast<char *>(arg_area_setropts), *raw_request_length));
+        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
+                                  *raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
                          raw_request, raw_request_length);
 
-    racfu_logger_p->log_debug(MSG_CALLING_SEQ);
+    logger_p->debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
-    racfu_logger_p->log_debug(MSG_DONE);
+    logger_p->debug(MSG_DONE);
 
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
@@ -81,19 +82,19 @@ char *extract(
     }
     // Preserve the raw request data
     *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
-    racfu_logger_p->log_debug(
+    logger_p->debug(
         MSG_REQUEST_SEQ_GENERIC,
-        racfu_logger_p->cast_hex_string(
-            reinterpret_cast<char *>(arg_area_generic), *raw_request_length));
+        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
+                                  *raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
                          raw_request, raw_request_length);
-    racfu_logger_p->log_debug(MSG_CALLING_SEQ);
+    logger_p->debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
-    racfu_logger_p->log_debug(MSG_DONE);
+    logger_p->debug(MSG_DONE);
 
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes

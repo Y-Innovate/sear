@@ -1,5 +1,5 @@
-#ifndef __UNISTD_H_
-#define __UNISTD_H_
+#ifndef __ZOSLIB_H_
+#define __ZOSLIB_H_
 
 #include <unistd.h>
 

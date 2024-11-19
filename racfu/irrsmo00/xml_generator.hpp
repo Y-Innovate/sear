@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include "logger.hpp"
+#include "messages.h"
 
 // XmlGenerator Generates an XML String from a JSON string
 class XmlGenerator {
@@ -32,7 +33,7 @@ class XmlGenerator {
   char *build_xml_string(const char *admin_type, nlohmann::json *request,
                          nlohmann::json *errors, char *userid_buffer,
                          int *irrsmo00_options, unsigned int *request_length,
-                         Logger *racfu_logger_p);
+                         Logger *logger_p);
 };
 
 #endif

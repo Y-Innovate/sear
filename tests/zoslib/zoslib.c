@@ -1,4 +1,4 @@
-#include "unistd.h"
+#include "zoslib.h"
 
 #ifdef __ptr32
 // Implement encoding conversion functions for unit testing on non-z/OS

@@ -4,6 +4,7 @@
 #include <nlohmann/json.hpp>
 
 #include "logger.hpp"
+#include "messages.h"
 
 // XmlParser Parses an XML String and forms a JSON String
 class XmlParser {
@@ -21,7 +22,7 @@ class XmlParser {
 
  public:
   nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc,
-                                   Logger* racfu_logger_p);
+                                   Logger* logger_p);
 };
 
 #endif

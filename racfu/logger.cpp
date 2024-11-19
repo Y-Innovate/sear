@@ -1,11 +1,14 @@
 #include "logger.hpp"
 
-#include <termios.h>
-#include <unistd.h>
-
 #include <csignal>
 #include <iostream>
 #include <string>
+
+#ifdef UNIT_TEST
+#include "zoslib.h"
+#else
+#include <unistd.h>
+#endif
 
 std::string Logger::cast_hex_string(char* input, int buffer_len) {
   // Cast data to hex so that small strings and buffers of hex values can be
@@ -42,8 +45,8 @@ std::string Logger::cast_hex_string(char* input, int buffer_len) {
   return output;
 }
 
-void Logger::log_debug(std::string message, std::string body) {
-  if (!debug) {
+void Logger::debug(std::string message, std::string body) {
+  if (!debug_mode) {
     return;
   }
   std::string racfu_header = "racfu:";
