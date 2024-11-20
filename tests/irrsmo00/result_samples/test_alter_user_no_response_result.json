@@ -1,12 +1,7 @@
 {
-  "admin_type": "user",
-  "operation": "alter",
-  "profile_name": "SQUIDWRD",
-  "result": {
-    "errors": [
-      "'SQUIDWRD' must exist before targeting with 'alter'"
-    ]
-  },
+  "errors": [
+    "'SQUIDWRD' must exist before targeting with 'alter'"
+  ],
   "return_codes": {
     "return_codes": {
       "racf_reason_code": null,

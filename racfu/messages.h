@@ -22,3 +22,4 @@
 #define MSG_SMO_VALIDATE_EXIST "Validating profile exists for alter ..."
 #define MSG_RESULT_SMO_EBCDIC "Raw EBCDIC encoded result XML:"
 #define MSG_RESULT_SMO_ASCII "Decoded result XML:"
+#define MSG_SMO_POST_PROCESS "Post-processing decoded result ..."

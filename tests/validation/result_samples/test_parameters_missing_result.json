@@ -1,13 +1,8 @@
 {
-  "admin_type": "",
-  "operation": "",
-  "profile_name": null,
-  "result": {
-    "errors": [
-      "'operation' is a required parameter",
-      "'admin_type' is a required parameter"
-    ]
-  },
+  "errors": [
+    "'operation' is a required parameter",
+    "'admin_type' is a required parameter"
+  ],
   "return_codes": {
     "return_codes": {
       "racf_reason_code": null,

@@ -50,7 +50,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     admin_xml_attrs = useful_xml_substrings[2];
     admin_xml_body = useful_xml_substrings[3];
 
-    parse_xml_header_attributes(&result, admin_xml_attrs);
+    // parse_xml_header_attributes(&result, admin_xml_attrs);
 
     // Erase the profile close tag as it messes up later regex parsing
     admin_close_tag = R"(</)" + admin_type + ">";
@@ -59,8 +59,8 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 
     parse_xml_tags(&result, admin_xml_body);
 
-    result_json["admin_type"] = admin_type;
-    result_json["result"] = result;
+    // result_json["admin_type"] = admin_type;
+    result_json = result;
     *racfu_rc = 0;
   } else {
     // If the XML does not match the main regular expression, then return
@@ -178,21 +178,18 @@ void XmlParser::update_json(nlohmann::json* input_json,
   if (inner_data.is_string()) {
     inner_data = replace_xml_chars(inner_data);
   }
-  if (!((*input_json).contains(outer_tag) ||
-        (*input_json).contains(outer_tag + "s"))) {
+  if (!(*input_json).contains(outer_tag)) {
     // If we do not already have this tag used in our object (at this
     // layer), just add data
     (*input_json)[outer_tag] = inner_data;
-    return;
-  }
-  if ((*input_json).contains(outer_tag)) {
-    // If we do already use this tag, pluralize the tag and merge the data
-    (*input_json)[outer_tag + "s"] = {(*input_json)[outer_tag], inner_data};
-    (*input_json).erase(outer_tag);
   } else {
-    // If we already have the plural version of this tag, simply merge the
-    // data
-    (*input_json)[outer_tag + "s"].push_back(inner_data);
+    // If we do already use this tag, add the data to the list (may have to make
+    // the json attribute a list first)
+    if ((*input_json)[outer_tag].is_array()) {
+      (*input_json)[outer_tag].push_back(inner_data);
+    } else {
+      (*input_json)[outer_tag] = {(*input_json)[outer_tag], inner_data};
+    }
   }
 }
 

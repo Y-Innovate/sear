@@ -1,13 +1,8 @@
 {
-  "admin_type": "",
-  "operation": "",
-  "profile_name": null,
-  "result": {
-    "errors": [
-      "'operation' must be a string value",
-      "'admin_type' must be a string value"
-    ]
-  },
+  "errors": [
+    "'operation' must be a string value",
+    "'admin_type' must be a string value"
+  ],
   "return_codes": {
     "return_codes": {
       "racf_reason_code": null,

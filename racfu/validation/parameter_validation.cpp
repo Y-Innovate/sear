@@ -77,7 +77,6 @@ void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
                                      true);
     return;
   }
-  checked_parameters.push_back("override");
   if (validate_parameter(request, errors, "profile_name", &no_validation,
                          *admin_type, true) == 0) {
     *profile_name = (*request)["profile_name"].get<std::string>();
@@ -142,7 +141,7 @@ void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
 uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
                            std::string json_key, nlohmann::json* valid_values,
                            std::string admin_type, bool required) {
-  if (!(*request).contains(json_key) && required && admin_type.empty()) {
+  if (!request->contains(json_key) && required && admin_type.empty()) {
     // Required Parameter for ALL Admin Types
     update_error_json(errors, REQUIRED_PARAMETER,
                       nlohmann::json{
@@ -150,7 +149,7 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
     });
     return REQUIRED_PARAMETER;
   }
-  if (!(*request).contains(json_key) && required) {
+  if (!request->contains(json_key) && required) {
     // Required Parameter for passed Admin Type
     update_error_json(errors, MISSING_PARAMETER,
                       nlohmann::json{
@@ -159,7 +158,7 @@ uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
     });
     return MISSING_PARAMETER;
   }
-  if (!(*request).contains(json_key)) {
+  if (!request->contains(json_key)) {
     // Parameter is not required and not present
     return 0;
   }

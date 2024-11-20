@@ -1,12 +1,7 @@
 {
-  "admin_type": "user",
-  "operation": "alter",
-  "profile_name": "SQUIDWRD",
-  "result": {
-    "errors": [
-      "'traits' must be a json value"
-    ]
-  },
+  "errors": [
+    "'traits' must be a json value"
+  ],
   "return_codes": {
     "return_codes": {
       "racf_reason_code": null,

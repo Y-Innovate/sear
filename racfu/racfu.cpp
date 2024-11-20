@@ -258,6 +258,10 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   return_codes->racfu_return_code = racfu_rc;
 
+  logger_p->debug(MSG_SMO_POST_PROCESS);
+  post_process_smo_json(&intermediate_result_json);
+  logger_p->debug(MSG_DONE);
+
   delete generator;
   delete parser;
   // free xml_response_string;
@@ -312,29 +316,21 @@ void build_result(const char *operation, const char *admin_type,
 
   // Build Result JSON
   nlohmann::json result_json = {
-      {   "operation",        operation},
-      {  "admin_type",       admin_type},
       {"return_codes", return_code_json}
   };
-  if (profile_name == NULL) {
-    result_json["profile_name"] = nullptr;
-  } else {
-    result_json["profile_name"] = profile_name;
-  }
-  if (class_name != NULL) {
-    result_json["class_name"] = class_name;
-  }
-  if (surrogate_userid != NULL) {
-    if (strlen(surrogate_userid) != 0) {
-      result_json["surrogate_userid"] = surrogate_userid;
-    }
-  }
 
   if (intermediate_result_json->contains("errors")) {
-    result_json["result"] =
-        format_error_json(&((*intermediate_result_json)["errors"]));
+    result_json.merge_patch(
+        format_error_json(&((*intermediate_result_json)["errors"])));
   } else {
-    result_json["result"] = (*intermediate_result_json);
+    if ((intermediate_result_json->empty()) &&
+        (std::string(operation) == "extract")) {
+      result_json["profile"] = nullptr;
+    } else if (intermediate_result_json->empty()) {
+      result_json["result"] = nullptr;
+    } else {
+      result_json.merge_patch(*intermediate_result_json);
+    }
   }
 
   // Convert profile JSON to C string.

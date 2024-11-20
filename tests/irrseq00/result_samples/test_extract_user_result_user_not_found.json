@@ -1,8 +1,5 @@
 {
-  "admin_type": "user",
-  "operation": "extract",
-  "profile_name": "SQUIDWRD",
-  "result": null,
+  "profile": null,
   "return_codes": {
     "return_codes": {
       "racf_reason_code": 4,

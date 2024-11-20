@@ -75,13 +75,13 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
         admin_type + R"( name=")" + profile_name + R"(" class=")" + class_name +
         R"("operation="listdata" requestid=")" + admin_type +
-        R"(Request"/></securityrequest>)";
+        R"(_request"/></securityrequest>)";
   } else {
     xml_buffer =
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
         admin_type + R"( name=")" + profile_name +
         R"(" operation="listdata" requestid=")" + admin_type +
-        R"(Request"/></securityrequest>)";
+        R"(_request"/></securityrequest>)";
   }
 
   irrsmo00_options = 13;
@@ -103,4 +103,36 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
     return false;
   }
   return true;
+}
+
+void post_process_smo_json(nlohmann::json *results) {
+  nlohmann::json messages{};
+  nlohmann::json images{};
+
+  if (!results->contains("command")) {
+    // Only expected for "errors" cases
+    return;
+  }
+  for (auto item = results->begin(); item != results->end();) {
+    if ((item.key() == "info") || (item.key() == "command")) {
+      item++;
+    } else {
+      item = results->erase(item);
+    }
+  }
+  for (const auto &item : (*results)["command"].items()) {
+    if (item.value().contains("message")) {
+      if (item.value()["message"].is_array()) {
+        messages.merge_patch(item.value()["message"]);
+      } else {
+        messages.push_back(item.value()["message"]);
+      }
+    }
+    if (item.value().contains("image")) {
+      images.push_back(item.value()["image"]);
+    }
+  }
+  results->erase("command");
+  (*results)["messages"] = messages;
+  (*results)["commands"] = images;
 }

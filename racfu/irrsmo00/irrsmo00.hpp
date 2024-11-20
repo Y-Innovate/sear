@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 
+#include <nlohmann/json.hpp>
 #include <string>
 
 #include "racfu_result.h"
@@ -43,5 +44,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
 
 bool does_profile_exist(std::string admin_type, std::string profile_name,
                         const char *class_name, char *running_userid);
+
+void post_process_smo_json(nlohmann::json *results);
 
 #endif /* IRRSMO00_H_ */
