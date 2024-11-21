@@ -18,18 +18,20 @@
 #define BAD_TRAIT_DATA_TYPE 8      // "'omvs:uid' must be an 'integer' value"
 #define BAD_SEGMENT_TRAIT_COMBO 9  // "'omvs:junk' is not a valid trait"
 #define BAD_TRAIT_OPERATION_COMBO \
-  10  //"'remove' is not a valid operation for 'omvs:uid'"
+  10  // "'remove' is not a valid operation for 'omvs:uid'"
 #define BAD_ALTER_TARGET \
-  11  //"Unable to alter 'junk' in the 'garbage' class because the profile does
+  11  // "Unable to alter 'junk' in the 'garbage' class because the profile does
       // not exist"
 #define BAD_ALTER_TARGET_NO_CLASS \
-  12  //"Unable to alter 'junk' because the profile does not exist"
-#define XML_PARSE_ERROR 101  // "Unable to parse XML returned by IRRSMO00"
+  12  // "unable to alter 'junk' because the profile does not exist"
+#define BAD_VALUE_FOR_DELETE \
+  13  // "'delete:segment:trait' is not compatible with any value"
+#define XML_PARSE_ERROR 101  // "unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET \
-  102  // "Unable to add 'junk' to the 'garbage' class because a profile already
+  102  // "unable to add 'junk' to the 'garbage' class because a profile already
        // exists with that name"
 #define BAD_ADD_TARGET_NO_CLASS \
-  103  // "Unable to add 'junk' because a profile already exists with that name"
+  103  // "unable to add 'junk' because a profile already exists with that name"
 #define SMO_ERROR_NO_TEXT \
   111  // copied from "errormessage" supplied by irrsmo00
 #define SMO_ERROR_WITH_TEXT \

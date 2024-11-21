@@ -163,7 +163,10 @@ int8_t map_operation(std::string operation) {
 }
 
 int8_t map_trait_type(const nlohmann::json &trait) {
-  if (trait.is_boolean() || trait.is_null()) {
+  if (trait.is_null()) {
+    return TRAIT_TYPE_ANY;
+  }
+  if (trait.is_boolean()) {
     return TRAIT_TYPE_BOOLEAN;
   }
   if (trait.is_string() || trait.is_array()) {
@@ -172,8 +175,5 @@ int8_t map_trait_type(const nlohmann::json &trait) {
   if (trait.is_number_unsigned()) {
     return TRAIT_TYPE_UINT;
   }
-  if (trait.is_object() || trait.is_number()) {
-    return TRAIT_TYPE_BAD;
-  }
-  return TRAIT_TYPE_ANY;
+  return TRAIT_TYPE_BAD;
 }

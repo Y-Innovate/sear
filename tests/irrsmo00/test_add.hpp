@@ -19,12 +19,18 @@
   IRRSMO00_REQUEST_SAMPLES                                 \
   "test_alter_user_traits_not_json_error_request."         \
   "json"
+#define TEST_DELETE_USER_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "test_delete_user_request.json"
 
 // Result samples
 #define TEST_ADD_USER_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "test_add_user_result.json"
 #define TEST_ADD_USER_RESULT_RAW \
   IRRSMO00_RESULT_SAMPLES "test_add_user_result.bin"
+#define TEST_DELETE_USER_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES "test_delete_user_result.json"
+#define TEST_DELETE_USER_RESULT_RAW \
+  IRRSMO00_RESULT_SAMPLES "test_delete_user_result.bin"
 #define TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_JSON \
   IRRSMO00_RESULT_SAMPLES                             \
   "test_add_user_result_user_already_exists.json"
@@ -48,6 +54,7 @@
 
 void test_generate_add_user_request();
 void test_parse_add_user_result();
+void test_parse_delete_user_result();
 void test_parse_add_user_result_user_already_exists();
 void test_parse_add_user_parameter_errors();
 void test_parse_add_user_trait_errors();

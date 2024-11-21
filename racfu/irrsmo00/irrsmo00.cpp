@@ -158,26 +158,43 @@ int post_process_smo_json(nlohmann::json *results_p, std::string profile_name,
   }
 
   for (auto item = results_p->begin(); item != results_p->end();) {
-    if ((item.key() == "info") || (item.key() == "command")) {
+    if ((item.key() == "command")) {
       item++;
     } else {
       item = results_p->erase(item);
     }
   }
-  for (const auto &item : (*results_p)["command"].items()) {
-    nlohmann::json current_command{};
-    if (item.value().contains("image")) {
-      current_command["command"] = item.value()["image"];
-    }
-    current_command["messages"] = nlohmann::json::array();
-    if (item.value().contains("message")) {
-      if (item.value()["message"].is_array()) {
-        current_command["messages"].merge_patch(item.value()["message"]);
+
+  if ((*results_p)["command"].contains("image")) {
+    // If there is only one command in the json
+    nlohmann::json command;
+    command["command"] = (*results_p)["command"]["image"];
+    command["messages"] = nlohmann::json::array();
+    if ((*results_p)["command"].contains("message")) {
+      if ((*results_p)["command"]["message"].is_array()) {
+        command["messages"].merge_patch((*results_p)["command"]["message"]);
       } else {
-        current_command["messages"].push_back(item.value()["message"]);
+        command["messages"].push_back((*results_p)["command"]["message"]);
       }
     }
-    commands.push_back(current_command);
+    commands.push_back(command);
+  } else {
+    // Iterate through a list of commands
+    for (const auto &item : (*results_p)["command"].items()) {
+      nlohmann::json current_command{};
+      if (item.value().contains("image")) {
+        current_command["command"] = item.value()["image"];
+      }
+      current_command["messages"] = nlohmann::json::array();
+      if (item.value().contains("message")) {
+        if (item.value()["message"].is_array()) {
+          current_command["messages"].merge_patch(item.value()["message"]);
+        } else {
+          current_command["messages"].push_back(item.value()["message"]);
+        }
+      }
+      commands.push_back(current_command);
+    }
   }
   results_p->erase("command");
   (*results_p)["commands"] = commands;

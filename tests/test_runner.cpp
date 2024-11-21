@@ -19,6 +19,7 @@ int main() {
   // IRRSMO00
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_parse_add_user_result);
+  RUN_TEST(test_parse_delete_user_result);
   RUN_TEST(test_parse_add_user_result_user_already_exists);
   RUN_TEST(test_parse_add_user_parameter_errors);
   RUN_TEST(test_parse_add_user_trait_errors);
