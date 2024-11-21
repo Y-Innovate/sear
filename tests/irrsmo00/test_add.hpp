@@ -41,6 +41,10 @@
   IRRSMO00_RESULT_SAMPLES "test_alter_user_no_response_result.json"
 #define TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "test_alter_user_traits_not_json_error_result.json"
+#define TEST_IRRSMO00_ERROR_STRUCTURE_JSON \
+  IRRSMO00_RESULT_SAMPLES "test_irrsmo00_error_structure_result.json"
+#define TEST_IRRSMO00_ERROR_STRUCTURE_RAW \
+  IRRSMO00_RESULT_SAMPLES "test_irrsmo00_error_structure_result.bin"
 
 void test_generate_add_user_request();
 void test_parse_add_user_result();
@@ -50,5 +54,6 @@ void test_parse_add_user_trait_errors();
 void test_parse_add_user_no_xml_data_error();
 void test_parse_alter_user_no_xml_data_error();
 void test_parse_alter_user_traits_not_json_error();
+void test_parse_irrsmo00_errors_result();
 
 #endif

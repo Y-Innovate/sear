@@ -19,21 +19,21 @@ class XmlGenerator {
   void build_close_tag_no_value();
   void build_single_trait(std::string tag, std::string operation,
                           std::string value);
-  void build_xml_header_attributes(std::string adminType,
-                                   nlohmann::json *request,
-                                   int *irrsmo00_options);
-  nlohmann::json build_request_data(std::string adminType,
-                                    nlohmann::json *requestData);
-  std::string convert_operation(std::string requestOperation,
-                                int *irrsmo00_options);
+  void build_xml_header_attributes(std::string true_admin_type,
+                                   nlohmann::json *request_p,
+                                   int *irrsmo00_options_p);
+  nlohmann::json build_request_data(std::string true_admin_type,
+                                    nlohmann::json request_data);
+  std::string convert_operation(std::string request_operation,
+                                int *irrsmo00_options_p);
   std::string convert_admin_type(std::string admin_type);
   std::string json_value_to_string(const nlohmann::json &trait);
 
  public:
-  char *build_xml_string(const char *admin_type, nlohmann::json *request,
-                         nlohmann::json *errors, char *userid_buffer,
-                         int *irrsmo00_options, unsigned int *request_length,
-                         Logger *logger_p);
+  char *build_xml_string(const char *admin_type, nlohmann::json *request_p,
+                         nlohmann::json *errors_p, char *userid_buffer,
+                         int *irrsmo00_options_p,
+                         unsigned int *request_length_p, Logger *logger_p);
 };
 
 #endif

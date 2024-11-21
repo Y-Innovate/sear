@@ -198,3 +198,32 @@ void test_parse_alter_user_traits_not_json_error() {
   free(result.raw_result);
   free(result.result_json);
 }
+
+void test_parse_irrsmo00_errors_result() {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(TEST_ADD_USER_REQUEST_JSON);
+  std::string result_json_expected =
+      get_json_sample(TEST_IRRSMO00_ERROR_STRUCTURE_JSON);
+
+  // Mock IRRSMO64 result
+  irrsmo64_result_mock = get_raw_sample(TEST_IRRSMO00_ERROR_STRUCTURE_RAW);
+  struct stat st;
+  stat(TEST_IRRSMO00_ERROR_STRUCTURE_RAW, &st);
+  irrsmo64_result_size_mock = st.st_size;
+  irrsmo64_saf_rc_mock = 8;
+  irrsmo64_racf_rc_mock = 2000;
+  irrsmo64_racf_reason_mock = 68;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          strlen(result.result_json));
+
+  // Cleanup
+  free(irrsmo64_result_mock);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}

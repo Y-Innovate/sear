@@ -35,7 +35,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   // Regular expression designed to match the header attributes, generic body,
   // and closing tags of the xml
   std::regex full_xml_regex{
-      R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<\/securityresult>)~"};
+      R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<returncode>.*<\/returncode><reasoncode>.*<\/reasoncode><\/securityresult>)~"};
   std::smatch useful_xml_substrings;
 
   nlohmann::json result_json;
@@ -49,8 +49,6 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     admin_type = useful_xml_substrings[1];
     admin_xml_attrs = useful_xml_substrings[2];
     admin_xml_body = useful_xml_substrings[3];
-
-    // parse_xml_header_attributes(&result, admin_xml_attrs);
 
     // Erase the profile close tag as it messes up later regex parsing
     admin_close_tag = R"(</)" + admin_type + ">";
@@ -77,40 +75,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 }
 
 // Private Methods of XmlParser
-void XmlParser::parse_xml_header_attributes(nlohmann::json* input_json,
-                                            const std::string& header_string) {
-  // Parse the header attributes of the XML for JSON information
-  // Ex: name="SQUIDWRD" operation="set" requestid="UserRequest"
-  std::smatch attribute_key_value;
-  std::regex attribute_regex{R"~(([a-z]*)="([^ ]*)")~"};
-
-  std::string::size_type attribute_length = -1, attribute_start_index = 0,
-                         header_string_length;
-  std::string remaining_header_string, attribute_string, attribute_key,
-      attribute_value;
-
-  header_string_length = header_string.length();
-  do {
-    // Loop through XML attributes and add them to the input_json JSON
-    // object
-    attribute_start_index += attribute_length + 1;
-    remaining_header_string = header_string.substr(
-        attribute_start_index, header_string_length - attribute_start_index);
-    attribute_length = remaining_header_string.find(' ');
-    attribute_string =
-        header_string.substr(attribute_start_index, attribute_length);
-
-    if (regex_match(attribute_string, attribute_key_value, attribute_regex)) {
-      // Ex: 1) name 2) SQUIDWRD
-      attribute_key = attribute_key_value[1];
-      attribute_value = attribute_key_value[2];
-      (*input_json)[attribute_key] = attribute_value;
-    }
-  } while (attribute_start_index !=
-           attribute_length + attribute_start_index + 1);
-};
-
-void XmlParser::parse_xml_tags(nlohmann::json* input_json,
+void XmlParser::parse_xml_tags(nlohmann::json* input_json_p,
                                std::string input_xml_string) {
   // Parse the outer layer of the XML (the tags) for attributes and tag names
   // with regex Ex:
@@ -143,7 +108,7 @@ void XmlParser::parse_xml_tags(nlohmann::json* input_json,
                     current_tags_regex)) {
       // Ex: 1) 0 2) </safreturncode> 3) <returncode>  4) returncode
       data_within_current_tags = data_around_current_tag[1];
-      parse_xml_data(input_json, data_within_current_tags, current_tag);
+      parse_xml_data(input_json_p, data_within_current_tags, current_tag);
       start_index += current_tag.length() * 2 +
                      ((std::string) "<></>").length() +
                      data_within_current_tags.length();
@@ -154,41 +119,41 @@ void XmlParser::parse_xml_tags(nlohmann::json* input_json,
   }
 };
 
-void XmlParser::parse_xml_data(nlohmann::json* input_json,
+void XmlParser::parse_xml_data(nlohmann::json* input_json_p,
                                std::string data_within_outer_tags,
                                std::string outer_tag) {
   // Parse data from within XML tags and add the values to the JSON
   if (data_within_outer_tags.find("<") == std::string::npos) {
     nlohmann::json data_as_json = data_within_outer_tags;
-    update_json(input_json, data_as_json, outer_tag);
+    update_json(input_json_p, data_as_json, outer_tag);
     return;
   }
   // If we did not return, there is another xml tag within this data (nested)
   nlohmann::json nested_json;
   std::string nested_xml = data_within_outer_tags;
   parse_xml_tags(&nested_json, nested_xml);
-  update_json(input_json, nested_json, outer_tag);
+  update_json(input_json_p, nested_json, outer_tag);
 }
 
-void XmlParser::update_json(nlohmann::json* input_json,
+void XmlParser::update_json(nlohmann::json* input_json_p,
                             nlohmann::json& inner_data, std::string outer_tag) {
-  // Add specified information (inner_data) to the input_json JSON object
+  // Add specified information (inner_data) to the input_json_p JSON object
   // using the specified key (outer_tag)
   outer_tag = replace_xml_chars(outer_tag);
   if (inner_data.is_string()) {
     inner_data = replace_xml_chars(inner_data);
   }
-  if (!(*input_json).contains(outer_tag)) {
+  if (!(*input_json_p).contains(outer_tag)) {
     // If we do not already have this tag used in our object (at this
     // layer), just add data
-    (*input_json)[outer_tag] = inner_data;
+    (*input_json_p)[outer_tag] = inner_data;
   } else {
     // If we do already use this tag, add the data to the list (may have to make
     // the json attribute a list first)
-    if ((*input_json)[outer_tag].is_array()) {
-      (*input_json)[outer_tag].push_back(inner_data);
+    if ((*input_json_p)[outer_tag].is_array()) {
+      (*input_json_p)[outer_tag].push_back(inner_data);
     } else {
-      (*input_json)[outer_tag] = {(*input_json)[outer_tag], inner_data};
+      (*input_json_p)[outer_tag] = {(*input_json_p)[outer_tag], inner_data};
     }
   }
 }

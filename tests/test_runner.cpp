@@ -11,7 +11,7 @@ void tearDown() {}
 int main() {
   UNITY_BEGIN();
 
-  // Common
+  // Validation
   RUN_TEST(test_parse_parameters_junk_error);
   RUN_TEST(test_parse_parameters_missing_error);
   RUN_TEST(test_parse_parameters_nonstring_error);
@@ -25,6 +25,7 @@ int main() {
   RUN_TEST(test_parse_add_user_no_xml_data_error);
   RUN_TEST(test_parse_alter_user_no_xml_data_error);
   RUN_TEST(test_parse_alter_user_traits_not_json_error);
+  RUN_TEST(test_parse_irrsmo00_errors_result);
 
   // Profile Extract
   RUN_TEST(test_generate_extract_user_request);

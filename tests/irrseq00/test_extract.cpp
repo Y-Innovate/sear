@@ -144,8 +144,7 @@ void test_parse_extract_user_result() {
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
                           strlen(result.result_json));
-  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock,
-                          ntohl(result.raw_result_length));
+  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result.raw_result_length);
 
   // Cleanup
   free(r_admin_result_mock);

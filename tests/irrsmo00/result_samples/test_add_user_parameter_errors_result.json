@@ -1,7 +1,7 @@
 {
   "errors": [
-    "'profile_name' is a required parameter for the 'user' admin type",
-    "'junk' is not a valid parameter"
+    "racfu: 'profile_name' is a required parameter for the 'user' admin type",
+    "racfu: 'junk' is not a valid parameter"
   ],
   "return_codes": {
     "return_codes": {

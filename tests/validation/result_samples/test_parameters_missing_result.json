@@ -1,7 +1,7 @@
 {
   "errors": [
-    "'operation' is a required parameter",
-    "'admin_type' is a required parameter"
+    "racfu: 'operation' is a required parameter",
+    "racfu: 'admin_type' is a required parameter"
   ],
   "return_codes": {
     "return_codes": {

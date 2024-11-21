@@ -1,6 +1,6 @@
 {
   "errors": [
-    "'traits' must be a json value"
+    "racfu: 'traits' must be a json value"
   ],
   "return_codes": {
     "return_codes": {

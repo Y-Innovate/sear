@@ -1,6 +1,6 @@
 {
   "errors": [
-    "'SQUIDWRD' must exist before targeting with 'alter'"
+    "racfu: 'SQUIDWRD' must exist before targeting with 'alter'"
   ],
   "return_codes": {
     "return_codes": {

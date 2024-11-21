@@ -5,7 +5,6 @@
 #include <cstring>
 
 #include "racfu/racfu.h"
-#include "racfu/racfu_result.h"
 #include "tests/unit_test_utilities.hpp"
 #include "tests/unity/unity.h"
 

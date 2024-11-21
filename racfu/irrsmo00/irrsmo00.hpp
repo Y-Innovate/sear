@@ -39,12 +39,12 @@ void IRRSMO64(char *,               // Workarea
 #endif
 
 char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int *result_buffer_size, int irrsmo00_options,
-                    int *saf_rc, int *racf_rc, int *racf_rsn);
+                    unsigned int *result_buffer_size_p, int irrsmo00_options,
+                    int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p);
 
 bool does_profile_exist(std::string admin_type, std::string profile_name,
                         const char *class_name, char *running_userid);
 
-void post_process_smo_json(nlohmann::json *results);
+int post_process_smo_json(nlohmann::json *results_p);
 
 #endif /* IRRSMO00_H_ */

@@ -1,10 +1,15 @@
 {
   "commands": [
-    "ADDUSER SQUIDWRD ",
-    "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))"
-  ],
-  "messages": [
-    "ICH01024I User SQUIDWRD is defined as PROTECTED."
+    {
+      "command": "ADDUSER SQUIDWRD ",
+      "messages": [
+        "ICH01024I User SQUIDWRD is defined as PROTECTED."
+      ]
+    },
+    {
+      "command": "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))",
+      "messages": []
+    }
   ],
   "return_codes": {
     "return_codes": {

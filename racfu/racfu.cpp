@@ -19,22 +19,23 @@
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *result,
-                racfu_return_codes_t *return_codes, Logger *logger_p);
+                racfu_return_codes_t *return_codes_p, Logger *logger_p);
 
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
                          const char *surrogate_userid, bool check_first,
-                         nlohmann::json *full_request_json,
+                         nlohmann::json *full_request_json_p,
                          racfu_result_t *results,
-                         racfu_return_codes_t *return_codes, Logger *logger_p);
+                         racfu_return_codes_t *return_codes_p,
+                         Logger *logger_p);
 
 void build_result(const char *operation, const char *admin_type,
                   const char *profile_name, const char *class_name,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
                   int raw_request_length,
-                  nlohmann::json *intermediate_result_json,
-                  racfu_result_t *result, racfu_return_codes_t *return_codes,
+                  nlohmann::json *intermediate_result_json_p,
+                  racfu_result_t *result, racfu_return_codes_t *return_codes_p,
                   Logger *logger_p);
 
 void racfu(racfu_result_t *result, const char *request_json, bool debug) {
@@ -104,7 +105,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
 
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *racfu_result,
-                racfu_return_codes_t *return_codes, Logger *logger_p) {
+                racfu_return_codes_t *return_codes_p, Logger *logger_p) {
   char *raw_result = NULL;
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
@@ -122,20 +123,20 @@ void do_extract(const char *admin_type, const char *profile_name,
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
   } else if (strcmp(admin_type, "data-set") == 0) {
     function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "setropts") == 0) {
+  } else if (strcmp(admin_type, "racf-options") == 0) {
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
-    return_codes->racfu_return_code = 8;
+    return_codes_p->racfu_return_code = 8;
   }
 
   // Do extract if function code is good.
-  if (return_codes->racfu_return_code == -1) {
+  if (return_codes_p->racfu_return_code == -1) {
     raw_result = extract(profile_name, class_name, function_code, &raw_request,
-                         &raw_request_length, return_codes, logger_p);
+                         &raw_request_length, return_codes_p, logger_p);
     if (raw_result == NULL) {
-      return_codes->racfu_return_code = 4;
+      return_codes_p->racfu_return_code = 4;
     } else {
-      return_codes->racfu_return_code = 0;
+      return_codes_p->racfu_return_code = 0;
     }
   }
 
@@ -143,27 +144,25 @@ void do_extract(const char *admin_type, const char *profile_name,
   if (raw_result == NULL) {
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
                  0, raw_request, raw_request_length, &errors, racfu_result,
-                 return_codes, logger_p);
+                 return_codes_p, logger_p);
     return;
   }
 
   // Post Process Generic Result
-  if (strcmp(admin_type, "setropts") != 0) {
+  if (strcmp(admin_type, "racf-options") != 0) {
     generic_extract_parms_results_t *generic_result_buffer =
         reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
-    raw_result_length = generic_result_buffer->result_buffer_length;
-    logger_p->debug(
-        MSG_RESULT_SEQ_GENERIC,
-        logger_p->cast_hex_string(raw_result, ntohl(raw_result_length)));
+    raw_result_length = ntohl(generic_result_buffer->result_buffer_length);
+    logger_p->debug(MSG_RESULT_SEQ_GENERIC,
+                    logger_p->cast_hex_string(raw_result, raw_result_length));
     profile_json = post_process_generic(generic_result_buffer);
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
         reinterpret_cast<setropts_extract_results_t *>(raw_result);
-    raw_result_length = setropts_result_buffer->result_buffer_length;
-    logger_p->debug(
-        MSG_RESULT_SEQ_SETROPTS,
-        logger_p->cast_hex_string(raw_result, ntohl(raw_result_length)));
+    raw_result_length = ntohl(setropts_result_buffer->result_buffer_length);
+    logger_p->debug(MSG_RESULT_SEQ_SETROPTS,
+                    logger_p->cast_hex_string(raw_result, raw_result_length));
     profile_json = post_process_setropts(setropts_result_buffer);
   }
 
@@ -172,7 +171,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   // Build Success Result
   build_result("extract", admin_type, profile_name, class_name, NULL,
                raw_result, raw_result_length, raw_request, raw_request_length,
-               &profile_json, racfu_result, return_codes, logger_p);
+               &profile_json, racfu_result, return_codes_p, logger_p);
 
   return;
 }
@@ -180,9 +179,10 @@ void do_extract(const char *admin_type, const char *profile_name,
 void do_add_alter_delete(const char *admin_type, const char *profile_name,
                          const char *class_name, const char *operation,
                          const char *surrogate_userid, bool check_first,
-                         nlohmann::json *full_request_json,
+                         nlohmann::json *full_request_json_p,
                          racfu_result_t *racfu_result,
-                         racfu_return_codes_t *return_codes, Logger *logger_p) {
+                         racfu_return_codes_t *return_codes_p,
+                         Logger *logger_p) {
   char running_userid[8] = {0};
   char *xml_response_string, *xml_request_string;
   int irrsmo00_options, saf_rc, racf_rc, racf_rsn, racfu_rc;
@@ -200,14 +200,15 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racfu_rc = 0;
 
   xml_request_string = generator->build_xml_string(
-      admin_type, full_request_json, &errors, running_userid, &irrsmo00_options,
-      &request_length, logger_p);
+      admin_type, full_request_json_p, &errors, running_userid,
+      &irrsmo00_options, &request_length, logger_p);
 
   if (!errors.empty()) {
-    return_codes->racfu_return_code = 8;
+    return_codes_p->racfu_return_code = 8;
     build_result(operation, admin_type, profile_name, class_name,
                  surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, &errors, racfu_result, return_codes, logger_p);
+                 request_length, &errors, racfu_result, return_codes_p,
+                 logger_p);
     return;
   }
 
@@ -233,10 +234,11 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   }
 
   if (!errors.empty()) {
-    return_codes->racfu_return_code = 8;
+    return_codes_p->racfu_return_code = 8;
     build_result(operation, admin_type, profile_name, class_name,
                  surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, &errors, racfu_result, return_codes, logger_p);
+                 request_length, &errors, racfu_result, return_codes_p,
+                 logger_p);
     return;
   }
   logger_p->debug(MSG_DONE);
@@ -249,18 +251,19 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   logger_p->debug(MSG_DONE);
 
-  return_codes->saf_return_code = saf_rc;
-  return_codes->racf_return_code = racf_rc;
-  return_codes->racf_reason_code = racf_rsn;
+  return_codes_p->saf_return_code = saf_rc;
+  return_codes_p->racf_return_code = racf_rc;
+  return_codes_p->racf_reason_code = racf_rsn;
 
   intermediate_result_json =
       parser->build_json_string(xml_response_string, &racfu_rc, logger_p);
 
-  return_codes->racfu_return_code = racfu_rc;
-
   logger_p->debug(MSG_SMO_POST_PROCESS);
-  post_process_smo_json(&intermediate_result_json);
+  // Maintain any RC 4's from parsing xml or post-processing json
+  racfu_rc = racfu_rc | post_process_smo_json(&intermediate_result_json);
   logger_p->debug(MSG_DONE);
+
+  return_codes_p->racfu_return_code = racfu_rc;
 
   delete generator;
   delete parser;
@@ -272,7 +275,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   build_result(operation, admin_type, profile_name, class_name,
                surrogate_userid, xml_response_string, result_buffer_size,
                xml_request_string, request_length, &intermediate_result_json,
-               racfu_result, return_codes, logger_p);
+               racfu_result, return_codes_p, logger_p);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
@@ -282,35 +285,35 @@ void build_result(const char *operation, const char *admin_type,
                   const char *surrogate_userid, char *raw_result,
                   int raw_result_length, char *raw_request,
                   int raw_request_length,
-                  nlohmann::json *intermediate_result_json,
+                  nlohmann::json *intermediate_result_json_p,
                   racfu_result_t *racfu_result,
-                  racfu_return_codes_t *return_codes, Logger *logger_p) {
+                  racfu_return_codes_t *return_codes_p, Logger *logger_p) {
   // Build Return Code JSON
 
   logger_p->debug(MSG_BUILD_RESULT);
 
   nlohmann::json return_code_json = {
       {"return_codes",
-       {{"saf_return_code", return_codes->saf_return_code},
-        {"racf_return_code", return_codes->racf_return_code},
-        {"racf_reason_code", return_codes->racf_reason_code},
-        {"racfu_return_code", return_codes->racfu_return_code}}}
+       {{"saf_return_code", return_codes_p->saf_return_code},
+        {"racf_return_code", return_codes_p->racf_return_code},
+        {"racf_reason_code", return_codes_p->racf_reason_code},
+        {"racfu_return_code", return_codes_p->racfu_return_code}}}
   };
 
   // Convert '-1' to 'nullptr'
-  if (return_codes->saf_return_code == -1) {
+  if (return_codes_p->saf_return_code == -1) {
     return_code_json["return_codes"]["saf_return_code"] = nullptr;
   }
-  if (return_codes->racf_return_code == -1) {
+  if (return_codes_p->racf_return_code == -1) {
     return_code_json["return_codes"]["racf_return_code"] = nullptr;
   }
-  if (return_codes->racf_reason_code == -1) {
+  if (return_codes_p->racf_reason_code == -1) {
     return_code_json["return_codes"]["racf_reason_code"] = nullptr;
   }
-  if (return_codes->racf_return_code == -1) {
+  if (return_codes_p->racf_return_code == -1) {
     return_code_json["return_codes"]["racf_return_code"] = nullptr;
   }
-  if (return_codes->racfu_return_code == -1) {
+  if (return_codes_p->racfu_return_code == -1) {
     return_code_json["return_codes"]["racfu_return_code"] = nullptr;
   }
 
@@ -319,17 +322,15 @@ void build_result(const char *operation, const char *admin_type,
       {"return_codes", return_code_json}
   };
 
-  if (intermediate_result_json->contains("errors")) {
+  if (intermediate_result_json_p->contains("errors")) {
     result_json.merge_patch(
-        format_error_json(&((*intermediate_result_json)["errors"])));
+        format_error_json(&((*intermediate_result_json_p)["errors"])));
   } else {
-    if ((intermediate_result_json->empty()) &&
+    if ((intermediate_result_json_p->empty()) &&
         (std::string(operation) == "extract")) {
       result_json["profile"] = nullptr;
-    } else if (intermediate_result_json->empty()) {
-      result_json["result"] = nullptr;
-    } else {
-      result_json.merge_patch(*intermediate_result_json);
+    } else if (!intermediate_result_json_p->empty()) {
+      result_json.merge_patch(*intermediate_result_json_p);
     }
   }
 

@@ -1,7 +1,7 @@
 {
   "errors": [
-    "'operation' must be a string value",
-    "'admin_type' must be a string value"
+    "racfu: 'operation' must be a string value",
+    "racfu: 'admin_type' must be a string value"
   ],
   "return_codes": {
     "return_codes": {

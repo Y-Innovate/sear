@@ -23,11 +23,16 @@
 #define BAD_ALTER_TARGET_NO_CLASS \
   12  //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 101  // "Unable to parse XML returned by IRRSMO00"
+#define SMO_ERROR_NO_TEXT \
+  102  // copied from "errormessage" supplied by irrsmo00
+#define SMO_ERROR_WITH_TEXT \
+  103  // copied from "errormessage" supplied by irrsmo00 plus "Text in error:
+       // {textinerror}" supplied by irrsmo00
 
-void update_error_json(nlohmann::json* errors, int8_t error_type,
+void update_error_json(nlohmann::json* errors_p, int8_t error_type,
                        nlohmann::json error_data);
 
-nlohmann::json format_error_json(nlohmann::json* errors);
+nlohmann::json format_error_json(nlohmann::json* errors_p);
 
 std::string decode_data_type(uint8_t data_type_code);
 

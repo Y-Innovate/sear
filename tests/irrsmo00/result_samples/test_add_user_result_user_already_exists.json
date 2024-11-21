@@ -1,10 +1,15 @@
 {
   "commands": [
-    "ADDUSER SQUIDWRD ",
-    "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))"
-  ],
-  "messages" : [
-    "IKJ56702I INVALID USERID, SQUIDWRD"
+    {
+      "command": "ADDUSER SQUIDWRD ",
+      "messages": [
+        "IKJ56702I INVALID USERID, SQUIDWRD"
+      ]
+    },
+    {
+      "command": "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))",
+      "messages": []
+    }
   ],
   "return_codes": {
     "return_codes": {
