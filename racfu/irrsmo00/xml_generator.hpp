@@ -26,6 +26,7 @@ class XmlGenerator {
                                     nlohmann::json request_data);
   std::string convert_operation(std::string request_operation,
                                 int *irrsmo00_options_p);
+  std::string convert_operator(std::string trait_operator);
   std::string convert_admin_type(std::string admin_type);
   std::string json_value_to_string(const nlohmann::json &trait);
 

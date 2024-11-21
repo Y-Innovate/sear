@@ -243,7 +243,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
             true_admin_type.c_str(), item_segment.c_str(),
             (item_segment + ":" + item_trait).c_str(), trait_type, operation);
         std::string operation_str =
-            (item_operation.empty()) ? "set" : item_operation;
+            (item_operation.empty()) ? "set" : convert_operator(item_operation);
         std::string value = (item.value().is_boolean())
                                 ? ""
                                 : json_value_to_string(item.value());
@@ -280,6 +280,14 @@ std::string XmlGenerator::convert_operation(std::string request_operation,
     return "listdata";
   }
   return "";
+}
+
+std::string XmlGenerator::convert_operator(std::string trait_operator) {
+  // Converts the designated function to the correct IRRSMO00 operator
+  if (trait_operator == "delete") {
+    return "del";
+  }
+  return trait_operator;
 }
 
 std::string XmlGenerator::convert_admin_type(std::string admin_type) {

@@ -3,11 +3,9 @@
     "irrsmo00: Invalid attribute value specified. Text in error: name"
   ],
   "return_codes": {
-    "return_codes": {
-      "racf_reason_code": 68,
-      "racf_return_code": 2000,
-      "racfu_return_code": 4,
-      "saf_return_code": 8
-    }
+    "racf_reason_code": 68,
+    "racf_return_code": 2000,
+    "racfu_return_code": 4,
+    "saf_return_code": 8
   }
 }

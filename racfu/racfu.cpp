@@ -290,11 +290,10 @@ void build_result(const char *operation, const char *admin_type,
                   nlohmann::json *intermediate_result_json_p,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes_p, Logger *logger_p) {
-  // Build Return Code JSON
-
   logger_p->debug(MSG_BUILD_RESULT);
 
-  nlohmann::json return_code_json = {
+  // Build Result JSON starting with Return Codes
+  nlohmann::json result_json = {
       {"return_codes",
        {{"saf_return_code", return_codes_p->saf_return_code},
         {"racf_return_code", return_codes_p->racf_return_code},
@@ -304,25 +303,21 @@ void build_result(const char *operation, const char *admin_type,
 
   // Convert '-1' to 'nullptr'
   if (return_codes_p->saf_return_code == -1) {
-    return_code_json["return_codes"]["saf_return_code"] = nullptr;
+    result_json["return_codes"]["saf_return_code"] = nullptr;
   }
   if (return_codes_p->racf_return_code == -1) {
-    return_code_json["return_codes"]["racf_return_code"] = nullptr;
+    result_json["return_codes"]["racf_return_code"] = nullptr;
   }
   if (return_codes_p->racf_reason_code == -1) {
-    return_code_json["return_codes"]["racf_reason_code"] = nullptr;
+    result_json["return_codes"]["racf_reason_code"] = nullptr;
   }
   if (return_codes_p->racf_return_code == -1) {
-    return_code_json["return_codes"]["racf_return_code"] = nullptr;
+    result_json["return_codes"]["racf_return_code"] = nullptr;
   }
   if (return_codes_p->racfu_return_code == -1) {
-    return_code_json["return_codes"]["racfu_return_code"] = nullptr;
+    result_json["return_codes"]["racfu_return_code"] = nullptr;
   }
 
-  // Build Result JSON
-  nlohmann::json result_json = {
-      {"return_codes", return_code_json}
-  };
 
   if (intermediate_result_json_p->contains("errors")) {
     result_json.merge_patch(
