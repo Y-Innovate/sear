@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'SQUIDWRD' must not exist before targeting with 'add'"
+    "racfu: unable to add 'SQUIDWRD' because a profile already exists with that name"
    ],
   "return_codes": {
     "racf_reason_code": 0,

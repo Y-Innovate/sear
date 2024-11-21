@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: Unable to parse XML returned by IRRSMO00"
+    "racfu: unable to parse XML returned by IRRSMO00"
   ],
   "return_codes": {
     "racf_reason_code": 16,

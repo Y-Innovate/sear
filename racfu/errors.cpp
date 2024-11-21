@@ -93,30 +93,30 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             error_data["trait"].get<std::string>() + "'";
         break;
       case BAD_ALTER_TARGET:
-        error_message_str =
-            prefix + "'" + error_data["name"].get<std::string>() +
-            "' must exist in the '" + error_data["class"].get<std::string>() +
-            "' class before targeting with 'alter'";
+        error_message_str = prefix + "Unable to alter '" +
+                            error_data["name"].get<std::string>() +
+                            "' in the '" +
+                            error_data["class"].get<std::string>() +
+                            "' class because the profile does not exist";
         break;
       case BAD_ALTER_TARGET_NO_CLASS:
-        error_message_str = prefix + "'" +
+        error_message_str = prefix + "unable to alter '" +
                             error_data["name"].get<std::string>() +
-                            "' must exist before targeting with 'alter'";
+                            "' because the profile does not exist";
         break;
       case XML_PARSE_ERROR:
-        error_message_str = prefix + "Unable to parse XML returned by IRRSMO00";
+        error_message_str = prefix + "unable to parse XML returned by IRRSMO00";
         break;
       case BAD_ADD_TARGET:
-        error_message_str = prefix + "'" +
-                            error_data["name"].get<std::string>() +
-                            "' must not exist in the '" +
-                            error_data["class"].get<std::string>() +
-                            "' class before targeting with 'add'";
+        error_message_str =
+            prefix + "unable to add '" + error_data["name"].get<std::string>() +
+            "' in the '" + error_data["class"].get<std::string>() +
+            "' class because a profile already exists with that name";
         break;
       case BAD_ADD_TARGET_NO_CLASS:
-        error_message_str = prefix + "'" +
+        error_message_str = prefix + "unable to add '" +
                             error_data["name"].get<std::string>() +
-                            "' must not exist before targeting with 'add'";
+                            "' because a profile already exists with that name";
         break;
       case SMO_ERROR_NO_TEXT:
         error_message_str =
@@ -128,7 +128,7 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
             " Text in error: " + error_data["text_in_error"].get<std::string>();
         break;
       default:
-        error_message_str = prefix + "An unknown error has occurred";
+        error_message_str = prefix + "an unknown error has occurred";
     }
     output["errors"] += error_message_str;
   }

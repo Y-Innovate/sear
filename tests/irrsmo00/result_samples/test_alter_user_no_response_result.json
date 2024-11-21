@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'SQUIDWRD' must exist before targeting with 'alter'"
+    "racfu: unable to alter 'SQUIDWRD' because the profile does not exist"
   ],
   "return_codes": {
     "racf_reason_code": null,
