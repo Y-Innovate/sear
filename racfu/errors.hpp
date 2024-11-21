@@ -23,10 +23,15 @@
 #define BAD_ALTER_TARGET_NO_CLASS \
   12  //"'remove' is not a valid operation for 'omvs:uid'"
 #define XML_PARSE_ERROR 101  // "Unable to parse XML returned by IRRSMO00"
+#define BAD_ADD_TARGET \
+  102  // 'junk' exists  in the 'garbage' class and cannot be a target for
+       // 'add'"
+#define BAD_ADD_TARGET_NO_CLASS \
+  103  // 'junk' exists and cannot be a target for 'add'"
 #define SMO_ERROR_NO_TEXT \
-  102  // copied from "errormessage" supplied by irrsmo00
+  111  // copied from "errormessage" supplied by irrsmo00
 #define SMO_ERROR_WITH_TEXT \
-  103  // copied from "errormessage" supplied by irrsmo00 plus "Text in error:
+  112  // copied from "errormessage" supplied by irrsmo00 plus "Text in error:
        // {textinerror}" supplied by irrsmo00
 
 void update_error_json(nlohmann::json* errors_p, int8_t error_type,

@@ -79,8 +79,8 @@ void test_parse_add_user_result_user_already_exists() {
   struct stat st;
   stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
   irrsmo64_result_size_mock = st.st_size;
-  irrsmo64_saf_rc_mock = 4;
-  irrsmo64_racf_rc_mock = 4;
+  irrsmo64_saf_rc_mock = 0;
+  irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
   racfu(&result, request_json.c_str(), false);

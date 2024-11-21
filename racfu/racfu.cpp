@@ -260,7 +260,9 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   logger_p->debug(MSG_SMO_POST_PROCESS);
   // Maintain any RC 4's from parsing xml or post-processing json
-  racfu_rc = racfu_rc | post_process_smo_json(&intermediate_result_json);
+  racfu_rc =
+      racfu_rc | post_process_smo_json(&intermediate_result_json,
+                                       std::string(profile_name), class_name);
   logger_p->debug(MSG_DONE);
 
   return_codes_p->racfu_return_code = racfu_rc;

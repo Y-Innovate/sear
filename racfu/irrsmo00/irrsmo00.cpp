@@ -106,7 +106,8 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
   return true;
 }
 
-int post_process_smo_json(nlohmann::json *results_p) {
+int post_process_smo_json(nlohmann::json *results_p, std::string profile_name,
+                          const char *class_name) {
   nlohmann::json commands = nlohmann::json::array();
 
   if (results_p->contains("error")) {
@@ -133,10 +134,29 @@ int post_process_smo_json(nlohmann::json *results_p) {
     return 4;
   }
 
-  if (!results_p->contains("command")) {
-    // Only expected for "errors" cases
+  if (results_p->contains("errors")) {
+    // Only expected for "XML Parse Error"
     return 4;
   }
+
+  if (!results_p->contains("command")) {
+    // Only expected for "Add Protection" cases
+    if (class_name == NULL) {
+      update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET_NO_CLASS,
+                        nlohmann::json{
+                            {"name", profile_name}
+      });
+    } else {
+      update_error_json(
+          &(*results_p)["errors"], BAD_ADD_TARGET,
+          nlohmann::json{
+              { "name",            profile_name},
+              {"class", std::string(class_name)}
+      });
+    }
+    return 4;
+  }
+
   for (auto item = results_p->begin(); item != results_p->end();) {
     if ((item.key() == "info") || (item.key() == "command")) {
       item++;

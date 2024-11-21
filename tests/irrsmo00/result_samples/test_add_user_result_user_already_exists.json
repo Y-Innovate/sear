@@ -1,22 +1,13 @@
 {
-  "commands": [
-    {
-      "command": "ADDUSER SQUIDWRD ",
-      "messages": [
-        "IKJ56702I INVALID USERID, SQUIDWRD"
-      ]
-    },
-    {
-      "command": "ALTUSER SQUIDWRD     NAME        ('Squidward') OMVS     (HOME        ('/u/squidwrd') UID         (24))",
-      "messages": []
-    }
-  ],
+  "errors": [
+    "racfu: 'SQUIDWRD' must not exist before targeting with 'add'"
+   ],
   "return_codes": {
     "return_codes": {
       "racf_reason_code": 0,
-      "racf_return_code": 4,
-      "racfu_return_code": 0,
-      "saf_return_code": 4
+      "racf_return_code": 0,
+      "racfu_return_code": 4,
+      "saf_return_code": 0
     }
   }
 }
