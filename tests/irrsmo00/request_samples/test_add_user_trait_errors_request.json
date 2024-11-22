@@ -7,6 +7,7 @@
     "omvs:uid": -24,
     "junkop:omvs:home_directory": "/u/squidwrd",
     "omvs:junk": "doesn't matter",
-    "remove:base:owner": "also doesn't matter"
+    "remove:base:owner": "also doesn't matter",
+    "delete:base:password": "Not a real value"
   }
 }

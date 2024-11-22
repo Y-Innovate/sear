@@ -50,7 +50,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     if ((operation == OPERATOR_DELETE) && (trait_type != TRAIT_TYPE_ANY)) {
       update_error_json(errors_p, BAD_VALUE_FOR_DELETE,
                         nlohmann::json{
-                            {"trait", item_trait}
+                            {  "trait",   item_trait},
+                            {"segment", item_segment}
       });
     }
     int8_t expected_type =

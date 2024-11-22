@@ -242,11 +242,24 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         translated_key = get_racf_key(
             true_admin_type.c_str(), item_segment.c_str(),
             (item_segment + ":" + item_trait).c_str(), trait_type, operation);
-        std::string operation_str =
-            (item_operation.empty()) ? "set" : convert_operator(item_operation);
-        std::string value = (item.value().is_boolean())
-                                ? ""
-                                : json_value_to_string(item.value());
+        std::string operation_str, value;
+        switch (trait_type) {
+          case TRAIT_TYPE_ANY:
+            operation_str = "del";
+            value = "";
+            break;
+          case TRAIT_TYPE_BOOLEAN:
+            operation_str = (item.value()) ? "set" : "del";
+            value = "";
+            break;
+          default:
+            operation_str = (item_operation.empty())
+                                ? "set"
+                                : convert_operator(item_operation);
+            value = (trait_type == TRAIT_TYPE_BOOLEAN)
+                        ? ""
+                        : json_value_to_string(item.value());
+        }
         build_single_trait(("racf:" + std::string(translated_key)),
                            operation_str, value);
         item = request_data.erase(item);

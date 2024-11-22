@@ -105,10 +105,10 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             "' because the profile does not exist";
         break;
       case BAD_VALUE_FOR_DELETE:
-        error_message_str =
-            prefix + "'delete:" + error_data["segment"].get<std::string>() +
-            ":" + error_data["trait"].get<std::string>() +
-            "' is not compatible with any value";
+        error_message_str = prefix + "'delete' operation for '" +
+                            error_data["segment"].get<std::string>() + ":" +
+                            error_data["trait"].get<std::string>() +
+                            "' is not compatible with any value";
         break;
       case XML_PARSE_ERROR:
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";

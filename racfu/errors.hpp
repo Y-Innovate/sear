@@ -25,7 +25,8 @@
 #define BAD_ALTER_TARGET_NO_CLASS \
   12  // "unable to alter 'junk' because the profile does not exist"
 #define BAD_VALUE_FOR_DELETE \
-  13  // "'delete:segment:trait' is not compatible with any value"
+  13  // "'delete' operation for 'segment:trait' is not compatible with any
+      // value"
 #define XML_PARSE_ERROR 101  // "unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET \
   102  // "unable to add 'junk' to the 'garbage' class because a profile already

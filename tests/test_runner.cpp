@@ -1,6 +1,6 @@
 #include "irrseq00.hpp"
-#include "tests/irrseq00/test_extract.hpp"
-#include "tests/irrsmo00/test_add.hpp"
+#include "tests/irrseq00/test_seq.hpp"
+#include "tests/irrsmo00/test_smo.hpp"
 #include "tests/unity/unity.h"
 #include "tests/validation/test_parameter_validation.hpp"
 
@@ -18,6 +18,7 @@ int main() {
 
   // IRRSMO00
   RUN_TEST(test_generate_add_user_request);
+  RUN_TEST(test_generate_alter_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_delete_user_result);
   RUN_TEST(test_parse_add_user_result_user_already_exists);

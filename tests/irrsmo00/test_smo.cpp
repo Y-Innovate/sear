@@ -1,4 +1,4 @@
-#include "tests/irrsmo00/test_add.hpp"
+#include "tests/irrsmo00/test_smo.hpp"
 
 #include <sys/stat.h>
 
@@ -24,6 +24,35 @@ void test_generate_add_user_request() {
   irrsmo64_racf_reason_mock = 0;
 
   racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
+                          result.raw_request_length);
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result.raw_request,
+                           raw_request_size_expected.st_size);
+
+  // Cleanup
+  free(raw_request_expected);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void test_generate_alter_user_request() {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(TEST_ALTER_USER_REQUEST_JSON);
+  char *raw_request_expected = get_raw_sample(TEST_ALTER_USER_REQUEST_RAW);
+  struct stat raw_request_size_expected;
+  stat(TEST_ALTER_USER_REQUEST_RAW, &raw_request_size_expected);
+
+  // Mock IRRSMO64 result
+  irrsmo64_result_mock = NULL;
+  irrsmo64_result_size_mock = 0;
+  irrsmo64_saf_rc_mock = 0;
+  irrsmo64_racf_rc_mock = 0;
+  irrsmo64_racf_reason_mock = 0;
+
+  racfu(&result, request_json.c_str(), true);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);

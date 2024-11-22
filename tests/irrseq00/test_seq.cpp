@@ -1,4 +1,4 @@
-#include "tests/irrseq00/test_extract.hpp"
+#include "tests/irrseq00/test_seq.hpp"
 
 #define _POSIX_C_SOURCE 200112L
 #include <arpa/inet.h>

@@ -9,6 +9,10 @@
   IRRSMO00_REQUEST_SAMPLES "test_add_user_request.json"
 #define TEST_ADD_USER_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "test_add_user_request.bin"
+#define TEST_ALTER_USER_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "test_alter_user_request.json"
+#define TEST_ALTER_USER_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "test_alter_user_request.bin"
 #define TEST_ADD_USER_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "test_add_user_parameter_errors_request.json"
 #define TEST_ADD_USER_TRAIT_ERRORS_REQUEST_JSON \
@@ -53,6 +57,7 @@
   IRRSMO00_RESULT_SAMPLES "test_irrsmo00_error_structure_result.bin"
 
 void test_generate_add_user_request();
+void test_generate_alter_user_request();
 void test_parse_add_user_result();
 void test_parse_delete_user_result();
 void test_parse_add_user_result_user_already_exists();
