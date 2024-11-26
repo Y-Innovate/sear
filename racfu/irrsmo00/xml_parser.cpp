@@ -57,7 +57,6 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
 
     parse_xml_tags(&result, admin_xml_body);
 
-    // result_json["admin_type"] = admin_type;
     result_json = result;
     *racfu_rc = 0;
   } else {

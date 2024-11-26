@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#define YELLOW_COLOR "\033[33m"
-#define NO_COLOR "\033[0m"
+#define ANSI_YELLOW "\033[33m"
+#define ANSI_RESET "\033[0m"
 
 #define MAX_LINE_LENGTH 80
 #define HEX_CHAR_SIZE 6

@@ -1,4 +1,4 @@
-#include "tests/irrsmo00/test_smo.hpp"
+#include "tests/irrsmo00/test_irrsmo00.hpp"
 
 #include <sys/stat.h>
 
@@ -52,7 +52,7 @@ void test_generate_alter_user_request() {
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), true);
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);
@@ -74,9 +74,9 @@ void test_parse_add_user_result() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = get_raw_sample(TEST_ADD_USER_RESULT_RAW);
-  struct stat st;
-  stat(TEST_ADD_USER_RESULT_RAW, &st);
-  irrsmo64_result_size_mock = st.st_size;
+  struct stat raw_request_size_expected;
+  stat(TEST_ADD_USER_RESULT_RAW, &raw_request_size_expected);
+  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 0;
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
@@ -103,9 +103,9 @@ void test_parse_delete_user_result() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = get_raw_sample(TEST_DELETE_USER_RESULT_RAW);
-  struct stat st;
-  stat(TEST_ADD_USER_RESULT_RAW, &st);
-  irrsmo64_result_size_mock = st.st_size;
+  struct stat raw_request_size_expected;
+  stat(TEST_ADD_USER_RESULT_RAW, &raw_request_size_expected);
+  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 0;
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
@@ -134,9 +134,9 @@ void test_parse_add_user_result_user_already_exists() {
   // Mock IRRSMO64 result
   irrsmo64_result_mock =
       get_raw_sample(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW);
-  struct stat st;
-  stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
-  irrsmo64_result_size_mock = st.st_size;
+  struct stat raw_request_size_expected;
+  stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &raw_request_size_expected);
+  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 0;
   irrsmo64_racf_rc_mock = 0;
   irrsmo64_racf_reason_mock = 0;
@@ -195,9 +195,9 @@ void test_parse_add_user_no_xml_data_error() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = NULL;
-  // struct stat st;
-  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
-  // irrsmo64_result_size_mock = st.st_size;
+  // struct stat raw_request_size_expected;
+  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &raw_request_size_expected);
+  // irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 8;
   irrsmo64_racf_rc_mock = 200;
   irrsmo64_racf_reason_mock = 16;
@@ -222,9 +222,9 @@ void test_parse_alter_user_no_xml_data_error() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = NULL;
-  // struct stat st;
-  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &st);
-  // irrsmo64_result_size_mock = st.st_size;
+  // struct stat raw_request_size_expected;
+  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW, &raw_request_size_expected);
+  // irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 4;
   irrsmo64_racf_rc_mock = 4;
   irrsmo64_racf_reason_mock = 0;
@@ -265,9 +265,9 @@ void test_parse_irrsmo00_errors_result() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = get_raw_sample(TEST_IRRSMO00_ERROR_STRUCTURE_RAW);
-  struct stat st;
-  stat(TEST_IRRSMO00_ERROR_STRUCTURE_RAW, &st);
-  irrsmo64_result_size_mock = st.st_size;
+  struct stat raw_request_size_expected;
+  stat(TEST_IRRSMO00_ERROR_STRUCTURE_RAW, &raw_request_size_expected);
+  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 8;
   irrsmo64_racf_rc_mock = 2000;
   irrsmo64_racf_reason_mock = 68;

@@ -51,7 +51,7 @@ void Logger::debug(std::string message, std::string body) {
   }
   std::string racfu_header = "racfu:";
   if (isatty(fileno(stdout))) {
-    racfu_header = YELLOW_COLOR + racfu_header + NO_COLOR;
+    racfu_header = ANSI_YELLOW + racfu_header + ANSI_RESET;
   }
   std::cout << racfu_header << " " << message << "\n";
   if (body != "") {

@@ -1,3 +1,6 @@
+#ifndef __RACFU_MESSAGES_H_
+#define __RACFU_MESSAGES_H_
+
 // Common Logging Messages
 #define MSG_VALIDATING_PARAMETERS "Validating parameters ..."
 #define MSG_DONE "Done"
@@ -23,3 +26,5 @@
 #define MSG_RESULT_SMO_EBCDIC "Raw EBCDIC encoded result XML:"
 #define MSG_RESULT_SMO_ASCII "Decoded result XML:"
 #define MSG_SMO_POST_PROCESS "Post-processing decoded result ..."
+
+#endif
