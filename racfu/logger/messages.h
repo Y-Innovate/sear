@@ -22,7 +22,7 @@
 #define MSG_REQUEST_SMO_ASCII "Request XML:"
 #define MSG_REQUEST_SMO_EBCDIC "EBCDIC encoded request XML:"
 #define MSG_CALLING_SMO "Calling IRRSMO00 ..."
-#define MSG_SMO_VALIDATE_EXIST "Validating profile exists for alter ..."
+#define MSG_SMO_VALIDATE_EXIST "Verifying that profile exists for alter ..."
 #define MSG_RESULT_SMO_EBCDIC "Raw EBCDIC encoded result XML:"
 #define MSG_RESULT_SMO_ASCII "Decoded result XML:"
 #define MSG_SMO_POST_PROCESS "Post-processing decoded result ..."

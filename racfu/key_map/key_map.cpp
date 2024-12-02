@@ -22,7 +22,7 @@ static bool check_trait_operator(int8_t trait_operator,
 const char *get_racfu_key(const char *profile_type, const char *segment,
                           const char *racf_key) {
   const trait_key_mapping_t *key_mapping =
-      get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_ANY,
+      get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_NULL,
                       OPERATOR_ANY, true);
   if (key_mapping == NULL) {
     return NULL;
@@ -45,7 +45,7 @@ const char *get_racf_key(const char *profile_type, const char *segment,
 const char get_racfu_trait_type(const char *profile_type, const char *segment,
                                 const char *racf_key) {
   const trait_key_mapping_t *key_mapping =
-      get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_ANY,
+      get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_NULL,
                       OPERATOR_ANY, true);
   if (key_mapping == NULL) {
     return TRAIT_TYPE_BAD;
@@ -56,7 +56,7 @@ const char get_racfu_trait_type(const char *profile_type, const char *segment,
 const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key) {
   const trait_key_mapping_t *key_mapping =
-      get_key_mapping(profile_type, segment, NULL, racfu_key, TRAIT_TYPE_ANY,
+      get_key_mapping(profile_type, segment, NULL, racfu_key, TRAIT_TYPE_NULL,
                       OPERATOR_ANY, false);
   if (key_mapping == NULL) {
     return TRAIT_TYPE_BAD;
@@ -114,7 +114,7 @@ static const trait_key_mapping_t *get_key_mapping(
 }
 
 static bool check_trait_type(int8_t actual, int8_t expected) {
-  if (actual == TRAIT_TYPE_ANY) {
+  if (actual == TRAIT_TYPE_NULL) {
     return true;
   }
   if (actual != expected) {
@@ -164,7 +164,7 @@ int8_t map_operation(std::string operation) {
 
 int8_t map_trait_type(const nlohmann::json &trait) {
   if (trait.is_null()) {
-    return TRAIT_TYPE_ANY;
+    return TRAIT_TYPE_NULL;
   }
   if (trait.is_boolean()) {
     return TRAIT_TYPE_BOOLEAN;

@@ -217,19 +217,17 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
     if (!does_profile_exist(std::string(admin_type), std::string(profile_name),
                             class_name, running_userid)) {
       if (class_name == NULL) {
-        update_error_json(&errors, BAD_ALTER_TARGET_NO_CLASS,
+        update_error_json(&errors, BAD_ALTER_TARGET,
                           nlohmann::json{
                               {"name", std::string(profile_name)}
         });
       } else {
-        update_error_json(&errors, BAD_ALTER_TARGET,
+        update_error_json(&errors, BAD_ALTER_TARGET_CLASS,
                           nlohmann::json{
                               { "name", std::string(profile_name)},
                               {"class",   std::string(class_name)}
         });
       }
-
-      logger_p->debug(MSG_SMO_VALIDATE_EXIST);
     }
   }
 

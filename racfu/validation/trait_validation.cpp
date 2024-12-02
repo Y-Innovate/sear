@@ -47,12 +47,15 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       continue;
     }
     int8_t trait_type = map_trait_type(item.value());
-    if ((operation == OPERATOR_DELETE) && (trait_type != TRAIT_TYPE_ANY)) {
+    if ((operation == OPERATOR_DELETE) && (trait_type != TRAIT_TYPE_NULL)) {
       update_error_json(errors_p, BAD_VALUE_FOR_DELETE,
                         nlohmann::json{
                             {  "trait",   item_trait},
                             {"segment", item_segment}
       });
+    }
+    if (trait_type == TRAIT_TYPE_NULL) {
+      operation = OPERATOR_DELETE;
     }
     int8_t expected_type =
         get_racf_trait_type(adminType.c_str(), item_segment.c_str(),
@@ -69,7 +72,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     validate_json_value_to_string(item, expected_type, errors_p);
     // Ensure that the type of data provided for the trait matches the expected
     // TRAIT_TYPE
-    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_ANY)) {
+    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL)) {
       update_error_json(
           errors_p, BAD_TRAIT_DATA_TYPE,
           nlohmann::json{
@@ -83,12 +86,18 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                                  trait_type, operation);
     // If we could not find the RACF key with this function, the operation is
     // bad because we check the Segment-Trait combination above
-    if (translatedKey == NULL) {
+    if ((translatedKey == NULL) && (trait_type != TRAIT_TYPE_NULL)) {
       update_error_json(errors_p, BAD_TRAIT_OPERATION_COMBO,
                         nlohmann::json{
                             {"operation", item_operation},
                             {  "segment",   item_segment},
                             {    "trait",     item_trait}
+      });
+    } else if (translatedKey == NULL) {
+      update_error_json(errors_p, NULL_NOT_ALLOWED,
+                        nlohmann::json{
+                            {"segment", item_segment},
+                            {  "trait",   item_trait}
       });
     }
     // Passed all of our validation so we go around the loop again

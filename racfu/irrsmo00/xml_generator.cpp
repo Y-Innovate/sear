@@ -244,7 +244,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
             (item_segment + ":" + item_trait).c_str(), trait_type, operation);
         std::string operation_str, value;
         switch (trait_type) {
-          case TRAIT_TYPE_ANY:
+          case TRAIT_TYPE_NULL:
             operation_str = "del";
             value = "";
             break;

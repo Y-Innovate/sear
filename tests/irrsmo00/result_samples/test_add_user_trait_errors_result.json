@@ -1,5 +1,6 @@
 {
   "errors": [
+    "racfu: 'base:default_group_authority' is not compatible with a 'null' value",
     "racfu: 'delete' operation for 'base:password' is not compatible with any value",
     "racfu: 'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>' format",
     "racfu: 'junkop' is not a valid trait operation",

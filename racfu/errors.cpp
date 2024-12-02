@@ -92,14 +92,14 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() + "'";
         break;
-      case BAD_ALTER_TARGET:
+      case BAD_ALTER_TARGET_CLASS:
         error_message_str = prefix + "Unable to alter '" +
                             error_data["name"].get<std::string>() +
                             "' in the '" +
                             error_data["class"].get<std::string>() +
                             "' class because the profile does not exist";
         break;
-      case BAD_ALTER_TARGET_NO_CLASS:
+      case BAD_ALTER_TARGET:
         error_message_str = prefix + "unable to alter '" +
                             error_data["name"].get<std::string>() +
                             "' because the profile does not exist";
@@ -110,16 +110,22 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             error_data["trait"].get<std::string>() +
                             "' is not compatible with any value";
         break;
+      case NULL_NOT_ALLOWED:
+        error_message_str = prefix + "'" +
+                            error_data["segment"].get<std::string>() + ":" +
+                            error_data["trait"].get<std::string>() +
+                            "' is not compatible with a 'null' value";
+        break;
       case XML_PARSE_ERROR:
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";
         break;
-      case BAD_ADD_TARGET:
+      case BAD_ADD_TARGET_CLASS:
         error_message_str =
             prefix + "unable to add '" + error_data["name"].get<std::string>() +
             "' in the '" + error_data["class"].get<std::string>() +
             "' class because a profile already exists with that name";
         break;
-      case BAD_ADD_TARGET_NO_CLASS:
+      case BAD_ADD_TARGET:
         error_message_str = prefix + "unable to add '" +
                             error_data["name"].get<std::string>() +
                             "' because a profile already exists with that name";

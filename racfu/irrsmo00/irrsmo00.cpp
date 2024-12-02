@@ -142,13 +142,13 @@ int post_process_smo_json(nlohmann::json *results_p, std::string profile_name,
   if (!results_p->contains("command")) {
     // Only expected for "Add Protection" cases
     if (class_name == NULL) {
-      update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET_NO_CLASS,
+      update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET,
                         nlohmann::json{
                             {"name", profile_name}
       });
     } else {
       update_error_json(
-          &(*results_p)["errors"], BAD_ADD_TARGET,
+          &(*results_p)["errors"], BAD_ADD_TARGET_CLASS,
           nlohmann::json{
               { "name",            profile_name},
               {"class", std::string(class_name)}
