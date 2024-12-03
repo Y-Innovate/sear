@@ -1,5 +1,5 @@
-#ifndef __EXTRACT_H_
-#define __EXTRACT_H_
+#ifndef __RACFU_EXTRACT_H_
+#define __RACFU_EXTRACT_H_
 
 #include <stdint.h>
 

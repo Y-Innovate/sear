@@ -7,10 +7,10 @@
 #include "logger.hpp"
 #include "messages.h"
 
-#ifdef UNIT_TEST
-#include "zoslib.h"
-#else
+#ifdef __TOS_390__
 #include <unistd.h>
+#else
+#include "zoslib.h"
 #endif
 
 // Public Methods of XmlParser

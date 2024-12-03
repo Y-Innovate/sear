@@ -34,7 +34,7 @@ void IRRSMO64(char *,               // Workarea
 
 // We need to ignore this pragma for unit tests since the
 // IRRSMO64 mock is compiled for XPLINK.
-#ifndef UNIT_TEST
+#ifdef __TOS_390__
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 

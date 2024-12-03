@@ -8,10 +8,10 @@
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
-#ifdef UNIT_TEST
-#include "zoslib.h"
-#else
+#ifdef __TOS_390__
 #include <unistd.h>
+#else
+#include "zoslib.h"
 #endif
 
 char *call_irrsmo00(char *request_xml, char *running_userid,

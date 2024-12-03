@@ -4,10 +4,10 @@
 #include <iostream>
 #include <string>
 
-#ifdef UNIT_TEST
-#include "zoslib.h"
-#else
+#ifdef __TOS_390__
 #include <unistd.h>
+#else
+#include "zoslib.h"
 #endif
 
 std::string Logger::cast_hex_string(char* input, int buffer_len) {

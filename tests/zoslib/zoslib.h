@@ -3,7 +3,6 @@
 
 #include <unistd.h>
 
-#ifdef __ptr32
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,6 +62,4 @@ size_t __a2e_l(char *bufptr, size_t szLen);
 size_t __e2a_l(char *bufptr, size_t szLen);
 
 void *__malloc31(size_t size);
-#endif
-
 #endif

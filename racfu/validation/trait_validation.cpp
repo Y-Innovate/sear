@@ -57,7 +57,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     }
     if (trait_type == TRAIT_TYPE_NULL) {
       // Validate that NULL is not used with non-delete operator specified
-      if (trait_operator != OPERATOR_ANY) {
+      if ((trait_operator != OPERATOR_ANY) && (trait_operator != OPERATOR_DELETE)) {
         update_error_json(errors_p, NULL_NOT_ALLOWED_OPERATOR,
                           nlohmann::json{
                               {"operator", item_operator},
