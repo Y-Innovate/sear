@@ -8,15 +8,18 @@
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
   PyObject* result_dictionary;
+  const PyObject* debug_pyobj;
   const char* request_as_string;
   bool debug = false;
 
   static char* kwlist[] = {"request", "debug", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|p", kwlist,
-                                   &request_as_string, &debug)) {
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwlist,
+                                   &request_as_string, &debug_pyobj)) {
     return NULL;
   }
+
+  debug = PyObject_IsTrue(debug_pyobj);
 
   racfu_result_t result;
 
