@@ -1,5 +1,5 @@
-#ifndef __KEY_MAP_USER_H_
-#define __KEY_MAP_USER_H_
+#ifndef __RACFU_KEY_MAP_USER_H_
+#define __RACFU_KEY_MAP_USER_H_
 
 #include <stdbool.h>
 
@@ -8,11 +8,11 @@
 const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
     {
      "base:automatic_data_set_protection",     "adsp",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:auditor",  "auditor",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:default_group_authority",     "auth",
@@ -112,7 +112,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:password_expired",  "expired",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:mfa",  "factorn",
@@ -124,7 +124,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:mfa_active",  "facactv",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:factor_tag_*",  "factag*",
@@ -140,7 +140,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:group_data_set_access",   "grpacc",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:has_passphrase", "hasphras",
@@ -160,7 +160,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:mfa_password_fallback",  "mfaflbk",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:mfa_policy", "mfapolnm",
@@ -180,11 +180,11 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:require_operator_id_card",  "oidcard",
-     TRAIT_TYPE_BOOLEAN,  {false, false, false, true},
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
      "base:operations",     "oper",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:owner",    "owner",
@@ -228,7 +228,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:restrict_global_access_checking",     "rest",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:resume_date",   "resume",
@@ -244,7 +244,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:audit_responsibility",  "roaudit",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:security_label", "seclabel",
@@ -256,7 +256,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:special",  "special",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:universal_access",     "uacc",
@@ -264,7 +264,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:audit_logging",   "uaudit",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
      "base:logon_allowed_day", "whendays",

@@ -1,8 +1,5 @@
 #include "zoslib.h"
 
-#ifdef __ptr32
-// Implement encoding conversion functions for unit testing on non-z/OS
-// platforms.
 size_t __a2e_l(char *bufptr, size_t szLen) {
   for (int i = 0; i < szLen; i++) {
     *(bufptr + i) = ASCII_TO_EBCDIC[(unsigned char)*(bufptr + i)];
@@ -21,4 +18,4 @@ size_t __e2a_l(char *bufptr, size_t szLen) {
 // Note: Technically __malloc31() is define in <stdlib.h>, but it being mocked
 // here since 'extract.cpp' will pick it up from here.
 void *__malloc31(size_t size) { return malloc(size); }
-#endif
+

@@ -229,17 +229,16 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
         });
       }
     }
+    if (!errors.empty()) {
+      return_codes_p->racfu_return_code = 8;
+      build_result(operation, admin_type, profile_name, class_name,
+                   surrogate_userid, nullptr, 0, xml_request_string,
+                   request_length, &errors, racfu_result, return_codes_p,
+                   logger_p);
+      return;
+    }
+    logger_p->debug(MSG_DONE);
   }
-
-  if (!errors.empty()) {
-    return_codes_p->racfu_return_code = 8;
-    build_result(operation, admin_type, profile_name, class_name,
-                 surrogate_userid, nullptr, 0, xml_request_string,
-                 request_length, &errors, racfu_result, return_codes_p,
-                 logger_p);
-    return;
-  }
-  logger_p->debug(MSG_DONE);
 
   logger_p->debug(MSG_CALLING_SMO);
 
@@ -315,7 +314,6 @@ void build_result(const char *operation, const char *admin_type,
   if (return_codes_p->racfu_return_code == -1) {
     result_json["return_codes"]["racfu_return_code"] = nullptr;
   }
-
 
   if (intermediate_result_json_p->contains("errors")) {
     result_json.merge_patch(

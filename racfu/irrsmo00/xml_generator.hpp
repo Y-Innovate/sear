@@ -1,5 +1,5 @@
-#ifndef XML_GENERATOR_H_
-#define XML_GENERATOR_H_
+#ifndef __RACFU_XML_GENERATOR_H_
+#define __RACFU_XML_GENERATOR_H_
 
 #include <nlohmann/json.hpp>
 

@@ -66,12 +66,12 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         error_message_str = prefix + "'" +
                             error_data["trait"].get<std::string>() +
                             "' is not in '<segment>:<trait>' or "
-                            "'<operation>:<segment>:<trait>' format";
+                            "'<operator>:<segment>:<trait>' format";
         break;
-      case BAD_OPERATION:
+      case BAD_OPERATOR:
         error_message_str = prefix + "'" +
-                            error_data["operation"].get<std::string>() +
-                            "' is not a valid trait operation";
+                            error_data["operator"].get<std::string>() +
+                            "' is not a valid trait operator";
         break;
       case BAD_TRAIT_DATA_TYPE:
         error_message_str =
@@ -85,10 +85,10 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
             prefix + "'" + error_data["segment"].get<std::string>() + ":" +
             error_data["trait"].get<std::string>() + "' is not a valid trait";
         break;
-      case BAD_TRAIT_OPERATION_COMBO:
+      case BAD_TRAIT_OPERATOR_COMBO:
         error_message_str = prefix + "'" +
-                            error_data["operation"].get<std::string>() +
-                            "' is not a valid operation for '" +
+                            error_data["operator"].get<std::string>() +
+                            "' is not a valid operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() + "'";
         break;
@@ -105,16 +105,24 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             "' because the profile does not exist";
         break;
       case BAD_VALUE_FOR_DELETE:
-        error_message_str = prefix + "'delete' operation for '" +
+        error_message_str = prefix + "'delete' operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
                             "' is not compatible with any value";
         break;
-      case NULL_NOT_ALLOWED:
+      case NULL_NOT_ALLOWED_TRAIT:
         error_message_str = prefix + "'" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
                             "' is not compatible with a 'null' value";
+        break;
+      case NULL_NOT_ALLOWED_OPERATOR:
+        error_message_str = prefix + "'" +
+                            error_data["operator"].get<std::string>() +
+                            "' operator (used with trait '" +
+                            error_data["segment"].get<std::string>() + ":" +
+                            error_data["trait"].get<std::string>() +
+                            +"') is not compatible with a 'null' value";
         break;
       case XML_PARSE_ERROR:
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";

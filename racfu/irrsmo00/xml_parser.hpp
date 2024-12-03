@@ -1,5 +1,5 @@
-#ifndef XML_PARSER_H_
-#define XML_PARSER_H_
+#ifndef __RACFU_XML_PARSER_H_
+#define __RACFU_XML_PARSER_H_
 
 #include <nlohmann/json.hpp>
 

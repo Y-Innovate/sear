@@ -1,5 +1,5 @@
-#ifndef __TEST_PARAMETER_VALIDATION_H_
-#define __TEST_PARAMETER_VALIDATION_H_
+#ifndef __RACFU_TEST_PARAMETER_VALIDATION_H_
+#define __RACFU_TEST_PARAMETER_VALIDATION_H_
 
 #define VALIDATION_REQUEST_SAMPLES "./tests/validation/request_samples/"
 #define VALIDATION_RESULT_SAMPLES "./tests/validation/result_samples/"

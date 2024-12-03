@@ -1,5 +1,5 @@
-#ifndef __KEY_MAP_H_
-#define __KEY_MAP_H_
+#ifndef __RACFU_KEY_MAP_H_
+#define __RACFU_KEY_MAP_H_
 
 #include <cstdint>
 #include <nlohmann/json.hpp>
@@ -24,7 +24,7 @@ const char get_racfu_trait_type(const char *profile_type, const char *segment,
 const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key);
 
-int8_t map_operation(std::string operation);
+int8_t map_operator(std::string trait_operator);
 int8_t map_trait_type(const nlohmann::json &trait);
 
 #endif

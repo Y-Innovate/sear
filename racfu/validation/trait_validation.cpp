@@ -12,7 +12,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                      nlohmann::json* errors_p) {
   // Parses the json for the traits (segment-trait information) passed in a
   // json object and validates the structure, format and types of this data
-  std::string current_segment = "", item_segment, item_trait, item_operation;
+  std::string current_segment = "", item_segment, item_trait, item_operator;
   const char* translatedKey;
 
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
@@ -29,25 +29,26 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       continue;
     }
     if (segment_trait_key_data[3] == "") {
-      item_operation = "";
+      item_operator = "";
       item_segment = segment_trait_key_data[2];
     } else {
-      item_operation = segment_trait_key_data[2];
+      item_operator = segment_trait_key_data[2];
       item_segment = segment_trait_key_data[3];
     }
     item_trait = segment_trait_key_data[4];
 
     // Get passed operation and validate it
-    int8_t operation = map_operation(item_operation);
-    if (operation == OPERATOR_BAD) {
-      update_error_json(errors_p, BAD_OPERATION,
+    int8_t trait_operator = map_operator(item_operator);
+    if (trait_operator == OPERATOR_BAD) {
+      update_error_json(errors_p, BAD_OPERATOR,
                         nlohmann::json{
-                            {"operation", item_operation}
+                            {"operator", item_operator}
       });
       continue;
     }
     int8_t trait_type = map_trait_type(item.value());
-    if ((operation == OPERATOR_DELETE) && (trait_type != TRAIT_TYPE_NULL)) {
+    if ((trait_operator == OPERATOR_DELETE) &&
+        (trait_type != TRAIT_TYPE_NULL)) {
       update_error_json(errors_p, BAD_VALUE_FOR_DELETE,
                         nlohmann::json{
                             {  "trait",   item_trait},
@@ -55,7 +56,17 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       });
     }
     if (trait_type == TRAIT_TYPE_NULL) {
-      operation = OPERATOR_DELETE;
+      // Validate that NULL is not used with non-delete operator specified
+      if (trait_operator != OPERATOR_ANY) {
+        update_error_json(errors_p, NULL_NOT_ALLOWED_OPERATOR,
+                          nlohmann::json{
+                              {"operator", item_operator},
+                              {   "trait",    item_trait},
+                              { "segment",  item_segment}
+        });
+        continue;
+      }
+      trait_operator = OPERATOR_DELETE;
     }
     int8_t expected_type =
         get_racf_trait_type(adminType.c_str(), item_segment.c_str(),
@@ -83,18 +94,20 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     }
     translatedKey = get_racf_key(adminType.c_str(), item_segment.c_str(),
                                  (item_segment + ":" + item_trait).c_str(),
-                                 trait_type, operation);
+                                 trait_type, trait_operator);
     // If we could not find the RACF key with this function, the operation is
     // bad because we check the Segment-Trait combination above
     if ((translatedKey == NULL) && (trait_type != TRAIT_TYPE_NULL)) {
-      update_error_json(errors_p, BAD_TRAIT_OPERATION_COMBO,
+      update_error_json(errors_p, BAD_TRAIT_OPERATOR_COMBO,
                         nlohmann::json{
-                            {"operation", item_operation},
-                            {  "segment",   item_segment},
-                            {    "trait",     item_trait}
+                            {"operator", item_operator},
+                            { "segment",  item_segment},
+                            {   "trait",    item_trait}
       });
     } else if (translatedKey == NULL) {
-      update_error_json(errors_p, NULL_NOT_ALLOWED,
+      // Validate that NULL is not used for Segment-Traits that don't allow
+      // DELETE
+      update_error_json(errors_p, NULL_NOT_ALLOWED_TRAIT,
                         nlohmann::json{
                             {"segment", item_segment},
                             {  "trait",   item_trait}

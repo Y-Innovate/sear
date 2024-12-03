@@ -209,7 +209,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
   // json object
   nlohmann::json errors;
   nlohmann::json built_request{};
-  std::string current_segment = "", item_segment, item_trait, item_operation;
+  std::string current_segment = "", item_segment, item_trait, item_operator;
   const char* translated_key;
 
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
@@ -220,10 +220,10 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
     for (item = request_data.begin(); item != request_data.end();) {
       regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex);
       if (segment_trait_key_data[3] == "") {
-        item_operation = "";
+        item_operator = "";
         item_segment = segment_trait_key_data[2];
       } else {
-        item_operation = segment_trait_key_data[2];
+        item_operator = segment_trait_key_data[2];
         item_segment = segment_trait_key_data[3];
       }
       item_trait = segment_trait_key_data[4];
@@ -236,32 +236,33 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
 
       if ((item_segment.compare(current_segment) == 0)) {
         // Build each individual trait
-        int8_t operation = map_operation(item_operation);
+        int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
-        translated_key = get_racf_key(
-            true_admin_type.c_str(), item_segment.c_str(),
-            (item_segment + ":" + item_trait).c_str(), trait_type, operation);
-        std::string operation_str, value;
+        translated_key =
+            get_racf_key(true_admin_type.c_str(), item_segment.c_str(),
+                         (item_segment + ":" + item_trait).c_str(), trait_type,
+                         trait_operator);
+        std::string trait_operator_str, value;
         switch (trait_type) {
           case TRAIT_TYPE_NULL:
-            operation_str = "del";
+            trait_operator_str = "del";
             value = "";
             break;
           case TRAIT_TYPE_BOOLEAN:
-            operation_str = (item.value()) ? "set" : "del";
+            trait_operator_str = (item.value()) ? "set" : "del";
             value = "";
             break;
           default:
-            operation_str = (item_operation.empty())
-                                ? "set"
-                                : convert_operator(item_operation);
+            trait_operator_str = (item_operator.empty())
+                                     ? "set"
+                                     : convert_operator(item_operator);
             value = (trait_type == TRAIT_TYPE_BOOLEAN)
                         ? ""
                         : json_value_to_string(item.value());
         }
         build_single_trait(("racf:" + std::string(translated_key)),
-                           operation_str, value);
+                           trait_operator_str, value);
         item = request_data.erase(item);
 
       } else

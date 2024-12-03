@@ -1,5 +1,5 @@
-#ifndef __TEST_ADD_H_
-#define __TEST_ADD_H_
+#ifndef __RACFU_TEST_ADD_H_
+#define __RACFU_TEST_ADD_H_
 
 #define IRRSMO00_REQUEST_SAMPLES "./tests/irrsmo00/request_samples/"
 #define IRRSMO00_RESULT_SAMPLES "./tests/irrsmo00/result_samples/"

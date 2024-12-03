@@ -141,22 +141,22 @@ static bool check_trait_operator(int8_t trait_operator,
   }
 }
 
-int8_t map_operation(std::string operation) {
-  if (operation.empty()) {
+int8_t map_operator(std::string trait_operator) {
+  if (trait_operator.empty()) {
     return OPERATOR_ANY;
   }
-  std::transform(operation.begin(), operation.end(), operation.begin(),
-                 ::tolower);
-  if (operation == "set") {
+  std::transform(trait_operator.begin(), trait_operator.end(),
+                 trait_operator.begin(), ::tolower);
+  if (trait_operator == "set") {
     return OPERATOR_SET;
   }
-  if (operation == "add") {
+  if (trait_operator == "add") {
     return OPERATOR_ADD;
   }
-  if (operation == "remove") {
+  if (trait_operator == "remove") {
     return OPERATOR_REMOVE;
   }
-  if (operation == "delete") {
+  if (trait_operator == "delete") {
     return OPERATOR_DELETE;
   }
   return OPERATOR_BAD;

@@ -16,25 +16,27 @@
 #define BAD_PARAMETER_DATA_TYPE 5
 //"'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE 6
-//"'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>'
+//"'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>'
 // format"
-#define BAD_OPERATION 7
-//"'junk' is not a valid trait operation"
+#define BAD_OPERATOR 7
+//"'junk' is not a valid trait operator"
 #define BAD_TRAIT_DATA_TYPE 8
 //"'omvs:uid' must be an 'integer' value"
 #define BAD_SEGMENT_TRAIT_COMBO 9
 //"'omvs:junk' is not a valid trait"
-#define BAD_TRAIT_OPERATION_COMBO 10
-//"'remove' is not a valid operation for 'omvs:uid'"
+#define BAD_TRAIT_OPERATOR_COMBO 10
+//"'remove' is not a valid operator for 'omvs:uid'"
 #define BAD_ALTER_TARGET_CLASS 11
 //"Unable to alter 'junk' in the 'garbage' class because the profile does not
 // exist"
 #define BAD_ALTER_TARGET 12
 //"unable to alter 'junk' because the profile does not exist"
 #define BAD_VALUE_FOR_DELETE 13
-//"'delete' operation for 'omvs:uid' is not compatible with any value"
-#define NULL_NOT_ALLOWED 14
+//"'delete' operator for 'omvs:uid' is not compatible with any value"
+#define NULL_NOT_ALLOWED_TRAIT 14
 //"'base:default_group_authority' is not compatible with a 'null' value "
+#define NULL_NOT_ALLOWED_OPERATOR 15
+//"'set' operator (used with trait 'base:passphrase') is not compatible with a 'null' value"
 #define XML_PARSE_ERROR 101
 //"unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET_CLASS 102

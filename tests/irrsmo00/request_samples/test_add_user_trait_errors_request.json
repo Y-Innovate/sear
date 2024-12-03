@@ -9,6 +9,8 @@
     "omvs:junk": "doesn't matter",
     "remove:base:owner": "also doesn't matter",
     "delete:base:password": "Not a real value",
-    "base:default_group_authority": null
+    "base:default_group_authority": null,
+    "base:special": null,
+    "set:base:passphrase": null
   }
 }
