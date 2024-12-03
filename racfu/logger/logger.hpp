@@ -15,7 +15,7 @@ class Logger {
   bool debug_mode;
 
  public:
-  Logger(bool debug) : debug_mode(debug) {};
+  explicit Logger(bool debug) : debug_mode(debug) {};
   std::string cast_hex_string(char* input, int buffer_len = 0);
   void debug(std::string message, std::string body = "");
 };
