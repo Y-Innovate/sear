@@ -108,21 +108,21 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         error_message_str = prefix + "'delete' operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
-                            "' is not compatible with any value";
+                            "' can only be used with a 'null' value";
         break;
       case NULL_NOT_ALLOWED_TRAIT:
         error_message_str = prefix + "'" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
-                            "' is not compatible with a 'null' value";
+                            "' can NOT be used with a 'null' value";
         break;
       case NULL_NOT_ALLOWED_OPERATOR:
         error_message_str = prefix + "'" +
                             error_data["operator"].get<std::string>() +
-                            "' operator (used with trait '" +
+                            "' operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
-                            +"') is not compatible with a 'null' value";
+                            +"' can NOT be used with a 'null' value";
         break;
       case XML_PARSE_ERROR:
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";

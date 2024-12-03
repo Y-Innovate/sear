@@ -32,11 +32,11 @@
 #define BAD_ALTER_TARGET 12
 //"unable to alter 'junk' because the profile does not exist"
 #define BAD_VALUE_FOR_DELETE 13
-//"'delete' operator for 'omvs:uid' is not compatible with any value"
+//"'delete' operator for 'omvs:uid' can only be used with a 'null' value"
 #define NULL_NOT_ALLOWED_TRAIT 14
-//"'base:default_group_authority' is not compatible with a 'null' value "
+//"'base:default_group_authority' can NOT be used with a 'null' value "
 #define NULL_NOT_ALLOWED_OPERATOR 15
-//"'set' operator (used with trait 'base:passphrase') is not compatible with a 'null' value"
+//"'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
 #define XML_PARSE_ERROR 101
 //"unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET_CLASS 102

@@ -1,14 +1,14 @@
 {
   "errors": [
-    "racfu: 'base:default_group_authority' is not compatible with a 'null' value",
-    "racfu: 'base:special' is not compatible with a 'null' value",
-    "racfu: 'delete' operator for 'base:password' is not compatible with any value",
+    "racfu: 'base:default_group_authority' can NOT be used with a 'null' value",
+    "racfu: 'base:special' can NOT be used with a 'null' value",
+    "racfu: 'delete' operator for 'base:password' can only be used with a 'null' value",
     "racfu: 'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>' format",
     "racfu: 'junkop' is not a valid trait operator",
     "racfu: 'omvs:junk' is not a valid trait",
     "racfu: 'omvs:uid' must be an 'unsigned integer' value",
     "racfu: 'remove' is not a valid operator for 'base:owner'",
-    "racfu: 'set' operator (used with trait 'base:passphrase') is not compatible with a 'null' value"
+    "racfu: 'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
   ],
   "return_codes": {
     "racf_reason_code": null,
