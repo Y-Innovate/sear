@@ -1,5 +1,5 @@
-#ifndef IRRSMO00_H_
-#define IRRSMO00_H_
+#ifndef _IRRSMO00_H_
+#define _IRRSMO00_H_
 
 #include <stdbool.h>
 

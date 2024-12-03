@@ -1,5 +1,5 @@
-#ifndef __ZOSLIB_H_
-#define __ZOSLIB_H_
+#ifndef __RACFU_ZOSLIB_H_
+#define __RACFU_ZOSLIB_H_
 
 #include <unistd.h>
 
