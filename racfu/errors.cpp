@@ -117,13 +117,21 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             "' can NOT be used with a 'null' value";
         break;
       case NULL_NOT_ALLOWED_OPERATOR:
-        error_message_str = prefix + "'" +
-                            error_data["operator"].get<std::string>() +
-                            "' operator for '" +
-                            error_data["segment"].get<std::string>() + ":" +
-                            error_data["trait"].get<std::string>() +
-                            +"' can NOT be used with a 'null' value";
+        error_message_str =
+            prefix + "'" + error_data["operator"].get<std::string>() +
+            "' operator for '" + error_data["segment"].get<std::string>() +
+            ":" + error_data["trait"].get<std::string>() +
+            +"' can NOT be used with a 'null' value";
         break;
+      case BAD_BOOLEAN_OPERATOR_COMBO: {
+        std::string value =
+            (error_data["value"].get<bool>()) ? "true" : "false";
+        error_message_str = prefix + "'" + value +
+                            "' is not a valid value for '" +
+                            error_data["segment"].get<std::string>() + ":" +
+                            error_data["trait"].get<std::string>() + "'";
+        break;
+      }
       case XML_PARSE_ERROR:
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";
         break;

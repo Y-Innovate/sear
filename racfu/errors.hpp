@@ -37,6 +37,8 @@
 //"'base:default_group_authority' can NOT be used with a 'null' value "
 #define NULL_NOT_ALLOWED_OPERATOR 15
 //"'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
+#define BAD_BOOLEAN_OPERATOR_COMBO 16
+//"'false' is not a valid value for 'omvs:auto_uid'"
 #define XML_PARSE_ERROR 101
 //"unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET_CLASS 102

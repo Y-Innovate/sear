@@ -5,6 +5,7 @@
     "racfu: 'delete' operator for 'base:password' can only be used with a 'null' value",
     "racfu: 'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>' format",
     "racfu: 'junkop' is not a valid trait operator",
+    "racfu: 'false' is not a valid value for 'omvs:auto_uid'",
     "racfu: 'omvs:junk' is not a valid trait",
     "racfu: 'omvs:uid' must be an 'unsigned integer' value",
     "racfu: 'remove' is not a valid operator for 'base:owner'",

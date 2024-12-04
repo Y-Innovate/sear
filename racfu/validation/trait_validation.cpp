@@ -38,7 +38,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     item_trait = segment_trait_key_data[4];
 
     // Get passed operation and validate it
-    int8_t trait_operator = map_operator(item_operator);
+    int8_t init_trait_operator = map_operator(item_operator);
+    int8_t trait_operator = init_trait_operator;
     if (trait_operator == OPERATOR_BAD) {
       update_error_json(errors_p, BAD_OPERATOR,
                         nlohmann::json{
@@ -57,7 +58,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     }
     if (trait_type == TRAIT_TYPE_NULL) {
       // Validate that NULL is not used with non-delete operator specified
-      if ((trait_operator != OPERATOR_ANY) && (trait_operator != OPERATOR_DELETE)) {
+      if ((trait_operator != OPERATOR_ANY) &&
+          (trait_operator != OPERATOR_DELETE)) {
         update_error_json(errors_p, NULL_NOT_ALLOWED_OPERATOR,
                           nlohmann::json{
                               {"operator", item_operator},
@@ -67,6 +69,10 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
         continue;
       }
       trait_operator = OPERATOR_DELETE;
+    }
+    if (trait_type == TRAIT_TYPE_BOOLEAN) {
+      // Set operator based on boolean value
+      trait_operator = (item.value()) ? OPERATOR_SET : OPERATOR_DELETE;
     }
     int8_t expected_type =
         get_racf_trait_type(adminType.c_str(), item_segment.c_str(),
@@ -80,9 +86,19 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       });
       continue;
     }
+    if ((expected_type == TRAIT_TYPE_BOOLEAN) &&
+        (trait_type == TRAIT_TYPE_NULL)) {
+      // Validate that NULL is not used for Boolean Segment-Traits
+      update_error_json(errors_p, NULL_NOT_ALLOWED_TRAIT,
+                        nlohmann::json{
+                            {"segment", item_segment},
+                            {  "trait",   item_trait}
+      });
+      continue;
+    }
     validate_json_value_to_string(item, expected_type, errors_p);
-    // Ensure that the type of data provided for the trait matches the expected
-    // TRAIT_TYPE
+    // Ensure that the type of data provided for the trait matches the
+    // expected TRAIT_TYPE
     if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL)) {
       update_error_json(
           errors_p, BAD_TRAIT_DATA_TYPE,
@@ -97,12 +113,21 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                                  trait_type, trait_operator);
     // If we could not find the RACF key with this function, the operation is
     // bad because we check the Segment-Trait combination above
-    if ((translatedKey == NULL) && (trait_type != TRAIT_TYPE_NULL)) {
+    if ((translatedKey == NULL) && (trait_type != TRAIT_TYPE_NULL) &&
+        (trait_operator == init_trait_operator)) {
       update_error_json(errors_p, BAD_TRAIT_OPERATOR_COMBO,
                         nlohmann::json{
                             {"operator", item_operator},
                             { "segment",  item_segment},
                             {   "trait",    item_trait}
+      });
+    } else if ((translatedKey == NULL) && (trait_type != TRAIT_TYPE_NULL)) {
+      // Validate that the boolean-influenced operator is allowed
+      update_error_json(errors_p, BAD_BOOLEAN_OPERATOR_COMBO,
+                        nlohmann::json{
+                            {  "value", item.value()},
+                            {"segment", item_segment},
+                            {  "trait",   item_trait}
       });
     } else if (translatedKey == NULL) {
       // Validate that NULL is not used for Segment-Traits that don't allow
@@ -113,8 +138,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                             {  "trait",   item_trait}
       });
     }
-    // Passed all of our validation so we go around the loop again
   }
+  // Passed all of our validation so we go around the loop again
 }
 
 void validate_json_value_to_string(const nlohmann::json& trait,
