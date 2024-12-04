@@ -1,10 +1,17 @@
-#ifndef __EXTRACT_H_
-#define __EXTRACT_H_
+#ifndef __RACFU_EXTRACT_H_
+#define __RACFU_EXTRACT_H_
 
 #include <stdint.h>
-#include <unistd.h>
 
+#include "logger.hpp"
+#include "messages.h"
 #include "racfu_result.h"
+
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
 
 /*************************************************************************/
 /* Function Codes                                                        */
@@ -363,7 +370,8 @@ extern "C" uint32_t callRadmin(char *__ptr32);
 
 char *extract(const char *profile_name, const char *class_name,
               uint8_t function_code, char **raw_request,
-              int *raw_request_length, racfu_return_codes_t *return_codes);
+              int *raw_request_length, racfu_return_codes_t *return_codes,
+              Logger *logger_p);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);

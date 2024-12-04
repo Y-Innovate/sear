@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-void racfu(racfu_result_t *result, const char *request_json);
+void racfu(racfu_result_t *result, const char *request_json, bool debug);
 
 #ifdef __cplusplus
 }

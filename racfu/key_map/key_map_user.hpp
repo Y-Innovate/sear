@@ -1,5 +1,5 @@
-#ifndef __KEY_MAP_USER_H_
-#define __KEY_MAP_USER_H_
+#ifndef __RACFU_KEY_MAP_USER_H_
+#define __RACFU_KEY_MAP_USER_H_
 
 #include <stdbool.h>
 

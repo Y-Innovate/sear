@@ -1,9 +1,14 @@
 #include "irrseq00.hpp"
 
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <cstring>
+
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
 
 // Use htonl() to convert 32-bit values from little endian to big endian.
 // On z/OS this macro does nothing since "network order" and z/Architecture are

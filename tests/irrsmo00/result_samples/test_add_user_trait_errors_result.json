@@ -1,22 +1,20 @@
 {
-  "admin_type": "user",
-  "operation": "add",
-  "profile_name": "SQUIDWRD",
-  "result": {
-    "errors": [
-      "'junk' is not in '<segment>:<trait>' or '<operation>:<segment>:<trait>' format",
-      "'junkop' is not a valid trait operation",
-      "'omvs:junk' is not a valid trait",
-      "'omvs:uid' must be an 'unsigned integer' value",
-      "'remove' is not a valid operation for 'base:owner'"
-    ]
-  },
+  "errors": [
+    "racfu: 'base:default_group_authority' can NOT be used with a 'null' value",
+    "racfu: 'set' operator for 'base:special' can NOT be used with a 'null' value",
+    "racfu: 'delete' operator for 'base:password' can only be used with a 'null' value",
+    "racfu: 'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>' format",
+    "racfu: 'junkop' is not a valid trait operator",
+    "racfu: 'false' is not a valid value for 'omvs:auto_uid'",
+    "racfu: 'omvs:junk' is not a valid trait",
+    "racfu: 'omvs:uid' must be an 'unsigned integer' value",
+    "racfu: 'remove' is not a valid operator for 'base:owner'",
+    "racfu: 'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
+  ],
   "return_codes": {
-    "return_codes": {
-      "racf_reason_code": null,
-      "racf_return_code": null,
-      "racfu_return_code": 8,
-      "saf_return_code": null
-    }
+    "racf_reason_code": null,
+    "racf_return_code": null,
+    "racfu_return_code": 8,
+    "saf_return_code": null
   }
 }

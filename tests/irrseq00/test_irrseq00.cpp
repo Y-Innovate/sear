@@ -1,5 +1,7 @@
-#include "tests/irrseq00/test_extract.hpp"
+#include "tests/irrseq00/test_irrseq00.hpp"
 
+#define _POSIX_C_SOURCE 200112L
+#include <arpa/inet.h>
 #include <sys/stat.h>
 
 #include <cstring>
@@ -102,7 +104,7 @@ void test_generate_extract_user_request() {
   r_admin_racf_rc_mock = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   // Check the size of the buffer
   TEST_ASSERT_EQUAL_INT32(TEST_GENERIC_REQUEST_BUFFER_SIZE,
@@ -137,11 +139,12 @@ void test_parse_extract_user_result() {
   r_admin_racf_rc_mock = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
                           strlen(result.result_json));
+  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result.raw_result_length);
 
   // Cleanup
   free(r_admin_result_mock);
@@ -168,7 +171,7 @@ void test_parse_extract_user_result_user_not_found() {
   r_admin_racf_rc_mock = 4;
   r_admin_racf_reason_mock = 4;
 
-  racfu(&result, request_json.c_str());
+  racfu(&result, request_json.c_str(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),

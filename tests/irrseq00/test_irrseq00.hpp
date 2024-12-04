@@ -1,5 +1,5 @@
-#ifndef __TEST_EXTRACT_H_
-#define __TEST_EXTRACT_H_
+#ifndef __RACFU_TEST_EXTRACT_H_
+#define __RACFU_TEST_EXTRACT_H_
 
 #ifdef __TOS_390__
 // arg pointers will be 32-bit when we run on z/OS.

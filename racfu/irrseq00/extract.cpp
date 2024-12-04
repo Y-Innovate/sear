@@ -5,6 +5,9 @@
 
 #include <cstring>
 
+#include "logger.hpp"
+#include "messages.h"
+
 // Use htonl() to convert 32-bit values from little endian to big endian.
 // use ntohl() to convert 16-bit values from big endian to little endian.
 // On z/OS these macros do nothing since "network order" and z/Architecture are
@@ -18,8 +21,8 @@ char *extract(
     uint8_t function_code,     // Always required
     char **raw_request,        // Always required
     int *raw_request_length,   // Always required
-    racfu_return_codes_t *return_codes  // Always required
-) {
+    racfu_return_codes_t *return_codes,  // Always required,
+    Logger *logger_p) {
   uint32_t rc;
 
   char *result_buffer;
@@ -36,11 +39,21 @@ char *extract(
     }
     // Preserve the raw request data
     *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
+    logger_p->debug(
+        MSG_REQUEST_SEQ_SETROPTS,
+        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
+                                  *raw_request_length));
+
     preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
                          raw_request, raw_request_length);
+
+    logger_p->debug(MSG_CALLING_SEQ);
+
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
+    logger_p->debug(MSG_DONE);
+
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = ntohl(arg_area_setropts->args.SAF_rc);
@@ -69,11 +82,20 @@ char *extract(
     }
     // Preserve the raw request data
     *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
+    logger_p->debug(
+        MSG_REQUEST_SEQ_GENERIC,
+        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
+                                  *raw_request_length));
+
     preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
                          raw_request, raw_request_length);
+    logger_p->debug(MSG_CALLING_SEQ);
+
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
+    logger_p->debug(MSG_DONE);
+
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
     return_codes->saf_return_code = ntohl(arg_area_generic->args.SAF_rc);

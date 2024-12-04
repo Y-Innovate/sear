@@ -34,3 +34,7 @@ print(json.dumps(result.result, indent=2))
 print("Delete Test (IRRSMO00):")
 result = racfu(delete_request)
 print(json.dumps(result.result, indent=2))
+
+print("Debug Test (IRRSMO00):")
+result = racfu(delete_request, debug=True)
+print(json.dumps(result.result, indent=2))

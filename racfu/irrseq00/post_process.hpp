@@ -1,5 +1,5 @@
-#ifndef __POST_PROCESS_H_
-#define __POST_PROCESS_H_
+#ifndef __RACFU_POST_PROCESS_H_
+#define __RACFU_POST_PROCESS_H_
 
 #include <nlohmann/json.hpp>
 

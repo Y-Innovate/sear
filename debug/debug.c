@@ -1,6 +1,7 @@
 #define _UNIX03_SOURCE
 
 #include <dlfcn.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,7 @@ typedef struct {
   char *result_json;
 } racfu_result_t;
 
-typedef void (*racfu_t)(racfu_result_t *, char *);
+typedef void (*racfu_t)(racfu_result_t *, char *, bool);
 
 int main(int argc, char **argv) {
   // Parameter Validation
@@ -54,7 +55,7 @@ int main(int argc, char **argv) {
 
   // Make Request;
   racfu_result_t racfu_result;
-  racfu(&racfu_result, request_json);
+  racfu(&racfu_result, request_json, true);
   dlclose(lib_handle);
 
   // Write Raw Request
