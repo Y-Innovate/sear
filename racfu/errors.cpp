@@ -34,95 +34,113 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
       error_data = (*errors_p)[i]["error_data"];
     }
     switch ((*errors_p)[i]["error_code"].get<uint>()) {
-      case BAD_PARAMETER_VALUE:
+      case BAD_PARAMETER_VALUE: {
         error_message_str = prefix + "'" +
                             error_data["parameter_value"].get<std::string>() +
                             "' is not a valid value for '" +
                             error_data["parameter"].get<std::string>() + "'";
         break;
-      case REQUIRED_PARAMETER:
+      }
+      case REQUIRED_PARAMETER: {
         error_message_str = prefix + "'" +
                             error_data["parameter"].get<std::string>() +
                             "' is a required parameter";
         break;
-      case MISSING_PARAMETER:
+      }
+      case MISSING_PARAMETER: {
         error_message_str =
             prefix + "'" + error_data["parameter"].get<std::string>() +
             "' is a required parameter for the '" +
             error_data["admin_type"].get<std::string>() + "' admin type";
         break;
-      case BAD_PARAMETER_NAME:
+      }
+      case BAD_PARAMETER_NAME: {
         error_message_str = prefix + "'" +
                             error_data["parameter"].get<std::string>() +
                             "' is not a valid parameter";
         break;
-      case BAD_PARAMETER_DATA_TYPE:
+      }
+      case BAD_PARAMETER_DATA_TYPE: {
         error_message_str =
             prefix + "'" + error_data["parameter"].get<std::string>() +
             "' must be a " + error_data["data_type"].get<std::string>() +
             " value";
         break;
-      case BAD_TRAIT_STRUCTURE:
+      }
+      case BAD_TRAIT_STRUCTURE: {
         error_message_str = prefix + "'" +
                             error_data["trait"].get<std::string>() +
                             "' is not in '<segment>:<trait>' or "
                             "'<operator>:<segment>:<trait>' format";
         break;
-      case BAD_OPERATOR:
+      }
+      case BAD_OPERATOR: {
         error_message_str = prefix + "'" +
                             error_data["operator"].get<std::string>() +
                             "' is not a valid trait operator";
         break;
-      case BAD_TRAIT_DATA_TYPE:
+      }
+      case BAD_TRAIT_DATA_TYPE: {
         error_message_str =
             prefix + "'" + error_data["trait"].get<std::string>() +
             "' must be " +
             decode_data_type(error_data["required_type"].get<uint>()) +
             "' value";
         break;
-      case BAD_SEGMENT_TRAIT_COMBO:
+      }
+      case BAD_SEGMENT_TRAIT_COMBO: {
         error_message_str =
             prefix + "'" + error_data["segment"].get<std::string>() + ":" +
             error_data["trait"].get<std::string>() + "' is not a valid trait";
         break;
-      case BAD_TRAIT_OPERATOR_COMBO:
+      }
+      case BAD_TRAIT_OPERATOR_COMBO: {
         error_message_str = prefix + "'" +
                             error_data["operator"].get<std::string>() +
                             "' is not a valid operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() + "'";
         break;
-      case BAD_ALTER_TARGET_CLASS:
+      }
+      case BAD_ALTER_TARGET_CLASS: {
         error_message_str = prefix + "Unable to alter '" +
                             error_data["name"].get<std::string>() +
                             "' in the '" +
                             error_data["class"].get<std::string>() +
                             "' class because the profile does not exist";
         break;
-      case BAD_ALTER_TARGET:
+      }
+      case BAD_ALTER_TARGET: {
         error_message_str = prefix + "unable to alter '" +
                             error_data["name"].get<std::string>() +
                             "' because the profile does not exist";
         break;
-      case BAD_VALUE_FOR_DELETE:
+      }
+      case BAD_VALUE_FOR_DELETE: {
         error_message_str = prefix + "'delete' operator for '" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
                             "' can only be used with a 'null' value";
         break;
-      case NULL_NOT_ALLOWED_TRAIT:
+      }
+      case NULL_NOT_ALLOWED_TRAIT: {
         error_message_str = prefix + "'" +
                             error_data["segment"].get<std::string>() + ":" +
                             error_data["trait"].get<std::string>() +
                             "' can NOT be used with a 'null' value";
         break;
-      case NULL_NOT_ALLOWED_OPERATOR:
-        error_message_str =
-            prefix + "'" + error_data["operator"].get<std::string>() +
-            "' operator for '" + error_data["segment"].get<std::string>() +
-            ":" + error_data["trait"].get<std::string>() +
-            +"' can NOT be used with a 'null' value";
+      }
+      case NULL_NOT_ALLOWED_OPERATOR: {
+        std::string trait_operator = error_data["operator"].get<std::string>();
+        if (trait_operator.empty()) {
+          trait_operator = "default";
+        }
+        error_message_str = prefix + "'" + trait_operator + "' operator for '" +
+                            error_data["segment"].get<std::string>() + ":" +
+                            error_data["trait"].get<std::string>() +
+                            +"' can NOT be used with a 'null' value";
         break;
+      }
       case BAD_BOOLEAN_OPERATOR_COMBO: {
         std::string value =
             (error_data["value"].get<bool>()) ? "true" : "false";
@@ -132,31 +150,37 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             error_data["trait"].get<std::string>() + "'";
         break;
       }
-      case XML_PARSE_ERROR:
+      case XML_PARSE_ERROR: {
         error_message_str = prefix + "unable to parse XML returned by IRRSMO00";
         break;
-      case BAD_ADD_TARGET_CLASS:
+      }
+      case BAD_ADD_TARGET_CLASS: {
         error_message_str =
             prefix + "unable to add '" + error_data["name"].get<std::string>() +
             "' in the '" + error_data["class"].get<std::string>() +
             "' class because a profile already exists with that name";
         break;
-      case BAD_ADD_TARGET:
+      }
+      case BAD_ADD_TARGET: {
         error_message_str = prefix + "unable to add '" +
                             error_data["name"].get<std::string>() +
                             "' because a profile already exists with that name";
         break;
-      case SMO_ERROR_NO_TEXT:
+      }
+      case SMO_ERROR_NO_TEXT: {
         error_message_str =
             smo_prefix + error_data["error_message"].get<std::string>();
         break;
-      case SMO_ERROR_WITH_TEXT:
+      }
+      case SMO_ERROR_WITH_TEXT: {
         error_message_str =
             smo_prefix + error_data["error_message"].get<std::string>() +
             " Text in error: " + error_data["text_in_error"].get<std::string>();
         break;
-      default:
+      }
+      default: {
         error_message_str = prefix + "an unknown error has occurred";
+      }
     }
     output["errors"] += error_message_str;
   }
