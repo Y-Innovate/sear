@@ -87,7 +87,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       continue;
     }
     if ((expected_type == TRAIT_TYPE_BOOLEAN) &&
-        (trait_type == TRAIT_TYPE_NULL)) {
+        (trait_type == TRAIT_TYPE_NULL) &&
+        (trait_operator != init_trait_operator)) {
       // Validate that NULL is not used for Boolean Segment-Traits
       update_error_json(errors_p, NULL_NOT_ALLOWED_TRAIT,
                         nlohmann::json{

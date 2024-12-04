@@ -1,5 +1,5 @@
-#ifndef _IRRSEQ00_H_
-#define _IRRSEQ00_H_
+#ifndef __IRRSEQ00_H_
+#define __IRRSEQ00_H_
 
 #include <stdio.h>
 

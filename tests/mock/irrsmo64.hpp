@@ -1,5 +1,5 @@
-#ifndef _IRRSMO64_H_
-#define _IRRSMO64_H_
+#ifndef __IRRSMO64_H_
+#define __IRRSMO64_H_
 
 #include <stdio.h>
 
