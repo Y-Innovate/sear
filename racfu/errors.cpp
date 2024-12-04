@@ -133,7 +133,7 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
       case NULL_NOT_ALLOWED_OPERATOR: {
         std::string trait_operator = error_data["operator"].get<std::string>();
         if (trait_operator.empty()) {
-          trait_operator = "default";
+          trait_operator = "set";
         }
         error_message_str = prefix + "'" + trait_operator + "' operator for '" +
                             error_data["segment"].get<std::string>() + ":" +

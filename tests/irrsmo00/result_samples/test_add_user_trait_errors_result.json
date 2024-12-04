@@ -1,7 +1,7 @@
 {
   "errors": [
     "racfu: 'base:default_group_authority' can NOT be used with a 'null' value",
-    "racfu: 'default' operator for 'base:special' can NOT be used with a 'null' value",
+    "racfu: 'set' operator for 'base:special' can NOT be used with a 'null' value",
     "racfu: 'delete' operator for 'base:password' can only be used with a 'null' value",
     "racfu: 'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>' format",
     "racfu: 'junkop' is not a valid trait operator",
