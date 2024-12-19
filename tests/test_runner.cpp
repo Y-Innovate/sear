@@ -32,7 +32,7 @@ int main() {
   // Profile Extract
   RUN_TEST(test_generate_extract_user_request);
   RUN_TEST(test_parse_extract_user_result);
-  // RUN_TEST(test_parse_extract_user_result_user_not_found);
+  RUN_TEST(test_parse_extract_user_result_user_not_found);
 
   return UNITY_END();
 }

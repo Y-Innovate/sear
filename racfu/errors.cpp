@@ -179,7 +179,7 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         break;
       }
       case BAD_EXTRACT_TARGET: {
-        error_message_str = prefix + "Unable to extract'" +
+        error_message_str = prefix + "unable to extract '" +
                             error_data["admin_type"].get<std::string>() +
                             "' profile '" +
                             error_data["profile_name"].get<std::string>() + "'";
