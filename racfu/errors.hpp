@@ -51,6 +51,7 @@
 #define SMO_ERROR_WITH_TEXT 112
 // copied from "errormessage" supplied by irrsmo00 plus "Text in error:
 // {textinerror}" supplied by irrsmo00
+#define BAD_EXTRACT_TARGET 113
 
 void update_error_json(nlohmann::json* errors_p, int8_t error_type,
                        nlohmann::json error_data);

@@ -175,8 +175,9 @@ nlohmann::json post_process_setropts(
     } else {
       profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
-    field = dynamic_cast<setropts_field_descriptor_t *>(
-        field + sizeof(setropts_field_descriptor_t) + field->field_length);
+    field = reinterpret_cast<setropts_field_descriptor_t *>(
+        reinterpret_cast<char *>(field) + sizeof(setropts_field_descriptor_t) +
+        field->field_length);
   }
   return profile;
 }
