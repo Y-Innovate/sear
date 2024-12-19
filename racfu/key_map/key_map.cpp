@@ -71,7 +71,7 @@ static const trait_key_mapping_t *get_key_mapping(
   bool trait_type_good;
   bool trait_operator_good;
   // Search for segment key mappings for the provided profile type
-  for (int i = 0; i < sizeof(KEY_MAP) / sizeof(segment_key_mapping_t); i++) {
+  for (int i = 0; i < sizeof(KEY_MAP) / sizeof(key_mapping_t); i++) {
     if (strcmp(profile_type, KEY_MAP[i].profile_type) == 0) {
       // Find the trait key mappings for the provided segment
       for (int j = 0; j < KEY_MAP[i].size; j++) {
