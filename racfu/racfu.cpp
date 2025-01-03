@@ -110,7 +110,7 @@ void do_extract(const char *admin_type, const char *profile_name,
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
   uint8_t function_code;
-  nlohmann::json profile_json, errors;
+  nlohmann::json profile_json;
 
   // Validate 'admin_type'
   if (strcmp(admin_type, "user") == 0) {
@@ -142,9 +142,14 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Build Failure Result
   if (raw_result == NULL) {
+    update_error_json(&profile_json["errors"], EXTRACT_FAILED,
+                      nlohmann::json{
+                          {  "admin_type",   std::string(admin_type)},
+                          {"profile_name", std::string(profile_name)}
+    });
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
-                 0, raw_request, raw_request_length, &errors, racfu_result,
-                 return_codes_p, logger_p);
+                 0, raw_request, raw_request_length, &profile_json,
+                 racfu_result, return_codes_p, logger_p);
     return;
   }
 

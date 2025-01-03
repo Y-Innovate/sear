@@ -1,5 +1,7 @@
 {
-  "profile": null,
+  "errors": [
+    "racfu: unable to extract 'user' profile 'SQUIDWRD'"
+  ],
   "return_codes": {
     "racf_reason_code": 4,
     "racf_return_code": 4,
