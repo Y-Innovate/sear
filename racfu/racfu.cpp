@@ -142,7 +142,7 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Build Failure Result
   if (raw_result == NULL) {
-    update_error_json(&profile_json["errors"], BAD_EXTRACT_TARGET,
+    update_error_json(&profile_json["errors"], EXTRACT_FAILED,
                       nlohmann::json{
                           {  "admin_type",   std::string(admin_type)},
                           {"profile_name", std::string(profile_name)}
