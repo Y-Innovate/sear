@@ -188,7 +188,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:owner",    "owner",
-     TRAIT_TYPE_STRING, {true, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:auditing",   "raudit",
@@ -224,7 +224,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:universal_access",     "uacc",
-     TRAIT_TYPE_STRING, {true, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:data_set_allocation_unit",     "unit",

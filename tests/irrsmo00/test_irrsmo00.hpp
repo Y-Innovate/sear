@@ -61,11 +61,11 @@
 #define TEST_ALTER_RACF_OPTIONS_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "racf_options/test_alter_racf_options_request.bin"
 #define TEST_ALTER_RACF_OPTIONS_PARAMETER_ERRORS_REQUEST_JSON      \
-  IRRSMO00_REQUEST_SAMPLES                                       \
+  IRRSMO00_REQUEST_SAMPLES                                         \
   "racf_options/test_alter_racf_options_parameter_errors_request." \
   "json"
 #define TEST_ALTER_RACF_OPTIONS_TRAIT_ERRORS_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES                              \
+  IRRSMO00_REQUEST_SAMPLES                                \
   "racf_options/test_alter_racf_options_trait_errors_request.json"
 // Request Samples Data-Set
 #define TEST_ADD_DATA_SET_REQUEST_JSON \
