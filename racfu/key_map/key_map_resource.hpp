@@ -91,10 +91,6 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "GIVEMEARACFUNAME", "automatc",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
      "base:security_categories", "category",
      TRAIT_TYPE_STRING,    {true, true, true, false},
      },

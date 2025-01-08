@@ -11,6 +11,10 @@ const trait_key_mapping_t PERMISSION_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {true, false, false, false},
      },
     {
+     "base:authid",   "authid",
+     TRAIT_TYPE_STRING, {true, false, false, false},
+     },
+    {
      "base:delete",   "delete",
      TRAIT_TYPE_BOOLEAN, {true, false, false, false},
      },

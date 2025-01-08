@@ -106,8 +106,8 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
   return true;
 }
 
-int post_process_smo_json(nlohmann::json *results_p, std::string profile_name,
-                          const char *class_name) {
+int post_process_smo_json(nlohmann::json *results_p, const char *profile_name,
+                          const char *admin_type, const char *class_name) {
   nlohmann::json commands = nlohmann::json::array();
 
   if (results_p->contains("error")) {
@@ -144,14 +144,14 @@ int post_process_smo_json(nlohmann::json *results_p, std::string profile_name,
     if (class_name == NULL) {
       update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET,
                         nlohmann::json{
-                            {"name", profile_name}
+                            {      "name", std::string(profile_name)},
+                            {"admin_type",   std::string(admin_type)}
       });
     } else {
-      update_error_json(
-          &(*results_p)["errors"], BAD_ADD_TARGET_CLASS,
-          nlohmann::json{
-              { "name",            profile_name},
-              {"class", std::string(class_name)}
+      update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET_CLASS,
+                        nlohmann::json{
+                            { "name", std::string(profile_name)},
+                            {"class",   std::string(class_name)}
       });
     }
     return 4;

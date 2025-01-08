@@ -261,10 +261,11 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       parser->build_json_string(xml_response_string, &racfu_rc, logger_p);
 
   logger_p->debug(MSG_SMO_POST_PROCESS);
+  logger_p->debug(intermediate_result_json.dump());
   // Maintain any RC 4's from parsing xml or post-processing json
   racfu_rc =
-      racfu_rc | post_process_smo_json(&intermediate_result_json,
-                                       std::string(profile_name), class_name);
+      racfu_rc | post_process_smo_json(&intermediate_result_json, profile_name,
+                                       admin_type, class_name);
   logger_p->debug(MSG_DONE);
 
   return_codes_p->racfu_return_code = racfu_rc;

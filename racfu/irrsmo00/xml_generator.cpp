@@ -20,7 +20,7 @@ char* XmlGenerator::build_xml_string(
     char* userid_buffer, int* irrsmo00_options_p,
     unsigned int* request_length_p, Logger* logger_p) {
   // Main body function that builds an xml string
-  std::string true_admin_type, running_user_id;
+  std::string true_admin_type, running_user_id, auth_id;
 
   // Build the securityrequest tag (Consistent)
   build_open_tag("securityrequest");
@@ -35,6 +35,14 @@ char* XmlGenerator::build_xml_string(
   // built into XML
   if (request_p->contains("run_as_user_id")) {
     running_user_id = (*request_p)["run_as_user_id"].get<std::string>();
+    request_p->erase("run_as_user_id");
+  }
+  // The following option passes the 'auth_id' parameter for PERMISSION
+  // to the traits of the XML
+  auth_id = "";
+  if (request_p->contains("auth_id")) {
+    auth_id = (*request_p)["auth_id"].get<std::string>();
+    request_p->erase("auth_id");
   }
 
   build_xml_header_attributes(true_admin_type, request_p, irrsmo00_options_p);
@@ -55,7 +63,11 @@ char* XmlGenerator::build_xml_string(
     logger_p->debug(MSG_VALIDATING_TRAITS);
     validate_traits(admin_type, &((*request_p)["traits"]), errors_p);
     if (errors_p->empty()) {
-      build_request_data(true_admin_type, (*request_p)["traits"]);
+      if (!auth_id.empty()) {
+        (*request_p)["traits"]["base:authid"] = auth_id;
+      }
+      build_request_data(true_admin_type, std::string(admin_type),
+                         (*request_p)["traits"]);
     } else {
       return nullptr;
     }
@@ -185,7 +197,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
     return;
   }
   if ((true_admin_type == "resource") || (true_admin_type == "permission")) {
-    class_name = (*request_p)["class"].get<std::string>();
+    class_name = (*request_p)["class_name"].get<std::string>();
     build_attribute("class", class_name);
     if (true_admin_type == "resource" || (class_name != "dataset")) {
       return;
@@ -204,6 +216,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
 }
 
 nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
+                                                std::string admin_type,
                                                 nlohmann::json request_data) {
   // Builds the xml for request data (segment-trait information) passed in a
   // json object
@@ -230,8 +243,12 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
 
       if (current_segment.empty()) {
         current_segment = item_segment;
-        build_open_tag(current_segment);
-        build_end_nested_tag();
+        if ((true_admin_type != "systemsettings") &&
+            (true_admin_type != "groupconnection") &&
+            (true_admin_type != "permission")) {
+          build_open_tag(current_segment);
+          build_end_nested_tag();
+        }
       }
 
       if ((item_segment.compare(current_segment) == 0)) {
@@ -239,10 +256,9 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
-        translated_key =
-            get_racf_key(true_admin_type.c_str(), item_segment.c_str(),
-                         (item_segment + ":" + item_trait).c_str(), trait_type,
-                         trait_operator);
+        translated_key = get_racf_key(admin_type.c_str(), item_segment.c_str(),
+                                      (item_segment + ":" + item_trait).c_str(),
+                                      trait_type, trait_operator);
         std::string trait_operator_str, value;
         switch (trait_type) {
           case TRAIT_TYPE_NULL:
@@ -268,7 +284,11 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
       } else
         item++;
     }
-    build_full_close_tag(current_segment);
+    if ((true_admin_type != "systemsettings") &&
+        (true_admin_type != "groupconnection") &&
+        (true_admin_type != "permission")) {
+      build_full_close_tag(current_segment);
+    }
     current_segment = "";
   }
   return errors;

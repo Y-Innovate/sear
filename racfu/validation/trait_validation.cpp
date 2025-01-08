@@ -139,8 +139,8 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                             {  "trait",   item_trait}
       });
     }
+    // Passed all of our validation so we go around the loop again
   }
-  // Passed all of our validation so we go around the loop again
 }
 
 void validate_json_value_to_string(const nlohmann::json& trait,

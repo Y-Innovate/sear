@@ -55,9 +55,10 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         break;
       }
       case BAD_PARAMETER_NAME: {
-        error_message_str = prefix + "'" +
-                            error_data["parameter"].get<std::string>() +
-                            "' is not a valid parameter";
+        error_message_str =
+            prefix + "'" + error_data["parameter"].get<std::string>() +
+            "' is not a valid parameter for the '" +
+            error_data["admin_type"].get<std::string>() + "' admin type";
         break;
       }
       case BAD_PARAMETER_DATA_TYPE: {
@@ -162,9 +163,10 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         break;
       }
       case BAD_ADD_TARGET: {
-        error_message_str = prefix + "unable to add '" +
-                            error_data["name"].get<std::string>() +
-                            "' because a profile already exists with that name";
+        error_message_str =
+            prefix + "unable to add '" + error_data["name"].get<std::string>() +
+            "' because a '" + error_data["admin_type"].get<std::string>() +
+            "' profile already exists with that name";
         break;
       }
       case SMO_ERROR_NO_TEXT: {

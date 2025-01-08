@@ -1,0 +1,9 @@
+{
+  "operation": "alter",
+  "admin_type": "permission",
+  "profile_name": "TESTING",
+  "class_name": "ELIJTEST",
+  "traits": {
+    "base:access": "READ"
+  }
+}

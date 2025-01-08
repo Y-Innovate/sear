@@ -12,7 +12,7 @@
 #define MISSING_PARAMETER 3
 //"'class_name' is a required parameter for the 'resource' admin type"
 #define BAD_PARAMETER_NAME 4
-//"'junk' is not a valid parameter"
+//"'junk' is not a valid parameter for the 'user' admin type"
 #define BAD_PARAMETER_DATA_TYPE 5
 //"'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE 6

@@ -89,7 +89,7 @@ const trait_key_mapping_t GROUP_OMVS_KEY_MAP[]{
      },
     {
      "omvs:gid",     "gid",
-     TRAIT_TYPE_STRING,  {true, false, false, true},
+     TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
      "omvs:shared",  "shared",

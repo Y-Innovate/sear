@@ -1,0 +1,9 @@
+{
+  "operation": "add",
+  "admin_type": "resource",
+  "profile_name": "TESTING",
+  "traits": {
+    "base:universal_access": "None",
+    "base:owner": "eswift"
+  }
+}
