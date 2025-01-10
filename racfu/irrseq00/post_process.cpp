@@ -23,8 +23,8 @@ nlohmann::json post_process_generic(
   char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
 
   // Set Class Name
-  char profile_type[9];
-  profile_type[8] = 0;  // add null terminator
+  char profile_type[18] = {0};
+  //profile_type[17] = 0;  // add null terminator
   post_process_key(profile_type, generic_result_buffer->class_name, 8);
 
   // Segment Variables
