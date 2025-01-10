@@ -180,7 +180,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:require_operator_id_card",  "oidcard",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {false, false, false, true},
      },
     {
      "base:operations",     "oper",
@@ -468,7 +468,7 @@ const trait_key_mapping_t USER_NETVIEW_KEY_MAP[]{
      TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
-     "netview:netview_graphic_monitor_facility_admin", "ngmfvspn",
+     "netview:group_graphic_monitor_facility_admin", "ngmfvspn",
      TRAIT_TYPE_STRING, {true, false, false, true},
      },
     {

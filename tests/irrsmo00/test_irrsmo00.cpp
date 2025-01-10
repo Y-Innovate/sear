@@ -197,10 +197,6 @@ void test_parse_add_user_no_xml_data_error() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = NULL;
-  // struct stat raw_request_size_expected;
-  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW,
-  // &raw_request_size_expected); irrsmo64_result_size_mock =
-  // raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 8;
   irrsmo64_racf_rc_mock = 200;
   irrsmo64_racf_reason_mock = 16;
@@ -225,10 +221,6 @@ void test_parse_alter_user_no_xml_data_error() {
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock = NULL;
-  // struct stat raw_request_size_expected;
-  // stat(TEST_ADD_USER_RESULT_USER_ALREADY_EXISTS_RAW,
-  // &raw_request_size_expected); irrsmo64_result_size_mock =
-  // raw_request_size_expected.st_size;
   irrsmo64_saf_rc_mock = 4;
   irrsmo64_racf_rc_mock = 4;
   irrsmo64_racf_reason_mock = 0;
