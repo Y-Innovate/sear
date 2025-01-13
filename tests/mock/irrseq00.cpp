@@ -21,11 +21,11 @@
 // and off platform link editors (i.e., Mac/Linux)
 // resolve symbols differently.
 #ifndef __TOS_390__
-char *r_admin_result_mock = NULL;
+char *r_admin_result_mock         = NULL;
 uint32_t r_admin_result_size_mock = 0;
-uint32_t r_admin_rc_mock = 0;
-uint32_t r_admin_saf_rc_mock = 0;
-uint32_t r_admin_racf_rc_mock = 0;
+uint32_t r_admin_rc_mock          = 0;
+uint32_t r_admin_saf_rc_mock      = 0;
+uint32_t r_admin_racf_rc_mock     = 0;
 uint32_t r_admin_racf_reason_mock = 0;
 #endif
 

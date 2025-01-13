@@ -19,12 +19,12 @@
 nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer) {
   nlohmann::json profile;
-  profile["profile"] = nlohmann::json::object();
+  profile["profile"]    = nlohmann::json::object();
   char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
 
   // Set Class Name
   char profile_type[18] = {0};
-  //profile_type[17] = 0;  // add null terminator
+  // profile_type[17] = 0;  // add null terminator
   post_process_key(profile_type, generic_result_buffer->class_name, 8);
 
   // Segment Variables
@@ -104,7 +104,7 @@ nlohmann::json post_process_generic(
 nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer) {
   nlohmann::json profile;
-  profile["profile"] = nlohmann::json::object();
+  profile["profile"]    = nlohmann::json::object();
   char *profile_address = reinterpret_cast<char *>(setropts_result_buffer);
 
   // Segment Variables

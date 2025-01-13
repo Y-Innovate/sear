@@ -20,6 +20,7 @@ int main() {
   // User
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_generate_alter_user_request);
+  RUN_TEST(test_generate_delete_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_delete_user_result);
   RUN_TEST(test_parse_add_user_result_user_already_exists);
@@ -29,9 +30,11 @@ int main() {
   RUN_TEST(test_parse_alter_user_no_xml_data_error);
   RUN_TEST(test_parse_alter_user_traits_not_json_error);
   RUN_TEST(test_parse_irrsmo00_errors_result);
+  RUN_TEST(test_parse_delete_user_trait_error_result);
   // Group
   RUN_TEST(test_generate_add_group_request);
   RUN_TEST(test_generate_alter_group_request);
+  RUN_TEST(test_generate_delete_group_request);
   RUN_TEST(test_parse_add_group_result);
   RUN_TEST(test_parse_delete_group_result);
   RUN_TEST(test_parse_add_group_result_group_already_exists);
@@ -39,6 +42,7 @@ int main() {
   RUN_TEST(test_parse_add_group_trait_errors);
   // Group Connection
   RUN_TEST(test_generate_alter_group_connection_request);
+  RUN_TEST(test_generate_delete_group_connection_request);
   RUN_TEST(test_parse_alter_group_connection_result);
   RUN_TEST(test_parse_delete_group_connection_result);
   RUN_TEST(test_parse_alter_group_connection_parameter_errors);
@@ -51,6 +55,7 @@ int main() {
   // Data-Set
   RUN_TEST(test_generate_add_data_set_request);
   RUN_TEST(test_generate_alter_data_set_request);
+  RUN_TEST(test_generate_delete_data_set_request);
   RUN_TEST(test_parse_add_data_set_result);
   RUN_TEST(test_parse_delete_data_set_result);
   RUN_TEST(test_parse_add_data_set_result_data_set_already_exists);
@@ -59,6 +64,7 @@ int main() {
   // Resource
   RUN_TEST(test_generate_add_resource_request);
   RUN_TEST(test_generate_alter_resource_request);
+  RUN_TEST(test_generate_delete_resource_request);
   RUN_TEST(test_parse_add_resource_result);
   RUN_TEST(test_parse_delete_resource_result);
   RUN_TEST(test_parse_add_resource_result_resource_already_exists);
@@ -66,6 +72,7 @@ int main() {
   RUN_TEST(test_parse_add_resource_trait_errors);
   // Permission
   RUN_TEST(test_generate_alter_permission_request);
+  RUN_TEST(test_generate_delete_permission_request);
   RUN_TEST(test_parse_alter_permission_result);
   RUN_TEST(test_parse_delete_permission_result);
   RUN_TEST(test_parse_alter_permission_parameter_errors);

@@ -22,6 +22,10 @@
   "user/test_alter_user_traits_not_json_error_request.json"
 #define TEST_DELETE_USER_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "user/test_delete_user_request.json"
+#define TEST_DELETE_USER_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "user/test_delete_user_request.bin"
+#define TEST_DELETE_USER_WITH_TRAITS_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "user/test_delete_user_with_traits_request.json"
 // Request Samples Group
 #define TEST_ADD_GROUP_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "group/test_add_group_request.json"
@@ -39,6 +43,8 @@
   IRRSMO00_REQUEST_SAMPLES "group/test_add_group_trait_errors_request.json"
 #define TEST_DELETE_GROUP_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "group/test_delete_group_request.json"
+#define TEST_DELETE_GROUP_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "group/test_delete_group_request.bin"
 // Request Samples Group Connection
 #define TEST_ALTER_GROUP_CONNECTION_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                       \
@@ -55,6 +61,9 @@
 #define TEST_DELETE_GROUP_CONNECTION_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                        \
   "group_connection/test_delete_group_connection_request.json"
+#define TEST_DELETE_GROUP_CONNECTION_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES                       \
+  "group_connection/test_delete_group_connection_request.bin"
 // Request Samples Racf Options
 #define TEST_ALTER_RACF_OPTIONS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "racf_options/test_alter_racf_options_request.json"
@@ -84,6 +93,8 @@
   "data_set/test_add_data_set_trait_errors_request.json"
 #define TEST_DELETE_DATA_SET_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "data_set/test_delete_data_set_request.json"
+#define TEST_DELETE_DATA_SET_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "data_set/test_delete_data_set_request.bin"
 // Request Samples Resource
 #define TEST_ADD_RESOURCE_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "resource/test_add_resource_request.json"
@@ -101,6 +112,8 @@
   "resource/test_add_resource_trait_errors_request.json"
 #define TEST_DELETE_RESOURCE_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "resource/test_delete_resource_request.json"
+#define TEST_DELETE_RESOURCE_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "resource/test_delete_resource_request.bin"
 // Request Samples Permission
 #define TEST_ALTER_PERMISSION_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "permission/test_alter_permission_request.json"
@@ -115,6 +128,8 @@
   "permission/test_alter_permission_trait_errors_request.json"
 #define TEST_DELETE_PERMISSION_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "permission/test_delete_permission_request.json"
+#define TEST_DELETE_PERMISSION_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "permission/test_delete_permission_request.bin"
 
 // Result samples User
 #define TEST_ADD_USER_RESULT_JSON \
@@ -146,6 +161,8 @@
   IRRSMO00_RESULT_SAMPLES "user/test_irrsmo00_error_structure_result.json"
 #define TEST_IRRSMO00_ERROR_STRUCTURE_RAW \
   IRRSMO00_RESULT_SAMPLES "user/test_irrsmo00_error_structure_result.bin"
+#define TEST_DELETE_USER_WITH_TRAITS_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES "user/test_delete_user_with_traits_result.json"
 // Result samples Group
 #define TEST_ADD_GROUP_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES "group/test_add_group_result.json"
@@ -260,6 +277,7 @@
 // User tests
 void test_generate_add_user_request();
 void test_generate_alter_user_request();
+void test_generate_delete_user_request();
 void test_parse_add_user_result();
 void test_parse_delete_user_result();
 void test_parse_add_user_result_user_already_exists();
@@ -269,9 +287,11 @@ void test_parse_add_user_no_xml_data_error();
 void test_parse_alter_user_no_xml_data_error();
 void test_parse_alter_user_traits_not_json_error();
 void test_parse_irrsmo00_errors_result();
+void test_parse_delete_user_trait_error_result();
 // Group tests
 void test_generate_add_group_request();
 void test_generate_alter_group_request();
+void test_generate_delete_group_request();
 void test_parse_add_group_result();
 void test_parse_delete_group_result();
 void test_parse_add_group_result_group_already_exists();
@@ -279,6 +299,7 @@ void test_parse_add_group_parameter_errors();
 void test_parse_add_group_trait_errors();
 // Group-Connection tests
 void test_generate_alter_group_connection_request();
+void test_generate_delete_group_connection_request();
 void test_parse_alter_group_connection_result();
 void test_parse_delete_group_connection_result();
 void test_parse_alter_group_connection_parameter_errors();
@@ -291,6 +312,7 @@ void test_parse_alter_racf_options_trait_errors();
 // Data-Set tests
 void test_generate_add_data_set_request();
 void test_generate_alter_data_set_request();
+void test_generate_delete_data_set_request();
 void test_parse_add_data_set_result();
 void test_parse_delete_data_set_result();
 void test_parse_add_data_set_result_data_set_already_exists();
@@ -299,6 +321,7 @@ void test_parse_add_data_set_trait_errors();
 // Resource tests
 void test_generate_add_resource_request();
 void test_generate_alter_resource_request();
+void test_generate_delete_resource_request();
 void test_parse_add_resource_result();
 void test_parse_delete_resource_result();
 void test_parse_add_resource_result_resource_already_exists();
@@ -306,6 +329,7 @@ void test_parse_add_resource_parameter_errors();
 void test_parse_add_resource_trait_errors();
 // Permission tests
 void test_generate_alter_permission_request();
+void test_generate_delete_permission_request();
 void test_parse_alter_permission_result();
 void test_parse_delete_permission_result();
 void test_parse_alter_permission_parameter_errors();

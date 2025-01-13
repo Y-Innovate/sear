@@ -68,6 +68,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
   // Each operation has required or allowed parameters, these checks are made in
   // order to validate that every required parameter is specified and optional
   // parameters are only used for supported operations and admin types
+  bool traits_allowed = true;
   validate_parameter(request_p, errors_p, "run", &yes_or_no, (*admin_type_p),
                      false);
   checked_parameters.push_back("run");
@@ -77,9 +78,10 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
     validate_parameter(request_p, errors_p, "operation",
                        &valid_racf_options_operations, *admin_type_p, true);
     validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                     &checked_parameters, true);
+                                     &checked_parameters, traits_allowed);
     return;
   }
+  traits_allowed = !(*operation_p == "delete");
   if (validate_parameter(request_p, errors_p, "profile_name", &no_validation,
                          *admin_type_p, true) == 0) {
     *profile_name_p = (*request_p)["profile_name"].get<std::string>();
@@ -88,7 +90,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
   if ((*admin_type_p == "user") || (*admin_type_p == "group")) {
     // USER and GROUP also allow 'override' and require 'profile_name'
     validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                     &checked_parameters, true);
+                                     &checked_parameters, traits_allowed);
     return;
   }
   if (*admin_type_p == "group-connection") {
@@ -101,7 +103,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
       checked_parameters.push_back("group");
     }
     validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                     &checked_parameters, true);
+                                     &checked_parameters, traits_allowed);
     return;
   }
   if (*admin_type_p == "permission") {
@@ -122,7 +124,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
       *class_name_p = (*request_p)["class_name"].get<std::string>();
     } else {
       validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                       &checked_parameters, true);
+                                       &checked_parameters, traits_allowed);
       return;
     }
     checked_parameters.push_back("class_name");
@@ -130,7 +132,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
       // RESOURCE and PERMISSION (for non DATASET class) do not support any
       // additional parameters
       validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                       &checked_parameters, true);
+                                       &checked_parameters, traits_allowed);
       return;
     }
   }
@@ -144,7 +146,7 @@ void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
                        *admin_type_p, false);
     checked_parameters.push_back("generic");
     validate_supplemental_parameters(request_p, errors_p, admin_type_p,
-                                     &checked_parameters, true);
+                                     &checked_parameters, traits_allowed);
   }
 }
 
@@ -228,6 +230,13 @@ void validate_supplemental_parameters(nlohmann::json* request_p,
                               {"data_type",   "json"}
         });
       }
+      continue;
+    } else if (item.key() == "traits") {
+      update_error_json(errors_p, BAD_PARAMETER_FOR_OPERATION,
+                        nlohmann::json{
+                            {"parameter", "traits"},
+                            {"operation", "delete"}
+      });
       continue;
     }
     bool found_match = false;

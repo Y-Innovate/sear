@@ -30,16 +30,16 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     }
     if (segment_trait_key_data[3] == "") {
       item_operator = "";
-      item_segment = segment_trait_key_data[2];
+      item_segment  = segment_trait_key_data[2];
     } else {
       item_operator = segment_trait_key_data[2];
-      item_segment = segment_trait_key_data[3];
+      item_segment  = segment_trait_key_data[3];
     }
     item_trait = segment_trait_key_data[4];
 
     // Get passed operation and validate it
     int8_t init_trait_operator = map_operator(item_operator);
-    int8_t trait_operator = init_trait_operator;
+    int8_t trait_operator      = init_trait_operator;
     if (trait_operator == OPERATOR_BAD) {
       update_error_json(errors_p, BAD_OPERATOR,
                         nlohmann::json{

@@ -464,11 +464,11 @@ const trait_key_mapping_t USER_NETVIEW_KEY_MAP[]{
      TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
-     "netview:graphic_monitor_facility_admin", "ngmfadmn",
+     "netview:operator_graphic_monitor_facility_administration_allowed", "ngmfadmn",
      TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
-     "netview:group_graphic_monitor_facility_admin", "ngmfvspn",
+     "netview:operator_graphic_monitor_facility_display_authority", "ngmfvspn",
      TRAIT_TYPE_STRING, {true, false, false, true},
      },
     {

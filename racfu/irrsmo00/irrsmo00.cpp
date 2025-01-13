@@ -18,7 +18,7 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
                     unsigned int *result_buffer_size_p, int irrsmo00_options,
                     int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p) {
   char work_area[1024];
-  char req_handle[64] = {0};
+  char req_handle[64]                    = {0};
   running_userid_t running_userid_struct = {
       (unsigned char)strlen(running_userid), {0}};
   unsigned int alet = 0;
@@ -26,9 +26,9 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   char *result_buffer =
       static_cast<char *>(calloc(*result_buffer_size_p, sizeof(char)));
   int request_xml_length = strlen(request_xml);
-  int result_len = *result_buffer_size_p;
-  int num_parms = 17;
-  int fn = 1;
+  int result_len         = *result_buffer_size_p;
+  int num_parms          = 17;
+  int fn                 = 1;
 
   strncpy(running_userid_struct.running_userid, running_userid,
           running_userid_struct.running_userid_length);
@@ -51,9 +51,9 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   char *result_buffer_ptr;
   strncpy(full_result, result_buffer, result_len);
   free(result_buffer);
-  result_buffer_ptr = full_result + result_len * sizeof(unsigned char);
+  result_buffer_ptr     = full_result + result_len * sizeof(unsigned char);
   *result_buffer_size_p = result_len;
-  result_len = *racf_rsn_p;
+  result_len            = *racf_rsn_p;
 
   // Call IRRSMO64 Again with the appropriate buffer size
   IRRSMO64(work_area, alet, saf_rc_p, alet, racf_rc_p, alet, racf_rsn_p,
@@ -85,7 +85,7 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
         R"(_request"/></securityrequest>)";
   }
 
-  irrsmo00_options = 13;
+  irrsmo00_options   = 13;
   result_buffer_size = 10000;
 
   // convert our c++ string to a char * buffer
@@ -168,7 +168,7 @@ int post_process_smo_json(nlohmann::json *results_p, const char *profile_name,
   if ((*results_p)["command"].contains("image")) {
     // If there is only one command in the json
     nlohmann::json command;
-    command["command"] = (*results_p)["command"]["image"];
+    command["command"]  = (*results_p)["command"]["image"];
     command["messages"] = nlohmann::json::array();
     if ((*results_p)["command"].contains("message")) {
       if ((*results_p)["command"]["message"].is_array()) {

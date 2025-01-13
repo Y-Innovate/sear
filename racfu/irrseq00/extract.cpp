@@ -56,7 +56,7 @@ char *extract(
 
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code = ntohl(arg_area_setropts->args.SAF_rc);
+    return_codes->saf_return_code  = ntohl(arg_area_setropts->args.SAF_rc);
     return_codes->racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
     return_codes->racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
     // Free Arg Area
@@ -98,7 +98,7 @@ char *extract(
 
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code = ntohl(arg_area_generic->args.SAF_rc);
+    return_codes->saf_return_code  = ntohl(arg_area_generic->args.SAF_rc);
     return_codes->racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
     return_codes->racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
     // Free Arg Area
@@ -147,7 +147,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   // Make sure buffer is clear.
   memset(arg_area, 0, sizeof(generic_extract_underbar_arg_area_t));
 
-  generic_extract_args_t *args = &arg_area->args;
+  generic_extract_args_t *args                 = &arg_area->args;
   generic_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
   generic_extract_parms_results_t *profile_extract_parms =
       &args->profile_extract_parms;
@@ -198,7 +198,7 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   // Make sure buffer is clear.
   memset(arg_area, 0, sizeof(setropts_extract_underbar_arg_area_t));
 
-  setropts_extract_args_t *args = &arg_area->args;
+  setropts_extract_args_t *args                 = &arg_area->args;
   setropts_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
   setropts_extract_parms_t *setropts_extract_parms =
       &args->setropts_extract_parms;

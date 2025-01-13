@@ -46,9 +46,9 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   if (regex_match(xml_buffer, useful_xml_substrings, full_xml_regex)) {
     // Use sub-matches in the regular expression to pull out useful
     // information
-    admin_type = useful_xml_substrings[1];
+    admin_type      = useful_xml_substrings[1];
     admin_xml_attrs = useful_xml_substrings[2];
-    admin_xml_body = useful_xml_substrings[3];
+    admin_xml_body  = useful_xml_substrings[3];
 
     // Erase the profile close tag as it messes up later regex parsing
     admin_close_tag = R"(</)" + admin_type + ">";
@@ -58,7 +58,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
     parse_xml_tags(&result, admin_xml_body);
 
     result_json = result;
-    *racfu_rc = 0;
+    *racfu_rc   = 0;
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
@@ -172,7 +172,7 @@ std::string XmlParser::replace_xml_chars(std::string xml_data) {
     xml_data = replace_substring(xml_data, apos, "'", index);
     xml_data = replace_substring(xml_data, quot, "\"", index);
     xml_data = replace_substring(xml_data, amp, "&", index);
-    index = xml_data.find("&", index + 1);
+    index    = xml_data.find("&", index + 1);
   } while (index != std::string::npos);
   return xml_data;
 }

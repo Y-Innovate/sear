@@ -57,15 +57,15 @@ char* XmlGenerator::build_xml_string(
 
   build_attribute("requestid", true_admin_type + "_request");
 
+  if (!auth_id.empty()) {
+    (*request_p)["traits"]["base:authid"] = auth_id;
+  }
   if ((request_p->contains("traits")) && (!(*request_p)["traits"].empty())) {
     build_end_nested_tag();
 
     logger_p->debug(MSG_VALIDATING_TRAITS);
     validate_traits(admin_type, &((*request_p)["traits"]), errors_p);
     if (errors_p->empty()) {
-      if (!auth_id.empty()) {
-        (*request_p)["traits"]["base:authid"] = auth_id;
-      }
       build_request_data(true_admin_type, std::string(admin_type),
                          (*request_p)["traits"]);
     } else {
@@ -81,12 +81,14 @@ char* XmlGenerator::build_xml_string(
   } else {
     // Close the admin object
     build_close_tag_no_value();
+    // Close the securityrequest tag (Consistent)
+    build_full_close_tag("securityrequest");
   }
 
   logger_p->debug(MSG_REQUEST_SMO_ASCII, xml_buffer);
 
   // convert our c++ string to a char * buffer
-  const int length = xml_buffer.length();
+  const int length    = xml_buffer.length();
   char* output_buffer = static_cast<char*>(malloc(sizeof(char) * (length + 1)));
   strncpy(output_buffer, xml_buffer.c_str(), length + 1);
   __a2e_l(output_buffer, length);
@@ -135,7 +137,7 @@ void XmlGenerator::build_open_tag(std::string tag) {
 }
 void XmlGenerator::build_attribute(std::string name, std::string value) {
   // Ex: " operation=set"
-  name = replace_xml_chars(name);
+  name  = replace_xml_chars(name);
   value = replace_xml_chars(value);
   xml_buffer.append(" " + name + "=\"" + value + "\"");
 }
@@ -234,10 +236,10 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
       regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex);
       if (segment_trait_key_data[3] == "") {
         item_operator = "";
-        item_segment = segment_trait_key_data[2];
+        item_segment  = segment_trait_key_data[2];
       } else {
         item_operator = segment_trait_key_data[2];
-        item_segment = segment_trait_key_data[3];
+        item_segment  = segment_trait_key_data[3];
       }
       item_trait = segment_trait_key_data[4];
 
@@ -263,19 +265,19 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         switch (trait_type) {
           case TRAIT_TYPE_NULL:
             trait_operator_str = "del";
-            value = "";
+            value              = "";
             break;
           case TRAIT_TYPE_BOOLEAN:
             trait_operator_str = (item.value()) ? "set" : "del";
-            value = "";
+            value              = "";
             break;
           default:
             trait_operator_str = (item_operator.empty())
                                      ? "set"
                                      : convert_operator(item_operator);
-            value = (trait_type == TRAIT_TYPE_BOOLEAN)
-                        ? ""
-                        : json_value_to_string(item.value());
+            value              = (trait_type == TRAIT_TYPE_BOOLEAN)
+                                     ? ""
+                                     : json_value_to_string(item.value());
         }
         build_single_trait(("racf:" + std::string(translated_key)),
                            trait_operator_str, value);

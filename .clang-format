@@ -4,6 +4,10 @@ TabWidth: 2
 UseTab: Never
 ColumnLimit: 80
 AlignArrayOfStructures: Right
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
 InsertNewlineAtEOF: true
 KeepEmptyLines:
   AtEndOfFile: true
