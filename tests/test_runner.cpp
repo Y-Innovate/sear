@@ -76,6 +76,7 @@ int main() {
   RUN_TEST(test_parse_alter_permission_result);
   RUN_TEST(test_parse_delete_permission_result);
   RUN_TEST(test_parse_alter_permission_parameter_errors);
+  RUN_TEST(test_parse_alter_permission_dataset_parameter_errors);
   RUN_TEST(test_parse_alter_permission_trait_errors);
 
   // Profile Extract

@@ -1,7 +1,7 @@
 {
   "operation": "add",
   "admin_type": "group",
-  "junk": "TESTGRP0",
+  "volume": "TESTGRP0",
   "traits": {
     "omvs:gid": 6667
   }

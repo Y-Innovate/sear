@@ -123,6 +123,10 @@
   IRRSMO00_REQUEST_SAMPLES                                     \
   "permission/test_alter_permission_parameter_errors_request." \
   "json"
+#define TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON    \
+  IRRSMO00_REQUEST_SAMPLES                                             \
+  "permission/test_alter_permission_dataset_parameter_errors_request." \
+  "json"
 #define TEST_ALTER_PERMISSION_TRAIT_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                              \
   "permission/test_alter_permission_trait_errors_request.json"
@@ -270,6 +274,9 @@
 #define TEST_ALTER_PERMISSION_PARAMETER_ERRORS_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES                                  \
   "permission/test_alter_permission_parameter_errors_result.json"
+#define TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES                                          \
+  "permission/test_alter_permission_dataset_parameter_errors_result.json"
 #define TEST_ALTER_PERMISSION_TRAIT_ERRORS_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES                              \
   "permission/test_alter_permission_trait_errors_result.json"
@@ -333,6 +340,7 @@ void test_generate_delete_permission_request();
 void test_parse_alter_permission_result();
 void test_parse_delete_permission_result();
 void test_parse_alter_permission_parameter_errors();
+void test_parse_alter_permission_dataset_parameter_errors();
 void test_parse_alter_permission_trait_errors();
 
 #endif

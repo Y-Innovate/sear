@@ -1342,6 +1342,22 @@ void test_parse_alter_permission_parameter_errors() {
   free(result.result_json);
 }
 
+void test_parse_alter_permission_dataset_parameter_errors() {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(
+      TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON);
+  std::string result_json_expected = get_json_sample(
+      TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_RESULT_JSON);
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
 void test_parse_alter_permission_trait_errors() {
   racfu_result_t result;
   std::string request_json =

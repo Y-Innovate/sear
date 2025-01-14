@@ -1,7 +1,6 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'user' admin type",
-    "racfu: 'class_name' is not a valid parameter for the 'user' admin type"
+    "racfu: 'auth_id' is a required parameter for the 'permission' admin type"
   ],
   "return_codes": {
     "racf_reason_code": null,
