@@ -15,7 +15,7 @@ const trait_key_mapping_t GROUP_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:connected_user_id",  "guserid",
+     "base:connected_userid",  "guserid",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
@@ -35,12 +35,12 @@ const trait_key_mapping_t GROUP_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:subgroup", "subgrpct",
+     "base:subgroups", "subgrpct",
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:subgroup", "subgroup",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:superior_group", "supgroup",

@@ -15,7 +15,7 @@ const trait_key_mapping_t GROUP_CONNECTION_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:group_authority",     "auth",
+     "base:authority",     "auth",
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
@@ -27,11 +27,11 @@ const trait_key_mapping_t GROUP_CONNECTION_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
-     "base:last_connecion_used_date", "cgljdate",
+     "base:connecion_last_used_date", "cgljdate",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:last_connecion_used_time", "cgljtime",
+     "base:connecion_last_used_time", "cgljtime",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
@@ -51,11 +51,11 @@ const trait_key_mapping_t GROUP_CONNECTION_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:resume",   "resume",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     "base:resume_date",   "resume",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:revoke",   "revoke",
+     "base:revoke_date",   "revoke",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {

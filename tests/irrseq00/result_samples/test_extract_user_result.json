@@ -11,8 +11,7 @@
         {
           "base:group_connection_auditor": false,
           "base:group_connection_automatic_data_set_protection": false,
-          "base:group_connection_connect_date": "09/13/24",
-          "base:group_connection_connects": 0,
+          "base:group_connection_create_date": "09/13/24",
           "base:group_connection_data_set_access": false,
           "base:group_connection_group": "SYS1",
           "base:group_connection_last_connect_date": null,
@@ -23,7 +22,8 @@
           "base:group_connection_revoke_date": null,
           "base:group_connection_revoked": false,
           "base:group_connection_special": false,
-          "base:group_connection_universal_access": "NONE"
+          "base:group_connection_universal_access": "NONE",
+          "base:group_connection_used_count": 0
         }
       ],
       "base:group_data_set_access": false,

@@ -47,7 +47,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
-     "base:group_connection_connect_date",  "cauthda",
+     "base:group_connection_create_date",  "cauthda",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
@@ -59,7 +59,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:group_connection_connects",  "cinitct",
+     "base:group_connection_used_count",  "cinitct",
      TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
@@ -286,32 +286,44 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
 
 const trait_key_mapping_t USER_CICS_KEY_MAP[]{
     {
-     "cics:operator_classes", "opclass",
-     TRAIT_TYPE_STRING,   {true, true, true, true},
+     "cics:operator_class",  "opclass",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
      },
     {
-     "cics:operator_id", "opident",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cics:operator_classes", "opclassn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "cics:operator_priority",  "opprty",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cics:operator_id",  "opident",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "cics:rsl_key",  "rslkey",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cics:operator_priority",   "opprty",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "cics:timeout", "timeout",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cics:resource_security_level_key",   "rslkey",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "cics:tsl_key",  "tslkey",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cics:resource_security_level_keys",  "rslkeyn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "cics:force_signoff_when_xrf_takeover", "xrfsoff",
-     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
+     "cics:timeout",  "timeout",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:transaction_security_level_key",   "tslkey",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:transaction_security_level_keys",  "tslkeyn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "cics:force_signoff_when_xrf_takeover",  "xrfsoff",
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      }
 };
 
@@ -377,6 +389,10 @@ const trait_key_mapping_t USER_KERB_KEY_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
+     "kerb:encryption_algorithms", "encryptn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
      "kerb:name", "kerbname",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
@@ -415,24 +431,28 @@ const trait_key_mapping_t USER_LNOTES_KEY_MAP[]{
 const trait_key_mapping_t USER_MFA_KEY_MAP[]{
     {
      "mfa:factor",   "factor",
-     TRAIT_TYPE_STRING, {true, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "mfa:active",  "facactv",
-     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
      "mfa:tags",  "factags",
-     TRAIT_TYPE_STRING,   {true, false, true, true},
+     TRAIT_TYPE_STRING,    {true, false, true, true},
      },
     {
      "mfa:password_fallback",  "mfaflbk",
-     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "mfa:policy", "mfapolnm",
-     TRAIT_TYPE_STRING,  {false, true, true, false},
-     }
+     "base:mfa_policy", "mfapolnm",
+     TRAIT_TYPE_STRING,   {false, true, true, false},
+     },
+    {
+     "base:mfa_policies",  "mfapoln",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
 };
 
 const trait_key_mapping_t USER_NDS_KEY_MAP[]{
@@ -445,35 +465,39 @@ const trait_key_mapping_t USER_NDS_KEY_MAP[]{
 const trait_key_mapping_t USER_NETVIEW_KEY_MAP[]{
     {
      "netview:default_mcs_console_name", "consname",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "netview:security_control_check",      "ctl",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "netview:domains_list",  "domains",
-     TRAIT_TYPE_STRING,   {true, true, true, true},
+     "netview:domain",  "domains",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "netview:domains", "domainsn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "netview:logon_commands",       "ic",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "netview:receive_unsolicited_messages", "msgrecvr",
-     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
      "netview:operator_graphic_monitor_facility_administration_allowed", "ngmfadmn",
-     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
      "netview:operator_graphic_monitor_facility_display_authority", "ngmfvspn",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "netview:operator_scope_classes",  "opclass",
-     TRAIT_TYPE_STRING,   {true, true, true, true},
+     TRAIT_TYPE_STRING,     {true, true, true, true},
      }
 };
 
@@ -535,75 +559,95 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[]{
 const trait_key_mapping_t USER_OPERPARM_KEY_MAP[]{
     {
      "operparm:alternate_console_group",   "altgrp",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_automated_messages",     "auto",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "operparm:command_target_systems",   "cmdsys",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "operparm:command_target_system",   "cmdsys",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_delete_operator_messages",      "dom",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_hardcopy_messages",       "hc",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_internal_console_messages",   "intids",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:console_searching_key",      "key",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:message_level",    "level",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:message_levels",   "leveln",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "operparm:log_command_responses",   "logcmd",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:message_format",    "mform",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:migration_id",    "migid",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "operparm:monitor_events",  "monitor",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "operparm:monitor_event",  "monitor",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:monitor_events", "monitorn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "operparm:message_scope",   "mscope",
-     TRAIT_TYPE_STRING,   {true, true, true, true},
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "operparm:message_scopes",  "mscopen",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "operparm:console_authority", "operauth",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "operparm:receive_routing_codes", "routcode",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "operparm:console_authorities", "operautn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:receive_routing_code", "routcode",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_routing_codes", "routcodn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "operparm:message_queue_storage",  "storage",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_undelivered_messages",       "ud",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "operparm:receive_unknown_console_id_messages",  "unknids",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      }
 };
 

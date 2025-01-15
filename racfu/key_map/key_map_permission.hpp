@@ -15,10 +15,6 @@ const trait_key_mapping_t PERMISSION_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {true, false, false, false},
      },
     {
-     "base:delete",   "delete",
-     TRAIT_TYPE_BOOLEAN, {true, false, false, false},
-     },
-    {
      "base:model_profile_class",   "fclass",
      TRAIT_TYPE_STRING, {true, false, false, false},
      },
@@ -36,10 +32,6 @@ const trait_key_mapping_t PERMISSION_BASE_SEGMENT_MAP[]{
      },
     {
      "base:reset",    "reset",
-     TRAIT_TYPE_STRING, {true, false, false, false},
-     },
-    {
-     "base:volume",   "volume",
      TRAIT_TYPE_STRING, {true, false, false, false},
      },
     {

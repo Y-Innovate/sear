@@ -90,8 +90,8 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
                &return_codes, &logger);
     // Add/Alter/Delete
   } else {
-    if (request.contains("run_as_user_id")) {
-      surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
+    if (request.contains("run_as_userid")) {
+      surrogate_userid = request["run_as_userid"].get<std::string>().c_str();
     }
     logger.debug(MSG_SMO_PATH);
     check_first = ((operation == "alter") &&

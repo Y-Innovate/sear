@@ -20,7 +20,7 @@ char* XmlGenerator::build_xml_string(
     char* userid_buffer, int* irrsmo00_options_p,
     unsigned int* request_length_p, Logger* logger_p) {
   // Main body function that builds an xml string
-  std::string true_admin_type, running_user_id, auth_id;
+  std::string true_admin_type, running_userid, auth_id;
 
   // Build the securityrequest tag (Consistent)
   build_open_tag("securityrequest");
@@ -33,9 +33,9 @@ char* XmlGenerator::build_xml_string(
 
   // The following options dictate parameters to IRRSMO00 and are not
   // built into XML
-  if (request_p->contains("run_as_user_id")) {
-    running_user_id = (*request_p)["run_as_user_id"].get<std::string>();
-    request_p->erase("run_as_user_id");
+  if (request_p->contains("run_as_userid")) {
+    running_userid = (*request_p)["run_as_userid"].get<std::string>();
+    request_p->erase("run_as_userid");
   }
   // The following option passes the 'auth_id' parameter for PERMISSION
   // to the traits of the XML
@@ -47,11 +47,11 @@ char* XmlGenerator::build_xml_string(
 
   build_xml_header_attributes(true_admin_type, request_p, irrsmo00_options_p);
 
-  if (!running_user_id.empty()) {
+  if (!running_userid.empty()) {
     // Run this command as another user id
-    logger_p->debug(MSG_RUN_AS_USER + running_user_id);
-    const int userid_length = running_user_id.length();
-    strncpy(userid_buffer, running_user_id.c_str(), userid_length);
+    logger_p->debug(MSG_RUN_AS_USER + running_userid);
+    const int userid_length = running_userid.length();
+    strncpy(userid_buffer, running_userid.c_str(), userid_length);
     __a2e_l(userid_buffer, userid_length);
   }
 

@@ -216,7 +216,7 @@ void validate_supplemental_parameters(nlohmann::json* request_p,
                                       std::string* admin_type,
                                       nlohmann::json* checked_parameters_p,
                                       bool traits_allowed) {
-  nlohmann::json stable_parameters{"run_as_user_id", "admin_type"};
+  nlohmann::json stable_parameters{"run_as_userid", "admin_type"};
   checked_parameters_p->insert(checked_parameters_p->end(),
                                stable_parameters.begin(),
                                stable_parameters.end());

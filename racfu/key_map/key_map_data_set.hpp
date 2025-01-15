@@ -52,19 +52,15 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:control_access_count",  "acscntl",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:read_access_count",  "acsread",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:update_access_count",  "acsupdt",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:all_access_count",      "all",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:alter_volume",   "altvol",
@@ -72,27 +68,27 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:audit_alter",  "audaltr",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:audit_control",  "audcntl",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:audit_none",  "audnone",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:audit_read",  "audread",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:audit_update",  "audupdt",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:security_category", "category",
-     TRAIT_TYPE_STRING,   {false, true, true, false},
+     TRAIT_TYPE_STRING,    {true, true, true, false},
      },
     {
      "base:security_categories",  "numctgy",
@@ -104,7 +100,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:installation_data",     "data",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:data_set_type",   "dstype",
@@ -112,51 +108,47 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:erase_data_sets_on_delete",    "erase",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
      "base:model_profile_class",   "fclass",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:model_profile_generic", "fgeneric",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:tape_data_set_file_sequence_number",  "fileseq",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT,  {true, false, false, false},
      },
     {
      "base:model_profile",     "from",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:model_profile_volume",  "fvolume",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
      "base:global_audit_alter", "gaudaltr",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:global_audit_control", "gaudcntl",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:global_audit_none", "gaudnone",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
      "base:global_audit_read", "gaudread",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:global_audit_update", "gaudupdt",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:is_generic",  "generic",
-     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:high_level_qualifier_is_group",  "groupds",
@@ -172,7 +164,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:level",    "level",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT,   {true, false, false, true},
      },
     {
      "base:last_reference_date",  "lrefdat",
@@ -180,23 +172,23 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:data_set_model_profile",    "model",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:notify_userid",   "notify",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:owner",    "owner",
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
+     "base:notify_userid",   "notify",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "base:owner",    "owner",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
      "base:auditing",   "raudit",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:tape_data_set_security_retention_period",    "retpd",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:global_auditing",  "rgaudit",
@@ -204,35 +196,35 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:security_label", "seclabel",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "base:security_level", "seclevel",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:generic_not_allowed",      "set",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     "base:racf_indicated_dataset",      "set",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:generic_allowed",  "setonly",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:use_tape_data_set_profile",     "tape",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:universal_access",     "uacc",
+     "base:create_only_tvtoc_entry",  "setonly",
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:data_set_allocation_unit",     "unit",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     "base:use_tape_data_set_profile",     "tape",
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
-     "base:volumes",   "volume",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     "base:universal_access",     "uacc",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "base:data_set_allocation_unit",     "unit",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "base:volume",   "volume",
+     TRAIT_TYPE_STRING,    {true, true, false, true},
      },
     {
      "base:resident_volume",   "volser",
@@ -244,7 +236,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:warn_on_insufficient_access",  "warning",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      }
 };
 
