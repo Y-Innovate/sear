@@ -16,7 +16,7 @@ This/these files were a part of how key mappings for both RACFu and pyRACF were 
 
 ### load_seg_data.py
 
-Attempts to convert an xlsx Microsoft Excel spreadsheet with the data for the "x administration" callable service tables like in (IBM Documentation)[https://www.ibm.com/docs/en/zos/3.1.0?topic=tables-user-administration]. Manually copying this data to an "x_admin.xlsx" file allows you to use this script to somewhat convert that to a json file with most of the data needed to generate meaningful key mappings (but not everything). I know for a fact that many booleans were missed, repeat groups weren't properly accounted for and dataset and setropts administration tables were not copied appropriately.
+Attempts to convert an xlsx Microsoft Excel spreadsheet with the data for the "x administration" callable service tables like in [IBM Documentation](https://www.ibm.com/docs/en/zos/3.1.0?topic=tables-user-administration). Manually copying this data to an "x_admin.xlsx" file allows you to use this script to somewhat convert that to a json file with most of the data needed to generate meaningful key mappings (but not everything). I know for a fact that many booleans were missed, repeat groups weren't properly accounted for and dataset and setropts administration tables were not copied appropriately.
 
 ### map_fields.py
 
