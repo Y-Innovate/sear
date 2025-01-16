@@ -1,37 +1,23 @@
-![RACFu Logo](logo.png)
-
-A standardized JSON interface for RACF that enables seemless exploitation by programming languages that have a foreign language interface for C/C++ and native JSON support.
-
 ## Description
 
-As automation becomes more and more prevalent, the need to manage the security environment programmaticaly increases. On z/OS that means managing a security product like the IBM **Resource Access Control Facility** _(RACF)_. RACF is the primary facility for managing identity, authority, and access control for z/OS. There are more than 50 callable services with assembler interfaces that are part of the RACF API. The complete set of interfaces can be found [here](http://publibz.boulder.ibm.com/epubs/pdf/ich2d112.pdf).
+This is a folder where we store tools that were useful for the development of RACFu but do not hold any meaninful code. The files and their natures are explained below in sections based on the purpose of the file.
 
-While there are a number of languages that can be used to manage RACF, _(from low level lnaguages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing indurstry standard programming languages and even programming languages that don't exist yet is paramount. The RACFu project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the forseeable future.
+## Unit Test Generation/Conversion
 
-## Getting Started
+This/these files were helpful in either generating unit tests or converting files involved in unit tests. RACFu uses a lot of binary files that are ebcdic-encoded xml data as an example, so this was beneficial for making quick adjustments to the files used in these tests.
 
-### Dependencies
+### convert_dirs.py
 
-* z/OS **2.4** or higher.
-* **R_SecMgtOper (IRRSMO00)**: Security Management Operations.
-  * More details about the authorizations required for **IRRSMO00** can be found [here](https://www.ibm.com/docs/en/zos/3.1.0?topic=operations-racf-authorization).
-* **R_Admin (IRRSEQ00)**: RACF Administration API.
-  * More details about the authorizations required for **IRRSEQ00** can be found [here](https://www.ibm.com/docs/en/zos/3.1.0?topic=api-racf-authorization).
+This is a python script that contains a number of functions designed to encode/decode files to and from one ebcdic codepage to another (or ascii). These are used in the script to take a folder of xml files in ascii encoding (e.g. `request_xml`) and convert these to binary files in a similarly named folder in IBM-1047 ebcdic (e.g. `request_bin`).
 
-### Installation
+## Key Mapping Generation/Compilation
 
-> :bulb: _Note: You can also [Download & Install RACFu from GitHub](https://github.com/ambitus/racfu/releases)_
+This/these files were a part of how key mappings for both RACFu and pyRACF were generated. These scripts were helpful tools, but they alone did not generate the final mappings used in RACFu or pyRACF. These tools are, as a result, somewhat incomplete, but including them still felt like it would help if someone were to try and replicate this work.
 
-```shell
-python3 -m pip install racfu
-```
+### load_seg_data.py
 
-## Help
-* [GitHub Discussions](https://github.com/ambitus/racfu/discussions)
+Attempts to convert an xlsx Microsoft Excel spreadsheet with the data for the "x administration" callable service tables like in (IBM Documentation)[https://www.ibm.com/docs/en/zos/3.1.0?topic=tables-user-administration]. Manually copying this data to an "x_admin.xlsx" file allows you to use this script to somewhat convert that to a json file with most of the data needed to generate meaningful key mappings (but not everything). I know for a fact that many booleans were missed, repeat groups weren't properly accounted for and dataset and setropts administration tables were not copied appropriately.
 
-## Authors
+### map_fields.py
 
-* Joe Bostian: jbostian@ibm.com
-* Frank De Gilio: degilio@us.ibm.com
-* Leonard Carcaramo: lcarcaramo@ibm.com
-* Elijah Swift: Elijah.Swift@ibm.com
+Takes the json file generated with the `load_seg_data.py` file and offers functions that attmept to format this into the c++ key_map structure files that RACFu uses. At one point this also generated the key mappings for pyRACF, but I believe those features were pruned to establish the RACFu ones. Takes in the `x_admin.json` files generated in the previous step and generates appropriate c header files. Conceivably this file works well, and just collecting the appropriate json data would enable this to perform its function perfectly.
