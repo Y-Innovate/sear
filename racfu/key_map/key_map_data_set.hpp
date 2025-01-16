@@ -207,7 +207,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:create_only_tvtoc_entry",  "setonly",
+     "base:create_only_tape_virtual_table_of_contents_entry",  "setonly",
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
