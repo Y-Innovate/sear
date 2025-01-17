@@ -23,6 +23,7 @@ class XmlGenerator {
                                    nlohmann::json *request_p,
                                    int *irrsmo00_options_p);
   nlohmann::json build_request_data(std::string true_admin_type,
+                                    std::string admin_type,
                                     nlohmann::json request_data);
   std::string convert_operation(std::string request_operation,
                                 int *irrsmo00_options_p);

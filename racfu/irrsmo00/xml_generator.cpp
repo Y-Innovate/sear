@@ -20,7 +20,7 @@ char* XmlGenerator::build_xml_string(
     char* userid_buffer, int* irrsmo00_options_p,
     unsigned int* request_length_p, Logger* logger_p) {
   // Main body function that builds an xml string
-  std::string true_admin_type, running_user_id;
+  std::string true_admin_type, running_userid, auth_id;
 
   // Build the securityrequest tag (Consistent)
   build_open_tag("securityrequest");
@@ -33,29 +33,41 @@ char* XmlGenerator::build_xml_string(
 
   // The following options dictate parameters to IRRSMO00 and are not
   // built into XML
-  if (request_p->contains("run_as_user_id")) {
-    running_user_id = (*request_p)["run_as_user_id"].get<std::string>();
+  if (request_p->contains("run_as_userid")) {
+    running_userid = (*request_p)["run_as_userid"].get<std::string>();
+    request_p->erase("run_as_userid");
+  }
+  // The following option passes the 'auth_id' parameter for PERMISSION
+  // to the traits of the XML
+  auth_id = "";
+  if (request_p->contains("auth_id")) {
+    auth_id = (*request_p)["auth_id"].get<std::string>();
+    request_p->erase("auth_id");
   }
 
   build_xml_header_attributes(true_admin_type, request_p, irrsmo00_options_p);
 
-  if (!running_user_id.empty()) {
+  if (!running_userid.empty()) {
     // Run this command as another user id
-    logger_p->debug(MSG_RUN_AS_USER + running_user_id);
-    const int userid_length = running_user_id.length();
-    strncpy(userid_buffer, running_user_id.c_str(), userid_length);
+    logger_p->debug(MSG_RUN_AS_USER + running_userid);
+    const int userid_length = running_userid.length();
+    strncpy(userid_buffer, running_userid.c_str(), userid_length);
     __a2e_l(userid_buffer, userid_length);
   }
 
   build_attribute("requestid", true_admin_type + "_request");
 
+  if (!auth_id.empty()) {
+    (*request_p)["traits"]["base:authid"] = auth_id;
+  }
   if ((request_p->contains("traits")) && (!(*request_p)["traits"].empty())) {
     build_end_nested_tag();
 
     logger_p->debug(MSG_VALIDATING_TRAITS);
     validate_traits(admin_type, &((*request_p)["traits"]), errors_p);
     if (errors_p->empty()) {
-      build_request_data(true_admin_type, (*request_p)["traits"]);
+      build_request_data(true_admin_type, std::string(admin_type),
+                         (*request_p)["traits"]);
     } else {
       return nullptr;
     }
@@ -69,12 +81,14 @@ char* XmlGenerator::build_xml_string(
   } else {
     // Close the admin object
     build_close_tag_no_value();
+    // Close the securityrequest tag (Consistent)
+    build_full_close_tag("securityrequest");
   }
 
   logger_p->debug(MSG_REQUEST_SMO_ASCII, xml_buffer);
 
   // convert our c++ string to a char * buffer
-  const int length = xml_buffer.length();
+  const int length    = xml_buffer.length();
   char* output_buffer = static_cast<char*>(malloc(sizeof(char) * (length + 1)));
   strncpy(output_buffer, xml_buffer.c_str(), length + 1);
   __a2e_l(output_buffer, length);
@@ -123,7 +137,7 @@ void XmlGenerator::build_open_tag(std::string tag) {
 }
 void XmlGenerator::build_attribute(std::string name, std::string value) {
   // Ex: " operation=set"
-  name = replace_xml_chars(name);
+  name  = replace_xml_chars(name);
   value = replace_xml_chars(value);
   xml_buffer.append(" " + name + "=\"" + value + "\"");
 }
@@ -185,7 +199,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
     return;
   }
   if ((true_admin_type == "resource") || (true_admin_type == "permission")) {
-    class_name = (*request_p)["class"].get<std::string>();
+    class_name = (*request_p)["class_name"].get<std::string>();
     build_attribute("class", class_name);
     if (true_admin_type == "resource" || (class_name != "dataset")) {
       return;
@@ -204,6 +218,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
 }
 
 nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
+                                                std::string admin_type,
                                                 nlohmann::json request_data) {
   // Builds the xml for request data (segment-trait information) passed in a
   // json object
@@ -221,17 +236,21 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
       regex_match(item.key(), segment_trait_key_data, segment_trait_key_regex);
       if (segment_trait_key_data[3] == "") {
         item_operator = "";
-        item_segment = segment_trait_key_data[2];
+        item_segment  = segment_trait_key_data[2];
       } else {
         item_operator = segment_trait_key_data[2];
-        item_segment = segment_trait_key_data[3];
+        item_segment  = segment_trait_key_data[3];
       }
       item_trait = segment_trait_key_data[4];
 
       if (current_segment.empty()) {
         current_segment = item_segment;
-        build_open_tag(current_segment);
-        build_end_nested_tag();
+        if ((true_admin_type != "systemsettings") &&
+            (true_admin_type != "groupconnection") &&
+            (true_admin_type != "permission")) {
+          build_open_tag(current_segment);
+          build_end_nested_tag();
+        }
       }
 
       if ((item_segment.compare(current_segment) == 0)) {
@@ -239,27 +258,26 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
-        translated_key =
-            get_racf_key(true_admin_type.c_str(), item_segment.c_str(),
-                         (item_segment + ":" + item_trait).c_str(), trait_type,
-                         trait_operator);
+        translated_key = get_racf_key(admin_type.c_str(), item_segment.c_str(),
+                                      (item_segment + ":" + item_trait).c_str(),
+                                      trait_type, trait_operator);
         std::string trait_operator_str, value;
         switch (trait_type) {
           case TRAIT_TYPE_NULL:
             trait_operator_str = "del";
-            value = "";
+            value              = "";
             break;
           case TRAIT_TYPE_BOOLEAN:
             trait_operator_str = (item.value()) ? "set" : "del";
-            value = "";
+            value              = "";
             break;
           default:
             trait_operator_str = (item_operator.empty())
                                      ? "set"
                                      : convert_operator(item_operator);
-            value = (trait_type == TRAIT_TYPE_BOOLEAN)
-                        ? ""
-                        : json_value_to_string(item.value());
+            value              = (trait_type == TRAIT_TYPE_BOOLEAN)
+                                     ? ""
+                                     : json_value_to_string(item.value());
         }
         build_single_trait(("racf:" + std::string(translated_key)),
                            trait_operator_str, value);
@@ -268,7 +286,11 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
       } else
         item++;
     }
-    build_full_close_tag(current_segment);
+    if ((true_admin_type != "systemsettings") &&
+        (true_admin_type != "groupconnection") &&
+        (true_admin_type != "permission")) {
+      build_full_close_tag(current_segment);
+    }
     current_segment = "";
   }
   return errors;

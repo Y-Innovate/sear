@@ -93,15 +93,15 @@ void check_arg_pointers(char *raw_request) {
 
 void test_generate_extract_user_request() {
   racfu_result_t result;
-  std::string request_json = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
+  std::string request_json   = get_json_sample(TEST_EXTRACT_USER_REQUEST_JSON);
   char *raw_request_expected = get_raw_sample(TEST_EXTRACT_USER_REQUEST_RAW);
 
   // Mock R_Admin result
-  r_admin_result_mock = NULL;
+  r_admin_result_mock      = NULL;
   r_admin_result_size_mock = 0;
-  r_admin_rc_mock = 0;
-  r_admin_saf_rc_mock = 0;
-  r_admin_racf_rc_mock = 0;
+  r_admin_rc_mock          = 0;
+  r_admin_saf_rc_mock      = 0;
+  r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
   racfu(&result, request_json.c_str(), false);
@@ -134,9 +134,9 @@ void test_parse_extract_user_result() {
   struct stat st;
   stat(TEST_EXTRACT_USER_RESULT_RAW, &st);
   r_admin_result_size_mock = st.st_size;
-  r_admin_rc_mock = 0;
-  r_admin_saf_rc_mock = 0;
-  r_admin_racf_rc_mock = 0;
+  r_admin_rc_mock          = 0;
+  r_admin_saf_rc_mock      = 0;
+  r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
   racfu(&result, request_json.c_str(), false);
@@ -164,11 +164,11 @@ void test_parse_extract_user_result_user_not_found() {
   // Note that there will be no result if the profile cannot be extracted
   // and the return and reason codes will be set to indicate why the extract
   // failed.
-  r_admin_result_mock = NULL;
+  r_admin_result_mock      = NULL;
   r_admin_result_size_mock = 0;
-  r_admin_rc_mock = -1;
-  r_admin_saf_rc_mock = 4;
-  r_admin_racf_rc_mock = 4;
+  r_admin_rc_mock          = -1;
+  r_admin_saf_rc_mock      = 4;
+  r_admin_racf_rc_mock     = 4;
   r_admin_racf_reason_mock = 4;
 
   racfu(&result, request_json.c_str(), false);

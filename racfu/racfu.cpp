@@ -42,13 +42,13 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   Logger logger = Logger(debug);
   nlohmann::json request, errors;
   std::string operation = "", admin_type = "", profile_name = "",
-              class_name = "";
-  request = nlohmann::json::parse(request_json);
+              class_name            = "";
+  request                           = nlohmann::json::parse(request_json);
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
-  const char *profile_name_ptr = NULL;
-  const char *class_name_ptr = NULL;
-  const char *surrogate_userid = NULL;
-  bool check_first = false;
+  const char *profile_name_ptr      = NULL;
+  const char *class_name_ptr        = NULL;
+  const char *surrogate_userid      = NULL;
+  bool check_first                  = false;
   // {
   //     "operation": "add",
   //     "admin_type": "user",
@@ -76,7 +76,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   }
   logger.debug(MSG_DONE);
 
-  operation = request["operation"].get<std::string>();
+  operation  = request["operation"].get<std::string>();
   admin_type = request["admin_type"].get<std::string>();
   if (request.contains("profile_name")) {
     profile_name = request["profile_name"].get<std::string>().c_str();
@@ -90,8 +90,8 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
                &return_codes, &logger);
     // Add/Alter/Delete
   } else {
-    if (request.contains("run_as_user_id")) {
-      surrogate_userid = request["run_as_user_id"].get<std::string>().c_str();
+    if (request.contains("run_as_userid")) {
+      surrogate_userid = request["run_as_userid"].get<std::string>().c_str();
     }
     logger.debug(MSG_SMO_PATH);
     check_first = ((operation == "alter") &&
@@ -106,7 +106,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
 void do_extract(const char *admin_type, const char *profile_name,
                 const char *class_name, racfu_result_t *racfu_result,
                 racfu_return_codes_t *return_codes_p, Logger *logger_p) {
-  char *raw_result = NULL;
+  char *raw_result  = NULL;
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
   uint8_t function_code;
@@ -194,17 +194,17 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   unsigned int result_buffer_size, request_length;
 
   nlohmann::json intermediate_result_json, errors{};
-  XmlParser *parser = new XmlParser();
+  XmlParser *parser       = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
-  irrsmo00_options = 13;
-  result_buffer_size = 10000;
-  saf_rc = 0;
-  racf_rc = 0;
-  racf_rsn = 0;
-  racfu_rc = 0;
+  irrsmo00_options        = 13;
+  result_buffer_size      = 10000;
+  saf_rc                  = 0;
+  racf_rc                 = 0;
+  racf_rsn                = 0;
+  racfu_rc                = 0;
 
-  xml_request_string = generator->build_xml_string(
+  xml_request_string      = generator->build_xml_string(
       admin_type, full_request_json_p, &errors, running_userid,
       &irrsmo00_options, &request_length, logger_p);
 
@@ -253,7 +253,7 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
 
   logger_p->debug(MSG_DONE);
 
-  return_codes_p->saf_return_code = saf_rc;
+  return_codes_p->saf_return_code  = saf_rc;
   return_codes_p->racf_return_code = racf_rc;
   return_codes_p->racf_reason_code = racf_rsn;
 
@@ -261,10 +261,11 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
       parser->build_json_string(xml_response_string, &racfu_rc, logger_p);
 
   logger_p->debug(MSG_SMO_POST_PROCESS);
+  logger_p->debug(intermediate_result_json.dump());
   // Maintain any RC 4's from parsing xml or post-processing json
   racfu_rc =
-      racfu_rc | post_process_smo_json(&intermediate_result_json,
-                                       std::string(profile_name), class_name);
+      racfu_rc | post_process_smo_json(&intermediate_result_json, profile_name,
+                                       admin_type, class_name);
   logger_p->debug(MSG_DONE);
 
   return_codes_p->racfu_return_code = racfu_rc;
@@ -334,16 +335,16 @@ void build_result(const char *operation, const char *admin_type,
 
   // Convert profile JSON to C string.
   std::string result_json_cpp_string = result_json.dump();
-  char *result_json_string = static_cast<char *>(
+  char *result_json_string           = static_cast<char *>(
       malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
   std::strcpy(result_json_string, result_json_cpp_string.c_str());
 
   // Build RACFu Result Structure
-  racfu_result->raw_result = raw_result;
-  racfu_result->raw_result_length = raw_result_length;
-  racfu_result->raw_request = raw_request;
+  racfu_result->raw_result         = raw_result;
+  racfu_result->raw_result_length  = raw_result_length;
+  racfu_result->raw_request        = raw_request;
   racfu_result->raw_request_length = raw_request_length;
-  racfu_result->result_json = result_json_string;
+  racfu_result->result_json        = result_json_string;
 
   logger_p->debug(MSG_DONE);
 

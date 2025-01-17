@@ -26,7 +26,7 @@ void update_error_json(nlohmann::json* errors_p, int8_t error_type,
 nlohmann::json format_error_json(nlohmann::json* errors_p) {
   std::string error_message_str;
   std::string prefix = "racfu: ", smo_prefix = "irrsmo00: ";
-  nlohmann::json error_data, output = {
+  nlohmann::json error_data, output          = {
                                  {"errors", {}}
   };
   for (int i = 0; i < errors_p->size(); i++) {
@@ -55,9 +55,10 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         break;
       }
       case BAD_PARAMETER_NAME: {
-        error_message_str = prefix + "'" +
-                            error_data["parameter"].get<std::string>() +
-                            "' is not a valid parameter";
+        error_message_str =
+            prefix + "'" + error_data["parameter"].get<std::string>() +
+            "' is not a valid parameter for the '" +
+            error_data["admin_type"].get<std::string>() + "' admin type";
         break;
       }
       case BAD_PARAMETER_DATA_TYPE: {
@@ -162,9 +163,17 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         break;
       }
       case BAD_ADD_TARGET: {
-        error_message_str = prefix + "unable to add '" +
-                            error_data["name"].get<std::string>() +
-                            "' because a profile already exists with that name";
+        error_message_str =
+            prefix + "unable to add '" + error_data["name"].get<std::string>() +
+            "' because a '" + error_data["admin_type"].get<std::string>() +
+            "' profile already exists with that name";
+        break;
+      }
+      case BAD_PARAMETER_FOR_OPERATION: {
+        error_message_str =
+            prefix + "'" + error_data["parameter"].get<std::string>() +
+            "' is not a valid parameter for the '" +
+            error_data["operation"].get<std::string>() + "' operation";
         break;
       }
       case SMO_ERROR_NO_TEXT: {

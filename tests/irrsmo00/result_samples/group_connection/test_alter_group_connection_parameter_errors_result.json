@@ -1,7 +1,6 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'user' admin type",
-    "racfu: 'junk' is not a valid parameter"
+    "racfu: 'group' is a required parameter for the 'group-connection' admin type"
   ],
   "return_codes": {
     "racf_reason_code": null,

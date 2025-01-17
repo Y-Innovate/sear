@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: unable to add 'SQUIDWRD' because a profile already exists with that name"
+    "racfu: unable to add 'TESTGRP0' because a 'group' profile already exists with that name"
    ],
   "return_codes": {
     "racf_reason_code": 0,

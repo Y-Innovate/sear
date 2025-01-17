@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
 
   // Write Raw Request
   char raw_request_file[] = "request.bin";
-  fp = fopen(raw_request_file, "wb");
+  fp                      = fopen(raw_request_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for writing.\n", raw_request_file);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 
   // Write Raw Result
   char raw_result_file[] = "result.bin";
-  fp = fopen(raw_result_file, "wb");
+  fp                     = fopen(raw_result_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for writing.\n", raw_result_file);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
 
   // Write Result JSON
   char result_json_file[] = "result.json";
-  fp = fopen(result_json_file, "wb");
+  fp                      = fopen(result_json_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for wirting.\n", "result_json_file");

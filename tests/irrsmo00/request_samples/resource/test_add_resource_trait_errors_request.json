@@ -1,0 +1,9 @@
+{
+  "operation": "add",
+  "admin_type": "resource",
+  "profile_name": "TESTING",
+  "class_name": "ELIJTEST",
+  "traits": {
+    "junkop:base:universal_access": "None"
+  }
+}

@@ -42,8 +42,8 @@ typedef struct {
 } segment_key_mapping_t;              // mappings for this segment.
 
 typedef struct {
-  const char profile_type[8 + 1];  // The type of profile (i.e., 'user')
-  const int size;                  // The number of segments in the profile.
+  const char profile_type[16 + 1];  // The type of profile (i.e., 'user')
+  const int size;                   // The number of segments in the profile.
   const segment_key_mapping_t *segments;
 } key_mapping_t;
 

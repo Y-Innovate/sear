@@ -14,10 +14,10 @@ extern int irrsmo64_saf_rc_mock;
 extern int irrsmo64_racf_rc_mock;
 extern int irrsmo64_racf_reason_mock;
 #else
-char *irrsmo64_result_mock = NULL;
+char *irrsmo64_result_mock    = NULL;
 int irrsmo64_result_size_mock = 0;
-int irrsmo64_saf_rc_mock = 0;
-int irrsmo64_racf_rc_mock = 0;
+int irrsmo64_saf_rc_mock      = 0;
+int irrsmo64_racf_rc_mock     = 0;
 int irrsmo64_racf_reason_mock = 0;
 #endif
 

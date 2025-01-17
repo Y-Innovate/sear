@@ -12,7 +12,7 @@
 #define MISSING_PARAMETER 3
 //"'class_name' is a required parameter for the 'resource' admin type"
 #define BAD_PARAMETER_NAME 4
-//"'junk' is not a valid parameter"
+//"'junk' is not a valid parameter for the 'user' admin type"
 #define BAD_PARAMETER_DATA_TYPE 5
 //"'admin_type' must be a string value"
 #define BAD_TRAIT_STRUCTURE 6
@@ -39,6 +39,8 @@
 //"'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
 #define BAD_BOOLEAN_OPERATOR_COMBO 16
 //"'false' is not a valid value for 'omvs:auto_uid'"
+#define BAD_PARAMETER_FOR_OPERATION 17
+//"'traits' is not a valid parameter for the 'delete' operation"
 #define XML_PARSE_ERROR 101
 //"unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET_CLASS 102

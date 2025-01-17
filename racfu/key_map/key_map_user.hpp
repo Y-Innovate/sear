@@ -47,7 +47,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
-     "base:group_connection_connect_date",  "cauthda",
+     "base:group_connection_create_date",  "cauthda",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
@@ -59,7 +59,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:group_connection_connects",  "cinitct",
+     "base:group_connection_used_count",  "cinitct",
      TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
@@ -115,16 +115,12 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:mfa",  "factorn",
+     "base:mfa_factors",  "factorn",
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "base:mfa_factor",   "factor",
-     TRAIT_TYPE_STRING,   {true, false, true, false},
-     },
-    {
      "base:mfa_active",  "facactv",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
      "base:factor_tag_*",  "factag*",
@@ -160,11 +156,11 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:mfa_password_fallback",  "mfaflbk",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
      "base:mfa_policy", "mfapolnm",
-     TRAIT_TYPE_STRING,   {false, true, true, false},
+     TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
      "base:mfa_policies",  "mfapoln",
@@ -281,10 +277,223 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
     {
      "base:logon_allowed_time", "whentime",
      TRAIT_TYPE_STRING,  {true, false, false, false},
-     },
+     }
 };
 
-const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
+const trait_key_mapping_t USER_CICS_KEY_MAP[]{
+    {
+     "cics:operator_class",  "opclass",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "cics:operator_classes", "opclassn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "cics:operator_id",  "opident",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:operator_priority",   "opprty",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:resource_security_level_key",   "rslkey",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:resource_security_level_keys",  "rslkeyn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "cics:timeout",  "timeout",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:transaction_security_level_key",   "tslkey",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cics:transaction_security_level_keys",  "tslkeyn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "cics:force_signoff_when_xrf_takeover",  "xrfsoff",
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_CSDATA_KEY_MAP[]{
+    {
+     "csdata:", "",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_DCE_KEY_MAP[]{
+    {
+     "dce:auto_login",  "autolog",
+     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
+     },
+    {
+     "dce:name",  "dcename",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dce:home_cell", "homecell",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dce:home_cell_uuid", "homeuuid",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dce:uuid",     "uuid",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_DFP_KEY_MAP[]{
+    {
+     "dfp:data_application", "dataappl",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dfp:data_class", "dataclas",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dfp:management_class", "mgmtclas",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "dfp:storage_class", "storclas",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_EIM_KEY_MAP[]{
+    {
+     "eim:ldap_bind_profile", "ldapprof",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_KERB_KEY_MAP[]{
+    {
+     "kerb:encryption_algorithm",  "encrypt",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "kerb:encryption_algorithms", "encryptn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "kerb:name", "kerbname",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "kerb:key_from",  "keyfrom",
+     TRAIT_TYPE_STRING, {false, false, false, false},
+     },
+    {
+     "kerb:key_version",  "keyvers",
+     TRAIT_TYPE_STRING, {false, false, false, false},
+     },
+    {
+     "kerb:max_ticket_life", "maxtktlf",
+     TRAIT_TYPE_UINT,   {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_LANGUAGE_KEY_MAP[]{
+    {
+     "language:primary", "primary",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "language:secondary",  "second",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_LNOTES_KEY_MAP[]{
+    {
+     "lnotes:zos_short_name", "sname",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_MFA_KEY_MAP[]{
+    {
+     "mfa:factor",   "factor",
+     TRAIT_TYPE_STRING, {true, false, false, false},
+     },
+    {
+     "mfa:active",  "facactv",
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
+     },
+    {
+     "mfa:tags",  "factags",
+     TRAIT_TYPE_STRING,   {true, false, true, true},
+     },
+    {
+     "mfa:password_fallback",  "mfaflbk",
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
+     },
+    {
+     "mfa:mfa_policy", "mfapolnm",
+     TRAIT_TYPE_STRING,  {false, true, true, false},
+     }
+};
+
+const trait_key_mapping_t USER_NDS_KEY_MAP[]{
+    {
+     "nds:username", "uname",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_NETVIEW_KEY_MAP[]{
+    {
+     "netview:default_mcs_console_name", "consname",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "netview:security_control_check",      "ctl",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "netview:domain",  "domains",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "netview:domains", "domainsn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "netview:logon_commands",       "ic",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "netview:receive_unsolicited_messages", "msgrecvr",
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     },
+    {
+     "netview:operator_graphic_monitor_facility_administration_allowed", "ngmfadmn",
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     },
+    {
+     "netview:operator_graphic_monitor_facility_display_authority", "ngmfvspn",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "netview:operator_scope_classes",  "opclass",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     }
+};
+
+const trait_key_mapping_t USER_OMVS_KEY_MAP[]{
     {
      "omvs:max_address_space_size",   "assize",
      TRAIT_TYPE_UINT,  {true, false, false, true},
@@ -339,7 +548,136 @@ const trait_key_mapping_t USER_OMVS_KEY_MAP[] = {
      }
 };
 
-const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
+const trait_key_mapping_t USER_OPERPARM_KEY_MAP[]{
+    {
+     "operparm:alternate_console_group",   "altgrp",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_automated_messages",     "auto",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:command_target_system",   "cmdsys",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_delete_operator_messages",      "dom",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_hardcopy_messages",       "hc",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_internal_console_messages",   "intids",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:console_searching_key",      "key",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:message_level",    "level",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:message_levels",   "leveln",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:log_command_responses",   "logcmd",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:message_format",    "mform",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:migration_id",    "migid",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:monitor_event",  "monitor",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:monitor_events", "monitorn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:message_scope",   "mscope",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "operparm:message_scopes",  "mscopen",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:console_authority", "operauth",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:console_authorities", "operautn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:receive_routing_code", "routcode",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_routing_codes", "routcodn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "operparm:message_queue_storage",  "storage",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_undelivered_messages",       "ud",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "operparm:receive_unknown_console_id_messages",  "unknids",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_OVM_KEY_MAP[]{
+    {
+     "ovm:file_system_root",   "fsroot",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "ovm:home_directory",    "vhome",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "ovm:default_shell", "vprogram",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "ovm:uid",     "vuid",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_PROXY_KEY_MAP[]{
+    {
+     "proxy:bind_distinguished_name",   "binddn",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "proxy:bind_password",   "bindpw",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "proxy:ldap_host", "ldaphost",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
+const trait_key_mapping_t USER_TSO_KEY_MAP[]{
     {
      "tso:account_number",  "acctnum",
      TRAIT_TYPE_STRING, {true, false, false, true},
@@ -394,10 +732,68 @@ const trait_key_mapping_t USER_TSO_KEY_MAP[] = {
      }
 };
 
+const trait_key_mapping_t USER_WORKATTR_KEY_MAP[]{
+    {
+     "workattr:account_number", "waaccnt",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_address_1", "waaddr1",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_address_2", "waaddr2",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_address_3", "waaddr3",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_address_4", "waaddr4",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_building",  "wabldg",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_department",  "wadept",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_user",  "waname",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_room",  "waroom",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     },
+    {
+     "workattr:sysout_email", "waemail",
+     TRAIT_TYPE_STRING, {true, false, false, true},
+     }
+};
+
 const segment_key_mapping_t USER_SEGMENT_KEY_MAP[] = {
-    {"base", field_count(USER_BASE_SEGMENT_MAP), USER_BASE_SEGMENT_MAP},
-    {"omvs",     field_count(USER_OMVS_KEY_MAP),     USER_OMVS_KEY_MAP},
-    { "tso",      field_count(USER_TSO_KEY_MAP),      USER_TSO_KEY_MAP}
+    {    "base", field_count(USER_BASE_SEGMENT_MAP), USER_BASE_SEGMENT_MAP},
+    {    "cics",     field_count(USER_CICS_KEY_MAP),     USER_CICS_KEY_MAP},
+    {  "csdata",   field_count(USER_CSDATA_KEY_MAP),   USER_CSDATA_KEY_MAP},
+    {     "dce",      field_count(USER_DCE_KEY_MAP),      USER_DCE_KEY_MAP},
+    {     "dfp",      field_count(USER_DFP_KEY_MAP),      USER_DFP_KEY_MAP},
+    {     "eim",      field_count(USER_EIM_KEY_MAP),      USER_EIM_KEY_MAP},
+    {    "kerb",     field_count(USER_KERB_KEY_MAP),     USER_KERB_KEY_MAP},
+    {"language", field_count(USER_LANGUAGE_KEY_MAP), USER_LANGUAGE_KEY_MAP},
+    {  "lnotes",   field_count(USER_LNOTES_KEY_MAP),   USER_LNOTES_KEY_MAP},
+    {     "mfa",      field_count(USER_MFA_KEY_MAP),      USER_MFA_KEY_MAP},
+    {     "nds",      field_count(USER_NDS_KEY_MAP),      USER_NDS_KEY_MAP},
+    { "netview",  field_count(USER_NETVIEW_KEY_MAP),  USER_NETVIEW_KEY_MAP},
+    {    "omvs",     field_count(USER_OMVS_KEY_MAP),     USER_OMVS_KEY_MAP},
+    {"operparm", field_count(USER_OPERPARM_KEY_MAP), USER_OPERPARM_KEY_MAP},
+    {     "ovm",      field_count(USER_OVM_KEY_MAP),      USER_OVM_KEY_MAP},
+    {   "proxy",    field_count(USER_PROXY_KEY_MAP),    USER_PROXY_KEY_MAP},
+    {     "tso",      field_count(USER_TSO_KEY_MAP),      USER_TSO_KEY_MAP},
+    {"workattr", field_count(USER_WORKATTR_KEY_MAP), USER_WORKATTR_KEY_MAP}
 };
 
 #endif
