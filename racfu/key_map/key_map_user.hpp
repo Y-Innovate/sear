@@ -115,16 +115,12 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:mfa",  "factorn",
+     "base:mfa_factors",  "factorn",
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "base:mfa_factor",   "factor",
-     TRAIT_TYPE_STRING,   {true, false, true, false},
-     },
-    {
      "base:mfa_active",  "facactv",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
      "base:factor_tag_*",  "factag*",
@@ -160,11 +156,11 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      },
     {
      "base:mfa_password_fallback",  "mfaflbk",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
      "base:mfa_policy", "mfapolnm",
-     TRAIT_TYPE_STRING,   {false, true, true, false},
+     TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
      "base:mfa_policies",  "mfapoln",
@@ -431,28 +427,24 @@ const trait_key_mapping_t USER_LNOTES_KEY_MAP[]{
 const trait_key_mapping_t USER_MFA_KEY_MAP[]{
     {
      "mfa:factor",   "factor",
-     TRAIT_TYPE_STRING,  {true, false, false, false},
+     TRAIT_TYPE_STRING, {true, false, false, false},
      },
     {
      "mfa:active",  "facactv",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
      },
     {
      "mfa:tags",  "factags",
-     TRAIT_TYPE_STRING,    {true, false, true, true},
+     TRAIT_TYPE_STRING,   {true, false, true, true},
      },
     {
      "mfa:password_fallback",  "mfaflbk",
-     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,  {true, false, false, true},
      },
     {
-     "base:mfa_policy", "mfapolnm",
-     TRAIT_TYPE_STRING,   {false, true, true, false},
-     },
-    {
-     "base:mfa_policies",  "mfapoln",
-     TRAIT_TYPE_REPEAT, {false, false, false, false},
-     },
+     "mfa:mfa_policy", "mfapolnm",
+     TRAIT_TYPE_STRING,  {false, true, true, false},
+     }
 };
 
 const trait_key_mapping_t USER_NDS_KEY_MAP[]{

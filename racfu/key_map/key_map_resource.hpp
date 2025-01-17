@@ -52,19 +52,15 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      },
     {
      "base:control_access_count",  "acscntl",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:read_access_count",  "acsread",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:update_access_count",  "acsupdt",
-     TRAIT_TYPE_STRING, {false, false, false, false},
-     },
-    {
-     "base:all_access_count",      "all",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {false, false, false, false},
      },
     {
      "base:application_data", "appldata",
@@ -91,8 +87,12 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:security_categories", "category",
+     "base:security_category", "category",
      TRAIT_TYPE_STRING,    {true, true, true, false},
+     },
+    {
+     "base:security_categories",  "numctgy",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:create_date", "creatdat",
@@ -155,8 +155,12 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:member",   "member",
+     "base:member_class_name",   "member",
      TRAIT_TYPE_STRING,    {true, true, true, false},
+     },
+    {
+     "base:member_class_names",   "member",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:notify_userid",   "notify",
@@ -168,7 +172,7 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      },
     {
      "base:auditing",   "raudit",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:global_auditing",  "rgaudit",
@@ -199,16 +203,24 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:volumes",   "volume",
+     "base:volume",   "volume",
      TRAIT_TYPE_STRING,   {false, true, true, false},
+     },
+    {
+     "base:volumes",   "volcnt",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:warn_on_insufficient_access",  "warning",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:terminal_access_allowed_days", "whendays",
+     "base:terminal_access_allowed_day", "whendays",
      TRAIT_TYPE_STRING,  {true, false, false, false},
+     },
+    {
+     "base:terminal_access_allowed_days", "whendyct",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "base:terminal_access_allowed_time", "whentime",
@@ -219,79 +231,87 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
 const trait_key_mapping_t RESOURCE_CDTINFO_KEY_MAP[]{
     {
      "cdtinfo:case_allowed",  "cdtcase",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:default_racroute_return_code", "cdtdftrc",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "cdtinfo:valid_first_characters", "cdtfirst",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cdtinfo:valid_first_character", "cdtfirst",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cdtinfo:valid_first_characters",  "cdtfirn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "cdtinfo:generic_profile_checking",   "cdtgen",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:generic_profile_sharing",  "cdtgenl",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:grouping_class_name", "cdtgroup",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:key_qualifiers", "cdtkeyql",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:manditory_access_control_processing",   "cdtmac",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:max_length", "cdtmaxln",
-     TRAIT_TYPE_UINT, {true, false, false, true},
+     TRAIT_TYPE_UINT,   {true, false, false, true},
      },
     {
      "cdtinfo:max_length_entityx", "cdtmaxlx",
-     TRAIT_TYPE_UINT, {true, false, false, true},
+     TRAIT_TYPE_UINT,   {true, false, false, true},
      },
     {
      "cdtinfo:member_class_name", "cdtmembr",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:operations",  "cdtoper",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "cdtinfo:valid_other_characters", "cdtother",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     "cdtinfo:valid_other_character", "cdtother",
+     TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "cdtinfo:valid_other_characters",  "cdtothn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "cdtinfo:posit_number", "cdtposit",
-     TRAIT_TYPE_UINT, {true, false, false, true},
+     TRAIT_TYPE_UINT,   {true, false, false, true},
      },
     {
      "cdtinfo:profiles_allowed", "cdtprfal",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:raclist_allowed",  "cdtracl",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:send_enf_signal_on_profile_creation",  "cdtsigl",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:security_label_required", "cdtslreq",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "cdtinfo:default_universal_access",  "cdtuacc",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      }
 };
 
@@ -347,12 +367,16 @@ const trait_key_mapping_t RESOURCE_CSDATA_KEY_MAP[]{
 
 const trait_key_mapping_t RESOURCE_DLFDATA_KEY_MAP[]{
     {
-     "dlfdata:job_names", "jobname",
-     TRAIT_TYPE_STRING,   {true, true, true, true},
+     "dlfdata:job_name",  "jobname",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
      },
     {
-     "dlfdata:retain",  "retain",
-     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
+     "dlfdata:job_names", "jobnmcnt",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "dlfdata:retain_object_after_use",   "retain",
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
 };
 
@@ -389,8 +413,12 @@ const trait_key_mapping_t RESOURCE_KERB_KEY_MAP[]{
      TRAIT_TYPE_UINT,   {true, false, false, true},
      },
     {
-     "kerb:encryption_algorithms",  "encrypt",
+     "kerb:encryption_algorithm",  "encrypt",
      TRAIT_TYPE_STRING,   {true, false, false, true},
+     },
+    {
+     "kerb:encryption_algorithms", "encryptn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "kerb:realm_name", "kerbname",
@@ -456,33 +484,33 @@ const trait_key_mapping_t RESOURCE_ICSF_KEY_MAP[]{
 const trait_key_mapping_t RESOURCE_ICTX_KEY_MAP[]{
     {
      "ictx:use_identity_map",    "domap",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
      "ictx:require_identity_mapping",   "mapreq",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
      "ictx:identity_map_timeout", "maptimeo",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_UINT, {true, false, false, true},
      },
     {
      "ictx:cache_application_provided_identity_map",   "usemap",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      }
 };
 
 const trait_key_mapping_t RESOURCE_IDTPARMS_KEY_MAP[]{
     {
-     "idtparms:token", "sigtoken",
+     "idtparms:pkcs11_token_name", "sigtoken",
      TRAIT_TYPE_STRING,  {true, false, false, true},
      },
     {
-     "idtparms:sequence_number",  "sigseqn",
+     "idtparms:pkcs11_sequence_number",  "sigseqn",
      TRAIT_TYPE_UINT,  {true, false, false, true},
      },
     {
-     "idtparms:category",   "sigcat",
+     "idtparms:pkcs11_category",   "sigcat",
      TRAIT_TYPE_STRING,  {true, false, false, true},
      },
     {
@@ -501,22 +529,26 @@ const trait_key_mapping_t RESOURCE_IDTPARMS_KEY_MAP[]{
 
 const trait_key_mapping_t RESOURCE_JES_KEY_MAP[]{
     {
-     "jes:key_label", "keylabel",
+     "jes:icsf_key_label", "keylabel",
      TRAIT_TYPE_STRING, {true, false, false, true},
      }
 };
 
 const trait_key_mapping_t RESOURCE_MFPOLICY_KEY_MAP[]{
     {
-     "mfpolicy:factors", "factors",
+     "mfpolicy:factor",  "factors",
      TRAIT_TYPE_STRING,     {true, true, true, true},
      },
     {
-     "mfpolicy:token_timeout", "timeout",
-     TRAIT_TYPE_STRING, {false, false, false, false},
+     "mfpolicy:factors", "factorsn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "mfpolicy:reuse_token",   "reuse",
+     "mfpolicy:token_timeout",  "timeout",
+     TRAIT_TYPE_UINT, {false, false, false, false},
+     },
+    {
+     "mfpolicy:reuse_token",    "reuse",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      }
 };
@@ -543,7 +575,7 @@ const trait_key_mapping_t RESOURCE_SESSION_KEY_MAP[]{
      },
     {
      "session:session_key_interval", "interval",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_UINT, {true, false, false, true},
      },
     {
      "session:locked",     "lock",
@@ -619,7 +651,7 @@ const trait_key_mapping_t RESOURCE_STDATA_KEY_MAP[]{
      TRAIT_TYPE_BOOLEAN, {true, false, false, true},
      },
     {
-     "stdata:user",     "user",
+     "stdata:userid",     "user",
      TRAIT_TYPE_STRING, {true, false, false, true},
      }
 };
@@ -637,24 +669,40 @@ const trait_key_mapping_t RESOURCE_SVFMR_KEY_MAP[]{
 
 const trait_key_mapping_t RESOURCE_TME_KEY_MAP[]{
     {
-     "tme:children", "children",
-     TRAIT_TYPE_STRING,    {true, true, true, true},
+     "tme:child", "children",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
      },
     {
-     "tme:groups",   "groups",
-     TRAIT_TYPE_STRING,    {true, true, true, true},
+     "tme:children",   "childn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "tme:group",   "groups",
+     TRAIT_TYPE_STRING,     {true, true, true, true},
+     },
+    {
+     "tme:groups",   "groupn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
      "tme:parent",   "parent",
-     TRAIT_TYPE_STRING,  {true, false, false, true},
+     TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
      "tme:resource", "resource",
-     TRAIT_TYPE_STRING,    {true, true, true, true},
+     TRAIT_TYPE_STRING,     {true, true, true, true},
      },
     {
-     "tme:roles",    "roles",
-     TRAIT_TYPE_STRING, {true, false, false, false},
+     "tme:resources",     "resn",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
+     },
+    {
+     "tme:role",    "roles",
+     TRAIT_TYPE_STRING,  {true, false, false, false},
+     },
+    {
+     "tme:roles",    "rolen",
+     TRAIT_TYPE_REPEAT, {false, false, false, false},
      }
 };
 
