@@ -160,7 +160,7 @@ void do_extract(const char *admin_type, const char *profile_name,
     raw_result_length = ntohl(generic_result_buffer->result_buffer_length);
     logger_p->debug(MSG_RESULT_SEQ_GENERIC,
                     logger_p->cast_hex_string(raw_result, raw_result_length));
-    profile_json = post_process_generic(generic_result_buffer);
+    profile_json = post_process_generic(generic_result_buffer, admin_type);
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
