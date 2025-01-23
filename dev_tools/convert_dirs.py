@@ -13,12 +13,14 @@ def convert_file(file_name, CCSID_1="ascii", CCSID_2="ascii", output_file_name =
 
     f = open(file_name, "rb")
     file_text = f.read().decode(CCSID_1)
+    f.close()
 
     if remove_newline:
         file_text = file_text.replace("\n","")
 
     f = open(output_file_name, "wb")
     f.write(file_text.encode(CCSID_2))
+    f.close()
     return True
 
 def convert_directory(directory_name, CCSID_1="ascii", CCSID_2="ascii", output_directory_name="", remove_newline=False):
