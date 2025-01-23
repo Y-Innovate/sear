@@ -194,6 +194,11 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
                             error_data["profile_name"].get<std::string>() + "'";
         break;
       }
+      case EXTRACT_FAILED_RACF_OPTIONS: {
+        error_message_str = prefix + "unable to extract '" +
+                            error_data["admin_type"].get<std::string>() + "'";
+        break;
+      }
       default: {
         error_message_str = prefix + "an unknown error has occurred";
       }

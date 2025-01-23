@@ -52,7 +52,7 @@ int main() {
   RUN_TEST(test_parse_alter_racf_options_result);
   RUN_TEST(test_parse_alter_racf_options_parameter_errors);
   RUN_TEST(test_parse_alter_racf_options_trait_errors);
-  // Data-Set
+  // Data Set
   RUN_TEST(test_generate_add_data_set_request);
   RUN_TEST(test_generate_alter_data_set_request);
   RUN_TEST(test_generate_delete_data_set_request);
@@ -79,10 +79,29 @@ int main() {
   RUN_TEST(test_parse_alter_permission_dataset_parameter_errors);
   RUN_TEST(test_parse_alter_permission_trait_errors);
 
-  // Profile Extract
+  // IRRSEQ00
+  // User
   RUN_TEST(test_generate_extract_user_request);
   RUN_TEST(test_parse_extract_user_result);
   RUN_TEST(test_parse_extract_user_result_user_not_found);
+  // Group
+  RUN_TEST(test_generate_extract_group_request);
+  RUN_TEST(test_parse_extract_group_result);
+  RUN_TEST(test_parse_extract_group_result_group_not_found);
+  // Group Connection
+  RUN_TEST(test_generate_extract_group_connection_request);
+  RUN_TEST(test_parse_extract_group_connection_result);
+  RUN_TEST(
+      test_parse_extract_group_connection_result_group_connection_not_found);
+  // RACF Options
+  RUN_TEST(test_generate_extract_racf_options_request);
+  RUN_TEST(test_parse_extract_racf_options_result);
+  RUN_TEST(test_parse_extract_racf_options_result_racf_options_not_found);
+  // Data Set
+  // Resource
+  RUN_TEST(test_generate_extract_resource_request);
+  RUN_TEST(test_parse_extract_resource_result);
+  RUN_TEST(test_parse_extract_resource_result_resource_not_found);
 
   return UNITY_END();
 }

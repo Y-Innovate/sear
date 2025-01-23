@@ -54,7 +54,9 @@
 // copied from "errormessage" supplied by irrsmo00 plus "Text in error:
 // {textinerror}" supplied by irrsmo00
 #define EXTRACT_FAILED 113
-// "unable to extract 'user' profile 'SQUIDWRD'""
+// "unable to extract 'user' profile 'SQUIDWRD'"
+#define EXTRACT_FAILED_RACF_OPTIONS 114
+// "unable to extract 'racf-options'"
 
 void update_error_json(nlohmann::json* errors_p, int8_t error_type,
                        nlohmann::json error_data);

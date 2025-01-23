@@ -142,11 +142,18 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Build Failure Result
   if (raw_result == NULL) {
-    update_error_json(&profile_json["errors"], EXTRACT_FAILED,
-                      nlohmann::json{
-                          {  "admin_type",   std::string(admin_type)},
-                          {"profile_name", std::string(profile_name)}
-    });
+    if (strcmp(admin_type, "racf-options") != 0) {
+      update_error_json(&profile_json["errors"], EXTRACT_FAILED,
+                        nlohmann::json{
+                            {  "admin_type",   std::string(admin_type)},
+                            {"profile_name", std::string(profile_name)}
+      });
+    } else {
+      update_error_json(&profile_json["errors"], EXTRACT_FAILED_RACF_OPTIONS,
+                        nlohmann::json{
+                            {"admin_type", std::string(admin_type)}
+      });
+    }
     build_result("extract", admin_type, profile_name, class_name, NULL, nullptr,
                  0, raw_request, raw_request_length, &profile_json,
                  racfu_result, return_codes_p, logger_p);
