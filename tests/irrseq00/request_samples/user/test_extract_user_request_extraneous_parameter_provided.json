@@ -1,0 +1,8 @@
+{
+  "admin_type": "user",
+  "operation": "extract",
+  "profile_name": "SQUIDWRD",
+  "traits": {
+    "omvs:uid": 24
+  }
+}

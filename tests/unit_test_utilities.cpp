@@ -50,6 +50,22 @@ std::string get_json_sample(const char *filename) {
   return json_sample_cpp_string;
 }
 
+void test_validation_errors(const char *test_request_json,
+                            const char *test_validation_errors_result_json) {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(test_request_json);
+  std::string result_json_expected =
+      get_json_sample(test_validation_errors_result_json);
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
 void check_arg_pointers(char *raw_request, bool racf_options) {
   // Arg Pointers on z/Architecture (31-bit big endian)
   /*

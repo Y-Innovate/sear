@@ -6,6 +6,8 @@
 char *get_sample(const char *filename, const char *mode);
 char *get_raw_sample(const char *filename);
 std::string get_json_sample(const char *filename);
+void test_validation_errors(const char *test_request_json,
+                            const char *test_validation_errors_result_json);
 
 // IRRSEQ00
 void check_arg_pointers(char *raw_request, bool racf_options);

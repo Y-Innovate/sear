@@ -84,6 +84,8 @@ int main() {
   RUN_TEST(test_generate_extract_user_request);
   RUN_TEST(test_parse_extract_user_result);
   RUN_TEST(test_parse_extract_user_result_user_not_found);
+  RUN_TEST(test_parse_extract_user_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_user_result_extraneous_parameter_provided);
   // Group
   RUN_TEST(test_generate_extract_group_request);
   RUN_TEST(test_parse_extract_group_result);
@@ -98,6 +100,9 @@ int main() {
   RUN_TEST(test_parse_extract_racf_options_result);
   RUN_TEST(test_parse_extract_racf_options_result_racf_options_not_found);
   // Data Set
+  RUN_TEST(test_generate_extract_data_set_request);
+  RUN_TEST(test_parse_extract_data_set_result);
+  RUN_TEST(test_parse_extract_data_set_result_data_set_not_found);
   // Resource
   RUN_TEST(test_generate_extract_resource_request);
   RUN_TEST(test_parse_extract_resource_result);

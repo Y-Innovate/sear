@@ -187,35 +187,13 @@ void test_parse_add_user_result_user_already_exists() {
 }
 
 void test_parse_add_user_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_USER_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_USER_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_USER_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ADD_USER_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_add_user_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_USER_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_USER_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_USER_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ADD_USER_TRAIT_ERRORS_RESULT_JSON);
 }
 
 void test_parse_add_user_no_xml_data_error() {
@@ -267,19 +245,8 @@ void test_parse_alter_user_no_xml_data_error() {
 }
 
 void test_parse_alter_user_traits_not_json_error() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_REQUEST_JSON,
+                         TEST_ALTER_USER_TRAITS_NOT_JSON_ERROR_RESULT_JSON);
 }
 
 void test_parse_irrsmo00_errors_result() {
@@ -312,19 +279,8 @@ void test_parse_irrsmo00_errors_result() {
 }
 
 void test_parse_delete_user_trait_error_result() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_DELETE_USER_WITH_TRAITS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_DELETE_USER_WITH_TRAITS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_DELETE_USER_WITH_TRAITS_REQUEST_JSON,
+                         TEST_DELETE_USER_WITH_TRAITS_RESULT_JSON);
 }
 
 // Group tests
@@ -505,35 +461,13 @@ void test_parse_add_group_result_group_already_exists() {
 }
 
 void test_parse_add_group_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_GROUP_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_GROUP_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_GROUP_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ADD_GROUP_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_add_group_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_GROUP_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_GROUP_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_GROUP_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ADD_GROUP_TRAIT_ERRORS_RESULT_JSON);
 }
 
 // Group-Connection tests
@@ -661,35 +595,14 @@ void test_parse_delete_group_connection_result() {
 }
 
 void test_parse_alter_group_connection_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json = get_json_sample(
-      TEST_ALTER_GROUP_CONNECTION_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_GROUP_CONNECTION_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(
+      TEST_ALTER_GROUP_CONNECTION_PARAMETER_ERRORS_REQUEST_JSON,
+      TEST_ALTER_GROUP_CONNECTION_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_alter_group_connection_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_GROUP_CONNECTION_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_GROUP_CONNECTION_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_GROUP_CONNECTION_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ALTER_GROUP_CONNECTION_TRAIT_ERRORS_RESULT_JSON);
 }
 
 // Racf-Options tests
@@ -755,35 +668,13 @@ void test_parse_alter_racf_options_result() {
 }
 
 void test_parse_alter_racf_options_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_RACF_OPTIONS_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_RACF_OPTIONS_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_RACF_OPTIONS_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ALTER_RACF_OPTIONS_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_alter_racf_options_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_RACF_OPTIONS_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_RACF_OPTIONS_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_RACF_OPTIONS_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ALTER_RACF_OPTIONS_TRAIT_ERRORS_RESULT_JSON);
 }
 
 // Data-Set tests
@@ -964,35 +855,13 @@ void test_parse_add_data_set_result_data_set_already_exists() {
 }
 
 void test_parse_add_data_set_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_DATA_SET_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ADD_DATA_SET_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_add_data_set_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_DATA_SET_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_DATA_SET_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_DATA_SET_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ADD_DATA_SET_TRAIT_ERRORS_RESULT_JSON);
 }
 
 // Resource tests
@@ -1173,35 +1042,13 @@ void test_parse_add_resource_result_resource_already_exists() {
 }
 
 void test_parse_add_resource_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_RESOURCE_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_RESOURCE_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_RESOURCE_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ADD_RESOURCE_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_add_resource_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ADD_RESOURCE_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ADD_RESOURCE_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ADD_RESOURCE_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ADD_RESOURCE_TRAIT_ERRORS_RESULT_JSON);
 }
 // Permission tests
 void test_generate_alter_permission_request() {
@@ -1327,49 +1174,17 @@ void test_parse_delete_permission_result() {
 }
 
 void test_parse_alter_permission_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_PERMISSION_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_PERMISSION_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_PERMISSION_PARAMETER_ERRORS_REQUEST_JSON,
+                         TEST_ALTER_PERMISSION_PARAMETER_ERRORS_RESULT_JSON);
 }
 
 void test_parse_alter_permission_dataset_parameter_errors() {
-  racfu_result_t result;
-  std::string request_json = get_json_sample(
-      TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON);
-  std::string result_json_expected = get_json_sample(
+  test_validation_errors(
+      TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON,
       TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_alter_permission_trait_errors() {
-  racfu_result_t result;
-  std::string request_json =
-      get_json_sample(TEST_ALTER_PERMISSION_TRAIT_ERRORS_REQUEST_JSON);
-  std::string result_json_expected =
-      get_json_sample(TEST_ALTER_PERMISSION_TRAIT_ERRORS_RESULT_JSON);
-
-  racfu(&result, request_json.c_str(), false);
-
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  test_validation_errors(TEST_ALTER_PERMISSION_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ALTER_PERMISSION_TRAIT_ERRORS_RESULT_JSON);
 }

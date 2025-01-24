@@ -26,6 +26,18 @@ void test_parse_extract_user_result_user_not_found() {
       TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON);
 }
 
+void test_parse_extract_user_result_required_parameter_missing() {
+  test_validation_errors(
+      TEST_EXTRACT_USER_REQUEST_REQUIRED_PARAMETER_MISSING_JSON,
+      TEST_EXTRACT_USER_RESULT_REQUIRED_PARAMETER_MISSING_JSON);
+}
+
+void test_parse_extract_user_result_extraneous_parameter_provided() {
+  test_validation_errors(
+      TEST_EXTRACT_USER_REQUEST_EXTRANEOUS_PARAMETER_PROVIDED_JSON,
+      TEST_EXTRACT_USER_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON);
+}
+
 // Extract Group
 void test_generate_extract_group_request() {
   test_extract_request_generation(TEST_EXTRACT_GROUP_REQUEST_JSON,
@@ -84,6 +96,22 @@ void test_parse_extract_racf_options_result_racf_options_not_found() {
 }
 
 // Extract Data Set
+void test_generate_extract_data_set_request() {
+  test_extract_request_generation(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
+                                  TEST_EXTRACT_DATA_SET_REQUEST_RAW, false);
+}
+
+void test_parse_extract_data_set_result() {
+  test_parse_extract_request(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
+                             TEST_EXTRACT_DATA_SET_RESULT_JSON,
+                             TEST_EXTRACT_DATA_SET_RESULT_RAW);
+}
+
+void test_parse_extract_data_set_result_data_set_not_found() {
+  test_parse_extract_result_profile_not_found(
+      TEST_EXTRACT_DATA_SET_REQUEST_JSON,
+      TEST_EXTRACT_DATA_SET_RESULT_DATA_SET_NOT_FOUND_JSON);
+}
 
 // Extract Resource
 void test_generate_extract_resource_request() {
