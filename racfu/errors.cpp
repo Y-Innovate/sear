@@ -34,6 +34,11 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
       error_data = (*errors_p)[i]["error_data"];
     }
     switch ((*errors_p)[i]["error_code"].get<uint>()) {
+      case SYNTAX_ERROR: {
+        error_message_str = prefix + "Syntax error in request JSON at byte " +
+                            std::to_string(error_data["byte"].get<int>());
+        break;
+      }
       case BAD_PARAMETER_VALUE: {
         error_message_str = prefix + "'" +
                             error_data["parameter_value"].get<std::string>() +
