@@ -15,6 +15,8 @@ int main() {
   /* Validation                                                            */
   /*************************************************************************/
   RUN_TEST(test_handle_syntax_error);
+  RUN_TEST(test_handle_syntax_error_not_json);
+  RUN_TEST(test_handle_syntax_error_binary_data);
   RUN_TEST(test_parse_no_parameters_provided_error);
   RUN_TEST(test_parse_junk_json_error);
   RUN_TEST(test_parse_parameters_junk_error);
