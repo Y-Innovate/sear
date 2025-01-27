@@ -1,6 +1,43 @@
 import os
 import sys
 import re
+import json
+
+def get_json_name(admin_type):
+    if admin_type == "group-connection":
+        return "gc"
+    if admin_type == "permission":
+        return "perm"
+    if admin_type == "racf-options":
+        return "s"
+    if admin_type == "resource":
+        return "p"
+    return admin_type[0]
+
+def add_supported_operations(racf_segment, racf_key, admin_json):
+    #print(f"Segment: {racf_segment}, Trait: {racf_key}")
+    #print(f"segment keys: {admin_json[racf_segment].keys()}")
+    trait = admin_json[racf_segment][racf_key]
+    #print(f"trait keys: {trait.keys()}")
+    supported_operations = []
+    for key in trait.keys():
+        if not isinstance(trait[key], dict) or "extract" not in trait[key].keys():
+            continue
+        print(f"{trait[key].keys()}")
+        if trait[key]["add"] == True:
+            supported_operations.append('`"add"`')
+        if trait[key]["alt"] == True:
+            supported_operations.append('`"alter"`')
+        if trait[key]["extract"] == True:
+            supported_operations.append('`"extract"`')
+    print(supported_operations)
+    if supported_operations != []:
+        supported_operations = list(set(supported_operations))
+        supported_operations.sort()
+    print(supported_operations)
+    return supported_operations
+
+
 
 def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
     alter_only_admin_types = ["Racf-Options", "Permission", "Group-Connection"]
@@ -10,6 +47,7 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
     operation_types = "add and alter operations,"
     if admin_type in alter_only_admin_types:
         operation_types = "alter operations"
+
     doc_file_data = f"---\nlayout: default\nparent: Traits\n---\n\n# {admin_type} Traits\n\n" + \
     f"The following tables describes the {admin_type.lower()} segments and traits that are" + \
     f" supported for {operation_types} and returned by extract operations.\n" + \
@@ -20,6 +58,10 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
     "> _See [Data Types](../data_types) for more information about **Data Types**._" + \
     "\n\n&nbsp;\n\n{: .note }\n" + \
     "> _See [Operators](../operators) for more information about **Operator** usage._\n"
+
+    json_admin_type_name =  f"{get_json_name(admin_type.lower())}_admin"
+    with open(f"{json_admin_type_name}.json") as fp:
+            admin_json = json.load(fp)
 
     f = open(input_filepath, "r")
     header_file_data = f.read()
@@ -34,6 +76,8 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
     for segment in segments:
         if segment == "BASE":
             segment = segment.title()
+        elif segment.upper() == "CSDATA":
+            continue
         else:
             segment = segment.upper()
         print(segment)
@@ -47,25 +91,19 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
             operators_allowed = []
             if trait[3] == "true":
                 operators_allowed.append('`"set"`')
-                supported_operations = ['`"add"`', '`"alter"`', '`"extract"`']
             if trait[4] == "true":
                 operators_allowed.append('`"add"`')
-                supported_operations = ['`"add"`', '`"alter"`', '`"extract"`']
             if trait[5] == "true":
                 operators_allowed.append('`"remove"`')
-                supported_operations = ['`"add"`', '`"alter"`', '`"extract"`']
             if trait[6] == "true":
                 operators_allowed.append('`"delete"`')
-                supported_operations = ['`"add"`', '`"alter"`', '`"extract"`']
             if operators_allowed == []:
                 operators_allowed = ["N/A"]
                 supported_operations = ['`"extract"`']
+            else:
+                supported_operations = add_supported_operations( segment.lower(), trait[1].lower(), admin_json)
             doc_file_data = doc_file_data + \
             f"| `\"{trait[0]}\"` | `{trait[1]}` | `{trait[2].lower()}` | {"<br>".join(operators_allowed)} | {"<br>".join(supported_operations)} |\n"
-    
-    #TODO Check JSON Data for supported Operations
-    #TODO Fix JSON Data for Dataset and Setropts Admins
-    #TODO remove "undocumented" traits/segments
     
     f = open(output_filepath, "w")
     f.write(doc_file_data)

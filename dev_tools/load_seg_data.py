@@ -95,7 +95,7 @@ def buildTableDict(table):
             tableDict[curr_name][field_name][row[FLG_IND]]['keyword'] = row[KEY_REF]
             tableDict[curr_name][field_name][row[FLG_IND]]['add'] = evalYN(row[ADD_REQ])
             tableDict[curr_name][field_name][row[FLG_IND]]['alt'] = evalYN(row[ALT_REQ])
-            tableDict[curr_name][field_name][row[FLG_IND]]['add'] = evalYN(row[EXT_REQ])
+            tableDict[curr_name][field_name][row[FLG_IND]]['extract'] = evalYN(row[EXT_REQ])
             if (DEL_REQ >= 0) :
                 tableDict[curr_name][field_name][row[FLG_IND]]['del'] = evalYN(row[DEL_REQ])
             if (LST_REQ >= 0) :
@@ -109,7 +109,7 @@ def buildTableDict(table):
             tableDict[curr_name][field_name][row[FLG_IND]]['keyword'] = row[KEY_REF]
             tableDict[curr_name][field_name][row[FLG_IND]]['add'] = evalYN(row[ADD_REQ])
             tableDict[curr_name][field_name][row[FLG_IND]]['alt'] = evalYN(row[ALT_REQ])
-            tableDict[curr_name][field_name][row[FLG_IND]]['add'] = evalYN(row[EXT_REQ])
+            tableDict[curr_name][field_name][row[FLG_IND]]['extract'] = evalYN(row[EXT_REQ])
             if (DEL_REQ >= 0) :
                 tableDict[curr_name][field_name][row[FLG_IND]]['del'] = evalYN(row[DEL_REQ])
             if (LST_REQ >= 0) :
