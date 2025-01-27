@@ -14,27 +14,28 @@ def get_json_name(admin_type):
         return "p"
     return admin_type[0]
 
-def add_supported_operations(racf_segment, racf_key, admin_json):
+def add_supported_operations(racf_segment, racf_key, allowed_operations, admin_json, override = False):
     #print(f"Segment: {racf_segment}, Trait: {racf_key}")
     #print(f"segment keys: {admin_json[racf_segment].keys()}")
     trait = admin_json[racf_segment][racf_key]
     #print(f"trait keys: {trait.keys()}")
+    #print(allowed_operations, ('alter' in allowed_operations))
     supported_operations = []
     for key in trait.keys():
         if not isinstance(trait[key], dict) or "extract" not in trait[key].keys():
             continue
-        print(f"{trait[key].keys()}")
-        if trait[key]["add"] == True:
+        #print(f"{trait[key].keys()}")
+        if ('add' in allowed_operations) and (trait[key]["add"] == True or override):
             supported_operations.append('`"add"`')
-        if trait[key]["alt"] == True:
+        if  trait[key]["alt"] == True:
             supported_operations.append('`"alter"`')
-        if trait[key]["extract"] == True:
+        if trait[key]["extract"] == True or override:
             supported_operations.append('`"extract"`')
-    print(supported_operations)
+    #print(supported_operations)
     if supported_operations != []:
         supported_operations = list(set(supported_operations))
         supported_operations.sort()
-    print(supported_operations)
+    #print(supported_operations)
     return supported_operations
 
 
@@ -45,8 +46,10 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
         print("whoops, wrong file!")
     admin_type = output_filepath.split('.')[0].split('/')[1].replace("_","-").title()
     operation_types = "add and alter operations,"
+    allowed_operations = ["add", "alter", "extract"]
     if admin_type in alter_only_admin_types:
         operation_types = "alter operations"
+        allowed_operations = ["alter", "extract"]
 
     doc_file_data = f"---\nlayout: default\nparent: Traits\n---\n\n# {admin_type} Traits\n\n" + \
     f"The following tables describes the {admin_type.lower()} segments and traits that are" + \
@@ -80,7 +83,7 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
             continue
         else:
             segment = segment.upper()
-        print(segment)
+        #print(segment)
         doc_file_data = doc_file_data + f"\n## {segment} Segment\n\n" + \
         "| **Trait** | **RACF Key** | **Data Types** | **Operators Allowed** | **Supported Operations** |\n"
         trait_mapping = f"\"({segment.lower()}:[a-z_]*)\"," + \
@@ -101,7 +104,7 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
                 operators_allowed = ["N/A"]
                 supported_operations = ['`"extract"`']
             else:
-                supported_operations = add_supported_operations( segment.lower(), trait[1].lower(), admin_json)
+                supported_operations = add_supported_operations( segment.lower(), trait[1].lower(), allowed_operations, admin_json, override = ((admin_type.lower() == "racf-options") or (admin_type.lower() == "permission") ))
             doc_file_data = doc_file_data + \
             f"| `\"{trait[0]}\"` | `{trait[1]}` | `{trait[2].lower()}` | {"<br>".join(operators_allowed)} | {"<br>".join(supported_operations)} |\n"
     
@@ -119,5 +122,13 @@ def convert_directory(directory_path):
         print(f"Converting {file_name} to {output_name} for documentation purposes...")
         convert_key_map_hpp_to_doc(directory_path+"/"+file_name, "md/"+output_name)
 
+def convert_file(file_path):
+    file_name = file_path.split('/')[1]
+    output_name = file_name.split("key_map_")[1].split('.')[0]+".md"
+    convert_key_map_hpp_to_doc(file_path, "md/"+output_name)
+
 directory_path = sys.argv[1]
 convert_directory(directory_path)
+
+#file_path = sys.argv[1]
+#convert_file(file_path)
