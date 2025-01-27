@@ -19,6 +19,7 @@ ifeq ($(UNAME), OS/390)
 	CXX 		= ibm-clang++
 
 	ZOSLIB		= 
+	SRCZOSLIB	=
 	INCZOSLIB	=
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
@@ -43,6 +44,7 @@ else
 	CXX 		= clang++
 
 	ZOSLIB		= $(TESTS)/zoslib
+	SRCZOSLIB	= $(ZOSLIB)/*.c
 	INCZOSLIB	= -I $(ZOSLIB)
 
 	CFLAGS		= \
@@ -86,7 +88,7 @@ test: clean mkdirs
 		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
 			$(TESTS)/unity/unity.c \
 			$(TESTS)/mock/*.cpp \
-			$(ZOSLIB)/*.c \
+			$(SRCZOSLIB) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
