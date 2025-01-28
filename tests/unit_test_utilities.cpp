@@ -54,13 +54,14 @@ std::string get_json_sample(const char *filename) {
 }
 
 void test_validation_errors(const char *test_request_json,
-                            const char *test_validation_errors_result_json) {
+                            const char *test_validation_errors_result_json,
+                            bool debug) {
   racfu_result_t result;
   std::string request_json = get_json_sample(test_request_json);
   std::string result_json_expected =
       get_json_sample(test_validation_errors_result_json);
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
 
@@ -74,7 +75,7 @@ void test_validation_errors(const char *test_request_json,
 /*************************************************************************/
 void test_extract_request_generation(const char *test_extract_request_json,
                                      const char *test_extract_request_raw,
-                                     bool racf_options) {
+                                     bool racf_options, bool debug) {
   racfu_result_t result;
   std::string request_json   = get_json_sample(test_extract_request_json);
   char *raw_request_expected = get_raw_sample(test_extract_request_raw);
@@ -87,7 +88,7 @@ void test_extract_request_generation(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   int request_buffer_size = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
   int arg_area_size       = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
@@ -115,7 +116,8 @@ void test_extract_request_generation(const char *test_extract_request_json,
 
 void test_parse_extract_result(const char *test_extract_request_json,
                                const char *test_extract_result_json,
-                               const char *test_extract_result_raw) {
+                               const char *test_extract_result_raw,
+                               bool debug) {
   racfu_result_t result;
   std::string request_json         = get_json_sample(test_extract_request_json);
   std::string result_json_expected = get_json_sample(test_extract_result_json);
@@ -130,7 +132,7 @@ void test_parse_extract_result(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
@@ -147,7 +149,7 @@ void test_parse_extract_result(const char *test_extract_request_json,
 
 void test_parse_extract_result_profile_not_found(
     const char *test_extract_request_json,
-    const char *test_extract_result_profile_not_found_json) {
+    const char *test_extract_result_profile_not_found_json, bool debug) {
   racfu_result_t result;
   std::string request_json = get_json_sample(test_extract_request_json);
   std::string result_json_expected =
@@ -164,7 +166,7 @@ void test_parse_extract_result_profile_not_found(
   r_admin_racf_rc_mock     = 4;
   r_admin_racf_reason_mock = 4;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
@@ -270,7 +272,7 @@ void check_arg_pointers(char *raw_request, bool racf_options) {
 /*************************************************************************/
 void test_generate_add_alter_delete_request_generation(
     const char *test_add_alter_delete_request_json,
-    const char *test_add_alter_delete_request_raw) {
+    const char *test_add_alter_delete_request_raw, bool debug) {
   racfu_result_t result;
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
@@ -286,7 +288,7 @@ void test_generate_add_alter_delete_request_generation(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
                           result.raw_request_length);
@@ -304,7 +306,7 @@ void test_generate_add_alter_delete_request_generation(
 void test_parse_add_alter_delete_result(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_result_json,
-    const char *test_add_alter_delete_result_raw) {
+    const char *test_add_alter_delete_result_raw, bool debug) {
   racfu_result_t result;
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
@@ -320,7 +322,7 @@ void test_parse_add_alter_delete_result(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu(&result, request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
