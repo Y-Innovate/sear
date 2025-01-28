@@ -155,8 +155,3 @@ group_admin.write2JSON()
 
 groupconn_admin = func_group('gc_admin')
 groupconn_admin.write2JSON()
-
-
-
-
-
