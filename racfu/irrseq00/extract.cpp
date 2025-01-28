@@ -220,10 +220,10 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
   return arg_area;
 }
 
-void preserve_raw_request(char *arg_area, char **raw_request,
-                          int *raw_request_length) {
+void preserve_raw_request(const char *arg_area, char **raw_request,
+                          const int *raw_request_length) {
   *raw_request = static_cast<char *>(calloc(*raw_request_length, sizeof(char)));
-  if (raw_request == NULL) {
+  if (*raw_request == NULL) {
     perror(
         "Warn - Unable to allocate space to preserve the "
         "raw request for profile extract.\n");

@@ -378,7 +378,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
 
-void preserve_raw_request(char *arg_area, char **raw_request,
-                          int *raw_request_length);
+void preserve_raw_request(const char *arg_area, char **raw_request,
+                          const int *raw_request_length);
 
 #endif

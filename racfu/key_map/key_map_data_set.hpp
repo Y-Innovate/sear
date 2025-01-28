@@ -236,7 +236,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      },
     {
      "base:warn_on_insufficient_access",  "warning",
-     TRAIT_TYPE_STRING,   {true, false, false, true},
+     TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      }
 };
 

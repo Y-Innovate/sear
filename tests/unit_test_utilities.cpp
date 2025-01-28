@@ -2,9 +2,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include <nlohmann/json.hpp>
 
+#include "racfu/racfu.h"
+#include "tests/mock/irrseq00.hpp"
+#include "tests/mock/irrsmo64.hpp"
+#include "tests/unity/unity.h"
+
+/*************************************************************************/
+/* Common                                                                */
+/*************************************************************************/
 char *get_sample(const char *filename, const char *mode) {
   // open file
   FILE *fp = fopen(filename, mode);
@@ -42,4 +51,285 @@ std::string get_json_sample(const char *filename) {
       nlohmann::json::parse(json_sample_string).dump();
   free(json_sample_string);
   return json_sample_cpp_string;
+}
+
+void test_validation_errors(const char *test_request_json,
+                            const char *test_validation_errors_result_json) {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(test_request_json);
+  std::string result_json_expected =
+      get_json_sample(test_validation_errors_result_json);
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+/*************************************************************************/
+/* IRRSEQ00                                                              */
+/*************************************************************************/
+void test_extract_request_generation(const char *test_extract_request_json,
+                                     const char *test_extract_request_raw,
+                                     bool racf_options) {
+  racfu_result_t result;
+  std::string request_json   = get_json_sample(test_extract_request_json);
+  char *raw_request_expected = get_raw_sample(test_extract_request_raw);
+
+  // Mock R_Admin result
+  r_admin_result_mock      = NULL;
+  r_admin_result_size_mock = 0;
+  r_admin_rc_mock          = 0;
+  r_admin_saf_rc_mock      = 0;
+  r_admin_racf_rc_mock     = 0;
+  r_admin_racf_reason_mock = 0;
+
+  racfu(&result, request_json.c_str(), false);
+
+  int request_buffer_size = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
+  int arg_area_size       = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
+
+  if (racf_options == true) {
+    request_buffer_size = TEST_IRRSEQ00_RACF_OPTIONS_REQUEST_BUFFER_SIZE;
+    arg_area_size       = TEST_IRRSEQ00_RACF_OPTIONS_ARG_AREA_SIZE;
+  }
+
+  // Check the size of the buffer
+  TEST_ASSERT_EQUAL_INT32(request_buffer_size, result.raw_request_length);
+  // Check the "arg area" (excludes the "arg pointers" at the end)
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result.raw_request,
+                           arg_area_size);
+
+  check_arg_pointers(result.raw_request, racf_options);
+
+  // Cleanup
+  free(raw_request_expected);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void test_parse_extract_result(const char *test_extract_request_json,
+                               const char *test_extract_result_json,
+                               const char *test_extract_result_raw) {
+  racfu_result_t result;
+  std::string request_json         = get_json_sample(test_extract_request_json);
+  std::string result_json_expected = get_json_sample(test_extract_result_json);
+
+  // Mock R_Admin result
+  r_admin_result_mock = get_raw_sample(test_extract_result_raw);
+  struct stat st;
+  stat(test_extract_result_raw, &st);
+  r_admin_result_size_mock = st.st_size;
+  r_admin_rc_mock          = 0;
+  r_admin_saf_rc_mock      = 0;
+  r_admin_racf_rc_mock     = 0;
+  r_admin_racf_reason_mock = 0;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          strlen(result.result_json));
+  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result.raw_result_length);
+
+  // Cleanup
+  free(r_admin_result_mock);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void test_parse_extract_result_profile_not_found(
+    const char *test_extract_request_json,
+    const char *test_extract_result_profile_not_found_json) {
+  racfu_result_t result;
+  std::string request_json = get_json_sample(test_extract_request_json);
+  std::string result_json_expected =
+      get_json_sample(test_extract_result_profile_not_found_json);
+
+  // Mock R_Admin result
+  // Note that there will be no result if the profile cannot be extracted
+  // and the return and reason codes will be set to indicate why the extract
+  // failed.
+  r_admin_result_mock      = NULL;
+  r_admin_result_size_mock = 0;
+  r_admin_rc_mock          = -1;
+  r_admin_saf_rc_mock      = 4;
+  r_admin_racf_rc_mock     = 4;
+  r_admin_racf_reason_mock = 4;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          strlen(result.result_json));
+
+  // Cleanup
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void check_arg_pointers(char *raw_request, bool racf_options) {
+  // Arg Pointers on z/Architecture (31-bit big endian)
+  /*
+  0x00, 0x00, 0x00, 0x00, // result buffer pointer
+  0x29, 0x96, 0x90, 0x48, // work area pointer
+  0x29, 0x96, 0x94, 0x48, // ALET pointer
+  0x29, 0x96, 0x94, 0x4c, // SAF return code pointer
+  0x29, 0x96, 0x94, 0x50, // ALET pointer
+  0x29, 0x96, 0x94, 0x54, // RACF return code pointer
+  0x29, 0x96, 0x94, 0x58, // ALET pointer
+  0x29, 0x96, 0x94, 0x5c, // RACF reason code pointer
+  0x29, 0x96, 0x94, 0x60, // function code pointer
+  0x29, 0x96, 0x94, 0x61, // profile extract parms pointer
+  0x29, 0x96, 0x94, 0x9d, // profile name pointer
+  0x29, 0x96, 0x95, 0x95, // ACEE pointer
+  0x29, 0x96, 0x95, 0x99, // result buffer subpool pointer
+  0xa9, 0x96, 0x95, 0x9a // result buffer pointer pointer
+  */
+
+  // Arg Pointers on x86_64/ARM64 (64-bit little endian)
+  /*
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // result buffer pointer
+  0x00, 0x88, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // work area pointer
+  0x00, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // ALET pointer
+  0x04, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // SAF return code pointer
+  0x08, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // ALET pointer
+  0x0c, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // RACF return code pointer
+  0x10, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // ALET pointer
+  0x14, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // RACF reason code pointer
+  0x18, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // function code pointer
+  0x19, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // profile extract parms
+  pointer 0x55, 0x8c, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // profile name
+  pointer 0x4d, 0x8d, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // ACEE pointer 0x51,
+  0x8d, 0x00, 0x35, 0x01, 0x00, 0x00, 0x00, // result buffer subpool pointer
+  0x52, 0x8d, 0x00, 0xb5, 0x01, 0x00, 0x00, 0x00 // result buffer pointer
+  pointer
+  */
+
+  int arg_area_size = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
+
+  if (racf_options == true) {
+    arg_area_size = TEST_IRRSEQ00_RACF_OPTIONS_ARG_AREA_SIZE;
+  }
+
+#ifdef __TOS_390__
+  uint32_t *arg_pointer = (uint32_t *)(raw_request + arg_area_size);
+#else
+  uint64_t *arg_pointer = (uint64_t *)(raw_request + arg_area_size);
+#endif
+  // Result buffer pointer should be left NULL since no
+  // result buffer exists until after R_Admin is called.
+  TEST_ASSERT_EQUAL_UINT64(0, arg_pointer[0]);
+  // work area pointer should be set.
+  TEST_ASSERT_NOT_EQUAL_UINT64(0, arg_pointer[1]);
+  // work area should be 1024 bytes
+  TEST_ASSERT_EQUAL_UINT64(1024, arg_pointer[2] - arg_pointer[1]);
+  // SAF RC ALET should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[3] - arg_pointer[2]);
+  // SAF RC should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[4] - arg_pointer[3]);
+  // RACF RC ALET should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[5] - arg_pointer[4]);
+  // RACF RC should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[6] - arg_pointer[5]);
+  // RACF reason ALET should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[7] - arg_pointer[6]);
+  // RACF reason should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[8] - arg_pointer[7]);
+  // function code pointer should be 1 byte
+  TEST_ASSERT_EQUAL_UINT64(1, arg_pointer[9] - arg_pointer[8]);
+  if (racf_options == false) {
+    // generic profile extract parms area should be 60 bytes
+    TEST_ASSERT_EQUAL_UINT64(60, arg_pointer[10] - arg_pointer[9]);
+  } else {
+    // RACF Options profile extract parms area should be 14 bytes
+    TEST_ASSERT_EQUAL_UINT64(14, arg_pointer[10] - arg_pointer[9]);
+  }
+  // profile name area should be 248 bytes
+  TEST_ASSERT_EQUAL_UINT64(248, arg_pointer[11] - arg_pointer[10]);
+  // ACEE should be 4 bytes
+  TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[12] - arg_pointer[11]);
+  // result buffer subpool should be 1 byte
+  // Note that the difference between the result buffer pointer pointer
+  // and the result buffer subpool pointer is 0x80000001 as a result
+  // of the high order bit of the result buffer pointer pointer being
+  // set to 0x80000000 to indicate that this is the end of the argument list.
+  TEST_ASSERT_EQUAL_UINT64(0x80000001, arg_pointer[13] - arg_pointer[12]);
+}
+
+/*************************************************************************/
+/* IRRSMO00                                                              */
+/*************************************************************************/
+void test_generate_add_alter_delete_request_generation(
+    const char *test_add_alter_delete_request_json,
+    const char *test_add_alter_delete_request_raw) {
+  racfu_result_t result;
+  std::string request_json =
+      get_json_sample(test_add_alter_delete_request_json);
+  char *raw_request_expected =
+      get_raw_sample(test_add_alter_delete_request_raw);
+  struct stat raw_request_size_expected;
+  stat(test_add_alter_delete_request_raw, &raw_request_size_expected);
+
+  // Mock IRRSMO64 result
+  irrsmo64_result_mock      = NULL;
+  irrsmo64_result_size_mock = 0;
+  irrsmo64_saf_rc_mock      = 0;
+  irrsmo64_racf_rc_mock     = 0;
+  irrsmo64_racf_reason_mock = 0;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
+                          result.raw_request_length);
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result.raw_request,
+                           raw_request_size_expected.st_size);
+
+  // Cleanup
+  free(raw_request_expected);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
+}
+
+void test_parse_add_alter_delete_result(
+    const char *test_add_alter_delete_request_json,
+    const char *test_add_alter_delete_result_json,
+    const char *test_add_alter_delete_result_raw) {
+  racfu_result_t result;
+  std::string request_json =
+      get_json_sample(test_add_alter_delete_request_json);
+  std::string result_json_expected =
+      get_json_sample(test_add_alter_delete_result_json);
+
+  // Mock IRRSMO64 result
+  irrsmo64_result_mock = get_raw_sample(test_add_alter_delete_result_raw);
+  struct stat raw_request_size_expected;
+  stat(test_add_alter_delete_result_raw, &raw_request_size_expected);
+  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
+  irrsmo64_saf_rc_mock      = 0;
+  irrsmo64_racf_rc_mock     = 0;
+  irrsmo64_racf_reason_mock = 0;
+
+  racfu(&result, request_json.c_str(), false);
+
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          strlen(result.result_json));
+
+  // Cleanup
+  free(irrsmo64_result_mock);
+
+  free(result.raw_request);
+  free(result.raw_result);
+  free(result.result_json);
 }

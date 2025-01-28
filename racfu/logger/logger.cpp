@@ -10,7 +10,7 @@
 #include "zoslib.h"
 #endif
 
-std::string Logger::cast_hex_string(char* input, int buffer_len) {
+std::string Logger::cast_hex_string(const char* input, int buffer_len) {
   // Cast data to hex so that small strings and buffers of hex values can be
   // printed to represent EBCDIC data
   std::string output = "";

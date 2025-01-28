@@ -11,12 +11,22 @@ void tearDown() {}
 int main() {
   UNITY_BEGIN();
 
-  // Validation
+  /*************************************************************************/
+  /* Validation                                                            */
+  /*************************************************************************/
+  RUN_TEST(test_handle_syntax_error);
+  RUN_TEST(test_handle_syntax_error_not_json);
+  RUN_TEST(test_handle_syntax_error_binary_data);
+  RUN_TEST(test_parse_no_parameters_provided_error);
+  RUN_TEST(test_parse_junk_json_error);
   RUN_TEST(test_parse_parameters_junk_error);
   RUN_TEST(test_parse_parameters_missing_error);
+  RUN_TEST(test_parse_extraneous_and_missing_parameters_error);
   RUN_TEST(test_parse_parameters_nonstring_error);
 
-  // IRRSMO00
+  /*************************************************************************/
+  /* IRRSMO00                                                              */
+  /*************************************************************************/
   // User
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_generate_alter_user_request);
@@ -52,7 +62,7 @@ int main() {
   RUN_TEST(test_parse_alter_racf_options_result);
   RUN_TEST(test_parse_alter_racf_options_parameter_errors);
   RUN_TEST(test_parse_alter_racf_options_trait_errors);
-  // Data-Set
+  // Data Set
   RUN_TEST(test_generate_add_data_set_request);
   RUN_TEST(test_generate_alter_data_set_request);
   RUN_TEST(test_generate_delete_data_set_request);
@@ -79,10 +89,48 @@ int main() {
   RUN_TEST(test_parse_alter_permission_dataset_parameter_errors);
   RUN_TEST(test_parse_alter_permission_trait_errors);
 
-  // Profile Extract
+  /*************************************************************************/
+  /* IRRSEQ00                                                              */
+  /*************************************************************************/
+  // User
   RUN_TEST(test_generate_extract_user_request);
   RUN_TEST(test_parse_extract_user_result);
   RUN_TEST(test_parse_extract_user_result_user_not_found);
+  RUN_TEST(test_parse_extract_user_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_user_result_extraneous_parameter_provided);
+  // Group
+  RUN_TEST(test_generate_extract_group_request);
+  RUN_TEST(test_parse_extract_group_result);
+  RUN_TEST(test_parse_extract_group_result_group_not_found);
+  RUN_TEST(test_parse_extract_group_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_group_result_extraneous_parameter_provided);
+  // Group Connection
+  RUN_TEST(test_generate_extract_group_connection_request);
+  RUN_TEST(test_parse_extract_group_connection_result);
+  RUN_TEST(
+      test_parse_extract_group_connection_result_group_connection_not_found);
+  RUN_TEST(
+      test_parse_extract_group_connection_result_required_parameter_missing);
+  RUN_TEST(
+      test_parse_extract_group_connection_result_extraneous_parameter_provided);
+  // RACF Options
+  RUN_TEST(test_generate_extract_racf_options_request);
+  RUN_TEST(test_parse_extract_racf_options_result);
+  RUN_TEST(test_parse_extract_racf_options_result_racf_options_not_found);
+  RUN_TEST(
+      test_parse_extract_racf_options_result_extraneous_parameter_provided);
+  // Data Set
+  RUN_TEST(test_generate_extract_data_set_request);
+  RUN_TEST(test_parse_extract_data_set_result);
+  RUN_TEST(test_parse_extract_data_set_result_data_set_not_found);
+  RUN_TEST(test_parse_extract_data_set_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_data_set_result_extraneous_parameter_provided);
+  // Resource
+  RUN_TEST(test_generate_extract_resource_request);
+  RUN_TEST(test_parse_extract_resource_result);
+  RUN_TEST(test_parse_extract_resource_result_resource_not_found);
+  RUN_TEST(test_parse_extract_resource_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_resource_result_extraneous_parameter_provided);
 
   return UNITY_END();
 }

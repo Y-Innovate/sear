@@ -19,6 +19,8 @@ ifeq ($(UNAME), OS/390)
 	CXX 		= ibm-clang++
 
 	ZOSLIB		= 
+	SRCZOSLIB	=
+	INCZOSLIB	=
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
@@ -34,14 +36,16 @@ ifeq ($(UNAME), OS/390)
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
 				-I ${PWD} \
 				-I $(TESTS)/mock \
-				-I $(TESTS)/zoslib
+				$(INCZOSLIB)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= --clang=ibm-clang++64 
 else
 	CC 			= clang
 	CXX 		= clang++
 
-	ZOSLIB		= $(TESTS)/zoslib/*.c
+	ZOSLIB		= $(TESTS)/zoslib
+	SRCZOSLIB	= $(ZOSLIB)/*.c
+	INCZOSLIB	= -I $(ZOSLIB)
 
 	CFLAGS		= \
 				-std=c++11 -D__ptr32= \
@@ -56,7 +60,7 @@ else
 				-DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
-				-I $(TESTS)/zoslib
+				$(INCZOSLIB)
 	CKFLGS		= --suppress='missingIncludeSystem'
 endif
 
@@ -84,7 +88,7 @@ test: clean mkdirs
 		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
 			$(TESTS)/unity/unity.c \
 			$(TESTS)/mock/*.cpp \
-			$(ZOSLIB) \
+			$(SRCZOSLIB) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
@@ -131,10 +135,13 @@ check:
 		-I $(VALIDATION) \
 		-I $(LOGGER) \
 		-I $(EXTERNALS) \
+		$(INCZOSLIB) \
 		$(SRC)/*.cpp \
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
-		$(KEY_MAP)/*.cpp 
+		$(KEY_MAP)/*.cpp \
+		$(LOGGER)/*.cpp \
+		$(VALIDATION)/*.cpp
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST)

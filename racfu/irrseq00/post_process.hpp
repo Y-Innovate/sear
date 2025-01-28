@@ -6,7 +6,8 @@
 #include "extract.hpp"
 
 nlohmann::json post_process_generic(
-    generic_extract_parms_results_t *generic_result_buffer);
+    generic_extract_parms_results_t *generic_result_buffer,
+    const char *admin_type);
 
 nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer);
@@ -20,7 +21,7 @@ void process_generic_field(nlohmann::json &json_field,
 
 char get_setropts_field_type(char *field_key);
 
-std::string post_process_field_key(char *field_key, const char *profile_type,
+std::string post_process_field_key(char *field_key, const char *admin_type,
                                    const char *segment,
                                    const char *raw_field_key);
 
