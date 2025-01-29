@@ -53,6 +53,8 @@ def convert_key_map_hpp_to_doc(input_filepath, output_filepath):
     
     doc_link = "https://www.ibm.com/docs/en/zos/latest?topic=services-reference-documentation-tables"
 
+    admin_type.replace("Racf","RACF")
+    
     doc_file_data = f"---\nlayout: default\nparent: Traits\n---\n\n# {admin_type} Traits\n\n" + \
     f"The following tables describes the {admin_type.lower()} segments and traits that are" + \
     f" supported for {operation_types} and returned by extract operations.\n" + \
