@@ -45,7 +45,6 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   const char *profile_name_ptr      = NULL;
   const char *class_name_ptr        = NULL;
   const char *surrogate_userid      = NULL;
-  bool check_first                  = false;
   try {
     request = nlohmann::json::parse(request_json);
   } catch (nlohmann::json::parse_error &ex) {
@@ -90,6 +89,7 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
                &return_codes, &logger);
     // Add/Alter/Delete
   } else {
+    bool check_first = false;
     if (request.contains("run_as_userid")) {
       surrogate_userid = request["run_as_userid"].get<std::string>().c_str();
     }

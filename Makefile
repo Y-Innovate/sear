@@ -110,8 +110,7 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
-check: 
-	export CLANG_CONFIG_PATH = ${PWD}/clang.cfg
+check: export CLANG_CONFIG_PATH = ${PWD}/clang.cfg
 check:
 	mkdir -p artifacts/cppcheck
 	cppcheck \
