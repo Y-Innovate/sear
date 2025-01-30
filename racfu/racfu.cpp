@@ -45,7 +45,6 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   const char *profile_name_ptr      = NULL;
   const char *class_name_ptr        = NULL;
   const char *surrogate_userid      = NULL;
-  bool check_first                  = false;
   try {
     request = nlohmann::json::parse(request_json);
   } catch (nlohmann::json::parse_error &ex) {
@@ -94,9 +93,10 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
       surrogate_userid = request["run_as_userid"].get<std::string>().c_str();
     }
     logger.debug(MSG_SMO_PATH);
-    check_first = ((operation == "alter") &&
-                   ((admin_type == "group") || (admin_type == "user") ||
-                    (admin_type == "data-set") || (admin_type == "resource")));
+    bool check_first =
+        ((operation == "alter") &&
+         ((admin_type == "group") || (admin_type == "user") ||
+          (admin_type == "data-set") || (admin_type == "resource")));
     do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
                         operation.c_str(), surrogate_userid, check_first,
                         &request, result, &return_codes, &logger);

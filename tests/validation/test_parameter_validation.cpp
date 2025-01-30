@@ -56,30 +56,31 @@ void test_handle_syntax_error_binary_data() {
 
 void test_parse_no_parameters_provided_error() {
   test_validation_errors(TEST_NO_PARAMETERS_PROVIDED_REQUEST_JSON,
-                         TEST_NO_PARAMETERS_PROVIDED_RESULT_JSON);
+                         TEST_NO_PARAMETERS_PROVIDED_RESULT_JSON, false);
 }
 
 void test_parse_junk_json_error() {
   test_validation_errors(TEST_JUNK_JSON_REQUEST_JSON,
-                         TEST_JUNK_JSON_RESULT_JSON);
+                         TEST_JUNK_JSON_RESULT_JSON, false);
 }
 
 void test_parse_parameters_junk_error() {
   test_validation_errors(TEST_PARAMETERS_JUNK_REQUEST_JSON,
-                         TEST_PARAMETERS_JUNK_RESULT_JSON);
+                         TEST_PARAMETERS_JUNK_RESULT_JSON, false);
 }
 
 void test_parse_parameters_missing_error() {
   test_validation_errors(TEST_PARAMETERS_MISSING_REQUEST_JSON,
-                         TEST_PARAMETERS_MISSING_RESULT_JSON);
+                         TEST_PARAMETERS_MISSING_RESULT_JSON, false);
 }
 
 void test_parse_extraneous_and_missing_parameters_error() {
   test_validation_errors(TEST_EXTRANEOUS_AND_MISSING_PARAMETERS_REQUEST_JSON,
-                         TEST_EXTRANEOUS_AND_MISSING_PARAMETERS_RESULT_JSON);
+                         TEST_EXTRANEOUS_AND_MISSING_PARAMETERS_RESULT_JSON,
+                         false);
 }
 
 void test_parse_parameters_nonstring_error() {
   test_validation_errors(TEST_PARAMETERS_NONSTRING_REQUEST_JSON,
-                         TEST_PARAMETERS_NONSTRING_RESULT_JSON);
+                         TEST_PARAMETERS_NONSTRING_RESULT_JSON, false);
 }

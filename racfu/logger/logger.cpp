@@ -45,7 +45,7 @@ std::string Logger::cast_hex_string(const char* input, int buffer_len) {
   return output;
 }
 
-void Logger::debug(std::string message, std::string body) {
+void Logger::debug(const std::string& message, const std::string& body) const {
   if (!debug_mode) {
     return;
   }
