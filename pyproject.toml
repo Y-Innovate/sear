@@ -1,16 +1,16 @@
 [build-system]
-requires = ["setuptools >= 75.2.0"]
+requires = ["setuptools >= 75.8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
     name="racfu"
     version="1.0a1"
-    requires-python = ">= 3.10"
+    requires-python = ">= 3.11"
     authors = [
-        { name = "Joe Bostian", email = "jbostian@ibm.com" },
-        { name = "Frank De Gilio", email = "degilio@us.ibm.com" },
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
         { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
+        { name = "Frank De Gilio", email = "degilio@us.ibm.com" },
+        { name = "Joe Bostian", email = "jbostian@ibm.com" },
     ]
     maintainers = [
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
@@ -25,8 +25,9 @@ build-backend = "setuptools.build_meta"
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Other",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Security",
