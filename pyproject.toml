@@ -39,6 +39,11 @@ build-backend = "setuptools.build_meta"
     Repository = "https://github.com/ambitus/racfu"
     Documentation = "https://ambitus.github.io/racfu/"
 
+[project.optional-dependencies]
+    dev = [
+        "build >= 1.2.2"
+    ]
+
 [tool.setuptools.packages.find]
     where = ["python"]
     include = ["racfu"]
