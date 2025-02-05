@@ -49,11 +49,6 @@ build-backend = "setuptools.build_meta"
     tracker = "https://github.com/ambitus/racfu/issues"
     "release notes" = "https://github.com/ambitus/racfu/releases"
 
-[project.optional-dependencies]
-    dev = [
-        "build >= 1.2.2"
-    ]
-
 [tool.setuptools.packages.find]
     where = ["python"]
     include = ["racfu"]
