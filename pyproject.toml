@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
         { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
     ]
-    description="Unified and standardized interface to RACF Callable Services."
+    description="A unified and standardized interface to RACF callable services."
     readme = "README.md"
     license = {text = "Apache-2.0"}
     classifiers=[

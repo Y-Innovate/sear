@@ -9,9 +9,11 @@ IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
 LOGGER			= ${PWD}/racfu/logger
+PYTHON			= ${PWD}/racfu/python
 VALIDATION      = ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 TESTS			= ${PWD}/tests
+PYTHON_INC		= $(shell python3 -c "import sysconfig; print(sysconfig.get_path('include'))")
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
@@ -119,6 +121,7 @@ check:
 		--enable=all \
 		--suppress='*:*/externals/*' \
 		--suppress='*:*openxl\*' \
+		--suppress='*:*/include/python*' \
 		--output-file=artifacts/cppcheck/output.xml \
 		--checkers-report=artifacts/cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=artifacts/cppcheck \
@@ -135,13 +138,15 @@ check:
 		-I $(VALIDATION) \
 		-I $(LOGGER) \
 		-I $(EXTERNALS) \
+		-I $(PYTHON_INC) \
 		$(INCZOSLIB) \
 		$(SRC)/*.cpp \
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
 		$(KEY_MAP)/*.cpp \
 		$(LOGGER)/*.cpp \
-		$(VALIDATION)/*.cpp
+		$(VALIDATION)/*.cpp \
+		$(PYTHON)/*.c
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST)
