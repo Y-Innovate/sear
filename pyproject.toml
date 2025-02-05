@@ -46,7 +46,7 @@ build-backend = "setuptools.build_meta"
     Documentation = "https://ambitus.github.io/racfu/interfaces/python/"
     Source = "https://github.com/ambitus/racfu"
     Issues = "https://github.com/ambitus/racfu/issues"
-    "Release Notes" = "https://github.com/ambitus/racfu/releases"
+    "Release Notes" = "https://github.com/ambitus/racfu/milestones?state=closed"
 
 [tool.setuptools.packages.find]
     where = ["python"]
