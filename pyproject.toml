@@ -42,12 +42,11 @@ build-backend = "setuptools.build_meta"
     ]
 
 [project.urls]
-    homepage = "https://ambitus.github.io/racfu/"
-    documentation = "https://ambitus.github.io/racfu/interfaces/python/"
-    source = "https://github.com/ambitus/racfu"
-    download = "https://github.com/ambitus/racfu/releases"
-    tracker = "https://github.com/ambitus/racfu/issues"
-    "release notes" = "https://github.com/ambitus/racfu/releases"
+    Homepage = "https://ambitus.github.io/racfu/"
+    Documentation = "https://ambitus.github.io/racfu/interfaces/python/"
+    Source = "https://github.com/ambitus/racfu"
+    Issues = "https://github.com/ambitus/racfu/issues"
+    "Release Notes" = "https://github.com/ambitus/racfu/releases"
 
 [tool.setuptools.packages.find]
     where = ["python"]
