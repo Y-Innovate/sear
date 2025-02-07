@@ -24,7 +24,7 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 * **R_Admin (IRRSEQ00)**: RACF Administration API.
   * More details about the authorizations required for **IRRSEQ00** can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=api-racf-authorization).
 * **RACF Subsystem Address Space**: This is a dependency for both **IRRSMO00** and **IRRSEQ00**.
-  * More information can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=considerations-racf-subsyste
+  * More information can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=considerations-racf-subsystem).
 
 ### Installation
 
