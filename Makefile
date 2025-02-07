@@ -8,9 +8,12 @@ SRC				= ${PWD}/racfu
 IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
+LOGGER			= ${PWD}/racfu/logger
+PYTHON			= ${PWD}/racfu/python
 VALIDATION      = ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 TESTS			= ${PWD}/tests
+PYTHON_INC		= $(shell python3 -c "import sysconfig; print(sysconfig.get_path('include'))")
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
@@ -18,6 +21,8 @@ ifeq ($(UNAME), OS/390)
 	CXX 		= ibm-clang++
 
 	ZOSLIB		= 
+	SRCZOSLIB	=
+	INCZOSLIB	=
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
@@ -27,18 +32,22 @@ ifeq ($(UNAME), OS/390)
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
-				-I $(EXTERNALS)
+				-I $(EXTERNALS) \
+				-I $(LOGGER)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
 				-I ${PWD} \
-				-I $(TESTS)/mock
+				-I $(TESTS)/mock \
+				$(INCZOSLIB)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 	CKFLGS		= --clang=ibm-clang++64 
 else
 	CC 			= clang
 	CXX 		= clang++
 
-	ZOSLIB		= $(TESTS)/zoslib/*.c
+	ZOSLIB		= $(TESTS)/zoslib
+	SRCZOSLIB	= $(ZOSLIB)/*.c
+	INCZOSLIB	= -I $(ZOSLIB)
 
 	CFLAGS		= \
 				-std=c++11 -D__ptr32= \
@@ -47,12 +56,13 @@ else
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
-				-I $(EXTERNALS)
+				-I $(EXTERNALS) \
+				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
+				-DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
-				-I $(TESTS)/zoslib
+				$(INCZOSLIB)
 	CKFLGS		= --suppress='missingIncludeSystem'
 endif
 
@@ -71,6 +81,7 @@ racfu: clean mkdirs
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
 		$(KEY_MAP)/*.cpp \
+		$(LOGGER)/*.cpp \
 		$(VALIDATION)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
 
@@ -79,11 +90,12 @@ test: clean mkdirs
 		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
 			$(TESTS)/unity/unity.c \
 			$(TESTS)/mock/*.cpp \
-			$(ZOSLIB) \
+			$(SRCZOSLIB) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
+			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(TESTS)/*.cpp \
 			$(TESTS)/irrsmo00/*.cpp \
@@ -109,6 +121,7 @@ check:
 		--enable=all \
 		--suppress='*:*/externals/*' \
 		--suppress='*:*openxl\*' \
+		--suppress='*:*/include/python*' \
 		--output-file=artifacts/cppcheck/output.xml \
 		--checkers-report=artifacts/cppcheck/checkers_report.txt \
 		--cppcheck-build-dir=artifacts/cppcheck \
@@ -123,11 +136,17 @@ check:
 		-I $(IRRSEQ00_SRC) \
 		-I $(KEY_MAP) \
 		-I $(VALIDATION) \
+		-I $(LOGGER) \
 		-I $(EXTERNALS) \
+		-I $(PYTHON_INC) \
+		$(INCZOSLIB) \
 		$(SRC)/*.cpp \
 		$(IRRSMO00_SRC)/*.cpp \
 		$(IRRSEQ00_SRC)/*.cpp \
-		$(KEY_MAP)/*.cpp 
+		$(KEY_MAP)/*.cpp \
+		$(LOGGER)/*.cpp \
+		$(VALIDATION)/*.cpp \
+		$(PYTHON)/*.c
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST)

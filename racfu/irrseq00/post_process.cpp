@@ -17,15 +17,11 @@
 #include "key_map.hpp"
 
 nlohmann::json post_process_generic(
-    generic_extract_parms_results_t *generic_result_buffer) {
+    generic_extract_parms_results_t *generic_result_buffer,
+    const char *admin_type) {
   nlohmann::json profile;
-  profile["profile"] = nlohmann::json::object();
+  profile["profile"]    = nlohmann::json::object();
   char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
-
-  // Set Class Name
-  char profile_type[9];
-  profile_type[8] = 0;  // add null terminator
-  post_process_key(profile_type, generic_result_buffer->class_name, 8);
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -60,10 +56,10 @@ nlohmann::json post_process_generic(
     field = reinterpret_cast<generic_field_descriptor_t *>(
         profile_address + ntohl(segment->field_descriptor_offset));
     for (int j = 1; j <= ntohl(segment->field_count); j++) {
-      racfu_field_key = post_process_field_key(field_key, profile_type,
+      racfu_field_key = post_process_field_key(field_key, admin_type,
                                                segment_key, field->name);
       racfu_field_type =
-          get_racfu_trait_type(profile_type, segment_key, field_key);
+          get_racfu_trait_type(admin_type, segment_key, field_key);
       // Post Process Non-Repeat Fields
       if (!(ntohs(field->type) & t_repeat_field_header)) {
         process_generic_field(profile["profile"][segment_key][racfu_field_key],
@@ -83,9 +79,9 @@ nlohmann::json post_process_generic(
           for (int l = 1; l <= repeat_group_element_count; l++) {
             field++;
             racfu_repeat_field_key = post_process_field_key(
-                repeat_field_key, profile_type, segment_key, field->name);
-            racfu_repeat_field_type = get_racfu_trait_type(
-                profile_type, segment_key, repeat_field_key);
+                repeat_field_key, admin_type, segment_key, field->name);
+            racfu_repeat_field_type =
+                get_racfu_trait_type(admin_type, segment_key, repeat_field_key);
             process_generic_field(repeat_group[k - 1][racfu_repeat_field_key],
                                   field, repeat_field_key, profile_address,
                                   racfu_repeat_field_type);
@@ -104,7 +100,7 @@ nlohmann::json post_process_generic(
 nlohmann::json post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer) {
   nlohmann::json profile;
-  profile["profile"] = nlohmann::json::object();
+  profile["profile"]    = nlohmann::json::object();
   char *profile_address = reinterpret_cast<char *>(setropts_result_buffer);
 
   // Segment Variables
@@ -127,6 +123,7 @@ nlohmann::json post_process_setropts(
   std::vector<std::string> list_field_data;
   char *list_field_data_pointer;
   char field_type;
+  int field_length;
 
   // Post Process Base Segment
   post_process_key(segment_key, segment->name, 8);
@@ -134,15 +131,16 @@ nlohmann::json post_process_setropts(
 
   // Post Process Fields
   for (int i = 1; i <= ntohs(segment->field_count); i++) {
-    racfu_field_key =
-        post_process_field_key(field_key, "setropts", segment_key, field->name);
-    field_type = get_setropts_field_type(field_key);
-    if (field->field_length != 0) {
+    racfu_field_key = post_process_field_key(field_key, "racf-options",
+                                             segment_key, field->name);
+    field_type      = get_setropts_field_type(field_key);
+    field_length    = ntohs(field->field_length);
+    if (field_length != 0) {
       // Post Process List Fields
       if (field_type == SETROPTS_FIELD_TYPE_LIST) {
         list_field_data_pointer = reinterpret_cast<char *>(field) +
                                   sizeof(setropts_field_descriptor_t);
-        for (int j = 0; j < field->field_length / 9; j++) {
+        for (int j = 0; j < field_length / 9; j++) {
           process_setropts_field(field_data, list_field_data_pointer, 8);
           list_field_data.push_back(field_data);
           list_field_data_pointer += 9;
@@ -154,7 +152,7 @@ nlohmann::json post_process_setropts(
         process_setropts_field(field_data,
                                reinterpret_cast<char *>(field) +
                                    sizeof(setropts_field_descriptor_t),
-                               field->field_length);
+                               field_length);
         // Number
         if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
           profile["profile"][segment_key][racfu_field_key] =
@@ -175,8 +173,9 @@ nlohmann::json post_process_setropts(
     } else {
       profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
-    field = dynamic_cast<setropts_field_descriptor_t *>(
-        field + sizeof(setropts_field_descriptor_t) + field->field_length);
+    field = reinterpret_cast<setropts_field_descriptor_t *>(
+        reinterpret_cast<char *>(field) + sizeof(setropts_field_descriptor_t) +
+        field_length);
   }
   return profile;
 }
@@ -236,11 +235,11 @@ char get_setropts_field_type(char *field_key) {
   return SETROPTS_FIELD_TYPE_STRING;
 }
 
-std::string post_process_field_key(char *field_key, const char *profile_type,
+std::string post_process_field_key(char *field_key, const char *admin_type,
                                    const char *segment,
                                    const char *raw_field_key) {
   post_process_key(field_key, raw_field_key, 8);
-  const char *racfu_field_key = get_racfu_key(profile_type, segment, field_key);
+  const char *racfu_field_key = get_racfu_key(admin_type, segment, field_key);
   if (racfu_field_key == NULL) {
     return std::string("experimental:") + std::string(field_key);
   }

@@ -1,5 +1,5 @@
-#ifndef _IRRSEQ00_H_
-#define _IRRSEQ00_H_
+#ifndef __IRRSEQ00_H_
+#define __IRRSEQ00_H_
 
 #include <stdio.h>
 
@@ -17,11 +17,11 @@ extern uint32_t r_admin_saf_rc_mock;
 extern uint32_t r_admin_racf_rc_mock;
 extern uint32_t r_admin_racf_reason_mock;
 #else
-char *r_admin_result_mock = NULL;
+char *r_admin_result_mock         = NULL;
 uint32_t r_admin_result_size_mock = 0;
-uint32_t r_admin_rc_mock = 0;
-uint32_t r_admin_saf_rc_mock = 0;
-uint32_t r_admin_racf_rc_mock = 0;
+uint32_t r_admin_rc_mock          = 0;
+uint32_t r_admin_saf_rc_mock      = 0;
+uint32_t r_admin_racf_rc_mock     = 0;
 uint32_t r_admin_racf_reason_mock = 0;
 #endif
 

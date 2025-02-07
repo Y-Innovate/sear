@@ -1,0 +1,9 @@
+{
+  "operation": "alter",
+  "admin_type": "group-connection",
+  "profile_name": "eswift",
+  "group": "TESTGRP0",
+  "traits": {
+    "base:special": true
+  }
+}

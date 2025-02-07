@@ -1,0 +1,16 @@
+{
+  "errors": [
+    "racfu: 'delete' operator for 'base:data_set_model' can only be used with a 'null' value",
+    "racfu: 'junk' is not in '<segment>:<trait>' or '<operator>:<segment>:<trait>' format",
+    "racfu: 'junkop' is not a valid trait operator",
+    "racfu: 'omvs:gid' must be an 'unsigned integer' value",
+    "racfu: 'omvs:junk' is not a valid trait",
+    "racfu: 'remove' is not a valid operator for 'base:owner'"
+  ],
+  "return_codes": {
+    "racf_reason_code": null,
+    "racf_return_code": null,
+    "racfu_return_code": 8,
+    "saf_return_code": null
+  }
+}

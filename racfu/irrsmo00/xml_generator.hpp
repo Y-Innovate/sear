@@ -1,13 +1,10 @@
-/* saf_xml.hpp */
+#ifndef __RACFU_XML_GENERATOR_H_
+#define __RACFU_XML_GENERATOR_H_
 
-#ifndef XML_GENERATOR_H_
-#define XML_GENERATOR_H_
-
-#ifndef XML_COMMON_LIB_H_
 #include <nlohmann/json.hpp>
 
-std::string cast_hex_string(char *input);
-#endif /* XML_COMMON_LIB_H_ */
+#include "logger.hpp"
+#include "messages.h"
 
 // XmlGenerator Generates an XML String from a JSON string
 class XmlGenerator {
@@ -22,22 +19,23 @@ class XmlGenerator {
   void build_close_tag_no_value();
   void build_single_trait(std::string tag, std::string operation,
                           std::string value);
-  void build_xml_header_attributes(std::string adminType,
-                                   nlohmann::json request,
-                                   int *irrsmo00_options);
-  nlohmann::json build_request_data(std::string adminType,
-                                    nlohmann::json requestData);
-  std::string convert_operation(std::string requestOperation,
-                                int *irrsmo00_options);
+  void build_xml_header_attributes(std::string true_admin_type,
+                                   nlohmann::json *request_p,
+                                   int *irrsmo00_options_p);
+  nlohmann::json build_request_data(std::string true_admin_type,
+                                    std::string admin_type,
+                                    nlohmann::json request_data);
+  std::string convert_operation(std::string request_operation,
+                                int *irrsmo00_options_p);
+  std::string convert_operator(std::string trait_operator);
   std::string convert_admin_type(std::string admin_type);
   std::string json_value_to_string(const nlohmann::json &trait);
 
  public:
-  char *build_xml_string(const char *admin_type, nlohmann::json request,
-                         nlohmann::json *errors, char *userid_buffer,
-                         int *irrsmo00_options,
-                         unsigned int *result_buffer_size,
-                         unsigned int *request_length, bool *debug);
+  char *build_xml_string(const char *admin_type, nlohmann::json *request_p,
+                         nlohmann::json *errors_p, char *userid_buffer,
+                         int *irrsmo00_options_p,
+                         unsigned int *request_length_p, Logger *logger_p);
 };
 
 #endif

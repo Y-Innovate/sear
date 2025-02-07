@@ -1,11 +1,11 @@
-#ifndef __KEY_MAP_STRUCTS_H_
-#define __KEY_MAP_STRUCTS_H_
+#ifndef __RACFU_KEY_MAP_STRUCTS_H_
+#define __RACFU_KEY_MAP_STRUCTS_H_
 
 #include <stdbool.h>
 
 // Trait Types
 #define TRAIT_TYPE_BAD -1
-#define TRAIT_TYPE_ANY 0
+#define TRAIT_TYPE_NULL 0
 #define TRAIT_TYPE_BOOLEAN 1
 #define TRAIT_TYPE_STRING 2
 #define TRAIT_TYPE_UINT 3
@@ -42,8 +42,8 @@ typedef struct {
 } segment_key_mapping_t;              // mappings for this segment.
 
 typedef struct {
-  const char profile_type[8 + 1];  // The type of profile (i.e., 'user')
-  const int size;                  // The number of segments in the profile.
+  const char profile_type[16 + 1];  // The type of profile (i.e., 'user')
+  const int size;                   // The number of segments in the profile.
   const segment_key_mapping_t *segments;
 } key_mapping_t;
 

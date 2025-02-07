@@ -1,19 +1,12 @@
 {
-  "admin_type": "",
-  "operation": "",
-  "profile_name": null,
-  "result": {
-    "errors": [
-      "'junk_operation' is not a valid value for 'operation'",
-      "'junk_admin' is not a valid value for 'admin_type'"
-    ]
-  },
+  "errors": [
+    "racfu: 'junk_operation' is not a valid value for 'operation'",
+    "racfu: 'junk_admin' is not a valid value for 'admin_type'"
+  ],
   "return_codes": {
-    "return_codes": {
-      "racf_reason_code": null,
-      "racf_return_code": null,
-      "racfu_return_code": 8,
-      "saf_return_code": null
-    }
+    "racf_reason_code": null,
+    "racf_return_code": null,
+    "racfu_return_code": 8,
+    "saf_return_code": null
   }
 }

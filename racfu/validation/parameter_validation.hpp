@@ -5,17 +5,20 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-void validate_parameters(nlohmann::json* request, nlohmann::json* errors,
-                         std::string* operation, std::string* admin_type,
-                         std::string* profile_name, std::string* class_name);
+void validate_parameters(nlohmann::json* request_p, nlohmann::json* errors_p,
+                         std::string* operation_p, std::string* admin_type_p,
+                         std::string* profile_name_p,
+                         std::string* class_name_p);
 
-uint8_t validate_parameter(nlohmann::json* request, nlohmann::json* errors,
-                           std::string json_key, nlohmann::json* valid_values,
+uint8_t validate_parameter(nlohmann::json* request_p, nlohmann::json* errors_p,
+                           std::string json_key, nlohmann::json* valid_values_p,
                            std::string admin_type, bool required);
 
-void validate_supplemental_parameters(nlohmann::json* request,
-                                      nlohmann::json* errors,
-                                      nlohmann::json* checked_parameters,
+void validate_supplemental_parameters(nlohmann::json* request_p,
+                                      nlohmann::json* errors_p,
+                                      std::string* admin_type,
+                                      std::string* operation,
+                                      nlohmann::json* checked_parameters_p,
                                       bool traits_allowed);
 
 #endif

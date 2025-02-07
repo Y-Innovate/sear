@@ -1,47 +1,54 @@
-#ifndef __EXTRACT_H_
-#define __EXTRACT_H_
+#ifndef __RACFU_EXTRACT_H_
+#define __RACFU_EXTRACT_H_
 
 #include <stdint.h>
-#include <unistd.h>
 
+#include "logger.hpp"
+#include "messages.h"
 #include "racfu_result.h"
+
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
 
 /*************************************************************************/
 /* Function Codes                                                        */
 /*************************************************************************/
-const uint8_t SETROPTS_EXTRACT_FUNCTION_CODE = 0x16;
-const uint8_t USER_EXTRACT_FUNCTION_CODE = 0x19;
-const uint8_t GROUP_EXTRACT_FUNCTION_CODE = 0x1b;
+const uint8_t SETROPTS_EXTRACT_FUNCTION_CODE         = 0x16;
+const uint8_t USER_EXTRACT_FUNCTION_CODE             = 0x19;
+const uint8_t GROUP_EXTRACT_FUNCTION_CODE            = 0x1b;
 const uint8_t GROUP_CONNECTION_EXTRACT_FUNCTION_CODE = 0x1d;
-const uint8_t RESOURCE_EXTRACT_FUNCTION_CODE = 0x1f;
-const uint8_t DATA_SET_EXTRACT_FUNCTION_CODE = 0x22;
+const uint8_t RESOURCE_EXTRACT_FUNCTION_CODE         = 0x1f;
+const uint8_t DATA_SET_EXTRACT_FUNCTION_CODE         = 0x22;
 
 /*************************************************************************/
 /* Field Descriptor Information                                          */
 /*************************************************************************/
 // Field types
 const uint16_t t_member_repeat_group = 0x8000;  // member of a repeat group
-const uint16_t t_reserved = 0x4000;             // reserved
-const uint16_t t_boolean_field = 0x2000;        // flag (boolean) field
+const uint16_t t_reserved            = 0x4000;  // reserved
+const uint16_t t_boolean_field       = 0x2000;  // flag (boolean) field
 const uint16_t t_repeat_field_header = 0x1000;  // repeat field header
 
 // Field descriptor flags
 const uint32_t f_boolean_field = 0x80000000;  // value of a boolean field
-const uint32_t f_output_only = 0x40000000;    // output-only field
+const uint32_t f_output_only   = 0x40000000;  // output-only field
 
 /*************************************************************************/
 /* Common Aliases                                                        */
 /*************************************************************************/
 const uint8_t RESULT_BUFFER_SUBPOOL = 127;
-const uint32_t ALET = 0x00000000;  // primary address space
-const uint32_t ACEE = 0x00000000;
+const uint32_t ALET                 = 0x00000000;  // primary address space
+const uint32_t ACEE                 = 0x00000000;
 
 /*************************************************************************/
 /* Setropts Constants                                                    */
 /*************************************************************************/
-const char SETROPTS_FIELD_TYPE_LIST = 0;
-const char SETROPTS_FIELD_TYPE_STRING = 1;
-const char SETROPTS_FIELD_TYPE_NUMBER = 2;
+const char SETROPTS_FIELD_TYPE_LIST    = 0;
+const char SETROPTS_FIELD_TYPE_STRING  = 1;
+const char SETROPTS_FIELD_TYPE_NUMBER  = 2;
 const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
 
 /*************************************************************************/
@@ -90,29 +97,29 @@ const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
   /* R_admin returns data here */          \
   char *__ptr32 *__ptr32 ppResult_buffer;
 
-#define SET_COMMON_ARGS       \
-  args->ALET_SAF_rc = ALET;   \
-  args->ALET_RACF_rc = ALET;  \
-  args->ALET_RACF_rsn = ALET; \
-  args->ACEE = ACEE;          \
+#define SET_COMMON_ARGS               \
+  args->ALET_SAF_rc           = ALET; \
+  args->ALET_RACF_rc          = ALET; \
+  args->ALET_RACF_rsn         = ALET; \
+  args->ACEE                  = ACEE; \
   args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
 
 #define SET_COMMON_ARG_POINTERS                                              \
   arg_pointers->pWork_area =                                                 \
       reinterpret_cast<char *__ptr32>(&args->RACF_work_area);                \
-  arg_pointers->pALET_SAF_rc = &(args->ALET_SAF_rc);                         \
-  arg_pointers->pSAF_rc = &(args->SAF_rc);                                   \
-  arg_pointers->pALET_RACF_rc = &(args->ALET_RACF_rc);                       \
-  arg_pointers->pRACF_rc = &(args->RACF_rc);                                 \
+  arg_pointers->pALET_SAF_rc   = &(args->ALET_SAF_rc);                       \
+  arg_pointers->pSAF_rc        = &(args->SAF_rc);                            \
+  arg_pointers->pALET_RACF_rc  = &(args->ALET_RACF_rc);                      \
+  arg_pointers->pRACF_rc       = &(args->RACF_rc);                           \
   arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
-  arg_pointers->pRACF_rsn = &(args->RACF_rsn);                               \
+  arg_pointers->pRACF_rsn      = &(args->RACF_rsn);                          \
                                                                              \
   arg_pointers->pFunction_code = &(args->function_code);                     \
   /* Function specific parms between function code and profile name */       \
-  arg_pointers->pProfile_name = &(args->profile_name[0]);                    \
-  arg_pointers->pACEE = &(args->ACEE);                                       \
+  arg_pointers->pProfile_name          = &(args->profile_name[0]);           \
+  arg_pointers->pACEE                  = &(args->ACEE);                      \
   arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
-  arg_pointers->ppResult_buffer = &(args->pResult_buffer);                   \
+  arg_pointers->ppResult_buffer        = &(args->pResult_buffer);            \
                                                                              \
   /* Turn on the hight order bit of the last argument - marks the end of the \
    */                                                                        \
@@ -363,14 +370,15 @@ extern "C" uint32_t callRadmin(char *__ptr32);
 
 char *extract(const char *profile_name, const char *class_name,
               uint8_t function_code, char **raw_request,
-              int *raw_request_length, racfu_return_codes_t *return_codes);
+              int *raw_request_length, racfu_return_codes_t *return_codes,
+              Logger *logger_p);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
     const char *profile_name, const char *class_name, uint8_t function_code);
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
 
-void preserve_raw_request(char *arg_area, char **raw_request,
-                          int *raw_request_length);
+void preserve_raw_request(const char *arg_area, char **raw_request,
+                          const int *raw_request_length);
 
 #endif

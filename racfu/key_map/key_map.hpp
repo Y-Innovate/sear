@@ -1,15 +1,57 @@
-#ifndef __KEY_MAP_H_
-#define __KEY_MAP_H_
+#ifndef __RACFU_KEY_MAP_H_
+#define __RACFU_KEY_MAP_H_
 
 #include <cstdint>
 #include <nlohmann/json.hpp>
 
+#include "key_map_data_set.hpp"
+#include "key_map_group.hpp"
+#include "key_map_group_connection.hpp"
+#include "key_map_permission.hpp"
+#include "key_map_racf_options.hpp"
+#include "key_map_resource.hpp"
 #include "key_map_structs.hpp"
 #include "key_map_user.hpp"
 
+// clang-format off
 const key_mapping_t KEY_MAP[] = {
-    {"user", segment_count(USER_SEGMENT_KEY_MAP), USER_SEGMENT_KEY_MAP}
+    { 
+     "data-set",
+     segment_count(DATA_SET_SEGMENT_KEY_MAP),
+     DATA_SET_SEGMENT_KEY_MAP
+     },
+    { 
+     "group", 
+     segment_count(GROUP_SEGMENT_KEY_MAP),
+     GROUP_SEGMENT_KEY_MAP
+     },
+    {
+     "group-connection", 
+     segment_count(GROUP_CONNECTION_SEGMENT_KEY_MAP),
+     GROUP_CONNECTION_SEGMENT_KEY_MAP 
+     },
+    { 
+     "permission",
+     segment_count(PERMISSION_SEGMENT_KEY_MAP),
+     PERMISSION_SEGMENT_KEY_MAP
+     },
+    {
+     "racf-options",
+     segment_count(RACF_OPTIONS_SEGMENT_KEY_MAP),
+     RACF_OPTIONS_SEGMENT_KEY_MAP
+     },
+    {
+     "resource",
+     segment_count(RESOURCE_SEGMENT_KEY_MAP),
+     RESOURCE_SEGMENT_KEY_MAP
+     },
+    {
+     "user",
+     segment_count(USER_SEGMENT_KEY_MAP),
+     USER_SEGMENT_KEY_MAP
+     }
 };
+// clang-format on
 
 const char *get_racfu_key(const char *profile_type, const char *segment,
                           const char *racf_key);
@@ -24,7 +66,7 @@ const char get_racfu_trait_type(const char *profile_type, const char *segment,
 const char get_racf_trait_type(const char *profile_type, const char *segment,
                                const char *racfu_key);
 
-int8_t map_operation(std::string operation);
+int8_t map_operator(std::string trait_operator);
 int8_t map_trait_type(const nlohmann::json &trait);
 
 #endif

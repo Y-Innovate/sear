@@ -1,6 +1,7 @@
 #define _UNIX03_SOURCE
 
 #include <dlfcn.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,7 +14,7 @@ typedef struct {
   char *result_json;
 } racfu_result_t;
 
-typedef void (*racfu_t)(racfu_result_t *, char *);
+typedef void (*racfu_t)(racfu_result_t *, char *, bool);
 
 int main(int argc, char **argv) {
   // Parameter Validation
@@ -54,12 +55,12 @@ int main(int argc, char **argv) {
 
   // Make Request;
   racfu_result_t racfu_result;
-  racfu(&racfu_result, request_json);
+  racfu(&racfu_result, request_json, true);
   dlclose(lib_handle);
 
   // Write Raw Request
   char raw_request_file[] = "request.bin";
-  fp = fopen(raw_request_file, "wb");
+  fp                      = fopen(raw_request_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for writing.\n", raw_request_file);
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
 
   // Write Raw Result
   char raw_result_file[] = "result.bin";
-  fp = fopen(raw_result_file, "wb");
+  fp                     = fopen(raw_result_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for writing.\n", raw_result_file);
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
 
   // Write Result JSON
   char result_json_file[] = "result.json";
-  fp = fopen(result_json_file, "wb");
+  fp                      = fopen(result_json_file, "wb");
   if (fp == NULL) {
     perror("");
     printf("Unable to open '%s' for wirting.\n", "result_json_file");
