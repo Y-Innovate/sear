@@ -1,7 +1,7 @@
 {
   "errors": [
-    "racfu: 'class_name' is a required parameter for the 'resource' admin type",
-    "racfu: 'traits' is not a valid parameter for the 'extract' operation"
+    "racfu: 'class' is a required parameter for the 'resource' admin type and 'extract' operation",
+    "racfu: 'traits' is not a valid parameter for the 'resource' admin type and 'extract' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

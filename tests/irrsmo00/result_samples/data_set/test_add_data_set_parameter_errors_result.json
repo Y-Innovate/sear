@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'data-set' admin type",
+    "racfu: 'data_set' is a required parameter for the 'data-set' admin type and 'add' operation",
     "racfu: 'junk' is not a valid parameter for the 'data-set' admin type"
   ],
   "return_codes": {

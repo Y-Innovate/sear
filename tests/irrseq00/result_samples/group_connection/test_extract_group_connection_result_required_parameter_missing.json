@@ -1,6 +1,7 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'group-connection' admin type"
+    "racfu: 'userid' is a required parameter for the 'group-connection' admin type and 'extract' operation",
+    "racfu: 'group' is a required parameter for the 'group-connection' admin type and 'extract' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

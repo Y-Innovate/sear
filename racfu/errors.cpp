@@ -56,7 +56,8 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
         error_message_str =
             prefix + "'" + error_data["parameter"].get<std::string>() +
             "' is a required parameter for the '" +
-            error_data["admin_type"].get<std::string>() + "' admin type";
+            error_data["admin_type"].get<std::string>() + "' admin type and '" +
+            error_data["operation"].get<std::string>() + "' operation";
         break;
       }
       case BAD_PARAMETER_NAME: {
@@ -174,10 +175,20 @@ nlohmann::json format_error_json(nlohmann::json* errors_p) {
             "' profile already exists with that name";
         break;
       }
-      case BAD_PARAMETER_FOR_OPERATION: {
+      case BAD_PARAMETER_FOR_ADMIN_TYPE_OPERATION_COMBO: {
         error_message_str =
             prefix + "'" + error_data["parameter"].get<std::string>() +
             "' is not a valid parameter for the '" +
+            error_data["admin_type"].get<std::string>() + "' admin type and '" +
+            error_data["operation"].get<std::string>() + "' operation";
+        break;
+      }
+      case ONE_OF_THESE_PARAMETERS_REQUIRED: {
+        error_message_str =
+            prefix + "'" + error_data["parameter"].get<std::string>() +
+            "' or '" + error_data["alternate"].get<std::string>() +
+            "' and only one of the two must be provided for the '" +
+            error_data["admin_type"].get<std::string>() + "' admin type and '" +
             error_data["operation"].get<std::string>() + "' operation";
         break;
       }

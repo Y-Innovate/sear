@@ -12,24 +12,19 @@
 #include "irrsmo00.hpp"
 #include "logger.hpp"
 #include "messages.h"
-#include "parameter_validation.hpp"
+#include "parameter_validator.hpp"
 #include "post_process.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
-void do_extract(const char *admin_type, const char *profile_name,
-                const char *class_name, racfu_result_t *result,
+void do_extract(nlohmann::json *request, racfu_result_t *result,
                 racfu_return_codes_t *return_codes_p, Logger *logger_p);
 
-void do_add_alter_delete(const char *admin_type, const char *profile_name,
-                         const char *class_name, const char *operation,
-                         const char *surrogate_userid, bool check_first,
-                         nlohmann::json *full_request_json_p,
-                         racfu_result_t *results,
+void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
                          racfu_return_codes_t *return_codes_p,
                          Logger *logger_p);
 
-void build_result(const char *operation, char *raw_result,
+void build_result(std::string operation, char *raw_result,
                   int raw_result_length, char *raw_request,
                   int raw_request_length,
                   nlohmann::json *intermediate_result_json_p,
@@ -39,13 +34,7 @@ void build_result(const char *operation, char *raw_result,
 void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   Logger logger = Logger(debug);
   nlohmann::json request, errors;
-  std::string operation = "", admin_type = "", profile_name = "",
-              class_name            = "";
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
-  const char *profile_name_ptr      = NULL;
-  const char *class_name_ptr        = NULL;
-  const char *surrogate_userid      = NULL;
-  bool check_first                  = false;
   try {
     request = nlohmann::json::parse(request_json);
   } catch (nlohmann::json::parse_error &ex) {
@@ -54,76 +43,62 @@ void racfu(racfu_result_t *result, const char *request_json, bool debug) {
                           {"byte", ex.byte}
     });
     return_codes.racfu_return_code = 8;
-    build_result(operation.c_str(), nullptr, 0, nullptr, 0, &errors, result,
-                 &return_codes, &logger);
+    build_result("", nullptr, 0, nullptr, 0, &errors, result, &return_codes,
+                 &logger);
     return;
   }
   logger.debug(MSG_VALIDATING_PARAMETERS);
-  validate_parameters(&request, &errors, &operation, &admin_type, &profile_name,
-                      &class_name);
-  if (!profile_name.empty()) {
-    profile_name_ptr = profile_name.c_str();
-  }
-  if (!class_name.empty()) {
-    class_name_ptr = class_name.c_str();
-  }
+  ParameterValidator parameter_validator(&request, &errors);
+  parameter_validator.validate_parameters();
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
-    build_result(operation.c_str(), nullptr, 0, nullptr, 0, &errors, result,
-                 &return_codes, &logger);
+    build_result("", nullptr, 0, nullptr, 0, &errors, result, &return_codes,
+                 &logger);
     return;
   }
   logger.debug(MSG_DONE);
 
-  operation  = request["operation"].get<std::string>();
-  admin_type = request["admin_type"].get<std::string>();
-  if (request.contains("profile_name")) {
-    profile_name = request["profile_name"].get<std::string>().c_str();
-  }
-  if (request.contains("class_name")) {
-    class_name = request["class_name"].get<std::string>().c_str();
-  }
   // Extract
-  if (operation == "extract") {
+  if (request["operation"].get<std::string>() == "extract") {
     logger.debug(MSG_SEQ_PATH);
-    do_extract(admin_type.c_str(), profile_name_ptr, class_name_ptr, result,
-               &return_codes, &logger);
+    do_extract(&request, result, &return_codes, &logger);
     // Add/Alter/Delete
   } else {
-    if (request.contains("run_as_userid")) {
-      surrogate_userid = request["run_as_userid"].get<std::string>().c_str();
-    }
     logger.debug(MSG_SMO_PATH);
-    check_first = ((operation == "alter") &&
-                   ((admin_type == "group") || (admin_type == "user") ||
-                    (admin_type == "data-set") || (admin_type == "resource")));
-    do_add_alter_delete(admin_type.c_str(), profile_name_ptr, class_name_ptr,
-                        operation.c_str(), surrogate_userid, check_first,
-                        &request, result, &return_codes, &logger);
+    do_add_alter_delete(&request, result, &return_codes, &logger);
   }
 }
 
-void do_extract(const char *admin_type, const char *profile_name,
-                const char *class_name, racfu_result_t *racfu_result,
+void do_extract(nlohmann::json *request, racfu_result_t *racfu_result,
                 racfu_return_codes_t *return_codes_p, Logger *logger_p) {
   char *raw_result  = NULL;
   char *raw_request = NULL;
   int raw_result_length, raw_request_length;
   uint8_t function_code;
   nlohmann::json profile_json;
+  std::string admin_type = (*request)["admin_type"].get<std::string>();
+  std::string profile_name;
+  std::string class_name;
 
-  // Validate 'admin_type'
-  if (strcmp(admin_type, "user") == 0) {
+  // Validate 'admin_type' and build profile name and class name
+  if (admin_type == "user") {
     function_code = USER_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "group") == 0) {
+    profile_name  = (*request)["userid"].get<std::string>();
+  } else if (admin_type == "group") {
     function_code = GROUP_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "group-connection") == 0) {
+    profile_name  = (*request)["group"].get<std::string>();
+  } else if (admin_type == "group-connection") {
     function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "resource") == 0) {
+    profile_name  = (*request)["userid"].get<std::string>() + "." +
+                   (*request)["group"].get<std::string>();
+  } else if (admin_type == "resource") {
     function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "data-set") == 0) {
+    profile_name  = (*request)["resource"].get<std::string>();
+    class_name    = (*request)["class"].get<std::string>();
+  } else if (admin_type == "data-set") {
     function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
-  } else if (strcmp(admin_type, "racf-options") == 0) {
+    profile_name  = (*request)["data_set"].get<std::string>();
+  } else if (admin_type == "racf-options") {
     function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else {
     return_codes_p->racfu_return_code = 8;
@@ -131,8 +106,9 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Do extract if function code is good.
   if (return_codes_p->racfu_return_code == -1) {
-    raw_result = extract(profile_name, class_name, function_code, &raw_request,
-                         &raw_request_length, return_codes_p, logger_p);
+    raw_result =
+        extract(&profile_name, &class_name, function_code, &raw_request,
+                &raw_request_length, return_codes_p, logger_p);
     if (raw_result == NULL) {
       return_codes_p->racfu_return_code = 4;
     } else {
@@ -142,7 +118,7 @@ void do_extract(const char *admin_type, const char *profile_name,
 
   // Build Failure Result
   if (raw_result == NULL) {
-    if (strcmp(admin_type, "racf-options") != 0) {
+    if (admin_type != "racf-options") {
       update_error_json(&profile_json["errors"], EXTRACT_FAILED,
                         nlohmann::json{
                             {  "admin_type",   std::string(admin_type)},
@@ -154,19 +130,21 @@ void do_extract(const char *admin_type, const char *profile_name,
                             {"admin_type", std::string(admin_type)}
       });
     }
-    build_result("extract", nullptr, 0, raw_request, raw_request_length,
-                 &profile_json, racfu_result, return_codes_p, logger_p);
+    build_result((*request)["operation"].get<std::string>(), nullptr, 0,
+                 raw_request, raw_request_length, &profile_json, racfu_result,
+                 return_codes_p, logger_p);
     return;
   }
 
   // Post Process Generic Result
-  if (strcmp(admin_type, "racf-options") != 0) {
+  if (admin_type != "racf-options") {
     generic_extract_parms_results_t *generic_result_buffer =
         reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
     raw_result_length = ntohl(generic_result_buffer->result_buffer_length);
     logger_p->debug(MSG_RESULT_SEQ_GENERIC,
                     logger_p->cast_hex_string(raw_result, raw_result_length));
-    profile_json = post_process_generic(generic_result_buffer, admin_type);
+    profile_json =
+        post_process_generic(generic_result_buffer, admin_type.c_str());
     // Post Process Setropts Result
   } else {
     setropts_extract_results_t *setropts_result_buffer =
@@ -180,18 +158,14 @@ void do_extract(const char *admin_type, const char *profile_name,
   logger_p->debug(MSG_SEQ_POST_PROCESS);
 
   // Build Success Result
-  build_result("extract", raw_result, raw_result_length, raw_request,
-               raw_request_length, &profile_json, racfu_result, return_codes_p,
-               logger_p);
+  build_result((*request)["operation"].get<std::string>(), raw_result,
+               raw_result_length, raw_request, raw_request_length,
+               &profile_json, racfu_result, return_codes_p, logger_p);
 
   return;
 }
 
-void do_add_alter_delete(const char *admin_type, const char *profile_name,
-                         const char *class_name, const char *operation,
-                         const char *surrogate_userid, bool check_first,
-                         nlohmann::json *full_request_json_p,
-                         racfu_result_t *racfu_result,
+void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
                          racfu_return_codes_t *return_codes_p,
                          Logger *logger_p) {
   char running_userid[8] = {0};
@@ -210,38 +184,61 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   racf_rsn                = 0;
   racfu_rc                = 0;
 
-  xml_request_string      = generator->build_xml_string(
-      admin_type, full_request_json_p, &errors, running_userid,
+  std::string admin_type  = (*request)["admin_type"].get<std::string>();
+  std::string operation   = (*request)["operation"].get<std::string>();
+  std::string profile_name;
+  std::string class_name;
+  std::string auth_id;
+
+  if (admin_type == "user" || admin_type == "group-connection") {
+    profile_name = (*request)["userid"].get<std::string>();
+  } else if (admin_type == "group") {
+    profile_name = (*request)["group"].get<std::string>();
+  } else if (admin_type == "resource") {
+    profile_name = (*request)["resource"].get<std::string>();
+    class_name   = (*request)["class"].get<std::string>();
+  } else if (admin_type == "data-set") {
+    profile_name = (*request)["data_set"].get<std::string>();
+  } else if (admin_type == "permission") {
+    profile_name = (*request)["resource"].get<std::string>();
+    class_name   = (*request)["class"].get<std::string>();
+    auth_id      = (*request)["userid"].get<std::string>();
+  }
+
+  xml_request_string = generator->build_xml_string(
+      &admin_type, request, &errors, &profile_name, &auth_id, running_userid,
       &irrsmo00_options, &request_length, logger_p);
 
   if (!errors.empty()) {
     return_codes_p->racfu_return_code = 8;
     build_result(operation, nullptr, 0, xml_request_string, request_length,
-                 &errors, racfu_result, return_codes_p, logger_p);
+                 &errors, result, return_codes_p, logger_p);
     return;
   }
 
-  if (check_first) {
+  if ((operation == "alter") &&
+      ((admin_type == "group") || (admin_type == "user") ||
+       (admin_type == "data-set") || (admin_type == "resource"))) {
     logger_p->debug(MSG_SMO_VALIDATE_EXIST);
-    if (!does_profile_exist(std::string(admin_type), std::string(profile_name),
-                            class_name, running_userid)) {
-      if (class_name == NULL) {
+    if (!does_profile_exist(admin_type, profile_name, class_name,
+                            running_userid)) {
+      if (class_name.empty()) {
         update_error_json(&errors, BAD_ALTER_TARGET,
                           nlohmann::json{
-                              {"name", std::string(profile_name)}
+                              {"name", profile_name}
         });
       } else {
         update_error_json(&errors, BAD_ALTER_TARGET_CLASS,
                           nlohmann::json{
-                              { "name", std::string(profile_name)},
-                              {"class",   std::string(class_name)}
+                              { "name", profile_name},
+                              {"class",   class_name}
         });
       }
     }
     if (!errors.empty()) {
       return_codes_p->racfu_return_code = 8;
       build_result(operation, nullptr, 0, xml_request_string, request_length,
-                   &errors, racfu_result, return_codes_p, logger_p);
+                   &errors, result, return_codes_p, logger_p);
       return;
     }
     logger_p->debug(MSG_DONE);
@@ -266,8 +263,8 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   logger_p->debug(intermediate_result_json.dump());
   // Maintain any RC 4's from parsing xml or post-processing json
   racfu_rc =
-      racfu_rc | post_process_smo_json(&intermediate_result_json, profile_name,
-                                       admin_type, class_name);
+      racfu_rc | post_process_smo_json(&intermediate_result_json, &profile_name,
+                                       &admin_type, &class_name);
   logger_p->debug(MSG_DONE);
 
   return_codes_p->racfu_return_code = racfu_rc;
@@ -281,12 +278,12 @@ void do_add_alter_delete(const char *admin_type, const char *profile_name,
   // Build Success Result
   build_result(operation, xml_response_string, result_buffer_size,
                xml_request_string, request_length, &intermediate_result_json,
-               racfu_result, return_codes_p, logger_p);
+               result, return_codes_p, logger_p);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
 
-void build_result(const char *operation, char *raw_result,
+void build_result(std::string operation, char *raw_result,
                   int raw_result_length, char *raw_request,
                   int raw_request_length,
                   nlohmann::json *intermediate_result_json_p,
@@ -324,8 +321,7 @@ void build_result(const char *operation, char *raw_result,
     result_json.merge_patch(
         format_error_json(&((*intermediate_result_json_p)["errors"])));
   } else {
-    if ((intermediate_result_json_p->empty()) &&
-        (std::string(operation) == "extract")) {
+    if ((intermediate_result_json_p->empty()) && (operation == "extract")) {
       result_json["profile"] = nullptr;
     } else if (!intermediate_result_json_p->empty()) {
       result_json.merge_patch(*intermediate_result_json_p);

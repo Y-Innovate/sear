@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'class_name' is a required parameter for the 'resource' admin type"
+    "racfu: 'class' is a required parameter for the 'resource' admin type and 'add' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

@@ -16,19 +16,19 @@
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(
-    const char* admin_type, nlohmann::json* request_p, nlohmann::json* errors_p,
+    std::string* admin_type, nlohmann::json* request_p,
+    nlohmann::json* errors_p, std::string* profile_name, std::string* auth_id,
     char* userid_buffer, int* irrsmo00_options_p,
     unsigned int* request_length_p, Logger* logger_p) {
   // Main body function that builds an xml string
-  std::string true_admin_type, running_userid, auth_id;
-
+  std::string true_admin_type, running_userid;
   // Build the securityrequest tag (Consistent)
   build_open_tag("securityrequest");
   build_attribute("xmlns", "http://www.ibm.com/systems/zos/saf");
   build_attribute("xmlns:racf", "http://www.ibm.com/systems/zos/racf");
   build_end_nested_tag();
 
-  true_admin_type = convert_admin_type(std::string(admin_type));
+  true_admin_type = convert_admin_type(*admin_type);
   build_open_tag(true_admin_type);
 
   // The following options dictate parameters to IRRSMO00 and are not
@@ -37,15 +37,9 @@ char* XmlGenerator::build_xml_string(
     running_userid = (*request_p)["run_as_userid"].get<std::string>();
     request_p->erase("run_as_userid");
   }
-  // The following option passes the 'auth_id' parameter for PERMISSION
-  // to the traits of the XML
-  auth_id = "";
-  if (request_p->contains("auth_id")) {
-    auth_id = (*request_p)["auth_id"].get<std::string>();
-    request_p->erase("auth_id");
-  }
 
-  build_xml_header_attributes(true_admin_type, request_p, irrsmo00_options_p);
+  build_xml_header_attributes(true_admin_type, profile_name, request_p,
+                              irrsmo00_options_p);
 
   if (!running_userid.empty()) {
     // Run this command as another user id
@@ -57,17 +51,16 @@ char* XmlGenerator::build_xml_string(
 
   build_attribute("requestid", true_admin_type + "_request");
 
-  if (!auth_id.empty()) {
-    (*request_p)["traits"]["base:authid"] = auth_id;
+  if (*auth_id != "") {
+    (*request_p)["traits"]["base:authid"] = *auth_id;
   }
   if ((request_p->contains("traits")) && (!(*request_p)["traits"].empty())) {
     build_end_nested_tag();
 
     logger_p->debug(MSG_VALIDATING_TRAITS);
-    validate_traits(admin_type, &((*request_p)["traits"]), errors_p);
+    validate_traits(*admin_type, &((*request_p)["traits"]), errors_p);
     if (errors_p->empty()) {
-      build_request_data(true_admin_type, std::string(admin_type),
-                         (*request_p)["traits"]);
+      build_request_data(true_admin_type, *admin_type, (*request_p)["traits"]);
     } else {
       return nullptr;
     }
@@ -171,6 +164,7 @@ void XmlGenerator::build_single_trait(std::string tag, std::string operation,
 }
 
 void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
+                                               std::string* profile_name,
                                                nlohmann::json* request_p,
                                                int* irrsmo00_options_p) {
   // Obtain JSON Header information and Build into Admin Object where
@@ -190,7 +184,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
   if (true_admin_type == "systemsettings") {
     return;
   }
-  build_attribute("name", (*request_p)["profile_name"].get<std::string>());
+  build_attribute("name", *profile_name);
   if ((true_admin_type == "user") || (true_admin_type == "group")) {
     return;
   }
@@ -199,7 +193,7 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
     return;
   }
   if ((true_admin_type == "resource") || (true_admin_type == "permission")) {
-    class_name = (*request_p)["class_name"].get<std::string>();
+    class_name = (*request_p)["class"].get<std::string>();
     build_attribute("class", class_name);
     if (true_admin_type == "resource" || (class_name != "dataset")) {
       return;
@@ -210,7 +204,11 @@ void XmlGenerator::build_xml_header_attributes(std::string true_admin_type,
       build_attribute("volume", (*request_p)["volume"].get<std::string>());
     }
     if (request_p->contains("generic")) {
-      build_attribute("generic", (*request_p)["generic"].get<std::string>());
+      if ((*request_p)["generic"].get<bool>() == true) {
+        build_attribute("generic", "yes");
+      } else {
+        build_attribute("generic", "no");
+      }
     }
     return;
   }

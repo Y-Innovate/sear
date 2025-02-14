@@ -41,8 +41,11 @@
 // "'set' operator for 'base:passphrase' can NOT be used with a 'null' value"
 #define BAD_BOOLEAN_OPERATOR_COMBO 16
 // "'false' is not a valid value for 'omvs:auto_uid'"
-#define BAD_PARAMETER_FOR_OPERATION 17
+#define BAD_PARAMETER_FOR_ADMIN_TYPE_OPERATION_COMBO 17
 // "'traits' is not a valid parameter for the 'delete' operation"
+#define ONE_OF_THESE_PARAMETERS_REQUIRED 18
+// "'userid' or 'group' and only one of the two must be provided for
+// 'permission' admin type and 'alter' operation"
 #define XML_PARSE_ERROR 101
 // "unable to parse XML returned by IRRSMO00"
 #define BAD_ADD_TARGET_CLASS 102

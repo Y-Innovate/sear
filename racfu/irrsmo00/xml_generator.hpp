@@ -20,6 +20,7 @@ class XmlGenerator {
   void build_single_trait(std::string tag, std::string operation,
                           std::string value);
   void build_xml_header_attributes(std::string true_admin_type,
+                                   std::string *profile_name,
                                    nlohmann::json *request_p,
                                    int *irrsmo00_options_p);
   nlohmann::json build_request_data(std::string true_admin_type,
@@ -32,8 +33,9 @@ class XmlGenerator {
   std::string json_value_to_string(const nlohmann::json &trait);
 
  public:
-  char *build_xml_string(const char *admin_type, nlohmann::json *request_p,
-                         nlohmann::json *errors_p, char *userid_buffer,
+  char *build_xml_string(std::string *admin_type, nlohmann::json *request_p,
+                         nlohmann::json *errors_p, std::string *profile_name,
+                         std::string *auth_id, char *userid_buffer,
                          int *irrsmo00_options_p,
                          unsigned int *request_length_p, Logger *logger_p);
 };

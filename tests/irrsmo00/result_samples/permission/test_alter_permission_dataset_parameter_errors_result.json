@@ -1,6 +1,7 @@
 {
   "errors": [
-    "racfu: 'auth_id' is a required parameter for the 'permission' admin type"
+    "racfu: 'userid' or 'group' and only one of the two must be provided for the 'permission' admin type and 'alter' operation",
+    "racfu: 'group' or 'userid' and only one of the two must be provided for the 'permission' admin type and 'alter' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

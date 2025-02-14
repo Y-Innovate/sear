@@ -16,11 +16,11 @@
 #include <arpa/inet.h>
 
 char *extract(
-    const char *profile_name,  // Required for everything except setropts
-    const char *class_name,    // Only required for general resource profile
-    uint8_t function_code,     // Always required
-    char **raw_request,        // Always required
-    int *raw_request_length,   // Always required
+    std::string *profile_name,  // Required for everything except setropts
+    std::string *class_name,    // Only required for general resource profile
+    uint8_t function_code,      // Always required
+    char **raw_request,         // Always required
+    int *raw_request_length,    // Always required
     racfu_return_codes_t *return_codes,  // Always required,
     Logger *logger_p) {
   uint32_t rc;
@@ -119,10 +119,11 @@ char *extract(
 }
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    const char *profile_name,  // Required always.
-    const char *class_name,    // Required only for resource extract.
-    uint8_t function_code      // Required always.
+    std::string *profile_name,  // Required always.
+    std::string *class_name,    // Required only for resource extract.
+    uint8_t function_code       // Required always.
 ) {
+  /*
   int profile_name_length;
   if (profile_name != NULL) {
     profile_name_length = strlen(profile_name);
@@ -131,6 +132,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   if (class_name != NULL) {
     class_name_length = strlen(class_name);
   }
+  */
 
   /***************************************************************************/
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
@@ -159,17 +161,18 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   args->function_code = function_code;
 
   // Copy profile name and class name.
-  memcpy(args->profile_name, profile_name, profile_name_length);
+  memcpy(args->profile_name, profile_name->c_str(), profile_name->length());
   // Encode profile name as IBM-1047.
-  __a2e_l(args->profile_name, profile_name_length);
-  if (class_name != NULL) {
+  __a2e_l(args->profile_name, profile_name->length());
+  if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE) {
     // Class name must be padded with blanks.
     memset(&profile_extract_parms->class_name, ' ', 8);
-    memcpy(profile_extract_parms->class_name, class_name, class_name_length);
+    memcpy(profile_extract_parms->class_name, class_name->c_str(),
+           class_name->length());
     // Encode class name as IBM-1047.
-    __a2e_l(profile_extract_parms->class_name, class_name_length);
+    __a2e_l(profile_extract_parms->class_name, class_name->length());
   }
-  profile_extract_parms->profile_name_length = htonl(profile_name_length);
+  profile_extract_parms->profile_name_length = htonl(profile_name->length());
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */

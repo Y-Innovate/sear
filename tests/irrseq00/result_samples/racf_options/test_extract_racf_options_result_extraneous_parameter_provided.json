@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'profile_name' is not a valid parameter for the 'racf-options' admin type"
+    "racfu: 'userid' is not a valid parameter for the 'racf-options' admin type and 'extract' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

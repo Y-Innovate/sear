@@ -1,7 +1,7 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'group' admin type",
-    "racfu: 'volume' is not a valid parameter for the 'group' admin type"
+    "racfu: 'group' is a required parameter for the 'group' admin type and 'add' operation",
+    "racfu: 'volume' is not a valid parameter for the 'group' admin type and 'add' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'profile_name' is a required parameter for the 'data-set' admin type"
+    "racfu: 'data_set' is a required parameter for the 'data-set' admin type and 'extract' operation"
   ],
   "return_codes": {
     "racf_reason_code": null,

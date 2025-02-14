@@ -43,9 +43,9 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
                     int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p);
 
 bool does_profile_exist(std::string admin_type, std::string profile_name,
-                        const char *class_name, char *running_userid);
+                        std::string class_name, char *running_userid);
 
-int post_process_smo_json(nlohmann::json *results_p, const char *profile_name,
-                          const char *admin_type, const char *class_name);
+int post_process_smo_json(nlohmann::json *results_p, std::string *profile_name,
+                          std::string *admin_type, std::string *class_name);
 
 #endif /* IRRSMO00_H_ */
