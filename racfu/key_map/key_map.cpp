@@ -80,15 +80,35 @@ static const trait_key_mapping_t *get_key_mapping(
           for (int k = 0; k < KEY_MAP[i].segments[j].size; k++) {
             // Get the RACFu key mapping for profile extract
             if (extract == true) {
-              if (strcmp(racf_key, KEY_MAP[i].segments[j].traits[k].racf_key) ==
-                  0) {
+              size_t functional_racf_key_length =
+                  strlen(KEY_MAP[i].segments[j].traits[k].racf_key);
+              if (KEY_MAP[i]
+                      .segments[j]
+                      .traits[k]
+                      .racf_key[functional_racf_key_length - 1] == '*') {
+                functional_racf_key_length--;
+              } else {
+                functional_racf_key_length = strlen(racf_key);
+              }
+              if (strncmp(racf_key, KEY_MAP[i].segments[j].traits[k].racf_key,
+                          functional_racf_key_length) == 0) {
                 return &KEY_MAP[i].segments[j].traits[k];
               }
             }
             // Get the RACF key mapping for add/alter/delete
             else {
-              if (strcmp(racfu_key,
-                         KEY_MAP[i].segments[j].traits[k].racfu_key) == 0) {
+              size_t functional_racfu_key_length =
+                  strlen(KEY_MAP[i].segments[j].traits[k].racfu_key);
+              if (KEY_MAP[i]
+                      .segments[j]
+                      .traits[k]
+                      .racfu_key[functional_racfu_key_length - 1] == '*') {
+                functional_racfu_key_length--;
+              } else {
+                functional_racfu_key_length = strlen(racfu_key);
+              }
+              if (strncmp(racfu_key, KEY_MAP[i].segments[j].traits[k].racfu_key,
+                          functional_racfu_key_length) == 0) {
                 // Check trait type
                 trait_type_good = check_trait_type(
                     trait_type, KEY_MAP[i].segments[j].traits[k].trait_type);

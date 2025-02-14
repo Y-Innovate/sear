@@ -55,6 +55,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                             {  "trait",   item_trait},
                             {"segment", item_segment}
       });
+      continue;
     }
     if (trait_type == TRAIT_TYPE_NULL) {
       // Validate that NULL is not used with non-delete operator specified

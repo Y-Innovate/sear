@@ -360,7 +360,7 @@ const trait_key_mapping_t RESOURCE_CFDEF_KEY_MAP[]{
 
 const trait_key_mapping_t RESOURCE_CSDATA_KEY_MAP[]{
     {
-     "csdata:", "",
+     "csdata:*", "*",
      TRAIT_TYPE_STRING, {true, false, false, true},
      }
 };
