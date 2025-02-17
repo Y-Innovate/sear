@@ -22,6 +22,11 @@ void test_generate_alter_user_request() {
       TEST_ALTER_USER_REQUEST_JSON, TEST_ALTER_USER_REQUEST_RAW);
 }
 
+void test_generate_alter_user_csdata_request() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_USER_CSDATA_REQUEST_JSON, TEST_ALTER_USER_CSDATA_REQUEST_RAW);
+}
+
 void test_generate_delete_user_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_DELETE_USER_REQUEST_JSON, TEST_DELETE_USER_REQUEST_RAW);
@@ -155,6 +160,12 @@ void test_generate_alter_group_request() {
       TEST_ALTER_GROUP_REQUEST_JSON, TEST_ALTER_GROUP_REQUEST_RAW);
 }
 
+void test_generate_alter_group_csdata_request() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_GROUP_CSDATA_REQUEST_JSON,
+      TEST_ALTER_GROUP_CSDATA_REQUEST_RAW);
+}
+
 void test_generate_delete_group_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_DELETE_GROUP_REQUEST_JSON, TEST_DELETE_GROUP_REQUEST_RAW);
@@ -265,6 +276,12 @@ void test_generate_alter_data_set_request() {
       TEST_ALTER_DATA_SET_REQUEST_JSON, TEST_ALTER_DATA_SET_REQUEST_RAW);
 }
 
+void test_generate_alter_data_set_csdata_request() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_DATA_SET_CSDATA_REQUEST_JSON,
+      TEST_ALTER_DATA_SET_CSDATA_REQUEST_RAW);
+}
+
 void test_generate_delete_data_set_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_DELETE_DATA_SET_REQUEST_JSON, TEST_DELETE_DATA_SET_REQUEST_RAW);
@@ -310,6 +327,12 @@ void test_generate_add_resource_request() {
 void test_generate_alter_resource_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_ALTER_RESOURCE_REQUEST_JSON, TEST_ALTER_RESOURCE_REQUEST_RAW);
+}
+
+void test_generate_alter_resource_csdata_request() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_RESOURCE_CSDATA_REQUEST_JSON,
+      TEST_ALTER_RESOURCE_CSDATA_REQUEST_RAW);
 }
 
 void test_generate_delete_resource_request() {

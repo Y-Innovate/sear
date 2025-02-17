@@ -30,6 +30,7 @@ int main() {
   // User
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_generate_alter_user_request);
+  RUN_TEST(test_generate_alter_user_csdata_request);
   RUN_TEST(test_generate_delete_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_delete_user_result);
@@ -44,6 +45,7 @@ int main() {
   // Group
   RUN_TEST(test_generate_add_group_request);
   RUN_TEST(test_generate_alter_group_request);
+  RUN_TEST(test_generate_alter_group_csdata_request);
   RUN_TEST(test_generate_delete_group_request);
   RUN_TEST(test_parse_add_group_result);
   RUN_TEST(test_parse_delete_group_result);
@@ -65,6 +67,7 @@ int main() {
   // Data Set
   RUN_TEST(test_generate_add_data_set_request);
   RUN_TEST(test_generate_alter_data_set_request);
+  RUN_TEST(test_generate_alter_data_set_csdata_request);
   RUN_TEST(test_generate_delete_data_set_request);
   RUN_TEST(test_parse_add_data_set_result);
   RUN_TEST(test_parse_delete_data_set_result);
@@ -74,6 +77,7 @@ int main() {
   // Resource
   RUN_TEST(test_generate_add_resource_request);
   RUN_TEST(test_generate_alter_resource_request);
+  RUN_TEST(test_generate_alter_resource_csdata_request);
   RUN_TEST(test_generate_delete_resource_request);
   RUN_TEST(test_parse_add_resource_result);
   RUN_TEST(test_parse_delete_resource_result);
