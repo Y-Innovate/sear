@@ -239,10 +239,15 @@ std::string post_process_field_key(char *field_key, const char *admin_type,
                                    const char *segment,
                                    const char *raw_field_key) {
   post_process_key(field_key, raw_field_key, 8);
-  const char *racfu_field_key = get_racfu_key(admin_type, segment, field_key);
-  if (racfu_field_key == NULL) {
+  const char *translated_key, *racfu_field_key;
+  translated_key = get_racfu_key(admin_type, segment, field_key);
+  if (translated_key == NULL) {
     return std::string("experimental:") + std::string(field_key);
   }
+  if (translated_key + strlen(translated_key) - 1)
+    racfu_field_key = (!(*(translated_key + strlen(translated_key) - 1) == '*'))
+                          ? translated_key
+                          : field_key;
   return std::string(racfu_field_key);
 }
 

@@ -225,7 +225,7 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
   nlohmann::json errors;
   nlohmann::json built_request{};
   std::string current_segment = "", item_segment, item_trait, item_operator;
-  const char *translated_key, *functional_key;
+  const char *translated_key, *racf_field_key;
 
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
   std::smatch segment_trait_key_data;
@@ -279,11 +279,11 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
                                      ? ""
                                      : json_value_to_string(item.value());
         }
-        functional_key =
+        racf_field_key =
             (!(*(translated_key + strlen(translated_key) - 1) == '*'))
                 ? translated_key
                 : item_trait.c_str();
-        build_single_trait(("racf:" + std::string(functional_key)),
+        build_single_trait(("racf:" + std::string(racf_field_key)),
                            trait_operator_str, value);
         item = request_data.erase(item);
 
