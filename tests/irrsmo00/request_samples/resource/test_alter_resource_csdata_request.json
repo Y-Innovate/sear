@@ -5,6 +5,7 @@
   "class_name": "ELIJTEST",
   "traits": {
     "base:universal_access": "Read",
-    "base:owner": "eswift"
+    "base:owner": "eswift",
+    "csdata:custom_field": "custom_value"
   }
 }

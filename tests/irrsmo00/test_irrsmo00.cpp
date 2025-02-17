@@ -24,7 +24,8 @@ void test_generate_alter_user_request() {
 
 void test_generate_alter_user_csdata_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ALTER_USER_CSDATA_REQUEST_JSON, TEST_ALTER_USER_CSDATA_REQUEST_RAW);
+      TEST_ALTER_USER_CSDATA_REQUEST_JSON, TEST_ALTER_USER_CSDATA_REQUEST_RAW,
+      false);
 }
 
 void test_generate_delete_user_request() {
@@ -163,8 +164,8 @@ void test_generate_alter_group_request() {
 
 void test_generate_alter_group_csdata_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ALTER_GROUP_CSDATA_REQUEST_JSON,
-      TEST_ALTER_GROUP_CSDATA_REQUEST_RAW);
+      TEST_ALTER_GROUP_CSDATA_REQUEST_JSON, TEST_ALTER_GROUP_CSDATA_REQUEST_RAW,
+      false);
 }
 
 void test_generate_delete_group_request() {
@@ -285,7 +286,7 @@ void test_generate_alter_data_set_request() {
 void test_generate_alter_data_set_csdata_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_ALTER_DATA_SET_CSDATA_REQUEST_JSON,
-      TEST_ALTER_DATA_SET_CSDATA_REQUEST_RAW);
+      TEST_ALTER_DATA_SET_CSDATA_REQUEST_RAW, false);
 }
 
 void test_generate_delete_data_set_request() {
@@ -339,7 +340,7 @@ void test_generate_alter_resource_request() {
 void test_generate_alter_resource_csdata_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_ALTER_RESOURCE_CSDATA_REQUEST_JSON,
-      TEST_ALTER_RESOURCE_CSDATA_REQUEST_RAW);
+      TEST_ALTER_RESOURCE_CSDATA_REQUEST_RAW, false);
 }
 
 void test_generate_delete_resource_request() {

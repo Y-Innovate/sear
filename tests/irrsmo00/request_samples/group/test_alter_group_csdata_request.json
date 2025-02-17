@@ -3,6 +3,7 @@
   "admin_type": "group",
   "profile_name": "TESTGRP0",
   "traits": {
-    "omvs:gid": 1234567
+    "omvs:gid": 1234567,
+    "csdata:custom_field": "custom_value"
   }
 }
