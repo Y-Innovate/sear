@@ -16,10 +16,9 @@
 
 // Public Functions of XmlGenerator
 char* XmlGenerator::build_xml_string(
-    std::string* admin_type, nlohmann::json* request_p,
-    nlohmann::json* errors_p, std::string* profile_name, std::string* auth_id,
-    char* userid_buffer, int* irrsmo00_options_p,
-    unsigned int* request_length_p, Logger* logger_p) {
+    std::string* admin_type, nlohmann::json* request_p, RACFu::Errors& errors,
+    std::string* profile_name, std::string* auth_id, char* userid_buffer,
+    int* irrsmo00_options_p, unsigned int* request_length_p, Logger* logger_p) {
   // Main body function that builds an xml string
   std::string true_admin_type, running_userid;
   // Build the securityrequest tag (Consistent)
@@ -58,8 +57,8 @@ char* XmlGenerator::build_xml_string(
     build_end_nested_tag();
 
     logger_p->debug(MSG_VALIDATING_TRAITS);
-    validate_traits(*admin_type, &((*request_p)["traits"]), errors_p);
-    if (errors_p->empty()) {
+    validate_traits(*admin_type, &((*request_p)["traits"]), errors);
+    if (errors.empty()) {
       build_request_data(true_admin_type, *admin_type, (*request_p)["traits"]);
     } else {
       return nullptr;

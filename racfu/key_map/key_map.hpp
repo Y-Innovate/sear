@@ -68,5 +68,6 @@ const char get_racf_trait_type(const char *profile_type, const char *segment,
 
 int8_t map_operator(std::string trait_operator);
 int8_t map_trait_type(const nlohmann::json &trait);
+std::string decode_data_type(uint8_t data_type_code);
 
 #endif

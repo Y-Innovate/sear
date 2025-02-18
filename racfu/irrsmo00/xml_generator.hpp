@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
 
@@ -34,7 +35,7 @@ class XmlGenerator {
 
  public:
   char *build_xml_string(std::string *admin_type, nlohmann::json *request_p,
-                         nlohmann::json *errors_p, std::string *profile_name,
+                         RACFu::Errors &errors, std::string *profile_name,
                          std::string *auth_id, char *userid_buffer,
                          int *irrsmo00_options_p,
                          unsigned int *request_length_p, Logger *logger_p);

@@ -127,6 +127,10 @@ check:
 		--verbose \
 		--check-level=exhaustive \
 		--inconclusive \
+		--file-filter=*.c \
+		--file-filter=*.h \
+		--file-filter=*.cpp \
+		--file-filter=*.hpp \
 		$(CKFLGS) \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
@@ -136,12 +140,7 @@ check:
 		-I $(LOGGER) \
 		-I $(EXTERNALS) \
 		$(INCZOSLIB) \
-		$(SRC)/*.cpp \
-		$(IRRSMO00_SRC)/*.cpp \
-		$(IRRSEQ00_SRC)/*.cpp \
-		$(KEY_MAP)/*.cpp \
-		$(LOGGER)/*.cpp \
-		$(VALIDATION)/*.cpp
+		$(SRC)/
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST)

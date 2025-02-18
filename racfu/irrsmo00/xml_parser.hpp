@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
 
@@ -20,7 +21,7 @@ class XmlParser {
 
  public:
   nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc_p,
-                                   Logger* logger_p);
+                                   RACFu::Errors& errors, Logger* logger_p);
 };
 
 #endif

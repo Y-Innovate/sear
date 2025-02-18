@@ -3,7 +3,6 @@
 #include <regex>
 #include <string>
 
-#include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
 
@@ -15,7 +14,9 @@
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(char* xml_result_string,
-                                            int* racfu_rc, Logger* logger_p) {
+                                            int* racfu_rc,
+                                            RACFu::Errors& errors,
+                                            Logger* logger_p) {
   std::string xml_buffer;
   char* xml_ascii_result =
       static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
@@ -62,10 +63,7 @@ nlohmann::json XmlParser::build_json_string(char* xml_result_string,
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    update_error_json(&result_json["errors"], XML_PARSE_ERROR,
-                      {
-                          {"xml_data", xml_buffer}
-    });
+    errors.add_racfu_error_message("unable to parse XML returned by IRRSMO00");
     *racfu_rc = 4;
   }
 

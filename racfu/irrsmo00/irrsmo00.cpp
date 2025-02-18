@@ -4,7 +4,6 @@
 
 #include <cstring>
 
-#include "errors.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
@@ -106,31 +105,23 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
   return true;
 }
 
-int post_process_smo_json(nlohmann::json *results_p, std::string *profile_name,
-                          std::string *admin_type, std::string *class_name) {
+int post_process_smo_json(RACFu::Errors &errors, nlohmann::json *results_p,
+                          std::string *profile_name, std::string *admin_type,
+                          std::string *class_name) {
   nlohmann::json commands = nlohmann::json::array();
 
   if (results_p->contains("error")) {
     // Only expected for irrsmo00 errors which are not expected, but possible
     std::string error_text;
     if ((*results_p)["error"].contains("textinerror")) {
-      update_error_json(
-          &(*results_p)["errors"], SMO_ERROR_WITH_TEXT,
-          {
-              {"error_message",
-               (*results_p)["error"]["errormessage"].get<std::string>()},
-              {"text_in_error",
-               (*results_p)["error"]["textinerror"].get<std::string>() }
-      });
+      errors.add_irrsmo00_error_message(
+          (*results_p)["error"]["errormessage"].get<std::string>() +
+          " Text in error: " +
+          (*results_p)["error"]["textinerror"].get<std::string>());
       return 4;
     }
-    update_error_json(
-        &(*results_p)["errors"], SMO_ERROR_NO_TEXT,
-        {
-            {"error_message",
-             (*results_p)["error"]["errormessage"].get<std::string>()}
-    });
-    results_p->erase("error");
+    errors.add_irrsmo00_error_message(
+        (*results_p)["error"]["errormessage"].get<std::string>());
     return 4;
   }
 
@@ -142,18 +133,13 @@ int post_process_smo_json(nlohmann::json *results_p, std::string *profile_name,
   if (!results_p->contains("command")) {
     // Only expected for "Add Protection" cases
     if ((*class_name).empty()) {
-      update_error_json(
-          &(*results_p)["errors"], BAD_ADD_TARGET,
-          nlohmann::json{
-              {      "name", *profile_name},
-              {"admin_type",   *admin_type}
-      });
+      errors.add_racfu_error_message("unable to add '" + *profile_name +
+                                     "' because a '" + *admin_type +
+                                     "' profile already exists with that name");
     } else {
-      update_error_json(&(*results_p)["errors"], BAD_ADD_TARGET_CLASS,
-                        nlohmann::json{
-                            { "name", *profile_name},
-                            {"class",   *class_name}
-      });
+      errors.add_racfu_error_message(
+          "unable to add '" + *profile_name + "' in the '" + *class_name +
+          "' class because a profile already exists with that name");
     }
     return 4;
   }

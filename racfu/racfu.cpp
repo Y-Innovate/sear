@@ -26,33 +26,32 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
 
 void build_result(std::string operation, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length,
-                  nlohmann::json *intermediate_result_json_p,
+                  int raw_request_length, RACFu::Errors &errors,
+                  nlohmann::json *intermediate_result_json,
                   racfu_result_t *result, racfu_return_codes_t *return_codes_p,
                   Logger *logger_p);
 
 void racfu(racfu_result_t *result, const char *request_json, bool debug) {
   Logger logger = Logger(debug);
-  nlohmann::json request, errors;
+  RACFu::Errors errors;
+  nlohmann::json request;
   racfu_return_codes_t return_codes = {-1, -1, -1, -1};
   try {
     request = nlohmann::json::parse(request_json);
   } catch (nlohmann::json::parse_error &ex) {
-    update_error_json(&errors, SYNTAX_ERROR,
-                      nlohmann::json{
-                          {"byte", ex.byte}
-    });
+    errors.add_racfu_error_message("Syntax error in request JSON at byte " +
+                                   std::to_string(ex.byte));
     return_codes.racfu_return_code = 8;
-    build_result("", nullptr, 0, nullptr, 0, &errors, result, &return_codes,
+    build_result("", nullptr, 0, nullptr, 0, errors, {}, result, &return_codes,
                  &logger);
     return;
   }
   logger.debug(MSG_VALIDATING_PARAMETERS);
-  ParameterValidator parameter_validator(&request, &errors);
+  RACFu::ParameterValidator parameter_validator(&request, &errors);
   parameter_validator.validate_parameters();
   if (!errors.empty()) {
     return_codes.racfu_return_code = 8;
-    build_result("", nullptr, 0, nullptr, 0, &errors, result, &return_codes,
+    build_result("", nullptr, 0, nullptr, 0, errors, {}, result, &return_codes,
                  &logger);
     return;
   }
@@ -116,23 +115,19 @@ void do_extract(nlohmann::json *request, racfu_result_t *racfu_result,
     }
   }
 
+  RACFu::Errors errors;
+
   // Build Failure Result
   if (raw_result == NULL) {
     if (admin_type != "racf-options") {
-      update_error_json(&profile_json["errors"], EXTRACT_FAILED,
-                        nlohmann::json{
-                            {  "admin_type",   std::string(admin_type)},
-                            {"profile_name", std::string(profile_name)}
-      });
+      errors.add_racfu_error_message("unable to extract '" + admin_type +
+                                     "' profile '" + profile_name + "'");
     } else {
-      update_error_json(&profile_json["errors"], EXTRACT_FAILED_RACF_OPTIONS,
-                        nlohmann::json{
-                            {"admin_type", std::string(admin_type)}
-      });
+      errors.add_racfu_error_message("unable to extract '" + admin_type + "'");
     }
     build_result((*request)["operation"].get<std::string>(), nullptr, 0,
-                 raw_request, raw_request_length, &profile_json, racfu_result,
-                 return_codes_p, logger_p);
+                 raw_request, raw_request_length, errors, &profile_json,
+                 racfu_result, return_codes_p, logger_p);
     return;
   }
 
@@ -159,7 +154,7 @@ void do_extract(nlohmann::json *request, racfu_result_t *racfu_result,
 
   // Build Success Result
   build_result((*request)["operation"].get<std::string>(), raw_result,
-               raw_result_length, raw_request, raw_request_length,
+               raw_result_length, raw_request, raw_request_length, errors,
                &profile_json, racfu_result, return_codes_p, logger_p);
 
   return;
@@ -173,7 +168,8 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
   int irrsmo00_options, saf_rc, racf_rc, racf_rsn, racfu_rc;
   unsigned int result_buffer_size, request_length;
 
-  nlohmann::json intermediate_result_json, errors{};
+  RACFu::Errors errors;
+  nlohmann::json intermediate_result_json;
   XmlParser *parser       = new XmlParser();
   XmlGenerator *generator = new XmlGenerator();
 
@@ -206,13 +202,13 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
   }
 
   xml_request_string = generator->build_xml_string(
-      &admin_type, request, &errors, &profile_name, &auth_id, running_userid,
+      &admin_type, request, errors, &profile_name, &auth_id, running_userid,
       &irrsmo00_options, &request_length, logger_p);
 
   if (!errors.empty()) {
     return_codes_p->racfu_return_code = 8;
     build_result(operation, nullptr, 0, xml_request_string, request_length,
-                 &errors, result, return_codes_p, logger_p);
+                 errors, {}, result, return_codes_p, logger_p);
     return;
   }
 
@@ -223,22 +219,18 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
     if (!does_profile_exist(admin_type, profile_name, class_name,
                             running_userid)) {
       if (class_name.empty()) {
-        update_error_json(&errors, BAD_ALTER_TARGET,
-                          nlohmann::json{
-                              {"name", profile_name}
-        });
+        errors.add_racfu_error_message("unable to alter '" + profile_name +
+                                       "' because the profile does not exist");
       } else {
-        update_error_json(&errors, BAD_ALTER_TARGET_CLASS,
-                          nlohmann::json{
-                              { "name", profile_name},
-                              {"class",   class_name}
-        });
+        errors.add_racfu_error_message(
+            "Unable to alter '" + profile_name + "' in the '" + class_name +
+            "' class because the profile does not exist");
       }
     }
     if (!errors.empty()) {
       return_codes_p->racfu_return_code = 8;
       build_result(operation, nullptr, 0, xml_request_string, request_length,
-                   &errors, result, return_codes_p, logger_p);
+                   errors, {}, result, return_codes_p, logger_p);
       return;
     }
     logger_p->debug(MSG_DONE);
@@ -256,16 +248,18 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
   return_codes_p->racf_return_code = racf_rc;
   return_codes_p->racf_reason_code = racf_rsn;
 
-  intermediate_result_json =
-      parser->build_json_string(xml_response_string, &racfu_rc, logger_p);
+  intermediate_result_json         = parser->build_json_string(
+      xml_response_string, &racfu_rc, errors, logger_p);
 
-  logger_p->debug(MSG_SMO_POST_PROCESS);
-  logger_p->debug(intermediate_result_json.dump());
-  // Maintain any RC 4's from parsing xml or post-processing json
-  racfu_rc =
-      racfu_rc | post_process_smo_json(&intermediate_result_json, &profile_name,
-                                       &admin_type, &class_name);
-  logger_p->debug(MSG_DONE);
+  if (errors.empty()) {
+    logger_p->debug(MSG_SMO_POST_PROCESS);
+    logger_p->debug(intermediate_result_json.dump());
+    // Maintain any RC 4's from parsing xml or post-processing json
+    racfu_rc = racfu_rc |
+               post_process_smo_json(errors, &intermediate_result_json,
+                                     &profile_name, &admin_type, &class_name);
+    logger_p->debug(MSG_DONE);
+  }
 
   return_codes_p->racfu_return_code = racfu_rc;
 
@@ -277,20 +271,19 @@ void do_add_alter_delete(nlohmann::json *request, racfu_result_t *result,
 
   // Build Success Result
   build_result(operation, xml_response_string, result_buffer_size,
-               xml_request_string, request_length, &intermediate_result_json,
-               result, return_codes_p, logger_p);
+               xml_request_string, request_length, errors,
+               &intermediate_result_json, result, return_codes_p, logger_p);
   // TODO: Make sure this isn't leaking memory?
   return;
 }
 
 void build_result(std::string operation, char *raw_result,
                   int raw_result_length, char *raw_request,
-                  int raw_request_length,
-                  nlohmann::json *intermediate_result_json_p,
+                  int raw_request_length, RACFu::Errors &errors,
+                  nlohmann::json *intermediate_result_json,
                   racfu_result_t *racfu_result,
                   racfu_return_codes_t *return_codes_p, Logger *logger_p) {
   logger_p->debug(MSG_BUILD_RESULT);
-
   // Build Result JSON starting with Return Codes
   nlohmann::json result_json = {
       {"return_codes",
@@ -317,14 +310,15 @@ void build_result(std::string operation, char *raw_result,
     result_json["return_codes"]["racfu_return_code"] = nullptr;
   }
 
-  if (intermediate_result_json_p->contains("errors")) {
-    result_json.merge_patch(
-        format_error_json(&((*intermediate_result_json_p)["errors"])));
-  } else {
-    if ((intermediate_result_json_p->empty()) && (operation == "extract")) {
+  if (!errors.empty()) {
+    result_json["errors"] = errors.error_messages;
+  }
+
+  if (intermediate_result_json != nullptr && errors.empty()) {
+    if ((intermediate_result_json->empty()) && (operation == "extract")) {
       result_json["profile"] = nullptr;
-    } else if (!intermediate_result_json_p->empty()) {
-      result_json.merge_patch(*intermediate_result_json_p);
+    } else if (!intermediate_result_json->empty()) {
+      result_json.merge_patch(*intermediate_result_json);
     }
   }
 
