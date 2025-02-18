@@ -49,7 +49,7 @@ static const std::vector<ParameterType> PARAMETER_TYPES = {
     ParameterType("volume", String),       ParameterType("generic", Boolean),
     ParameterType("run_as_userid", String)};
 
-static const std::vector<std::string> ALL_ADMMIN_TYPE_PARAMETERS = {
+static const std::vector<std::string> ALL_ADMIN_TYPE_PARAMETERS = {
     "userid", "group", "resource", "class", "data_set"};
 
 static const std::vector<std::string> ALL_OPERATION_SPECIFIC_PARAMETERS = {
@@ -174,7 +174,7 @@ void ParameterValidator::validate_parameters() {
     if (this->admin_type == admin_type_parameter_rules.admin_type) {
       // Check profile identification parameters
       this->check_parameter_rules(
-          ALL_ADMMIN_TYPE_PARAMETERS,
+          ALL_ADMIN_TYPE_PARAMETERS,
           admin_type_parameter_rules.profile_identification_parameter_rules);
       // Check operation specific parameters
       for (OperationSpecificParameterRules operation_specific_parameter_rules :
@@ -283,11 +283,17 @@ void ParameterValidator::check_parameter_usage(
            !this->request->contains(parameter_rule.alternate)) ||
           (this->request->contains(parameter_rule.name) &&
            this->request->contains(parameter_rule.alternate))) {
-        this->errors->add_racfu_error_message(
-            "'" + parameter_rule.name + "' or '" + parameter_rule.alternate +
-            "' and only one of the two must be provided for the '" +
-            this->admin_type + "' admin type and '" + this->operation +
-            "' operation");
+        // Only add an error if the alternate has not already beeen found to be
+        // missing.
+        if (std::find(this->checked_parameters.begin(),
+                      checked_parameters.end(),
+                      parameter_rule.alternate) == checked_parameters.end()) {
+          this->errors->add_racfu_error_message(
+              "'" + parameter_rule.name + "' or '" + parameter_rule.alternate +
+              "' and only one of the two must be provided for the '" +
+              this->admin_type + "' admin type and '" + this->operation +
+              "' operation");
+        }
       } else if (this->request->contains(parameter_rule.name)) {
         this->check_parameter_type(parameter_rule,
                                    (*this->request)[parameter_rule.name]);
@@ -296,6 +302,7 @@ void ParameterValidator::check_parameter_usage(
     default:
       break;
   }
+  this->checked_parameters.push_back(parameter_rule.name);
 }
 
 DataType ParameterValidator::get_parameter_type(

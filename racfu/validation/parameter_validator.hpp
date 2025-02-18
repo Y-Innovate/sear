@@ -65,6 +65,7 @@ class ParameterValidator {
   Errors* errors;
   std::string admin_type;
   std::string operation;
+  std::vector<std::string> checked_parameters;
   void check_main_parameter(const std::string& parameter_name,
                             const std::vector<std::string>& valid_values);
   void check_parameter_rules(

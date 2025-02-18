@@ -16,11 +16,12 @@
 #include <arpa/inet.h>
 
 char *extract(
-    std::string *profile_name,  // Required for everything except setropts
-    std::string *class_name,    // Only required for general resource profile
-    uint8_t function_code,      // Always required
-    char **raw_request,         // Always required
-    int *raw_request_length,    // Always required
+    const std::string &profile_name,  // Required for everything except setropts
+    const std::string
+        &class_name,          // Only required for general resource profile
+    uint8_t function_code,    // Always required
+    char **raw_request,       // Always required
+    int *raw_request_length,  // Always required
     racfu_return_codes_t *return_codes,  // Always required,
     Logger *logger_p) {
   uint32_t rc;
@@ -119,9 +120,9 @@ char *extract(
 }
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    std::string *profile_name,  // Required always.
-    std::string *class_name,    // Required only for resource extract.
-    uint8_t function_code       // Required always.
+    const std::string &profile_name,  // Required always.
+    const std::string &class_name,    // Required only for resource extract.
+    uint8_t function_code             // Required always.
 ) {
   /*
   int profile_name_length;
@@ -161,18 +162,18 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   args->function_code = function_code;
 
   // Copy profile name and class name.
-  memcpy(args->profile_name, profile_name->c_str(), profile_name->length());
+  memcpy(args->profile_name, profile_name.c_str(), profile_name.length());
   // Encode profile name as IBM-1047.
-  __a2e_l(args->profile_name, profile_name->length());
+  __a2e_l(args->profile_name, profile_name.length());
   if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE) {
     // Class name must be padded with blanks.
     memset(&profile_extract_parms->class_name, ' ', 8);
-    memcpy(profile_extract_parms->class_name, class_name->c_str(),
-           class_name->length());
+    memcpy(profile_extract_parms->class_name, class_name.c_str(),
+           class_name.length());
     // Encode class name as IBM-1047.
-    __a2e_l(profile_extract_parms->class_name, class_name->length());
+    __a2e_l(profile_extract_parms->class_name, class_name.length());
   }
-  profile_extract_parms->profile_name_length = htonl(profile_name->length());
+  profile_extract_parms->profile_name_length = htonl(profile_name.length());
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */
