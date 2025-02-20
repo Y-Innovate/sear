@@ -9,11 +9,9 @@ IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
 LOGGER			= ${PWD}/racfu/logger
-PYTHON			= ${PWD}/racfu/python
 VALIDATION      = ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 TESTS			= ${PWD}/tests
-PYTHON_INC		= $(shell python3 -c "import sysconfig; print(sysconfig.get_path('include'))")
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as

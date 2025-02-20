@@ -50,6 +50,8 @@ static struct PyModuleDef _C_module_def = {
     -1, _C_methods};
 
 // Module initialization function
+// 'unusedFunction' is a false positive since 'PyInit__C()' is used by the
+// Python interpreter
 // cppcheck-suppress unusedFunction
 PyMODINIT_FUNC PyInit__C(void) {
   Py_Initialize();
