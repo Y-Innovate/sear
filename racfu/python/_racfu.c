@@ -8,7 +8,7 @@
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
   PyObject* result_dictionary;
-  const PyObject* debug_pyobj;
+  PyObject* debug_pyobj;
   const char* request_as_string;
   bool debug            = false;
 
