@@ -22,27 +22,28 @@ char *get_sample(const char *filename, const char *mode);
 char *get_raw_sample(const char *filename);
 std::string get_json_sample(const char *filename);
 void test_validation_errors(const char *test_request_json,
-                            const char *test_validation_errors_result_json);
+                            const char *test_validation_errors_result_json,
+                            bool debug);
 
 // IRRSEQ00
 void check_arg_pointers(char *raw_request, bool racf_options);
 void test_extract_request_generation(const char *test_extract_request_json,
                                      const char *test_extract_request_raw,
-                                     bool racf_options);
+                                     bool racf_options, bool debug);
 void test_parse_extract_result(const char *test_extract_request_json,
                                const char *test_extract_result_json,
-                               const char *test_extract_result_raw);
+                               const char *test_extract_result_raw, bool debug);
 void test_parse_extract_result_profile_not_found(
     const char *test_extract_request_json,
-    const char *test_extract_result_profile_not_found_json);
+    const char *test_extract_result_profile_not_found_json, bool debug);
 
 // IRRSMO00
 void test_generate_add_alter_delete_request_generation(
     const char *test_add_alter_delete_request_json,
-    const char *test_add_alter_delete_request_raw);
+    const char *test_add_alter_delete_request_raw, bool debug);
 void test_parse_add_alter_delete_result(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_result_json,
-    const char *test_add_alter_delete_result_raw);
+    const char *test_add_alter_delete_result_raw, bool debug);
 
 #endif

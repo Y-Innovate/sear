@@ -1,32 +1,39 @@
 [build-system]
-requires = ["setuptools >= 75.2.0"]
+requires = ["setuptools >= 75.8.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
     name="racfu"
     version="1.0a1"
-    requires-python = ">= 3.10"
+    requires-python = ">= 3.11"
     authors = [
-        { name = "Joe Bostian", email = "jbostian@ibm.com" },
-        { name = "Frank De Gilio", email = "degilio@us.ibm.com" },
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
         { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
+        { name = "Frank De Gilio", email = "degilio@us.ibm.com" },
+        { name = "Joe Bostian", email = "jbostian@ibm.com" },
     ]
     maintainers = [
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
         { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
     ]
-    description="Python interface to RACF using RACF Callable Services."
+    description="A unified and standardized interface to RACF callable services."
     readme = "README.md"
     license = {text = "Apache-2.0"}
     classifiers=[
-        "Development Status :: 2 - Pre-Alpha",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Other",
+        "Programming Language :: Assembly",
+        "Programming Language :: C",
+        "Programming Language :: C++",
+        'Programming Language :: Python',
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        'Programming Language :: Python :: 3 :: Only',
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
         "Topic :: Security",
@@ -35,8 +42,11 @@ build-backend = "setuptools.build_meta"
     ]
 
 [project.urls]
-    Repository = "https://github.com/ambitus/racfu"
-    Documentation = "https://ambitus.github.io/racfu/"
+    Homepage = "https://ambitus.github.io/racfu/"
+    Documentation = "https://ambitus.github.io/racfu/interfaces/python/"
+    Source = "https://github.com/ambitus/racfu"
+    Issues = "https://github.com/ambitus/racfu/issues"
+    "Release Notes" = "https://github.com/ambitus/racfu/milestones?state=closed"
 
 [tool.setuptools.packages.find]
     where = ["python"]

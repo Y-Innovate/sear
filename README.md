@@ -10,13 +10,21 @@ While there are a number of languages that can be used to manage RACF, _(from lo
 
 ## Getting Started
 
+
+## Minimum z/OS & Language Versions
+
+All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are fully supported by IBM are supported by RACFu.
+* [z/OS Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search/?q=5655-ZOS,%205650-ZOS)
+* [IBM Open Enterprise SDK for Python Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search?q=5655-PYT)
+
 ### Dependencies
 
-* z/OS **2.4** or higher.
 * **R_SecMgtOper (IRRSMO00)**: Security Management Operations.
-  * More details about the authorizations required for **IRRSMO00** can be found [here](https://www.ibm.com/docs/en/zos/3.1.0?topic=operations-racf-authorization).
+  * More details about the authorizations required for **IRRSMO00** can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=operations-racf-authorization).
 * **R_Admin (IRRSEQ00)**: RACF Administration API.
-  * More details about the authorizations required for **IRRSEQ00** can be found [here](https://www.ibm.com/docs/en/zos/3.1.0?topic=api-racf-authorization).
+  * More details about the authorizations required for **IRRSEQ00** can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=api-racf-authorization).
+* **RACF Subsystem Address Space**: This is a dependency for both **IRRSMO00** and **IRRSEQ00**.
+  * More information can be found [here](https://www.ibm.com/docs/en/zos/latest?topic=considerations-racf-subsystem).
 
 ### Installation
 
@@ -31,7 +39,7 @@ python3 -m pip install racfu
 
 ## Authors
 
-* Joe Bostian: jbostian@ibm.com
-* Frank De Gilio: degilio@us.ibm.com
 * Leonard Carcaramo: lcarcaramo@ibm.com
 * Elijah Swift: Elijah.Swift@ibm.com
+* Frank De Gilio: degilio@us.ibm.com
+* Joe Bostian: jbostian@ibm.com

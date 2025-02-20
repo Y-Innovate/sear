@@ -38,8 +38,8 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
            req_handle, reinterpret_cast<char *>(&running_userid_struct), acee,
            &result_len, result_buffer);
 
-  if (((*saf_rc_p != 8) || (*racf_rc_p != 4000)) ||
-      ((*saf_rc_p == 8) && (*racf_rc_p == 4000) && (*racf_rsn_p > 100000000))) {
+  if (!((*saf_rc_p == 8) && (*racf_rc_p == 4000) &&
+        (*racf_rsn_p <= 100000000))) {
     *result_buffer_size_p = result_len;
     return result_buffer;
   }
