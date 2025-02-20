@@ -2,6 +2,7 @@
 #define __RACFU_XML_PARSER_H_
 
 #include <nlohmann/json.hpp>
+#include <string>
 
 #include "errors.hpp"
 #include "logger.hpp"
@@ -10,18 +11,20 @@
 // XmlParser Parses an XML String and forms a JSON String
 class XmlParser {
  private:
-  void parse_xml_tags(nlohmann::json* input_json_p, std::string body_string);
-  void parse_xml_data(nlohmann::json* input_json_p, std::string inner_data,
-                      std::string outer_tag);
-  void update_json(nlohmann::json* input_json_p, nlohmann::json& inner_data,
-                   std::string outer_tag);
-  std::string replace_xml_chars(std::string xml_data);
-  std::string replace_substring(std::string data, std::string substring,
-                                std::string replacement, std::size_t start);
+  void parse_xml_tags(nlohmann::json& input_json, std::string input_xml_string);
+  void parse_xml_data(nlohmann::json& input_json,
+                      const std::string& data_within_outer_tags,
+                      const std::string& outer_tag);
+  static void update_json(nlohmann::json& input_json,
+                          nlohmann::json& inner_data, std::string outer_tag);
+  static std::string replace_xml_chars(std::string xml_data);
+  static std::string replace_substring(std::string data, std::string substring,
+                                       std::string replacement,
+                                       std::size_t start);
 
  public:
-  nlohmann::json build_json_string(char* xml_result_string, int* racfu_rc_p,
-                                   RACFu::Errors& errors, Logger* logger_p);
+  nlohmann::json build_json_string(const char* xml_result_string, int& racfu_rc,
+                                   RACFu::Errors& errors, Logger& logger);
 };
 
 #endif

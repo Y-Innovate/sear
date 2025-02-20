@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <vector>
 
 #include "errors.hpp"
 
@@ -72,7 +73,7 @@ class ParameterValidator {
       const std::vector<std::string>& all_possible_parameters,
       const std::vector<ParameterRule>& parameter_rules);
   void check_parameter_usage(const ParameterRule& parameter_rule);
-  DataType get_parameter_type(const std::string& parameter_name);
+  static DataType get_parameter_type(const std::string& parameter_name);
   void check_parameter_type(const ParameterRule& parameter_rule,
                             const nlohmann::json& parameter);
 };

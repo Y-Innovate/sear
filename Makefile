@@ -15,10 +15,10 @@ TESTS			= ${PWD}/tests
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
-	CC 			= ibm-clang
-	CXX 		= ibm-clang++
+	CC 			= ibm-clang64
+	CXX 		= ibm-clang++64
 
-	ZOSLIB		= 
+	ZOSLIB		=
 	SRCZOSLIB	=
 	INCZOSLIB	=
 
@@ -33,12 +33,12 @@ ifeq ($(UNAME), OS/390)
 				-I $(EXTERNALS) \
 				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNIT_TEST -DUNITY_OUTPUT_COLOR\
+				-DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
 				$(INCZOSLIB)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
-	CKFLGS		= --clang=ibm-clang++64 
+	CKFLGS		= -D __TOS_390__
 else
 	CC 			= clang
 	CXX 		= clang++
@@ -61,7 +61,7 @@ else
 				-I ${PWD} \
 				-I $(TESTS)/mock \
 				$(INCZOSLIB)
-	CKFLGS		= --suppress='missingIncludeSystem'
+	CKFLGS		= -U __TOS_390__ -D __ptr32=
 endif
 
 RM				= rm -rf
@@ -110,27 +110,18 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
-check: export CLANG_CONFIG_PATH = ${PWD}/clang.cfg
 check:
-	mkdir -p artifacts/cppcheck
 	cppcheck \
+		--suppress='missingIncludeSystem' \
+		--suppress='useStlAlgorithm' \
+		--inline-suppr \
 		--language=c++ \
 		--std=c++11 \
 		--enable=all \
-		--suppress='*:*/externals/*' \
-		--suppress='*:*openxl\*' \
-		--output-file=artifacts/cppcheck/output.xml \
-		--checkers-report=artifacts/cppcheck/checkers_report.txt \
-		--cppcheck-build-dir=artifacts/cppcheck \
-		--xml --xml-version=2 \
 		--force \
-		--verbose \
 		--check-level=exhaustive \
 		--inconclusive \
-		--file-filter=*.c \
-		--file-filter=*.h \
-		--file-filter=*.cpp \
-		--file-filter=*.hpp \
+		--error-exitcode=1 \
 		$(CKFLGS) \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
@@ -138,7 +129,6 @@ check:
 		-I $(KEY_MAP) \
 		-I $(VALIDATION) \
 		-I $(LOGGER) \
-		-I $(EXTERNALS) \
 		$(INCZOSLIB) \
 		$(SRC)/
 

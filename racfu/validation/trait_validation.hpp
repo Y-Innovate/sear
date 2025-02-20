@@ -7,8 +7,8 @@
 
 #include "errors.hpp"
 
-void validate_traits(std::string adminType, nlohmann::json* traits_p,
-                     RACFu::Errors& errors);
+void validate_traits(const std::string& admin_type,
+                     const nlohmann::json& traits, RACFu::Errors& errors);
 void validate_json_value_to_string(const nlohmann::json& trait,
                                    char expected_type, RACFu::Errors& errors);
 

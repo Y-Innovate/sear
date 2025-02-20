@@ -1,5 +1,7 @@
 #include "parameter_validator.hpp"
 
+#include <algorithm>
+
 namespace {
 
 ParameterType::ParameterType(std::string name, DataType type) {
@@ -170,14 +172,16 @@ void ParameterValidator::validate_parameters() {
   this->admin_type = (*this->request)["admin_type"].get<std::string>();
   this->operation  = (*this->request)["operation"].get<std::string>();
   // Loop over the parameter rules for each admin type
-  for (AdminTypeParameterRules admin_type_parameter_rules : PARAMETER_RULES) {
+  for (const AdminTypeParameterRules& admin_type_parameter_rules :
+       PARAMETER_RULES) {
     if (this->admin_type == admin_type_parameter_rules.admin_type) {
       // Check profile identification parameters
       this->check_parameter_rules(
           ALL_ADMIN_TYPE_PARAMETERS,
           admin_type_parameter_rules.profile_identification_parameter_rules);
       // Check operation specific parameters
-      for (OperationSpecificParameterRules operation_specific_parameter_rules :
+      for (const OperationSpecificParameterRules&
+               operation_specific_parameter_rules :
            admin_type_parameter_rules.operation_specific_parameter_rules) {
         if (this->operation == operation_specific_parameter_rules.operation) {
           this->check_parameter_rules(
@@ -195,7 +199,7 @@ void ParameterValidator::validate_parameters() {
       continue;
     }
     found = false;
-    for (ParameterType parameter_type : PARAMETER_TYPES) {
+    for (const ParameterType& parameter_type : PARAMETER_TYPES) {
       if (parameter.key() == parameter_type.name) {
         found = true;
       }
@@ -224,7 +228,7 @@ void ParameterValidator::check_main_parameter(
     bool found = false;
     std::string parameter_value =
         (*this->request)[parameter_name].get<std::string>();
-    for (std::string value : valid_values) {
+    for (const std::string& value : valid_values) {
       if (value == parameter_value) {
         found = true;
       }
@@ -307,7 +311,7 @@ void ParameterValidator::check_parameter_usage(
 
 DataType ParameterValidator::get_parameter_type(
     const std::string& parameter_name) {
-  for (ParameterType parameter_type : PARAMETER_TYPES) {
+  for (const ParameterType& parameter_type : PARAMETER_TYPES) {
     if (parameter_name == parameter_type.name) {
       return parameter_type.type;
     }

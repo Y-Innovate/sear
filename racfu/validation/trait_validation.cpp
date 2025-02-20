@@ -1,5 +1,6 @@
 #include "trait_validation.hpp"
 
+#include <algorithm>
 #include <cstdint>
 #include <nlohmann/json.hpp>
 #include <regex>
@@ -7,17 +8,17 @@
 
 #include "key_map.hpp"
 
-void validate_traits(std::string adminType, nlohmann::json* traits_p,
-                     RACFu::Errors& errors) {
+void validate_traits(const std::string& admin_type,
+                     const nlohmann::json& traits, RACFu::Errors& errors) {
   // Parses the json for the traits (segment-trait information) passed in a
   // json object and validates the structure, format and types of this data
-  std::string current_segment = "", item_segment, item_trait, item_operator;
+  std::string item_segment, item_trait, item_operator;
   const char* translatedKey;
 
   std::regex segment_trait_key_regex{R"~((([a-z]*):*)([a-z]*):(.*))~"};
   std::smatch segment_trait_key_data;
 
-  for (const auto& item : traits_p->items()) {
+  for (const auto& item : traits.items()) {
     if (!regex_match(item.key(), segment_trait_key_data,
                      segment_trait_key_regex)) {
       // Track any entries that do not match proper syntax
@@ -66,7 +67,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
       trait_operator = (item.value()) ? OPERATOR_SET : OPERATOR_DELETE;
     }
     int8_t expected_type =
-        get_racf_trait_type(adminType.c_str(), item_segment.c_str(),
+        get_racf_trait_type(admin_type.c_str(), item_segment.c_str(),
                             (item_segment + ":" + item_trait).c_str());
     // Validate Segment-Trait by ensuring a TRAIT_TYPE is found
     if (expected_type == TRAIT_TYPE_BAD) {
@@ -78,16 +79,16 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
         (trait_type == TRAIT_TYPE_NULL) &&
         (trait_operator != init_trait_operator)) {
       // Validate that NULL is not used for Boolean Segment-Traits
-      std::string trait_operator = item_operator;
-      if (trait_operator.empty()) {
-        trait_operator = "set";
+      if (item_operator.empty()) {
+        item_operator = "set";
       }
-      errors.add_racfu_error_message("'" + trait_operator + "' operator for '" +
+      errors.add_racfu_error_message("'" + item_operator + "' operator for '" +
                                      item_segment + ":" + item_trait +
                                      +"' can NOT be used with a 'null' value");
       continue;
     }
-    validate_json_value_to_string(item, expected_type, errors);
+    validate_json_value_to_string(reinterpret_cast<const nlohmann::json&>(item),
+                                  expected_type, errors);
     // Ensure that the type of data provided for the trait matches the
     // expected TRAIT_TYPE
     if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL)) {
@@ -96,7 +97,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                                      "' value");
       continue;
     }
-    translatedKey = get_racf_key(adminType.c_str(), item_segment.c_str(),
+    translatedKey = get_racf_key(admin_type.c_str(), item_segment.c_str(),
                                  (item_segment + ":" + item_trait).c_str(),
                                  trait_type, trait_operator);
     // If we could not find the RACF key with this function, the operation is

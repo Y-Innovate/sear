@@ -35,19 +35,22 @@ void IRRSMO64(char *,               // Workarea
 
 // We need to ignore this pragma for unit tests since the
 // IRRSMO64 mock is compiled for XPLINK.
-#ifndef UNIT_TEST
+#ifdef __TOS_390__
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int *result_buffer_size_p, int irrsmo00_options,
-                    int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p);
+char *call_irrsmo00(char *request_xml, const char *running_userid,
+                    unsigned int &result_buffer_size, int irrsmo00_options,
+                    racfu_return_codes_t &return_codes);
 
-bool does_profile_exist(std::string admin_type, std::string profile_name,
-                        std::string class_name, char *running_userid);
+bool does_profile_exist(const std::string &admin_type,
+                        const std::string &profile_name,
+                        const std::string &class_name,
+                        const char *running_userid);
 
-int post_process_smo_json(RACFu::Errors &errors, nlohmann::json *results_p,
-                          std::string *profile_name, std::string *admin_type,
-                          std::string *class_name);
+int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
+                          const std::string &profile_name,
+                          const std::string &admin_type,
+                          const std::string &class_name);
 
 #endif /* IRRSMO00_H_ */

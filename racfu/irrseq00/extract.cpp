@@ -21,9 +21,9 @@ char *extract(
         &class_name,          // Only required for general resource profile
     uint8_t function_code,    // Always required
     char **raw_request,       // Always required
-    int *raw_request_length,  // Always required
-    racfu_return_codes_t *return_codes,  // Always required,
-    Logger *logger_p) {
+    int &raw_request_length,  // Always required
+    racfu_return_codes_t &return_codes,  // Always required,
+    Logger &logger) {
   uint32_t rc;
 
   char *result_buffer;
@@ -39,27 +39,27 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
-    logger_p->debug(
+    raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
+    logger.debug(
         MSG_REQUEST_SEQ_SETROPTS,
-        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
-                                  *raw_request_length));
+        logger.cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
+                               raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
                          raw_request, raw_request_length);
 
-    logger_p->debug(MSG_CALLING_SEQ);
+    logger.debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
-    logger_p->debug(MSG_DONE);
+    logger.debug(MSG_DONE);
 
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code  = ntohl(arg_area_setropts->args.SAF_rc);
-    return_codes->racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
-    return_codes->racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
+    return_codes.saf_return_code  = ntohl(arg_area_setropts->args.SAF_rc);
+    return_codes.racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
+    return_codes.racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_setropts);
   }
@@ -82,34 +82,33 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
-    logger_p->debug(
+    raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
+    logger.debug(
         MSG_REQUEST_SEQ_GENERIC,
-        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
-                                  *raw_request_length));
+        logger.cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
+                               raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
                          raw_request, raw_request_length);
-    logger_p->debug(MSG_CALLING_SEQ);
+    logger.debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
-    logger_p->debug(MSG_DONE);
+    logger.debug(MSG_DONE);
 
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code  = ntohl(arg_area_generic->args.SAF_rc);
-    return_codes->racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
-    return_codes->racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
+    return_codes.saf_return_code  = ntohl(arg_area_generic->args.SAF_rc);
+    return_codes.racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
+    return_codes.racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_generic);
   }
 
   // Check Return Codes
-  if (return_codes->saf_return_code != 0 ||
-      return_codes->racf_return_code != 0 ||
-      return_codes->racf_reason_code != 0 || rc != 0) {
+  if (return_codes.saf_return_code != 0 || return_codes.racf_return_code != 0 ||
+      return_codes.racf_reason_code != 0 || rc != 0) {
     // Free Result Buffer & Return 'NULL' if not successful.
     free(result_buffer);
     return NULL;
@@ -225,13 +224,13 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
 }
 
 void preserve_raw_request(const char *arg_area, char **raw_request,
-                          const int *raw_request_length) {
-  *raw_request = static_cast<char *>(calloc(*raw_request_length, sizeof(char)));
+                          const int &raw_request_length) {
+  *raw_request = static_cast<char *>(calloc(raw_request_length, sizeof(char)));
   if (*raw_request == NULL) {
     perror(
         "Warn - Unable to allocate space to preserve the "
         "raw request for profile extract.\n");
     return;
   }
-  memcpy(*raw_request, arg_area, *raw_request_length);
+  memcpy(*raw_request, arg_area, raw_request_length);
 }

@@ -13,9 +13,9 @@
 #include "zoslib.h"
 #endif
 
-char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int *result_buffer_size_p, int irrsmo00_options,
-                    int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p) {
+char *call_irrsmo00(char *request_xml, const char *running_userid,
+                    unsigned int &result_buffer_size, int irrsmo00_options,
+                    racfu_return_codes_t &return_codes) {
   char work_area[1024];
   char req_handle[64]                    = {0};
   running_userid_t running_userid_struct = {
@@ -23,51 +23,59 @@ char *call_irrsmo00(char *request_xml, char *running_userid,
   unsigned int alet = 0;
   unsigned int acee = 0;
   char *result_buffer =
-      static_cast<char *>(calloc(*result_buffer_size_p, sizeof(char)));
+      static_cast<char *>(calloc(result_buffer_size, sizeof(char)));
   int request_xml_length = strlen(request_xml);
-  int result_len         = *result_buffer_size_p;
+  int result_len         = result_buffer_size;
   int num_parms          = 17;
   int fn                 = 1;
 
   strncpy(running_userid_struct.running_userid, running_userid,
           running_userid_struct.running_userid_length);
 
-  IRRSMO64(work_area, alet, saf_rc_p, alet, racf_rc_p, alet, racf_rsn_p,
+  IRRSMO64(work_area, alet, &return_codes.saf_return_code, alet,
+           &return_codes.racf_return_code, alet, &return_codes.racf_reason_code,
            &num_parms, &fn, &irrsmo00_options, &request_xml_length, request_xml,
            req_handle, reinterpret_cast<char *>(&running_userid_struct), acee,
            &result_len, result_buffer);
 
-  if (((*saf_rc_p != 8) || (*racf_rc_p != 4000)) ||
-      ((*saf_rc_p == 8) && (*racf_rc_p == 4000) && (*racf_rsn_p > 100000000))) {
-    *result_buffer_size_p = result_len;
+  if (((return_codes.saf_return_code != 8) ||
+       (return_codes.racf_return_code != 4000)) ||
+      // cppcheck-suppress knownConditionTrueFalse
+      ((return_codes.saf_return_code == 8) &&
+       // cppcheck-suppress knownConditionTrueFalse
+       (return_codes.racf_return_code == 4000) &&
+       (return_codes.racf_reason_code > 100000000))) {
+    result_buffer_size = result_len;
     return result_buffer;
   }
 
-  unsigned int new_result_buffer_size = *racf_rsn_p + result_len + 1;
+  unsigned int new_result_buffer_size =
+      return_codes.racf_reason_code + result_len + 1;
 
   char *full_result =
       static_cast<char *>(calloc(new_result_buffer_size, sizeof(char)));
   char *result_buffer_ptr;
   strncpy(full_result, result_buffer, result_len);
   free(result_buffer);
-  result_buffer_ptr     = full_result + result_len * sizeof(unsigned char);
-  *result_buffer_size_p = result_len;
-  result_len            = *racf_rsn_p;
+  result_buffer_ptr  = full_result + result_len * sizeof(unsigned char);
+  result_buffer_size = result_len;
+  result_len         = return_codes.racf_reason_code;
 
   // Call IRRSMO64 Again with the appropriate buffer size
-  IRRSMO64(work_area, alet, saf_rc_p, alet, racf_rc_p, alet, racf_rsn_p,
+  IRRSMO64(work_area, alet, &return_codes.saf_return_code, alet,
+           &return_codes.racf_return_code, alet, &return_codes.racf_reason_code,
            &num_parms, &fn, &irrsmo00_options, &request_xml_length, request_xml,
            req_handle, reinterpret_cast<char *>(&running_userid_struct), acee,
            &result_len, result_buffer_ptr);
 
-  *result_buffer_size_p += result_len;
+  result_buffer_size += result_len;
   return full_result;
 }
 
-bool does_profile_exist(std::string admin_type, std::string profile_name,
-                        std::string class_name, char *running_userid) {
-  int irrsmo00_options, saf_rc = 0, racf_rc = 0, racf_rsn = 0;
-  unsigned int result_buffer_size, request_length;
+bool does_profile_exist(const std::string &admin_type,
+                        const std::string &profile_name,
+                        const std::string &class_name,
+                        const char *running_userid) {
   std::string xml_buffer;
 
   if (admin_type == "resource") {
@@ -84,8 +92,9 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
         R"(_request"/></securityrequest>)";
   }
 
-  irrsmo00_options   = 13;
-  result_buffer_size = 10000;
+  int irrsmo00_options            = 13;
+  unsigned int result_buffer_size = 10000;
+  racfu_return_codes_t return_codes;
 
   // convert our c++ string to a char * buffer
   const int length = xml_buffer.length();
@@ -94,80 +103,81 @@ bool does_profile_exist(std::string admin_type, std::string profile_name,
   strncpy(request_buffer, xml_buffer.c_str(), length + 1);
   __a2e_l(request_buffer, length);
 
-  call_irrsmo00(request_buffer, running_userid, &result_buffer_size,
-                irrsmo00_options, &saf_rc, &racf_rc, &racf_rsn);
+  call_irrsmo00(request_buffer, running_userid, result_buffer_size,
+                irrsmo00_options, return_codes);
 
   free(request_buffer);
 
-  if ((racf_rc > 0) || (saf_rc > 0)) {
+  if ((return_codes.racf_return_code > 0) ||
+      (return_codes.saf_return_code > 0)) {
     return false;
   }
   return true;
 }
 
-int post_process_smo_json(RACFu::Errors &errors, nlohmann::json *results_p,
-                          std::string *profile_name, std::string *admin_type,
-                          std::string *class_name) {
+int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
+                          const std::string &profile_name,
+                          const std::string &admin_type,
+                          const std::string &class_name) {
   nlohmann::json commands = nlohmann::json::array();
 
-  if (results_p->contains("error")) {
+  if (results.contains("error")) {
     // Only expected for irrsmo00 errors which are not expected, but possible
-    std::string error_text;
-    if ((*results_p)["error"].contains("textinerror")) {
+    if (results["error"].contains("textinerror")) {
       errors.add_irrsmo00_error_message(
-          (*results_p)["error"]["errormessage"].get<std::string>() +
+          results["error"]["errormessage"].get<std::string>() +
           " Text in error: " +
-          (*results_p)["error"]["textinerror"].get<std::string>());
+          results["error"]["textinerror"].get<std::string>());
       return 4;
     }
     errors.add_irrsmo00_error_message(
-        (*results_p)["error"]["errormessage"].get<std::string>());
+        results["error"]["errormessage"].get<std::string>());
     return 4;
   }
 
-  if (results_p->contains("errors")) {
+  if (results.contains("errors")) {
     // Only expected for "XML Parse Error"
     return 4;
   }
 
-  if (!results_p->contains("command")) {
+  if (!results.contains("command")) {
     // Only expected for "Add Protection" cases
-    if ((*class_name).empty()) {
-      errors.add_racfu_error_message("unable to add '" + *profile_name +
-                                     "' because a '" + *admin_type +
+    if (class_name.empty()) {
+      errors.add_racfu_error_message("unable to add '" + profile_name +
+                                     "' because a '" + admin_type +
                                      "' profile already exists with that name");
     } else {
       errors.add_racfu_error_message(
-          "unable to add '" + *profile_name + "' in the '" + *class_name +
+          "unable to add '" + profile_name + "' in the '" + class_name +
           "' class because a profile already exists with that name");
     }
     return 4;
   }
 
-  for (auto item = results_p->begin(); item != results_p->end();) {
+  for (auto item = results.begin(); item != results.end();) {
     if ((item.key() == "command")) {
       item++;
     } else {
-      item = results_p->erase(item);
+      item = results.erase(item);
     }
   }
 
-  if ((*results_p)["command"].contains("image")) {
+  if (results["command"].contains("image")) {
     // If there is only one command in the json
     nlohmann::json command;
-    command["command"]  = (*results_p)["command"]["image"];
+    command["command"]  = results["command"]["image"];
     command["messages"] = nlohmann::json::array();
-    if ((*results_p)["command"].contains("message")) {
-      if ((*results_p)["command"]["message"].is_array()) {
-        command["messages"].merge_patch((*results_p)["command"]["message"]);
+    if (results["command"].contains("message")) {
+      if (results["command"]["message"].is_array()) {
+        command["messages"].merge_patch(results["command"]["message"]);
       } else {
-        command["messages"].push_back((*results_p)["command"]["message"]);
+        command["messages"].push_back(results["command"]["message"]);
       }
     }
     commands.push_back(command);
   } else {
     // Iterate through a list of commands
-    for (const auto &item : (*results_p)["command"].items()) {
+    for (const auto &item : results["command"].items()) {
       nlohmann::json current_command{};
       if (item.value().contains("image")) {
         current_command["command"] = item.value()["image"];
@@ -183,7 +193,7 @@ int post_process_smo_json(RACFu::Errors &errors, nlohmann::json *results_p,
       commands.push_back(current_command);
     }
   }
-  results_p->erase("command");
-  (*results_p)["commands"] = commands;
+  results.erase("command");
+  results["commands"] = commands;
   return 0;
 }

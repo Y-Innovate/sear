@@ -50,6 +50,7 @@ static struct PyModuleDef _C_module_def = {
     -1, _C_methods};
 
 // Module initialization function
+// cppcheck-suppress unusedFunction
 PyMODINIT_FUNC PyInit__C(void) {
   Py_Initialize();
   return PyModule_Create(&_C_module_def);

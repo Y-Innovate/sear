@@ -1,6 +1,7 @@
 #ifndef __RACFU_SECURITY_ADMIN_H_
 #define __RACFU_SECURITY_ADMIN_H_
 
+#include <cstdint>
 #include <nlohmann/json.hpp>
 
 #include "errors.hpp"
@@ -19,6 +20,13 @@ class SecurityAdmin {
   Errors errors;
   nlohmann::json request;
   racfu_return_codes_t return_codes;
+  std::string admin_type;
+  std::string operation;
+  std::string profile_name;
+  std::string class_name;
+  std::string auth_id;
+  uint8_t function_code = 0;
+  void prepare();
   void do_extract();
   void do_add_alter_delete();
   void build_result(char *raw_request, int raw_request_length, char *raw_result,
