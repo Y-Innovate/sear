@@ -57,7 +57,7 @@ else
 				-I $(EXTERNALS) \
 				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNITY_OUTPUT_COLOR \
+				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
 				$(INCZOSLIB)

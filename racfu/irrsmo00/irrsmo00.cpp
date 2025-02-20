@@ -38,7 +38,7 @@ char *call_irrsmo00(char *request_xml, const char *running_userid,
            req_handle, reinterpret_cast<char *>(&running_userid_struct), acee,
            &result_len, result_buffer);
 
-  // 'knownConditionTrueFalse' is a false positive, these conditionals work as
+  // 'knownConditionTrueFalse' is a false positive. These conditionals work as
   // intended
   if (((return_codes.saf_return_code != 8) ||
        (return_codes.racf_return_code != 4000)) ||
