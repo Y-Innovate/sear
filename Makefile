@@ -12,15 +12,14 @@ LOGGER			= ${PWD}/racfu/logger
 VALIDATION      = ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 TESTS			= ${PWD}/tests
+ZOSLIB			= $(TESTS)/zoslib
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
 	CC 			= ibm-clang64
 	CXX 		= ibm-clang++64
 
-	ZOSLIB		=
 	SRCZOSLIB	=
-	INCZOSLIB	=
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
@@ -35,16 +34,13 @@ ifeq ($(UNAME), OS/390)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
-				-I $(TESTS)/mock \
-				$(INCZOSLIB)
+				-I $(TESTS)/mock
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 else
 	CC 			= clang
 	CXX 		= clang++
 
-	ZOSLIB		= $(TESTS)/zoslib
 	SRCZOSLIB	= $(ZOSLIB)/*.c
-	INCZOSLIB	= -I $(ZOSLIB)
 
 	CFLAGS		= \
 				-std=c++11 -D__ptr32= \
@@ -56,10 +52,10 @@ else
 				-I $(EXTERNALS) \
 				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNITY_OUTPUT_COLOR \
+				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
-				$(INCZOSLIB)
+				-I $(ZOSLIB)
 endif
 
 RM				= rm -rf
@@ -127,7 +123,7 @@ check:
 		-I $(KEY_MAP) \
 		-I $(VALIDATION) \
 		-I $(LOGGER) \
-		$(INCZOSLIB) \
+		-I $(ZOSLIB) \
 		$(SRC)/
 
 clean:
