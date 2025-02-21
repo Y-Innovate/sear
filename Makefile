@@ -33,12 +33,11 @@ ifeq ($(UNAME), OS/390)
 				-I $(EXTERNALS) \
 				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNITY_OUTPUT_COLOR \
+				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
 				$(INCZOSLIB)
 	LDFLAGS		= -m64 -Wl,-b,edit=no
-	CKFLGS		= -D __TOS_390__
 else
 	CC 			= clang
 	CXX 		= clang++
@@ -57,11 +56,10 @@ else
 				-I $(EXTERNALS) \
 				-I $(LOGGER)
 	TFLAGS		= \
-				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
+				-DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
 				-I $(TESTS)/mock \
 				$(INCZOSLIB)
-	CKFLGS		= -U __TOS_390__ -D __ptr32=
 endif
 
 RM				= rm -rf
@@ -122,7 +120,7 @@ check:
 		--check-level=exhaustive \
 		--inconclusive \
 		--error-exitcode=1 \
-		$(CKFLGS) \
+		-U __TOS_390__ -D __ptr32= \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
 		-I $(IRRSEQ00_SRC) \

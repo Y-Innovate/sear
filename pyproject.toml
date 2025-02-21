@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
     name="racfu"
-    version="1.0a1"
+    version="1.0a2"
     requires-python = ">= 3.11"
     authors = [
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
