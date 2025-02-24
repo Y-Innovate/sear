@@ -29,6 +29,10 @@
   IRRSMO00_REQUEST_SAMPLES "user/test_delete_user_request.bin"
 #define TEST_DELETE_USER_WITH_TRAITS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "user/test_delete_user_with_traits_request.json"
+#define TEST_ALTER_USER_PSEUDO_BOOLEAN_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_pseudo_boolean_request.json"
+#define TEST_ALTER_USER_PSEUDO_BOOLEAN_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_pseudo_boolean_request.bin"
 
 // Group
 #define TEST_ADD_GROUP_REQUEST_JSON \
@@ -316,6 +320,7 @@ void test_parse_alter_user_no_xml_data_error();
 void test_parse_alter_user_traits_not_json_error();
 void test_parse_irrsmo00_errors_result();
 void test_parse_delete_user_trait_error_result();
+void test_generate_alter_user_pseudo_boolean_request();
 
 // Group
 void test_generate_add_group_request();

@@ -143,6 +143,12 @@ void test_parse_delete_user_trait_error_result() {
                          TEST_DELETE_USER_WITH_TRAITS_RESULT_JSON, false);
 }
 
+void test_generate_alter_user_pseudo_boolean_request() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_USER_PSEUDO_BOOLEAN_REQUEST_JSON,
+      TEST_ALTER_USER_PSEUDO_BOOLEAN_REQUEST_RAW, true);
+}
+
 /*************************************************************************/
 /* Group                                                                 */
 /*************************************************************************/

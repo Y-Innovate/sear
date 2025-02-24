@@ -55,6 +55,7 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
                             {  "trait",   item_trait},
                             {"segment", item_segment}
       });
+      continue;
     }
     if (trait_type == TRAIT_TYPE_NULL) {
       // Validate that NULL is not used with non-delete operator specified
@@ -101,7 +102,9 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
     validate_json_value_to_string(item, expected_type, errors_p);
     // Ensure that the type of data provided for the trait matches the
     // expected TRAIT_TYPE
-    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL)) {
+    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL) &&
+        ((expected_type != TRAIT_TYPE_PSEUDO_BOOLEAN) ||
+         (trait_type != TRAIT_TYPE_BOOLEAN))) {
       update_error_json(
           errors_p, BAD_TRAIT_DATA_TYPE,
           nlohmann::json{
@@ -109,6 +112,9 @@ void validate_traits(std::string adminType, nlohmann::json* traits_p,
               {"required_type", expected_type}
       });
       continue;
+    }
+    if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN) {
+      trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;
     }
     translatedKey = get_racf_key(adminType.c_str(), item_segment.c_str(),
                                  (item_segment + ":" + item_trait).c_str(),

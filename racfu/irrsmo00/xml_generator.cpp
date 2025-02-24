@@ -65,10 +65,12 @@ char* XmlGenerator::build_xml_string(
 
     logger_p->debug(MSG_VALIDATING_TRAITS);
     validate_traits(admin_type, &((*request_p)["traits"]), errors_p);
+    logger_p->debug("Made it out?");
     if (errors_p->empty()) {
       build_request_data(true_admin_type, std::string(admin_type),
                          (*request_p)["traits"]);
     } else {
+      logger_p->debug(errors_p->dump());
       return nullptr;
     }
     logger_p->debug(MSG_DONE);
@@ -258,6 +260,13 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
+        int8_t expected_type =
+            get_racf_trait_type(admin_type.c_str(), item_segment.c_str(),
+                                (item_segment + ":" + item_trait).c_str());
+        if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN and
+            trait_type != TRAIT_TYPE_NULL) {
+          trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;
+        }
         translated_key = get_racf_key(admin_type.c_str(), item_segment.c_str(),
                                       (item_segment + ":" + item_trait).c_str(),
                                       trait_type, trait_operator);
@@ -271,6 +280,10 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
             trait_operator_str = (item.value()) ? "set" : "del";
             value              = "";
             break;
+          case TRAIT_TYPE_PSEUDO_BOOLEAN:
+            trait_operator_str = "set";
+            value              = (item.value()) ? "YES" : "NO";
+            break;
           default:
             trait_operator_str = (item_operator.empty())
                                      ? "set"
@@ -282,7 +295,6 @@ nlohmann::json XmlGenerator::build_request_data(std::string true_admin_type,
         build_single_trait(("racf:" + std::string(translated_key)),
                            trait_operator_str, value);
         item = request_data.erase(item);
-
       } else
         item++;
     }

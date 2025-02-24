@@ -41,6 +41,7 @@ int main() {
   RUN_TEST(test_parse_alter_user_traits_not_json_error);
   RUN_TEST(test_parse_irrsmo00_errors_result);
   RUN_TEST(test_parse_delete_user_trait_error_result);
+  RUN_TEST(test_generate_alter_user_pseudo_boolean_request);
   // Group
   RUN_TEST(test_generate_add_group_request);
   RUN_TEST(test_generate_alter_group_request);
