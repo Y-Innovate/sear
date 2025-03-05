@@ -31,6 +31,7 @@ ifeq ($(UNAME), OS/390)
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
+				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
 				-std=$(STANDARD) -m64 -fzos-le-char-mode=ascii \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
@@ -52,7 +53,7 @@ else
 	SRCZOSLIB	= $(ZOSLIB)/*.c
 
 	CFLAGS		= \
-	            -DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
+				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
 				-std=$(STANDARD) -D__ptr32= \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
