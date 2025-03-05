@@ -9,7 +9,7 @@ IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
 LOGGER			= ${PWD}/racfu/logger
-VALIDATION      = ${PWD}/racfu/validation
+VALIDATION		= ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
 JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
@@ -24,9 +24,9 @@ CXXSTANDARD		= c++11
 RACFU_PARAMETERS_SCHEMA	= $(shell cat $(SCHEMAS)/parameters.json | jq -c)
 
 ifeq ($(UNAME), OS/390)
-	AS 			= as
-	CC 			= ibm-clang64
-	CXX 		= ibm-clang++64
+	AS			= as
+	CC			= ibm-clang64
+	CXX			= ibm-clang++64
 
 	SRCZOSLIB	=
 
@@ -48,8 +48,8 @@ ifeq ($(UNAME), OS/390)
 				-I $(TESTS)/mock
 	LDFLAGS		= -m64 -Wl,-b,edit=no
 else
-	CC 			= clang
-	CXX 		= clang++
+	CC			= clang
+	CXX			= clang++
 
 	SRCZOSLIB	= $(ZOSLIB)/*.c
 
