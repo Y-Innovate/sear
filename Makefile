@@ -17,7 +17,8 @@ TESTS			= ${PWD}/tests
 ZOSLIB			= $(TESTS)/zoslib
 SCHEMAS			= ${PWD}/schemas
 
-STANDARD		= c++11
+CSTANDARD		= c99
+CXXSTANDARD		= c++11
 
 # JSON Schemas
 RACFU_PARAMETERS_SCHEMA	= $(shell cat $(SCHEMAS)/parameters.json | jq -c)
@@ -32,7 +33,7 @@ ifeq ($(UNAME), OS/390)
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
 				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
-				-std=$(STANDARD) -m64 -fzos-le-char-mode=ascii \
+				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
@@ -54,7 +55,7 @@ else
 
 	CFLAGS		= \
 				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
-				-std=$(STANDARD) -D__ptr32= \
+				-std=$(CXXSTANDARD) -D__ptr32= \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
@@ -80,7 +81,7 @@ mkdirs:
 
 racfu: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
-	cd $(ARTIFACTS) 
+	cd $(ARTIFACTS) \
 		&& $(CXX) -c $(CFLAGS) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
@@ -115,7 +116,7 @@ fvt:
 	python3 $(TESTS)/fvt/fvt.py
 
 dbg:
-	cd $(ARTIFACTS) && $(CC) -m64 -std=c99 -fzos-le-char-mode=ascii \
+	cd $(ARTIFACTS) && $(CC) -m64 -std=$(CSTANDARD) -fzos-le-char-mode=ascii \
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
@@ -125,7 +126,7 @@ check:
 		--suppress='useStlAlgorithm' \
 		--inline-suppr \
 		--language=c++ \
-		--std=$(STANDARD) \
+		--std=$(CXXSTANDARD) \
 		--enable=all \
 		--force \
 		--check-level=exhaustive \
