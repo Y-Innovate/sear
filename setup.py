@@ -31,15 +31,12 @@ def assemble(asm_file: str, asm_directory: str) -> None:
     print(assemble_command)
     subprocess.run(assemble_command, shell=True, check=True)
 
-def insert_json_schema(json_schema_file: str, header_file: str, macro: str) -> None:
+def load_json_schema(relative_path: str) -> str:
     """Load a JSON schema as a minified JSON string"""
     cwd = Path.cwd()
-    with open(cwd / "schemas" / json_schema_file, "r") as file_handle:
-        json_schema = json.dumps(json.load(file_handle), separators=(",", ":"))
-    with open(cwd / "racfu" / header_file, "rw") as file_handle:
-        header_file_content = file_handle.read().replace(
-            macro, f"'\"({json_schema})\"_json'")
-        file_handle.write(header_file_content)
+    absolute_path = cwd / "schemas" / relative_path
+    with open(absolute_path, "r") as file_handle:
+        return json.dumps(json.load(file_handle), separators=(",", ":"))
 
 class build_and_asm_ext(build_ext):
     def run(self):
@@ -55,11 +52,15 @@ def main():
     """Python extension build entrypoint."""
     cwd = Path.cwd()
     assembled_object_path = cwd / "artifacts" / "irrseq00.o"
-    insert_json_schema("parameters.json", "security_admin.hpp", "RACFU_PARAMETERS_SCHEMA")
+    racfu_parameters_schema = load_json_schema("parameters.json")
     setup_args ={
         "ext_modules": [
                 Extension(
                     "racfu._C",
+                    define_macros=[
+                        ("RACFU_PARAMETERS_SCHEMA", 
+                        f"'R\"({racfu_parameters_schema})\"_json'")
+                    ],
                     sources=(
                         glob("racfu/**/*.cpp")
                         + glob("racfu/*.cpp")
