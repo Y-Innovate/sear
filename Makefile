@@ -11,8 +11,16 @@ KEY_MAP			= ${PWD}/racfu/key_map
 LOGGER			= ${PWD}/racfu/logger
 VALIDATION      = ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
+JSON			= $(EXTERNALS)/json
+JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
 TESTS			= ${PWD}/tests
 ZOSLIB			= $(TESTS)/zoslib
+SCHEMAS			= ${PWD}/schemas
+
+STANDARD		= c++11
+
+# JSON Schemas
+RACFU_PARAMETERS_SCHEMA	= $(shell cat $(SCHEMAS)/parameters.json | jq -c)
 
 ifeq ($(UNAME), OS/390)
 	AS 			= as
@@ -23,13 +31,14 @@ ifeq ($(UNAME), OS/390)
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
-				-m64 -fzos-le-char-mode=ascii \
+				-std=$(STANDARD) -m64 -fzos-le-char-mode=ascii \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
-				-I $(EXTERNALS) \
+				-I $(JSON) \
+				-I $(JSON_SCHEMA) \
 				-I $(LOGGER)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
@@ -43,13 +52,15 @@ else
 	SRCZOSLIB	= $(ZOSLIB)/*.c
 
 	CFLAGS		= \
-				-std=c++11 -D__ptr32= \
+	            -DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
+				-std=$(STANDARD) -D__ptr32= \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
-				-I $(EXTERNALS) \
+				-I $(JSON) \
+				-I $(JSON_SCHEMA) \
 				-I $(LOGGER)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
@@ -68,13 +79,15 @@ mkdirs:
 
 racfu: clean mkdirs
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
-	cd $(ARTIFACTS) && $(CXX) -c $(CFLAGS) \
-		$(SRC)/*.cpp \
-		$(IRRSMO00_SRC)/*.cpp \
-		$(IRRSEQ00_SRC)/*.cpp \
-		$(KEY_MAP)/*.cpp \
-		$(LOGGER)/*.cpp \
-		$(VALIDATION)/*.cpp
+	cd $(ARTIFACTS) 
+		&& $(CXX) -c $(CFLAGS) \
+			$(SRC)/*.cpp \
+			$(IRRSMO00_SRC)/*.cpp \
+			$(IRRSEQ00_SRC)/*.cpp \
+			$(KEY_MAP)/*.cpp \
+			$(LOGGER)/*.cpp \
+			$(VALIDATION)/*.cpp \
+			$(JSON_SCHEMA)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
 
 test: clean mkdirs
@@ -89,6 +102,7 @@ test: clean mkdirs
 			$(KEY_MAP)/*.cpp \
 			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
+			$(JSON_SCHEMA)/*.cpp \
 			$(TESTS)/*.cpp \
 			$(TESTS)/irrsmo00/*.cpp \
 			$(TESTS)/irrseq00/*.cpp \
@@ -110,7 +124,7 @@ check:
 		--suppress='useStlAlgorithm' \
 		--inline-suppr \
 		--language=c++ \
-		--std=c++11 \
+		--std=$(STANDARD) \
 		--enable=all \
 		--force \
 		--check-level=exhaustive \

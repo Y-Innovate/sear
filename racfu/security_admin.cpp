@@ -6,7 +6,6 @@
 #include "extract.hpp"
 #include "irrsmo00.hpp"
 #include "messages.h"
-#include "parameter_validator.hpp"
 #include "post_process.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
@@ -24,18 +23,20 @@ void SecurityAdmin::make_request(const char *request_json) {
   // Parse Request JSON
   try {
     this->request = nlohmann::json::parse(request_json);
-  } catch (nlohmann::json::parse_error &ex) {
+  } catch (const nlohmann::json::parse_error &ex) {
     this->errors.add_racfu_error_message(
         "Syntax error in request JSON at byte " + std::to_string(ex.byte));
     this->return_codes.racfu_return_code = 8;
     this->build_result(nullptr, 0, nullptr, 0, {});
     return;
   }
-  // Parameter Validation
+
   this->logger.debug(MSG_VALIDATING_PARAMETERS);
-  ParameterValidator parameter_validator(&this->request, &this->errors);
-  parameter_validator.validate_parameters();
-  if (!errors.empty()) {
+  try {
+    parameter_validator.validate(this->request);
+  } catch (const std::exception &ex) {
+    this->errors.add_racfu_error_message(
+        "The provided request JSON does not contain a valid request");
     this->return_codes.racfu_return_code = 8;
     this->build_result(nullptr, 0, nullptr, 0, {});
     return;

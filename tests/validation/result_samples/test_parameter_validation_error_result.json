@@ -1,6 +1,6 @@
 {
   "errors": [
-    "racfu: 'userid' is not a valid parameter for the 'racf-options' admin type and 'extract' operation"
+    "racfu: The provided request JSON does not contain a valid request"
   ],
   "return_codes": {
     "racf_reason_code": null,

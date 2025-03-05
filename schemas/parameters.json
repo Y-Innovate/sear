@@ -1,0 +1,553 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RACFu Parameters",
+  "type": "object",
+  "oneOf": [
+    {
+      "properties": {
+        "admin_type": {
+          "const": "user"
+        },
+        "operation": {
+          "const": "extract"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "userid"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "user"
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "alter"
+          ]
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "userid",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "user"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "userid"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group"
+        },
+        "operation": {
+          "const": "extract"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "group"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group"
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "alter"
+          ]
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "group",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "group"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group-connection"
+        },
+        "operation": {
+          "const": "extract"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "group",
+        "userid"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group-connection"
+        },
+        "operation": {
+          "const": "alter"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "userid",
+        "group",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "group-connection"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "group",
+        "userid"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "resource"
+        },
+        "operation": {
+          "const": "extract"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "resource",
+        "class"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "resource"
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "alter"
+          ]
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "resource",
+        "class",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "resource"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "resource",
+        "class"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "data-set"
+        },
+        "operation": {
+          "const": "extract"
+        },
+        "data_set": {
+          "$ref": "#/$defs/dataSetName"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "data_set"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "data-set"
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "alter"
+          ]
+        },
+        "data_set": {
+          "$ref": "#/$defs/dataSetName"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "data_set",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "data-set"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "data_set": {
+          "$ref": "#/$defs/dataSetName"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "data_set"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "racf-options"
+        },
+        "operation": {
+          "const": "extract"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "racf-options"
+        },
+        "operation": {
+          "const": "alter"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "admin_type",
+        "operation",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "permission"
+        },
+        "operation": {
+          "enum": [
+            "add",
+            "alter"
+          ]
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "userid"
+          ]
+        },
+        {
+          "required": [
+            "group"
+          ]
+        }
+      ],
+      "required": [
+        "admin_type",
+        "operation",
+        "resource",
+        "class",
+        "traits"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "admin_type": {
+          "const": "permission"
+        },
+        "operation": {
+          "const": "delete"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "userid"
+          ]
+        },
+        {
+          "required": [
+            "group"
+          ]
+        }
+      ],
+      "required": [
+        "admin_type",
+        "operation",
+        "resource",
+        "class"
+      ],
+      "additionalProperties": false
+    }
+  ],
+  "$defs": {
+    "eightCharacterString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8
+    },
+    "resourceName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 247
+    },
+    "dataSetName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 44
+    },
+    "volumeSerial": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 6
+    }
+  }
+}

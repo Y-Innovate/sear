@@ -2,6 +2,7 @@
 #define __RACFU_SECURITY_ADMIN_H_
 
 #include <cstdint>
+#include <nlohmann/json-schema.hpp>
 #include <nlohmann/json.hpp>
 
 #include "errors.hpp"
@@ -9,6 +10,11 @@
 #include "racfu_result.h"
 
 namespace RACFu {
+
+static nlohmann::json parameters_schema = RACFU_PARAMETERS_SCHEMA;
+static nlohmann::json_schema::json_validator parameter_validator{
+    parameters_schema};
+
 class SecurityAdmin {
  public:
   SecurityAdmin(racfu_result_t *result, bool debug);
