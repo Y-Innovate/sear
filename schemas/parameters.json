@@ -426,10 +426,7 @@
     {
       "properties": {
         "operation": {
-          "enum": [
-            "add",
-            "alter"
-          ]
+          "const": "alter"
         },
         "admin_type": {
           "const": "permission"
