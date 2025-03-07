@@ -13,7 +13,7 @@ class Errors {
   bool empty() const;
 
  private:
-  void add_error_message(std::string error_message);
+  void add_error_message(const std::string& error_message);
 };
 }  // namespace RACFu
 

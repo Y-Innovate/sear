@@ -5,33 +5,33 @@
   "oneOf": [
     {
       "properties": {
-        "admin_type": {
-          "const": "user"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "user"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "userid"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "user"
-        },
         "operation": {
           "enum": [
             "add",
             "alter"
           ]
+        },
+        "admin_type": {
+          "const": "user"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
@@ -44,8 +44,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "userid",
         "traits"
       ],
@@ -53,11 +53,11 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "user"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "user"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
@@ -67,41 +67,41 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "userid"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "group"
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "group"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group"
-        },
         "operation": {
           "enum": [
             "add",
             "alter"
           ]
+        },
+        "admin_type": {
+          "const": "group"
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
@@ -114,8 +114,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "group",
         "traits"
       ],
@@ -123,11 +123,11 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "group"
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
@@ -137,19 +137,19 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "group"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group-connection"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "group-connection"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
@@ -159,8 +159,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "group",
         "userid"
       ],
@@ -168,12 +168,12 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group-connection"
-        },
         "operation": {
           "const": "alter"
         },
+        "admin_type": {
+          "const": "group-connection"
+        },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
         },
@@ -188,8 +188,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "userid",
         "group",
         "traits"
@@ -198,22 +198,25 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "group-connection"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "group-connection"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "group",
         "userid"
       ],
@@ -221,11 +224,11 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "resource"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "resource"
         },
         "resource": {
           "$ref": "#/$defs/resourceName"
@@ -235,8 +238,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "resource",
         "class"
       ],
@@ -244,14 +247,14 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "resource"
-        },
         "operation": {
           "enum": [
             "add",
             "alter"
           ]
+        },
+        "admin_type": {
+          "const": "resource"
         },
         "resource": {
           "$ref": "#/$defs/resourceName"
@@ -267,8 +270,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "resource",
         "class",
         "traits"
@@ -277,11 +280,11 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "resource"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "resource"
         },
         "resource": {
           "$ref": "#/$defs/resourceName"
@@ -294,8 +297,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "resource",
         "class"
       ],
@@ -303,33 +306,33 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "data-set"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "data-set"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "data_set"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "data-set"
-        },
         "operation": {
           "enum": [
             "add",
             "alter"
           ]
+        },
+        "admin_type": {
+          "const": "data-set"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"
@@ -348,8 +351,8 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "data_set",
         "traits"
       ],
@@ -357,11 +360,11 @@
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "data-set"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "data-set"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"
@@ -377,34 +380,34 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "data_set"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "racf-options"
-        },
         "operation": {
           "const": "extract"
+        },
+        "admin_type": {
+          "const": "racf-options"
         }
       },
       "required": [
-        "admin_type",
-        "operation"
+        "operation",
+        "admin_type"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "racf-options"
-        },
         "operation": {
           "const": "alter"
+        },
+        "admin_type": {
+          "const": "racf-options"
         },
         "traits": {
           "type": "object"
@@ -414,23 +417,23 @@
         }
       },
       "required": [
-        "admin_type",
         "operation",
+        "admin_type",
         "traits"
       ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "permission"
-        },
         "operation": {
           "enum": [
             "add",
             "alter"
           ]
         },
+        "admin_type": {
+          "const": "permission"
+        },
         "resource": {
           "$ref": "#/$defs/resourceName"
         },
@@ -456,6 +459,13 @@
           "$ref": "#/$defs/eightCharacterString"
         }
       },
+      "required": [
+        "operation",
+        "admin_type",
+        "resource",
+        "class",
+        "traits"
+      ],
       "oneOf": [
         {
           "required": [
@@ -468,22 +478,15 @@
           ]
         }
       ],
-      "required": [
-        "admin_type",
-        "operation",
-        "resource",
-        "class",
-        "traits"
-      ],
       "additionalProperties": false
     },
     {
       "properties": {
-        "admin_type": {
-          "const": "permission"
-        },
         "operation": {
           "const": "delete"
+        },
+        "admin_type": {
+          "const": "permission"
         },
         "resource": {
           "$ref": "#/$defs/resourceName"
@@ -507,6 +510,12 @@
           "$ref": "#/$defs/eightCharacterString"
         }
       },
+      "required": [
+        "operation",
+        "admin_type",
+        "resource",
+        "class"
+      ],
       "oneOf": [
         {
           "required": [
@@ -518,12 +527,6 @@
             "group"
           ]
         }
-      ],
-      "required": [
-        "admin_type",
-        "operation",
-        "resource",
-        "class"
       ],
       "additionalProperties": false
     }
@@ -537,7 +540,7 @@
     "resourceName": {
       "type": "string",
       "minLength": 1,
-      "maxLength": 247
+      "maxLength": 246
     },
     "dataSetName": {
       "type": "string",

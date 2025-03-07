@@ -19,6 +19,11 @@ nlohmann::json XmlParser::build_json_string(const char* xml_result_string,
   std::string xml_buffer;
   char* xml_ascii_result =
       static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
+  if (xml_ascii_result == NULL) {
+    racfu_rc = 8;
+    errors.add_racfu_error_message("Allocation of 'xml_ascii_result' failed");
+    return {};
+  }
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes

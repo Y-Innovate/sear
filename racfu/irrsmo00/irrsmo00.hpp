@@ -41,12 +41,12 @@ void IRRSMO64(char *,               // Workarea
 
 char *call_irrsmo00(char *request_xml, const char *running_userid,
                     unsigned int &result_buffer_size, int irrsmo00_options,
-                    racfu_return_codes_t &return_codes);
+                    racfu_return_codes_t &return_codes, RACFu::Errors &errors);
 
 bool does_profile_exist(const std::string &admin_type,
                         const std::string &profile_name,
                         const std::string &class_name,
-                        const char *running_userid);
+                        const char *running_userid, RACFu::Errors &errors);
 
 int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
                           const std::string &profile_name,

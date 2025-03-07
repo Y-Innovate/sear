@@ -15,7 +15,7 @@
 
 char *call_irrsmo00(char *request_xml, const char *running_userid,
                     unsigned int &result_buffer_size, int irrsmo00_options,
-                    racfu_return_codes_t &return_codes) {
+                    racfu_return_codes_t &return_codes, RACFu::Errors &errors) {
   char work_area[1024];
   char req_handle[64]                    = {0};
   running_userid_t running_userid_struct = {
@@ -56,6 +56,10 @@ char *call_irrsmo00(char *request_xml, const char *running_userid,
 
   char *full_result =
       static_cast<char *>(calloc(new_result_buffer_size, sizeof(char)));
+  if (full_result == NULL) {
+    errors.add_racfu_error_message("Allocation of 'full_result' failed");
+    return NULL;
+  }
   char *result_buffer_ptr;
   strncpy(full_result, result_buffer, result_len);
   free(result_buffer);
@@ -77,7 +81,7 @@ char *call_irrsmo00(char *request_xml, const char *running_userid,
 bool does_profile_exist(const std::string &admin_type,
                         const std::string &profile_name,
                         const std::string &class_name,
-                        const char *running_userid) {
+                        const char *running_userid, RACFu::Errors &errors) {
   std::string xml_buffer;
 
   if (admin_type == "resource") {
@@ -102,11 +106,20 @@ bool does_profile_exist(const std::string &admin_type,
   const int length = xml_buffer.length();
   char *request_buffer =
       static_cast<char *>(malloc(sizeof(char) * (length + 1)));
+  if (request_buffer == NULL) {
+    errors.add_racfu_error_message("Allocation of 'request_buffer' failed");
+    return false;
+  }
   strncpy(request_buffer, xml_buffer.c_str(), length + 1);
   __a2e_l(request_buffer, length);
 
-  call_irrsmo00(request_buffer, running_userid, result_buffer_size,
-                irrsmo00_options, return_codes);
+  const char *result =
+      call_irrsmo00(request_buffer, running_userid, result_buffer_size,
+                    irrsmo00_options, return_codes, errors);
+
+  if (result == NULL) {
+    return false;
+  }
 
   free(request_buffer);
 

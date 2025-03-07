@@ -175,7 +175,7 @@ void SecurityAdmin::do_add_alter_delete() {
        (this->admin_type == "data-set") || (this->admin_type == "resource"))) {
     this->logger.debug(MSG_SMO_VALIDATE_EXIST);
     if (!does_profile_exist(this->admin_type, this->profile_name,
-                            this->class_name, running_userid)) {
+                            this->class_name, running_userid, errors)) {
       if (class_name.empty()) {
         this->errors.add_racfu_error_message(
             "unable to alter '" + this->profile_name +
@@ -198,7 +198,13 @@ void SecurityAdmin::do_add_alter_delete() {
 
   xml_response_string =
       call_irrsmo00(xml_request_string, running_userid, result_buffer_size,
-                    irrsmo00_options, this->return_codes);
+                    irrsmo00_options, this->return_codes, errors);
+
+  if (!this->errors.empty()) {
+    this->return_codes.racfu_return_code = 8;
+    this->build_result(xml_request_string, request_length, nullptr, 0, {});
+    return;
+  }
 
   this->logger.debug(MSG_DONE);
 
@@ -206,17 +212,21 @@ void SecurityAdmin::do_add_alter_delete() {
       xml_response_string, this->return_codes.racfu_return_code, this->errors,
       this->logger);
 
-  if (this->errors.empty()) {
-    this->logger.debug(MSG_SMO_POST_PROCESS);
-    this->logger.debug(intermediate_result_json.dump());
-    // Maintain any RC 4's from parsing xml or post-processing json
-    this->return_codes.racfu_return_code =
-        this->return_codes.racfu_return_code |
-        post_process_smo_json(this->errors, intermediate_result_json,
-                              this->profile_name, this->admin_type,
-                              this->class_name);
-    this->logger.debug(MSG_DONE);
+  if (!this->errors.empty()) {
+    this->build_result(xml_request_string, request_length, nullptr, 0, {});
+    return;
   }
+
+  this->logger.debug(MSG_SMO_POST_PROCESS);
+  this->logger.debug(intermediate_result_json.dump());
+  // Maintain any RC 4's from parsing xml or post-processing json
+  this->return_codes.racfu_return_code =
+      this->return_codes.racfu_return_code |
+      post_process_smo_json(this->errors, intermediate_result_json,
+                            this->profile_name, this->admin_type,
+                            this->class_name);
+
+  this->logger.debug(MSG_DONE);
 
   // Build Success Result
   this->build_result(xml_request_string, request_length, xml_response_string,
@@ -267,7 +277,9 @@ void SecurityAdmin::build_result(
   std::string result_json_cpp_string = result_json.dump();
   char *result_json_string           = static_cast<char *>(
       malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
-  std::strcpy(result_json_string, result_json_cpp_string.c_str());
+  if (result_json_string != NULL) {
+    std::strcpy(result_json_string, result_json_cpp_string.c_str());
+  }
 
   // Build RACFu Result Structure
   this->result->raw_result         = raw_result;

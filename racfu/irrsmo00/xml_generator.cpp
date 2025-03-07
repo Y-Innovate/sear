@@ -82,6 +82,9 @@ char* XmlGenerator::build_xml_string(
   // convert our c++ string to a char * buffer
   const int length    = xml_buffer.length();
   char* output_buffer = static_cast<char*>(malloc(sizeof(char) * (length + 1)));
+  if (output_buffer == NULL) {
+    return nullptr;
+  }
   strncpy(output_buffer, xml_buffer.c_str(), length + 1);
   __a2e_l(output_buffer, length);
 

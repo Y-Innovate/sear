@@ -115,7 +115,7 @@ When contributing to RACFu, think about the following:
 * Make any necessary updates to `README.md`.
 * Make any necessary updates to the GitHub pages documentation in the `gh-pages` branch _(Pull requests should be opened against the `gh-pages-dev` branch)_.
 * Add any necessary test cases to `/tests`.
-* Ensure that you have __pre-commit Hooks__ setup to ensure that `clang-format`, `cppcheck`, and **unit tests** are run against the code for every commit you make.
+* Ensure that you have **pre-commit Hooks** setup to ensure that `clang-format`, `cppcheck`, and **unit tests** are run against the code for every commit you make.
 * Run unit tests by running `make test`.
 * Run functional verification tests by running `make fvt`.
 * Run `cppcheck` static code analysis cans by running `make check`

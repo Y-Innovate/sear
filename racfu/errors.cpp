@@ -9,7 +9,7 @@ void Errors::add_irrsmo00_error_message(const std::string& error_message) {
   this->add_error_message("irrsmo00: " + error_message);
 }
 
-void Errors::add_error_message(std::string error_message) {
+void Errors::add_error_message(const std::string& error_message) {
   this->error_messages.push_back(error_message);
 }
 
