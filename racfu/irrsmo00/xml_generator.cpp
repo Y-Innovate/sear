@@ -176,6 +176,10 @@ void XmlGenerator::build_xml_header_attributes(
   }
   operation = convert_operation(operation, irrsmo00_options);
   build_attribute("operation", operation);
+  if (true_admin_type == "groupconnection" ||
+      true_admin_type == "systemsettings" || true_admin_type == "permission") {
+    irrsmo00_options = 13;
+  }
   if (request.contains("run")) {
     build_attribute("run", request["run"].get<std::string>());
   }
@@ -191,10 +195,11 @@ void XmlGenerator::build_xml_header_attributes(
     return;
   }
   if ((true_admin_type == "resource") || (true_admin_type == "permission")) {
-    std::string class_name = request["class"].get<std::string>();
-    build_attribute("class", class_name);
-    if (true_admin_type == "resource" || (class_name != "dataset")) {
-      return;
+    if (request.contains("data_set")) {
+      build_attribute("class", "DATASET");
+    } else {
+      std::string class_name = request["class"].get<std::string>();
+      build_attribute("class", class_name);
     }
   }
   if ((true_admin_type == "dataset") || (true_admin_type == "permission")) {

@@ -1,9 +1,9 @@
 {
   "operation": "alter",
   "admin_type": "permission",
-  "resource": "TESTING",
-  "class": "ELIJTEST",
-  "volume": "TESTVOL",
+  "resource": "IRR.IRRSMO00.PRECHECK",
+  "class": "DATASET",
+  "userid": "SQUIDWRD",
   "traits": {
     "base:access": "READ"
   }

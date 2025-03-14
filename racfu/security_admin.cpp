@@ -83,9 +83,18 @@ void SecurityAdmin::prepare() {
   } else if (this->admin_type == "racf-options") {
     this->function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
   } else if (this->admin_type == "permission") {
-    this->profile_name = this->request["resource"].get<std::string>();
-    this->class_name   = this->request["class"].get<std::string>();
-    this->auth_id      = this->request["userid"].get<std::string>();
+    if (this->request.contains("data_set")) {
+      this->profile_name = this->request["data_set"].get<std::string>();
+      this->class_name   = "DATASET";
+    } else {
+      this->profile_name = this->request["resource"].get<std::string>();
+      this->class_name   = this->request["class"].get<std::string>();
+    }
+    if (this->request.contains("group")) {
+      this->auth_id = this->request["group"].get<std::string>();
+    } else {
+      this->auth_id = this->request["userid"].get<std::string>();
+    }
   }
 }
 

@@ -124,25 +124,57 @@
   IRRSMO00_REQUEST_SAMPLES "resource/test_delete_resource_request.bin"
 
 // Permission
-#define TEST_ALTER_PERMISSION_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "permission/test_alter_permission_request.json"
-#define TEST_ALTER_PERMISSION_REQUEST_RAW \
-  IRRSMO00_REQUEST_SAMPLES "permission/test_alter_permission_request.bin"
-#define TEST_ALTER_PERMISSION_PARAMETER_ERRORS_REQUEST_JSON    \
-  IRRSMO00_REQUEST_SAMPLES                                     \
-  "permission/test_alter_permission_parameter_errors_request." \
+#define TEST_ALTER_PERMISSION_DATA_SET_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                          \
+  "permission/test_alter_permission_data_set_request.json"
+#define TEST_ALTER_PERMISSION_DATA_SET_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES                         \
+  "permission/test_alter_permission_data_set_request.bin"
+#define TEST_ALTER_PERMISSION_DATA_SET_WITH_CLASS_PARAMETER_ERROR_REQEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                                    \
+  "permission/"                                                               \
+  "test_alter_permission_data_set_with_class_parameter_error_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                          \
+  "permission/test_alter_permission_resource_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES                         \
+  "permission/test_alter_permission_resource_request.bin"
+#define TEST_ALTER_PERMISSION_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON    \
+  IRRSMO00_REQUEST_SAMPLES                                              \
+  "permission/test_alter_permission_data_set_parameter_errors_request." \
   "json"
-#define TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON    \
-  IRRSMO00_REQUEST_SAMPLES                                             \
-  "permission/test_alter_permission_dataset_parameter_errors_request." \
+#define TEST_ALTER_PERMISSION_DATA_SET_WITH_CLASS_PARAMETER_ERROR_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                                     \
+  "permission/"                                                                \
+  "test_alter_permission_data_set_with_class_parameter_error_request."         \
   "json"
-#define TEST_ALTER_PERMISSION_TRAIT_ERRORS_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES                              \
-  "permission/test_alter_permission_trait_errors_request.json"
-#define TEST_DELETE_PERMISSION_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "permission/test_delete_permission_request.json"
-#define TEST_DELETE_PERMISSION_REQUEST_RAW \
-  IRRSMO00_REQUEST_SAMPLES "permission/test_delete_permission_request.bin"
+#define TEST_ALTER_PERMISSION_RESOURCE_PARAMETER_ERRORS_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                           \
+  "permission/test_alter_permission_resource_parameter_errors_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_CLASS_SET_TO_DATASET_LOWERCASE_PARAMETER_ERROR_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                                                         \
+  "permission/"                                                                                    \
+  "test_alter_permission_resource_class_set_to_dataset_lowercase_parameter_"                       \
+  "error_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_CLASS_SET_TO_DATASET_UPPERCASE_PARAMETER_ERROR_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                                                         \
+  "permission/"                                                                                    \
+  "test_alter_permission_resource_class_set_to_dataset_uppercase_parameter_"                       \
+  "error_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_WITH_VOLUME_PARAMETER_ERROR_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                                      \
+  "permission/"                                                                 \
+  "test_alter_permission_resource_with_volume_parameter_error_request.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_TRAIT_ERRORS_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                                       \
+  "permission/test_alter_permission_resource_trait_errors_request.json"
+#define TEST_DELETE_PERMISSION_RESOURCE_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES                           \
+  "permission/test_delete_permission_resource_request.json"
+#define TEST_DELETE_PERMISSION_RESOURCE_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES                          \
+  "permission/test_delete_permission_resource_request.bin"
 
 /*************************************************************************/
 /* Result Samples                                                        */
@@ -259,17 +291,27 @@
   "test_add_resource_trait_errors_result.json"
 
 // Permission
-#define TEST_ALTER_PERMISSION_RESULT_JSON \
-  IRRSMO00_RESULT_SAMPLES "permission/test_alter_permission_result.json"
-#define TEST_ALTER_PERMISSION_RESULT_RAW \
-  IRRSMO00_RESULT_SAMPLES "permission/test_alter_permission_result.bin"
-#define TEST_DELETE_PERMISSION_RESULT_JSON \
-  IRRSMO00_RESULT_SAMPLES "permission/test_delete_permission_result.json"
-#define TEST_DELETE_PERMISSION_RESULT_RAW \
-  IRRSMO00_RESULT_SAMPLES "permission/test_delete_permission_result.bin"
-#define TEST_ALTER_PERMISSION_TRAIT_ERRORS_RESULT_JSON \
-  IRRSMO00_RESULT_SAMPLES                              \
-  "permission/test_alter_permission_trait_errors_result.json"
+#define TEST_ALTER_PERMISSION_DATA_SET_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES                          \
+  "permission/test_alter_permission_data_set_result.json"
+#define TEST_ALTER_PERMISSION_DATA_SET_RESULT_RAW \
+  IRRSMO00_RESULT_SAMPLES                         \
+  "permission/test_alter_permission_data_set_result.bin"
+#define TEST_ALTER_PERMISSION_RESOURCE_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES                          \
+  "permission/test_alter_permission_resource_result.json"
+#define TEST_ALTER_PERMISSION_RESOURCE_RESULT_RAW \
+  IRRSMO00_RESULT_SAMPLES                         \
+  "permission/test_alter_permission_resource_result.bin"
+#define TEST_DELETE_PERMISSION_RESOURCE_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES                           \
+  "permission/test_delete_permission_resource_result.json"
+#define TEST_DELETE_PERMISSION_RESOURCE_RESULT_RAW \
+  IRRSMO00_RESULT_SAMPLES                          \
+  "permission/test_delete_permission_resource_result.bin"
+#define TEST_ALTER_PERMISSION_RESOURCE_TRAIT_ERRORS_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES                                       \
+  "permission/test_alter_permission_resource_trait_errors_result.json"
 
 /*************************************************************************/
 /* Prototypes                                                            */
@@ -334,12 +376,18 @@ void test_parse_add_resource_parameter_errors();
 void test_parse_add_resource_trait_errors();
 
 // Permission
-void test_generate_alter_permission_request();
-void test_generate_delete_permission_request();
-void test_parse_alter_permission_result();
-void test_parse_delete_permission_result();
-void test_parse_alter_permission_parameter_errors();
-void test_parse_alter_permission_dataset_parameter_errors();
+void test_generate_alter_permission_data_set_request();
+void test_generate_alter_permission_resource_request();
+void test_generate_delete_permission_resource_request();
+void test_parse_alter_permission_data_set_result();
+void test_parse_alter_permission_resource_result();
+void test_parse_delete_permission_resource_result();
+void test_parse_alter_permission_data_set_parameter_errors();
+void test_parse_alter_permission_data_set_with_class_parameter_error();
+void test_parse_alter_permission_resource_parameter_errors();
+void test_parse_alter_permission_resource_class_set_to_data_set_lowercase_parameter_error();
+void test_parse_alter_permission_resource_class_set_to_data_set_uppercase_parameter_error();
+void test_parse_alter_permission_resource_with_volume_parameter_error();
 void test_parse_alter_permission_trait_errors();
 
 #endif

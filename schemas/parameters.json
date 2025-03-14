@@ -435,19 +435,13 @@
           "$ref": "#/$defs/resourceName"
         },
         "class": {
-          "$ref": "#/$defs/eightCharacterString"
+          "$ref": "#/$defs/classNamePermission"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
-        },
-        "volume": {
-          "$ref": "#/$defs/volumeSerial"
-        },
-        "generic": {
-          "type": "boolean"
         },
         "traits": {
           "type": "object"
@@ -480,6 +474,56 @@
     {
       "properties": {
         "operation": {
+          "const": "alter"
+        },
+        "admin_type": {
+          "const": "permission"
+        },
+        "data_set": {
+          "$ref": "#/$defs/dataSetName"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "data_set",
+        "traits"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "userid"
+          ]
+        },
+        {
+          "required": [
+            "group"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
           "const": "delete"
         },
         "admin_type": {
@@ -489,7 +533,48 @@
           "$ref": "#/$defs/resourceName"
         },
         "class": {
+          "$ref": "#/$defs/classNamePermission"
+        },
+        "userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "resource",
+        "class"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "userid"
+          ]
+        },
+        {
+          "required": [
+            "group"
+          ]
+        }
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "delete"
+        },
+        "admin_type": {
+          "const": "permission"
+        },
+        "data_set": {
+          "$ref": "#/$defs/dataSetName"
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
@@ -510,8 +595,7 @@
       "required": [
         "operation",
         "admin_type",
-        "resource",
-        "class"
+        "data_set"
       ],
       "oneOf": [
         {
@@ -538,6 +622,17 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 246
+    },
+    "classNamePermission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 8,
+      "not": {
+        "enum": [
+          "DATASET",
+          "dataset"
+        ]
+      }
     },
     "dataSetName": {
       "type": "string",

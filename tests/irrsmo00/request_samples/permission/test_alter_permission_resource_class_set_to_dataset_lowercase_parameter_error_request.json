@@ -1,9 +1,9 @@
 {
   "operation": "alter",
   "admin_type": "permission",
-  "resource": "TESTING",
-  "class": "ELIJTEST",
-  "userid": "ESWIFT",
+  "resource": "IRR.IRRSMO00.PRECHECK",
+  "class": "dataset",
+  "userid": "SQUIDWRD",
   "traits": {
     "base:access": "READ"
   }
