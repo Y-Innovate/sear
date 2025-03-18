@@ -46,7 +46,7 @@ There are many ways to contribute to the project. You can write code, work on th
 If you want to write code, a good way to get started is by looking at the issues section of this repository. Look for the **Good First Issue** tag. Good First Issues are great as a first contribution.
 
 ### pre-commit Hooks
-To ensure `clang-format` and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
+To ensure `clang-format`, `cppcheck`, and **unit tests** are always run against your code on **every commit**, set up the **pre-commit hooks**.
 
 * Install [`pre-commit`](https://pre-commit.com/).
 * Setup **pre-commit Hooks**:
@@ -103,7 +103,9 @@ The use of the `clang-format` code formatter is required.
 
 ## Static Code Analysis
 
-`cppcheck` will be run against all code contributions. It is recommended to run `cppcheck` against the code before making contributions to ensure that your contributions don't inadvertently introduce any vulnerabilities or other significant issues. You can run `cppcheck` by running `make check`.
+:bulb: _These steps can be done automatically using the [pre-commit Hooks](#pre-commit-hooks)._
+
+`cppcheck` will be run against all code contributions to ensure that contributions don't inadvertently introduce any vulnerabilities or other significant issues. All contributions must have no `cppcheck` complaints. False positives and minor complaints may be [suppressed](http://cppcheck.net/manual.html#inline-suppressions) when it make sense to do so, but this should only be done very sparingly. All `cppcheck` comlpaints should be evaluated and corrected when it is possible and makes sense to do so. You can run `cppcheck` by running `make check`.
 
 ## Contribution checklist
 
@@ -113,10 +115,10 @@ When contributing to RACFu, think about the following:
 * Make any necessary updates to `README.md`.
 * Make any necessary updates to the GitHub pages documentation in the `gh-pages` branch _(Pull requests should be opened against the `gh-pages-dev` branch)_.
 * Add any necessary test cases to `/tests`.
-* Ensure that you have __pre-commit Hooks__ setup to ensure that `clang-format` and **unit tests** are run against the code for every commit you make.
+* Ensure that you have **pre-commit Hooks** setup to ensure that `clang-format`, `cppcheck`, and **unit tests** are run against the code for every commit you make.
 * Run unit tests by running `make test`.
 * Run functional verification tests by running `make fvt`.
-* Run `cppcheck` static code analysis cans by running `make scan`
+* Run `cppcheck` static code analysis cans by running `make check`
 
 ## Found a bug?
 

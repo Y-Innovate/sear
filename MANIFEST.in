@@ -1,3 +1,4 @@
 graft externals
 graft racfu
+graft schemas
 exclude externals/.clang-format

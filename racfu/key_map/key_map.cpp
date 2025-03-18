@@ -177,3 +177,16 @@ int8_t map_trait_type(const nlohmann::json &trait) {
   }
   return TRAIT_TYPE_BAD;
 }
+
+std::string decode_data_type(uint8_t data_type_code) {
+  switch (data_type_code) {
+    case TRAIT_TYPE_BOOLEAN:
+      return "a 'boolean";
+    case TRAIT_TYPE_UINT:
+      return "an 'unsigned integer";
+    case TRAIT_TYPE_STRING:
+      return "a 'string";
+    default:
+      return "any data type";
+  }
+}
