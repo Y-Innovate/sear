@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
     name="racfu"
-    version="1.0a1"
+    version="1.0a2"
     requires-python = ">= 3.11"
     authors = [
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
@@ -18,8 +18,8 @@ build-backend = "setuptools.build_meta"
     ]
     description="A unified and standardized interface to RACF callable services."
     readme = "README.md"
-    license = {text = "Apache-2.0"}
-    classifiers=[
+    license = { text = "Apache-2.0" }
+    classifiers = [
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
@@ -53,4 +53,4 @@ build-backend = "setuptools.build_meta"
     include = ["racfu"]
 
 [tool.setuptools.package-data]
-    racfu = ['NOTICES.txt']
+    racfu = ["LICENSE", "NOTICES"]

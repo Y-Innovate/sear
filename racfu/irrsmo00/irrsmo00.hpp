@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "errors.hpp"
 #include "racfu_result.h"
 
 typedef struct {
@@ -38,14 +39,18 @@ void IRRSMO64(char *,               // Workarea
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-char *call_irrsmo00(char *request_xml, char *running_userid,
-                    unsigned int *result_buffer_size_p, int irrsmo00_options,
-                    int *saf_rc_p, int *racf_rc_p, int *racf_rsn_p);
+char *call_irrsmo00(char *request_xml, const char *running_userid,
+                    unsigned int &result_buffer_size, int irrsmo00_options,
+                    racfu_return_codes_t &return_codes, RACFu::Errors &errors);
 
-bool does_profile_exist(std::string admin_type, std::string profile_name,
-                        const char *class_name, char *running_userid);
+bool does_profile_exist(const std::string &admin_type,
+                        const std::string &profile_name,
+                        const std::string &class_name,
+                        const char *running_userid, RACFu::Errors &errors);
 
-int post_process_smo_json(nlohmann::json *results_p, const char *profile_name,
-                          const char *admin_type, const char *class_name);
+int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
+                          const std::string &profile_name,
+                          const std::string &admin_type,
+                          const std::string &class_name);
 
 #endif /* IRRSMO00_H_ */
