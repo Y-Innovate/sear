@@ -145,7 +145,7 @@ void test_parse_delete_user_trait_error_result() {
 void test_generate_alter_user_request_pseudo_boolean() {
   test_generate_add_alter_delete_request_generation(
       TEST_ALTER_USER_REQUEST_PSEUDO_BOOLEAN_JSON,
-      TEST_ALTER_USER_REQUEST_PSEUDO_BOOLEAN_RAW, true);
+      TEST_ALTER_USER_REQUEST_PSEUDO_BOOLEAN_RAW, false);
 }
 
 /*************************************************************************/
