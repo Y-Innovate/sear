@@ -1,7 +1,8 @@
 #ifndef __RACFU_EXTRACT_H_
 #define __RACFU_EXTRACT_H_
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 #include "logger.hpp"
 #include "messages.h"
@@ -368,17 +369,18 @@ const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
 // Glue code to call IRRSEQ00 assembler code.
 extern "C" uint32_t callRadmin(char *__ptr32);
 
-char *extract(const char *profile_name, const char *class_name,
+char *extract(const std::string &profile_name, const std::string &class_name,
               uint8_t function_code, char **raw_request,
-              int *raw_request_length, racfu_return_codes_t *return_codes,
-              Logger *logger_p);
+              int &raw_request_length, racfu_return_codes_t &return_codes,
+              Logger &logger);
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    const char *profile_name, const char *class_name, uint8_t function_code);
+    const std::string &profile_name, const std::string &class_name,
+    uint8_t function_code);
 
 setropts_extract_underbar_arg_area_t *build_setropts_extract_parms();
 
 void preserve_raw_request(const char *arg_area, char **raw_request,
-                          const int *raw_request_length);
+                          const int &raw_request_length);
 
 #endif

@@ -5,10 +5,11 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-void validate_traits(std::string adminType, nlohmann::json *traits_p,
-                     nlohmann::json *errors_p);
-void validate_json_value_to_string(const nlohmann::json &trait,
-                                   char expected_type,
-                                   nlohmann::json *errors_p);
+#include "errors.hpp"
+
+void validate_traits(const std::string& admin_type,
+                     const nlohmann::json& traits, RACFu::Errors& errors);
+void validate_json_value_to_string(const nlohmann::json& trait,
+                                   char expected_type, RACFu::Errors& errors);
 
 #endif

@@ -82,12 +82,20 @@ int main() {
   RUN_TEST(test_parse_add_resource_parameter_errors);
   RUN_TEST(test_parse_add_resource_trait_errors);
   // Permission
-  RUN_TEST(test_generate_alter_permission_request);
-  RUN_TEST(test_generate_delete_permission_request);
-  RUN_TEST(test_parse_alter_permission_result);
-  RUN_TEST(test_parse_delete_permission_result);
-  RUN_TEST(test_parse_alter_permission_parameter_errors);
-  RUN_TEST(test_parse_alter_permission_dataset_parameter_errors);
+  RUN_TEST(test_generate_alter_permission_data_set_request);
+  RUN_TEST(test_generate_alter_permission_resource_request);
+  RUN_TEST(test_generate_delete_permission_resource_request);
+  RUN_TEST(test_parse_alter_permission_data_set_result);
+  RUN_TEST(test_parse_alter_permission_resource_result);
+  RUN_TEST(test_parse_delete_permission_resource_result);
+  RUN_TEST(test_parse_alter_permission_data_set_parameter_errors);
+  RUN_TEST(test_parse_alter_permission_data_set_with_class_parameter_error);
+  RUN_TEST(test_parse_alter_permission_resource_parameter_errors);
+  RUN_TEST(
+      test_parse_alter_permission_resource_class_set_to_data_set_lowercase_parameter_error);
+  RUN_TEST(
+      test_parse_alter_permission_resource_class_set_to_data_set_uppercase_parameter_error);
+  RUN_TEST(test_parse_alter_permission_resource_with_volume_parameter_error);
   RUN_TEST(test_parse_alter_permission_trait_errors);
 
   /*************************************************************************/

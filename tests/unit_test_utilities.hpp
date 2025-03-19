@@ -13,9 +13,14 @@
 #define TEST_IRRSEQ00_RACF_OPTIONS_REQUEST_BUFFER_SIZE 1428
 #endif
 
-// arg area should be the same on every platform
+// arg area should be the same on every platform.
 #define TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE 1362
 #define TEST_IRRSEQ00_RACF_OPTIONS_ARG_AREA_SIZE 1316
+
+// This result sample is used in several places.
+#define TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON \
+  "./tests/validation/result_samples/"              \
+  "test_parameter_validation_error_result.json"
 
 // Common
 char *get_sample(const char *filename, const char *mode);

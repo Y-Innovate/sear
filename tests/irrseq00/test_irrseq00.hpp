@@ -94,12 +94,6 @@
 #define TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                            \
   "user/test_extract_user_result_user_not_found.json"
-#define TEST_EXTRACT_USER_RESULT_REQUIRED_PARAMETER_MISSING_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                        \
-  "user/test_extract_user_result_required_parameter_missing.json"
-#define TEST_EXTRACT_USER_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                           \
-  "user/test_extract_user_result_extraneous_parameter_provided.json"
 #define TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_JSON \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_pseudo_boolean.json"
 #define TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_RAW \
@@ -113,12 +107,6 @@
 #define TEST_EXTRACT_GROUP_RESULT_GROUP_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                              \
   "group/test_extract_group_result_group_not_found.json"
-#define TEST_EXTRACT_GROUP_RESULT_REQUIRED_PARAMETER_MISSING_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                         \
-  "group/test_extract_group_result_required_parameter_missing.json"
-#define TEST_EXTRACT_GROUP_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                            \
-  "group/test_extract_group_result_extraneous_parameter_provided.json"
 
 // Group Connection
 #define TEST_EXTRACT_GROUP_CONNECTION_RESULT_JSON \
@@ -131,14 +119,6 @@
   IRRSEQ00_RESULT_SAMPLES                                                    \
   "group_connection/"                                                        \
   "test_extract_group_connection_result_group_connection_not_found.json"
-#define TEST_EXTRACT_GROUP_CONNECTION_RESULT_REQUIRED_PARAMETER_MISSING_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                                    \
-  "group_connection/"                                                        \
-  "test_extract_group_connection_result_required_parameter_missing.json"
-#define TEST_EXTRACT_GROUP_CONNECTION_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                                       \
-  "group_connection/"                                                           \
-  "test_extract_group_connection_result_extraneous_parameter_provided.json"
 
 // Racf Options
 #define TEST_EXTRACT_RACF_OPTIONS_RESULT_JSON \
@@ -148,10 +128,6 @@
 #define TEST_EXTRACT_RACF_OPTIONS_RESULT_RACF_OPTIONS_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                            \
   "racf_options/test_extract_racf_options_result_racf_options_not_found.json"
-#define TEST_EXTRACT_RACF_OPTIONS_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                                   \
-  "racf_options/"                                                           \
-  "test_extract_racf_options_result_extraneous_parameter_provided.json"
 
 // Data Set
 #define TEST_EXTRACT_DATA_SET_RESULT_JSON \
@@ -161,12 +137,6 @@
 #define TEST_EXTRACT_DATA_SET_RESULT_DATA_SET_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                    \
   "data_set/test_extract_data_set_result_data_set_not_found.json"
-#define TEST_EXTRACT_DATA_SET_RESULT_REQUIRED_PARAMETER_MISSING_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                            \
-  "data_set/test_extract_data_set_result_required_parameter_missing.json"
-#define TEST_EXTRACT_DATA_SET_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                               \
-  "data_set/test_extract_data_set_result_extraneous_parameter_provided.json"
 
 // Resource
 #define TEST_EXTRACT_RESOURCE_RESULT_JSON \
@@ -176,12 +146,6 @@
 #define TEST_EXTRACT_RESOURCE_RESULT_RESOURCE_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                    \
   "resource/test_extract_resource_result_resource_not_found.json"
-#define TEST_EXTRACT_RESOURCE_RESULT_REQUIRED_PARAMETER_MISSING_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                            \
-  "resource/test_extract_resource_result_required_parameter_missing.json"
-#define TEST_EXTRACT_RESOURCE_RESULT_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
-  IRRSEQ00_RESULT_SAMPLES                                               \
-  "resource/test_extract_resource_result_extraneous_parameter_provided.json"
 
 /*************************************************************************/
 /* Prototypes                                                            */

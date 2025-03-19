@@ -16,13 +16,14 @@
 #include <arpa/inet.h>
 
 char *extract(
-    const char *profile_name,  // Required for everything except setropts
-    const char *class_name,    // Only required for general resource profile
-    uint8_t function_code,     // Always required
-    char **raw_request,        // Always required
-    int *raw_request_length,   // Always required
-    racfu_return_codes_t *return_codes,  // Always required,
-    Logger *logger_p) {
+    const std::string &profile_name,  // Required for everything except setropts
+    const std::string
+        &class_name,          // Only required for general resource profile
+    uint8_t function_code,    // Always required
+    char **raw_request,       // Always required
+    int &raw_request_length,  // Always required
+    racfu_return_codes_t &return_codes,  // Always required,
+    Logger &logger) {
   uint32_t rc;
 
   char *result_buffer;
@@ -38,27 +39,27 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
-    logger_p->debug(
+    raw_request_length = (int)sizeof(setropts_extract_underbar_arg_area_t);
+    logger.debug(
         MSG_REQUEST_SEQ_SETROPTS,
-        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
-                                  *raw_request_length));
+        logger.cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
+                               raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
                          raw_request, raw_request_length);
 
-    logger_p->debug(MSG_CALLING_SEQ);
+    logger.debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
-    logger_p->debug(MSG_DONE);
+    logger.debug(MSG_DONE);
 
     result_buffer = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code  = ntohl(arg_area_setropts->args.SAF_rc);
-    return_codes->racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
-    return_codes->racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
+    return_codes.saf_return_code  = ntohl(arg_area_setropts->args.SAF_rc);
+    return_codes.racf_return_code = ntohl(arg_area_setropts->args.RACF_rc);
+    return_codes.racf_reason_code = ntohl(arg_area_setropts->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_setropts);
   }
@@ -81,34 +82,33 @@ char *extract(
       return NULL;
     }
     // Preserve the raw request data
-    *raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
-    logger_p->debug(
+    raw_request_length = (int)sizeof(generic_extract_underbar_arg_area_t);
+    logger.debug(
         MSG_REQUEST_SEQ_GENERIC,
-        logger_p->cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
-                                  *raw_request_length));
+        logger.cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
+                               raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
                          raw_request, raw_request_length);
-    logger_p->debug(MSG_CALLING_SEQ);
+    logger.debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
     rc = callRadmin(
         reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
-    logger_p->debug(MSG_DONE);
+    logger.debug(MSG_DONE);
 
     result_buffer = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    return_codes->saf_return_code  = ntohl(arg_area_generic->args.SAF_rc);
-    return_codes->racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
-    return_codes->racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
+    return_codes.saf_return_code  = ntohl(arg_area_generic->args.SAF_rc);
+    return_codes.racf_return_code = ntohl(arg_area_generic->args.RACF_rc);
+    return_codes.racf_reason_code = ntohl(arg_area_generic->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_generic);
   }
 
   // Check Return Codes
-  if (return_codes->saf_return_code != 0 ||
-      return_codes->racf_return_code != 0 ||
-      return_codes->racf_reason_code != 0 || rc != 0) {
+  if (return_codes.saf_return_code != 0 || return_codes.racf_return_code != 0 ||
+      return_codes.racf_reason_code != 0 || rc != 0) {
     // Free Result Buffer & Return 'NULL' if not successful.
     free(result_buffer);
     return NULL;
@@ -119,10 +119,11 @@ char *extract(
 }
 
 generic_extract_underbar_arg_area_t *build_generic_extract_parms(
-    const char *profile_name,  // Required always.
-    const char *class_name,    // Required only for resource extract.
-    uint8_t function_code      // Required always.
+    const std::string &profile_name,  // Required always.
+    const std::string &class_name,    // Required only for resource extract.
+    uint8_t function_code             // Required always.
 ) {
+  /*
   int profile_name_length;
   if (profile_name != NULL) {
     profile_name_length = strlen(profile_name);
@@ -131,6 +132,7 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   if (class_name != NULL) {
     class_name_length = strlen(class_name);
   }
+  */
 
   /***************************************************************************/
   /* Allocate 31-bit Area For IRRSEQ00 Parameters/Arguments                  */
@@ -159,17 +161,18 @@ generic_extract_underbar_arg_area_t *build_generic_extract_parms(
   args->function_code = function_code;
 
   // Copy profile name and class name.
-  memcpy(args->profile_name, profile_name, profile_name_length);
+  memcpy(args->profile_name, profile_name.c_str(), profile_name.length());
   // Encode profile name as IBM-1047.
-  __a2e_l(args->profile_name, profile_name_length);
-  if (class_name != NULL) {
+  __a2e_l(args->profile_name, profile_name.length());
+  if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE) {
     // Class name must be padded with blanks.
     memset(&profile_extract_parms->class_name, ' ', 8);
-    memcpy(profile_extract_parms->class_name, class_name, class_name_length);
+    memcpy(profile_extract_parms->class_name, class_name.c_str(),
+           class_name.length());
     // Encode class name as IBM-1047.
-    __a2e_l(profile_extract_parms->class_name, class_name_length);
+    __a2e_l(profile_extract_parms->class_name, class_name.length());
   }
-  profile_extract_parms->profile_name_length = htonl(profile_name_length);
+  profile_extract_parms->profile_name_length = htonl(profile_name.length());
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */
@@ -221,13 +224,13 @@ setropts_extract_underbar_arg_area_t *build_setropts_extract_parms() {
 }
 
 void preserve_raw_request(const char *arg_area, char **raw_request,
-                          const int *raw_request_length) {
-  *raw_request = static_cast<char *>(calloc(*raw_request_length, sizeof(char)));
+                          const int &raw_request_length) {
+  *raw_request = static_cast<char *>(calloc(raw_request_length, sizeof(char)));
   if (*raw_request == NULL) {
     perror(
         "Warn - Unable to allocate space to preserve the "
         "raw request for profile extract.\n");
     return;
   }
-  memcpy(*raw_request, arg_area, *raw_request_length);
+  memcpy(*raw_request, arg_area, raw_request_length);
 }
