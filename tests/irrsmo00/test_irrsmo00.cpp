@@ -394,7 +394,7 @@ void test_generate_alter_permission_resource_request() {
 void test_generate_delete_permission_resource_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_DELETE_PERMISSION_RESOURCE_REQUEST_JSON,
-      TEST_DELETE_PERMISSION_RESOURCE_REQUEST_RAW, true);
+      TEST_DELETE_PERMISSION_RESOURCE_REQUEST_RAW, false);
 }
 
 void test_parse_alter_permission_data_set_result() {
