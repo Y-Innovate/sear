@@ -8,7 +8,7 @@
       "base:universal": false
     },
     "csdata": {
-      "sample": "Test field 5678"
+      "csdata:sample": "Test field 5678"
     }
   },
   "return_codes": {

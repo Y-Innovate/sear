@@ -242,12 +242,11 @@ std::string post_process_field_key(char *field_key,
     return std::string("experimental:") + std::string(field_key);
   }
   if (racfu_field_key + strlen(racfu_field_key) - 1) {
-    racfu_field_key =
-        (!(*(racfu_field_key + strlen(racfu_field_key) - 1) == '*'))
-            ? racfu_field_key
-            : field_key;
+    if (!(*(racfu_field_key + strlen(racfu_field_key) - 1) == '*')) {
+      return std::string(racfu_field_key);
+    }
   }
-  return std::string(racfu_field_key);
+  return std::string(segment) + ":" + std::string(field_key);
 }
 
 void post_process_key(char *destination_key, const char *source_key,

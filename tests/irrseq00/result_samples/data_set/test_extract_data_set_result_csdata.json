@@ -20,7 +20,7 @@
       "base:warn_on_insufficient_access": false
     },
     "csdata": {
-      "sample": "Test field 3456"
+      "csdata:sample": "Test field 3456"
     }
   },
   "return_codes": {
