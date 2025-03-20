@@ -91,11 +91,16 @@ void validate_traits(const std::string& admin_type,
                                   expected_type, errors);
     // Ensure that the type of data provided for the trait matches the
     // expected TRAIT_TYPE
-    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL)) {
+    if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL) &&
+        ((expected_type != TRAIT_TYPE_PSEUDO_BOOLEAN) ||
+         (trait_type != TRAIT_TYPE_BOOLEAN))) {
       errors.add_racfu_error_message("'" + item.key() + "' must be " +
                                      decode_data_type(expected_type) +
                                      "' value");
       continue;
+    }
+    if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN) {
+      trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;
     }
     translatedKey = get_racf_key(admin_type.c_str(), item_segment.c_str(),
                                  (item_segment + ":" + item_trait).c_str(),

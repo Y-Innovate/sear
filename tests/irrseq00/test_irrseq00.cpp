@@ -40,6 +40,12 @@ void test_parse_extract_user_result_extraneous_parameter_provided() {
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
+void test_parse_extract_user_result_pseudo_boolean() {
+  test_parse_extract_result(TEST_EXTRACT_USER_REQUEST_JSON,
+                            TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_JSON,
+                            TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_RAW, false);
+}
+
 /*************************************************************************/
 /* Group                                                                 */
 /*************************************************************************/

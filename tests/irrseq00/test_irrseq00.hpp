@@ -94,6 +94,10 @@
 #define TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                            \
   "user/test_extract_user_result_user_not_found.json"
+#define TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_JSON \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_pseudo_boolean.json"
+#define TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_RAW \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_pseudo_boolean.bin"
 
 // Group
 #define TEST_EXTRACT_GROUP_RESULT_JSON \
@@ -152,6 +156,7 @@ void test_parse_extract_user_result();
 void test_parse_extract_user_result_user_not_found();
 void test_parse_extract_user_result_required_parameter_missing();
 void test_parse_extract_user_result_extraneous_parameter_provided();
+void test_parse_extract_user_result_pseudo_boolean();
 
 // Group
 void test_generate_extract_group_request();

@@ -258,6 +258,13 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
         int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
         int8_t trait_type = map_trait_type(item.value());
+        int8_t expected_type =
+            get_racf_trait_type(admin_type.c_str(), item_segment.c_str(),
+                                (item_segment + ":" + item_trait).c_str());
+        if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN and
+            trait_type != TRAIT_TYPE_NULL) {
+          trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;
+        }
         translated_key = get_racf_key(admin_type.c_str(), item_segment.c_str(),
                                       (item_segment + ":" + item_trait).c_str(),
                                       trait_type, trait_operator);
@@ -271,6 +278,10 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
             trait_operator_str = (item.value()) ? "set" : "del";
             value              = "";
             break;
+          case TRAIT_TYPE_PSEUDO_BOOLEAN:
+            trait_operator_str = "set";
+            value              = (item.value()) ? "YES" : "NO";
+            break;
           default:
             trait_operator_str = (item_operator.empty())
                                      ? "set"
@@ -282,7 +293,6 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
         build_single_trait(("racf:" + std::string(translated_key)),
                            trait_operator_str, value);
         item = request_data.erase(item);
-
       } else
         item++;
     }

@@ -205,6 +205,13 @@ void process_generic_field(nlohmann::json &json_field,
       // Cast Integer Fields
     } else if (racfu_field_type == TRAIT_TYPE_UINT) {
       json_field = strtol(field_data, NULL, 10);
+      // Convert Pseudo Boolean Fields
+    } else if (racfu_field_type == TRAIT_TYPE_PSEUDO_BOOLEAN) {
+      if (strcmp(field_data, "YES") == 0) {
+        json_field = true;
+      } else {
+        json_field = false;
+      }
       // Treat All Other Fields as Strings
     } else {
       json_field = field_data;

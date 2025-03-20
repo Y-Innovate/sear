@@ -142,6 +142,12 @@ void test_parse_delete_user_trait_error_result() {
                          TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
+void test_generate_alter_user_request_pseudo_boolean() {
+  test_generate_add_alter_delete_request_generation(
+      TEST_ALTER_USER_REQUEST_PSEUDO_BOOLEAN_JSON,
+      TEST_ALTER_USER_REQUEST_PSEUDO_BOOLEAN_RAW, false);
+}
+
 /*************************************************************************/
 /* Group                                                                 */
 /*************************************************************************/
@@ -370,7 +376,7 @@ void test_generate_alter_permission_resource_request() {
 void test_generate_delete_permission_resource_request() {
   test_generate_add_alter_delete_request_generation(
       TEST_DELETE_PERMISSION_RESOURCE_REQUEST_JSON,
-      TEST_DELETE_PERMISSION_RESOURCE_REQUEST_RAW, true);
+      TEST_DELETE_PERMISSION_RESOURCE_REQUEST_RAW, false);
 }
 
 void test_parse_alter_permission_data_set_result() {
