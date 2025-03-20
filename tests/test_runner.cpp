@@ -30,6 +30,7 @@ int main() {
   // User
   RUN_TEST(test_generate_add_user_request);
   RUN_TEST(test_generate_alter_user_request);
+  RUN_TEST(test_generate_alter_user_csdata_request);
   RUN_TEST(test_generate_delete_user_request);
   RUN_TEST(test_parse_add_user_result);
   RUN_TEST(test_parse_delete_user_result);
@@ -45,6 +46,7 @@ int main() {
   // Group
   RUN_TEST(test_generate_add_group_request);
   RUN_TEST(test_generate_alter_group_request);
+  RUN_TEST(test_generate_alter_group_csdata_request);
   RUN_TEST(test_generate_delete_group_request);
   RUN_TEST(test_parse_add_group_result);
   RUN_TEST(test_parse_delete_group_result);
@@ -66,6 +68,7 @@ int main() {
   // Data Set
   RUN_TEST(test_generate_add_data_set_request);
   RUN_TEST(test_generate_alter_data_set_request);
+  RUN_TEST(test_generate_alter_data_set_csdata_request);
   RUN_TEST(test_generate_delete_data_set_request);
   RUN_TEST(test_parse_add_data_set_result);
   RUN_TEST(test_parse_delete_data_set_result);
@@ -75,6 +78,7 @@ int main() {
   // Resource
   RUN_TEST(test_generate_add_resource_request);
   RUN_TEST(test_generate_alter_resource_request);
+  RUN_TEST(test_generate_alter_resource_csdata_request);
   RUN_TEST(test_generate_delete_resource_request);
   RUN_TEST(test_parse_add_resource_result);
   RUN_TEST(test_parse_delete_resource_result);
@@ -104,6 +108,7 @@ int main() {
   // User
   RUN_TEST(test_generate_extract_user_request);
   RUN_TEST(test_parse_extract_user_result);
+  RUN_TEST(test_parse_extract_user_result_csdata);
   RUN_TEST(test_parse_extract_user_result_user_not_found);
   RUN_TEST(test_parse_extract_user_result_required_parameter_missing);
   RUN_TEST(test_parse_extract_user_result_extraneous_parameter_provided);
@@ -111,6 +116,7 @@ int main() {
   // Group
   RUN_TEST(test_generate_extract_group_request);
   RUN_TEST(test_parse_extract_group_result);
+  RUN_TEST(test_parse_extract_group_result_csdata);
   RUN_TEST(test_parse_extract_group_result_group_not_found);
   RUN_TEST(test_parse_extract_group_result_required_parameter_missing);
   RUN_TEST(test_parse_extract_group_result_extraneous_parameter_provided);
@@ -132,12 +138,14 @@ int main() {
   // Data Set
   RUN_TEST(test_generate_extract_data_set_request);
   RUN_TEST(test_parse_extract_data_set_result);
+  RUN_TEST(test_parse_extract_data_set_result_csdata);
   RUN_TEST(test_parse_extract_data_set_result_data_set_not_found);
   RUN_TEST(test_parse_extract_data_set_result_required_parameter_missing);
   RUN_TEST(test_parse_extract_data_set_result_extraneous_parameter_provided);
   // Resource
   RUN_TEST(test_generate_extract_resource_request);
   RUN_TEST(test_parse_extract_resource_result);
+  RUN_TEST(test_parse_extract_resource_result_csdata);
   RUN_TEST(test_parse_extract_resource_result_resource_not_found);
   RUN_TEST(test_parse_extract_resource_result_required_parameter_missing);
   RUN_TEST(test_parse_extract_resource_result_extraneous_parameter_provided);

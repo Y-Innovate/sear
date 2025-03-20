@@ -91,6 +91,10 @@
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result.json"
 #define TEST_EXTRACT_USER_RESULT_RAW \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result.bin"
+  #define TEST_EXTRACT_USER_RESULT_CSDATA_JSON \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_csdata.json"
+#define TEST_EXTRACT_USER_RESULT_CSDATA_RAW \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_csdata.bin"
 #define TEST_EXTRACT_USER_RESULT_USER_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                            \
   "user/test_extract_user_result_user_not_found.json"
@@ -104,6 +108,10 @@
   IRRSEQ00_RESULT_SAMPLES "group/test_extract_group_result.json"
 #define TEST_EXTRACT_GROUP_RESULT_RAW \
   IRRSEQ00_RESULT_SAMPLES "group/test_extract_group_result.bin"
+#define TEST_EXTRACT_GROUP_RESULT_CSDATA_JSON \
+  IRRSEQ00_RESULT_SAMPLES "group/test_extract_group_result_csdata.json"
+#define TEST_EXTRACT_GROUP_RESULT_CSDATA_RAW \
+  IRRSEQ00_RESULT_SAMPLES "group/test_extract_group_result_csdata.bin"
 #define TEST_EXTRACT_GROUP_RESULT_GROUP_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                              \
   "group/test_extract_group_result_group_not_found.json"
@@ -134,6 +142,10 @@
   IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result.json"
 #define TEST_EXTRACT_DATA_SET_RESULT_RAW \
   IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result.bin"
+#define TEST_EXTRACT_DATA_SET_RESULT_CSDATA_JSON \
+  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result_csdata.json"
+#define TEST_EXTRACT_DATA_SET_RESULT_CSDATA_RAW \
+  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result_csdata.bin"
 #define TEST_EXTRACT_DATA_SET_RESULT_DATA_SET_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                    \
   "data_set/test_extract_data_set_result_data_set_not_found.json"
@@ -143,6 +155,10 @@
   IRRSEQ00_RESULT_SAMPLES "resource/test_extract_resource_result.json"
 #define TEST_EXTRACT_RESOURCE_RESULT_RAW \
   IRRSEQ00_RESULT_SAMPLES "resource/test_extract_resource_result.bin"
+#define TEST_EXTRACT_RESOURCE_RESULT_CSDATA_JSON \
+  IRRSEQ00_RESULT_SAMPLES "resource/test_extract_resource_result_csdata.json"
+#define TEST_EXTRACT_RESOURCE_RESULT_CSDATA_RAW \
+  IRRSEQ00_RESULT_SAMPLES "resource/test_extract_resource_result_csdata.bin"
 #define TEST_EXTRACT_RESOURCE_RESULT_RESOURCE_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                    \
   "resource/test_extract_resource_result_resource_not_found.json"
@@ -153,6 +169,7 @@
 // User
 void test_generate_extract_user_request();
 void test_parse_extract_user_result();
+void test_parse_extract_user_result_csdata();
 void test_parse_extract_user_result_user_not_found();
 void test_parse_extract_user_result_required_parameter_missing();
 void test_parse_extract_user_result_extraneous_parameter_provided();
@@ -161,6 +178,7 @@ void test_parse_extract_user_result_pseudo_boolean();
 // Group
 void test_generate_extract_group_request();
 void test_parse_extract_group_result();
+void test_parse_extract_group_result_csdata();
 void test_parse_extract_group_result_group_not_found();
 void test_parse_extract_group_result_required_parameter_missing();
 void test_parse_extract_group_result_extraneous_parameter_provided();
@@ -181,6 +199,7 @@ void test_parse_extract_racf_options_result_extraneous_parameter_provided();
 // Data Set
 void test_generate_extract_data_set_request();
 void test_parse_extract_data_set_result();
+void test_parse_extract_data_set_result_csdata();
 void test_parse_extract_data_set_result_data_set_not_found();
 void test_parse_extract_data_set_result_required_parameter_missing();
 void test_parse_extract_data_set_result_extraneous_parameter_provided();
@@ -188,6 +207,7 @@ void test_parse_extract_data_set_result_extraneous_parameter_provided();
 // Resource
 void test_generate_extract_resource_request();
 void test_parse_extract_resource_result();
+void test_parse_extract_resource_result_csdata();
 void test_parse_extract_resource_result_resource_not_found();
 void test_parse_extract_resource_result_required_parameter_missing();
 void test_parse_extract_resource_result_extraneous_parameter_provided();

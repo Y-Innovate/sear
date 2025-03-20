@@ -325,7 +325,7 @@ const trait_key_mapping_t USER_CICS_KEY_MAP[]{
 
 const trait_key_mapping_t USER_CSDATA_KEY_MAP[]{
     {
-     "csdata:", "",
+     "csdata:*", "*",
      TRAIT_TYPE_STRING, {true, false, false, true},
      }
 };

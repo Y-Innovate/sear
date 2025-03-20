@@ -50,6 +50,7 @@ void validate_traits(const std::string& admin_type,
       errors.add_racfu_error_message("'delete' operator for '" + item_segment +
                                      ":" + item_trait +
                                      "' can only be used with a 'null' value");
+      continue;
     }
     if (trait_type == TRAIT_TYPE_NULL) {
       // Validate that NULL is not used with non-delete operator specified

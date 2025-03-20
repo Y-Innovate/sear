@@ -16,6 +16,10 @@
   IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_request.json"
 #define TEST_ALTER_USER_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_request.bin"
+#define TEST_ALTER_USER_CSDATA_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_csdata_request.json"
+#define TEST_ALTER_USER_CSDATA_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "user/test_alter_user_csdata_request.bin"
 #define TEST_ADD_USER_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "user/test_add_user_parameter_errors_request.json"
 #define TEST_ADD_USER_TRAIT_ERRORS_REQUEST_JSON \
@@ -43,6 +47,10 @@
   IRRSMO00_REQUEST_SAMPLES "group/test_alter_group_request.json"
 #define TEST_ALTER_GROUP_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "group/test_alter_group_request.bin"
+#define TEST_ALTER_GROUP_CSDATA_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "group/test_alter_group_csdata_request.json"
+#define TEST_ALTER_GROUP_CSDATA_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "group/test_alter_group_csdata_request.bin"
 #define TEST_ADD_GROUP_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                           \
   "group/"                                           \
@@ -96,6 +104,10 @@
   IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_request.json"
 #define TEST_ALTER_DATA_SET_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_request.bin"
+#define TEST_ALTER_DATA_SET_CSDATA_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_csdata_request.json"
+#define TEST_ALTER_DATA_SET_CSDATA_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_csdata_request.bin"
 #define TEST_ADD_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                              \
   "data_set/test_add_data_set_parameter_errors_request.json"
@@ -116,6 +128,10 @@
   IRRSMO00_REQUEST_SAMPLES "resource/test_alter_resource_request.json"
 #define TEST_ALTER_RESOURCE_REQUEST_RAW \
   IRRSMO00_REQUEST_SAMPLES "resource/test_alter_resource_request.bin"
+#define TEST_ALTER_RESOURCE_CSDATA_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "resource/test_alter_resource_csdata_request.json"
+#define TEST_ALTER_RESOURCE_CSDATA_REQUEST_RAW \
+  IRRSMO00_REQUEST_SAMPLES "resource/test_alter_resource_csdata_request.bin"
 #define TEST_ADD_RESOURCE_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                              \
   "resource/test_add_resource_parameter_errors_request.json"
@@ -323,6 +339,7 @@
 // User
 void test_generate_add_user_request();
 void test_generate_alter_user_request();
+void test_generate_alter_user_csdata_request();
 void test_generate_delete_user_request();
 void test_parse_add_user_result();
 void test_parse_delete_user_result();
@@ -339,6 +356,7 @@ void test_generate_alter_user_request_pseudo_boolean();
 // Group
 void test_generate_add_group_request();
 void test_generate_alter_group_request();
+void test_generate_alter_group_csdata_request();
 void test_generate_delete_group_request();
 void test_parse_add_group_result();
 void test_parse_delete_group_result();
@@ -363,6 +381,7 @@ void test_parse_alter_racf_options_trait_errors();
 // Data-Set
 void test_generate_add_data_set_request();
 void test_generate_alter_data_set_request();
+void test_generate_alter_data_set_csdata_request();
 void test_generate_delete_data_set_request();
 void test_parse_add_data_set_result();
 void test_parse_delete_data_set_result();
@@ -373,6 +392,7 @@ void test_parse_add_data_set_trait_errors();
 // Resource
 void test_generate_add_resource_request();
 void test_generate_alter_resource_request();
+void test_generate_alter_resource_csdata_request();
 void test_generate_delete_resource_request();
 void test_parse_add_resource_result();
 void test_parse_delete_resource_result();

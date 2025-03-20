@@ -22,6 +22,12 @@ void test_parse_extract_user_result() {
                             TEST_EXTRACT_USER_RESULT_RAW, false);
 }
 
+void test_parse_extract_user_result_csdata() {
+  test_parse_extract_result(TEST_EXTRACT_USER_REQUEST_JSON,
+                            TEST_EXTRACT_USER_RESULT_CSDATA_JSON,
+                            TEST_EXTRACT_USER_RESULT_CSDATA_RAW, false);
+}
+
 void test_parse_extract_user_result_user_not_found() {
   test_parse_extract_result_profile_not_found(
       TEST_EXTRACT_USER_REQUEST_JSON,
@@ -58,6 +64,12 @@ void test_parse_extract_group_result() {
   test_parse_extract_result(TEST_EXTRACT_GROUP_REQUEST_JSON,
                             TEST_EXTRACT_GROUP_RESULT_JSON,
                             TEST_EXTRACT_GROUP_RESULT_RAW, false);
+}
+
+void test_parse_extract_group_result_csdata() {
+  test_parse_extract_result(TEST_EXTRACT_GROUP_REQUEST_JSON,
+                            TEST_EXTRACT_GROUP_RESULT_CSDATA_JSON,
+                            TEST_EXTRACT_GROUP_RESULT_CSDATA_RAW, false);
 }
 
 void test_parse_extract_group_result_group_not_found() {
@@ -156,6 +168,12 @@ void test_parse_extract_data_set_result() {
                             TEST_EXTRACT_DATA_SET_RESULT_RAW, false);
 }
 
+void test_parse_extract_data_set_result_csdata() {
+  test_parse_extract_result(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
+                            TEST_EXTRACT_DATA_SET_RESULT_CSDATA_JSON,
+                            TEST_EXTRACT_DATA_SET_RESULT_CSDATA_RAW, false);
+}
+
 void test_parse_extract_data_set_result_data_set_not_found() {
   test_parse_extract_result_profile_not_found(
       TEST_EXTRACT_DATA_SET_REQUEST_JSON,
@@ -187,6 +205,12 @@ void test_parse_extract_resource_result() {
   test_parse_extract_result(TEST_EXTRACT_RESOURCE_REQUEST_JSON,
                             TEST_EXTRACT_RESOURCE_RESULT_JSON,
                             TEST_EXTRACT_RESOURCE_RESULT_RAW, false);
+}
+
+void test_parse_extract_resource_result_csdata() {
+  test_parse_extract_result(TEST_EXTRACT_RESOURCE_REQUEST_JSON,
+                            TEST_EXTRACT_RESOURCE_RESULT_CSDATA_JSON,
+                            TEST_EXTRACT_RESOURCE_RESULT_CSDATA_RAW, false);
 }
 
 void test_parse_extract_resource_result_resource_not_found() {
