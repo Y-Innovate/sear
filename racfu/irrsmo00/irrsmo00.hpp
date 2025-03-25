@@ -8,6 +8,7 @@
 
 #include "errors.hpp"
 #include "racfu_result.h"
+#include "security_request.hpp"
 
 typedef struct {
   unsigned char running_userid_length;
@@ -39,18 +40,12 @@ void IRRSMO64(char *,               // Workarea
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-char *call_irrsmo00(char *request_xml, const char *running_userid,
-                    unsigned int &result_buffer_size, int irrsmo00_options,
-                    racfu_return_codes_t &return_codes, RACFu::Errors &errors);
+void call_irrsmo00(RACFu::SecurityRequest &request, const RACFu::Errors &errors,
+                   bool profile_exists_check);
 
-bool does_profile_exist(const std::string &admin_type,
-                        const std::string &profile_name,
-                        const std::string &class_name,
-                        const char *running_userid, RACFu::Errors &errors);
+bool does_profile_exist(RACFu::SecurityRequest &request, RACFu::Errors &errors);
 
-int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
-                          const std::string &profile_name,
-                          const std::string &admin_type,
-                          const std::string &class_name);
+int post_process_smo_json(const RACFu::SecurityRequest &request,
+                          RACFu::Errors &errors, nlohmann::json &results);
 
 #endif /* IRRSMO00_H_ */

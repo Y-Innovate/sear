@@ -4,7 +4,7 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "extract.hpp"
+#include "irrseq00.hpp"
 
 nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer,

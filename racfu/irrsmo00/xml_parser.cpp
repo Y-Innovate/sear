@@ -12,15 +12,14 @@
 #endif
 
 // Public Methods of XmlParser
-nlohmann::json XmlParser::build_json_string(const char* xml_result_string,
-                                            int& racfu_rc,
+nlohmann::json XmlParser::build_json_string(RACFu::SecurityRequest& request,
                                             RACFu::Errors& errors,
                                             Logger& logger) {
   std::string xml_buffer;
-  char* xml_ascii_result =
-      static_cast<char*>(calloc(strlen(xml_result_string) + 1, sizeof(char)));
+  char* xml_ascii_result = static_cast<char*>(
+      calloc(strlen(request.result->raw_result) + 1, sizeof(char)));
   if (xml_ascii_result == NULL) {
-    racfu_rc = 8;
+    request.return_codes.racfu_return_code = 8;
     errors.add_racfu_error_message("Allocation of 'xml_ascii_result' failed");
     return {};
   }
@@ -28,10 +27,10 @@ nlohmann::json XmlParser::build_json_string(const char* xml_result_string,
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
   logger.debug(MSG_RESULT_SMO_EBCDIC,
-               logger.cast_hex_string(xml_result_string));
+               logger.cast_hex_string(request.result->raw_result));
 
-  int xml_result_length = strlen(xml_result_string);
-  memcpy(xml_ascii_result, xml_result_string, xml_result_length);
+  int xml_result_length = strlen(request.result->raw_result);
+  memcpy(xml_ascii_result, request.result->raw_result, xml_result_length);
   __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
@@ -58,12 +57,12 @@ nlohmann::json XmlParser::build_json_string(const char* xml_result_string,
 
     parse_xml_tags(result_json, admin_xml_body);
 
-    racfu_rc = 0;
+    request.return_codes.racfu_return_code = 0;
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
     errors.add_racfu_error_message("unable to parse XML returned by IRRSMO00");
-    racfu_rc = 4;
+    request.return_codes.racfu_return_code = 4;
   }
 
   free(xml_ascii_result);

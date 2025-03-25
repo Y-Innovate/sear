@@ -7,6 +7,7 @@
 #include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
+#include "security_request.hpp"
 
 // XmlParser Parses an XML String and forms a JSON String
 class XmlParser {
@@ -23,7 +24,7 @@ class XmlParser {
                                        std::size_t start);
 
  public:
-  nlohmann::json build_json_string(const char* xml_result_string, int& racfu_rc,
+  nlohmann::json build_json_string(RACFu::SecurityRequest& request,
                                    RACFu::Errors& errors, Logger& logger);
 };
 

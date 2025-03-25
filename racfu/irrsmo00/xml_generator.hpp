@@ -7,6 +7,7 @@
 #include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
+#include "security_request.hpp"
 
 // XmlGenerator Generates an XML String from a JSON string
 class XmlGenerator {
@@ -21,25 +22,19 @@ class XmlGenerator {
   void build_close_tag_no_value();
   void build_single_trait(const std::string& tag, const std::string& operation,
                           const std::string& value);
-  void build_xml_header_attributes(const std::string& true_admin_type,
-                                   const std::string& profile_name,
-                                   const nlohmann::json& request,
-                                   int& irrsmo00_options);
+  void build_xml_header_attributes(const RACFu::SecurityRequest& request,
+                                   const std::string& true_admin_type);
   void build_request_data(const std::string& true_admin_type,
                           const std::string& admin_type,
                           nlohmann::json request_data);
-  static std::string convert_operation(const std::string& request_operation,
-                                       int& irrsmo00_options);
+  static std::string convert_operation(const std::string& operation);
   static std::string convert_operator(const std::string& trait_operator);
   static std::string convert_admin_type(const std::string& admin_type);
   std::string json_value_to_string(const nlohmann::json& trait);
 
  public:
-  char* build_xml_string(const std::string& admin_type, nlohmann::json request,
-                         RACFu::Errors& errors, const std::string& profile_name,
-                         const std::string& auth_id, char* userid_buffer,
-                         int& irrsmo00_options, unsigned int& request_length,
-                         Logger& logger);
+  void build_xml_string(const RACFu::SecurityRequest& request,
+                        RACFu::Errors& errors, Logger& logger);
 };
 
 #endif

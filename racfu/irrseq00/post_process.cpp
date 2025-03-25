@@ -15,6 +15,12 @@
 
 #include "key_map.hpp"
 
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
+
 nlohmann::json post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer,
     const std::string &admin_type) {
