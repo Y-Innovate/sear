@@ -56,18 +56,13 @@ std::string get_json_sample(const char *filename) {
 void test_validation_errors(const char *test_request_json,
                             const char *test_validation_errors_result_json,
                             bool debug) {
-  racfu_result_t result;
   std::string request_json = get_json_sample(test_request_json);
   std::string result_json_expected =
       get_json_sample(test_validation_errors_result_json);
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result = racfu(request_json.c_str(), debug);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 }
 
 /*************************************************************************/
@@ -76,7 +71,6 @@ void test_validation_errors(const char *test_request_json,
 void test_extract_request_generation(const char *test_extract_request_json,
                                      const char *test_extract_request_raw,
                                      bool racf_options, bool debug) {
-  racfu_result_t result;
   std::string request_json   = get_json_sample(test_extract_request_json);
   char *raw_request_expected = get_raw_sample(test_extract_request_raw);
 
@@ -88,10 +82,10 @@ void test_extract_request_generation(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result   = racfu(request_json.c_str(), debug);
 
-  int request_buffer_size = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
-  int arg_area_size       = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
+  int request_buffer_size  = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
+  int arg_area_size        = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
 
   if (racf_options == true) {
     request_buffer_size = TEST_IRRSEQ00_RACF_OPTIONS_REQUEST_BUFFER_SIZE;
@@ -99,26 +93,21 @@ void test_extract_request_generation(const char *test_extract_request_json,
   }
 
   // Check the size of the buffer
-  TEST_ASSERT_EQUAL_INT32(request_buffer_size, result.raw_request_length);
+  TEST_ASSERT_EQUAL_INT32(request_buffer_size, result->raw_request_length);
   // Check the "arg area" (excludes the "arg pointers" at the end)
-  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result.raw_request,
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result->raw_request,
                            arg_area_size);
 
-  check_arg_pointers(result.raw_request, racf_options);
+  check_arg_pointers(result->raw_request, racf_options);
 
   // Cleanup
   free(raw_request_expected);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_extract_result(const char *test_extract_request_json,
                                const char *test_extract_result_json,
                                const char *test_extract_result_raw,
                                bool debug) {
-  racfu_result_t result;
   std::string request_json         = get_json_sample(test_extract_request_json);
   std::string result_json_expected = get_json_sample(test_extract_result_json);
 
@@ -132,25 +121,20 @@ void test_parse_extract_result(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result   = racfu(request_json.c_str(), debug);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result.result_json));
-  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result.raw_result_length);
+                          strlen(result->result_json));
+  TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result->raw_result_length);
 
   // Cleanup
   free(r_admin_result_mock);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_extract_result_profile_not_found(
     const char *test_extract_request_json,
     const char *test_extract_result_profile_not_found_json, bool debug) {
-  racfu_result_t result;
   std::string request_json = get_json_sample(test_extract_request_json);
   std::string result_json_expected =
       get_json_sample(test_extract_result_profile_not_found_json);
@@ -166,16 +150,11 @@ void test_parse_extract_result_profile_not_found(
   r_admin_racf_rc_mock     = 4;
   r_admin_racf_reason_mock = 4;
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result   = racfu(request_json.c_str(), debug);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result.result_json));
-
-  // Cleanup
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+                          strlen(result->result_json));
 }
 
 void check_arg_pointers(char *raw_request, bool racf_options) {
@@ -273,7 +252,6 @@ void check_arg_pointers(char *raw_request, bool racf_options) {
 void test_generate_add_alter_delete_request_generation(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_request_raw, bool debug) {
-  racfu_result_t result;
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
   char *raw_request_expected =
@@ -288,26 +266,21 @@ void test_generate_add_alter_delete_request_generation(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result    = racfu(request_json.c_str(), debug);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
-                          result.raw_request_length);
-  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result.raw_request,
+                          result->raw_request_length);
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result->raw_request,
                            raw_request_size_expected.st_size);
 
   // Cleanup
   free(raw_request_expected);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_add_alter_delete_result(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_result_json,
     const char *test_add_alter_delete_result_raw, bool debug) {
-  racfu_result_t result;
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
   std::string result_json_expected =
@@ -322,16 +295,12 @@ void test_parse_add_alter_delete_result(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), debug);
+  racfu_result_t *result    = racfu(request_json.c_str(), debug);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result.result_json));
+                          strlen(result->result_json));
 
   // Cleanup
   free(irrsmo64_result_mock);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }

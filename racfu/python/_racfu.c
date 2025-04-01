@@ -19,20 +19,14 @@ static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
     return NULL;
   }
 
-  debug = PyObject_IsTrue(debug_pyobj);
+  debug                  = PyObject_IsTrue(debug_pyobj);
 
-  racfu_result_t result;
+  racfu_result_t* result = racfu(request_as_string, debug);
 
-  racfu(&result, request_as_string, debug);
-
-  result_dictionary = Py_BuildValue(
-      "{s:y#,s:y#,s:s}", "raw_request", result.raw_request,
-      result.raw_request_length, "raw_result", result.raw_result,
-      result.raw_result_length, "result_json", result.result_json);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
+  result_dictionary      = Py_BuildValue(
+      "{s:y#,s:y#,s:s}", "raw_request", result->raw_request,
+      result->raw_request_length, "raw_result", result->raw_result,
+      result->raw_result_length, "result_json", result->result_json);
 
   return result_dictionary;
 }

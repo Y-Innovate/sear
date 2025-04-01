@@ -5,11 +5,11 @@
 #define _POSIX_C_SOURCE 200112L
 #include <arpa/inet.h>
 
-#include "extract.hpp"
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"
 #include "messages.h"
-#include "post_process.hpp"
+#include "profile_extractor.hpp"
+#include "profile_post_processor.hpp"
 #include "racfu_error.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
@@ -64,22 +64,12 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
 
 void SecurityAdmin::doExtract() {
   // Extract Profile
-  extract(request_, logger_);
-  if (request_.p_result_->raw_result == NULL) {
-    request_.return_codes_.racfu_return_code = 4;
-    // Raise Exception if Extract Failed.
-    if (request_.admin_type_ != "racf-options") {
-      throw RACFuError("unable to extract '" + request_.admin_type_ +
-                       "' profile '" + request_.profile_name_ + "'");
-    } else {
-      throw RACFuError("unable to extract '" + request_.admin_type_ + "'");
-    }
-  } else {
-    request_.return_codes_.racfu_return_code = 0;
-  }
+  ProfileExtractor extractor;
+  extractor.extract(request_, logger_);
 
-  // Post Process Generic Result
+  ProfilePostProcessor post_processor;
   if (request_.admin_type_ != "racf-options") {
+    // Post Process Generic Extract Result
     generic_extract_parms_results_t *p_generic_result =
         reinterpret_cast<generic_extract_parms_results_t *>(
             request_.p_result_->raw_result);
@@ -89,10 +79,10 @@ void SecurityAdmin::doExtract() {
         MSG_RESULT_SEQ_GENERIC,
         logger_.cast_hex_string(request_.p_result_->raw_result,
                                 request_.p_result_->raw_result_length));
-    request_.intermediate_result_json_ =
-        post_process_generic(p_generic_result, request_.admin_type_);
-    // Post Process Setropts Result
+    request_.intermediate_result_json_ = post_processor.post_process_generic(
+        p_generic_result, request_.admin_type_);
   } else {
+    // Post Process RACF Options Extract Result
     setropts_extract_results_t *p_setropts_result =
         reinterpret_cast<setropts_extract_results_t *>(
             request_.p_result_->raw_result);
@@ -103,7 +93,7 @@ void SecurityAdmin::doExtract() {
         logger_.cast_hex_string(request_.p_result_->raw_result,
                                 request_.p_result_->raw_result_length));
     request_.intermediate_result_json_ =
-        post_process_setropts(p_setropts_result);
+        post_processor.post_process_setropts(p_setropts_result);
   }
 
   logger_.debug(MSG_SEQ_POST_PROCESS);

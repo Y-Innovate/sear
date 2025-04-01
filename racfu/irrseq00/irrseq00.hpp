@@ -2,6 +2,15 @@
 #define __IRRSEQ00_H_
 
 #include <cstdint>
+#include <memory>
+
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
+
+#define PROFILE_NAME_MAX_LENGTH 247
 
 /*************************************************************************/
 /* Function Codes                                                        */
@@ -41,82 +50,6 @@ const char SETROPTS_FIELD_TYPE_STRING  = 1;
 const char SETROPTS_FIELD_TYPE_NUMBER  = 2;
 const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
 
-/*************************************************************************/
-/* Common Structure Data Macros                                          */
-/*************************************************************************/
-#define PROFILE_NAME_MAX_LENGTH 247
-
-#define COMMON_START_ARGS           \
-  char RACF_work_area[1024];        \
-  /* return and reason codes */     \
-  uint32_t ALET_SAF_rc;             \
-  uint32_t SAF_rc;                  \
-  uint32_t ALET_RACF_rc;            \
-  uint32_t RACF_rc;                 \
-  uint32_t ALET_RACF_rsn;           \
-  uint32_t RACF_rsn;                \
-  /* extract function to perform */ \
-  uint8_t function_code;
-
-#define COMMON_START_ARG_POINTERS   \
-  char *__ptr32 pWork_area;         \
-  /* return and reason code */      \
-  uint32_t *__ptr32 pALET_SAF_rc;   \
-  uint32_t *__ptr32 pSAF_rc;        \
-  uint32_t *__ptr32 pALET_RACF_rc;  \
-  uint32_t *__ptr32 pRACF_rc;       \
-  uint32_t *__ptr32 pALET_RACF_rsn; \
-  uint32_t *__ptr32 pRACF_rsn;      \
-  /* extract function to perform */ \
-  uint8_t *__ptr32 pFunction_code;
-
-#define COMMON_END_ARGS                           \
-  /* Max of 247 + 1 for null terimnator */        \
-  char profile_name[PROFILE_NAME_MAX_LENGTH + 1]; \
-  /* Result area for the service */               \
-  uint32_t ACEE;                                  \
-  uint8_t result_buffer_subpool;                  \
-  /* R_admin returns data here */                 \
-  char *__ptr32 pResult_buffer;
-
-#define COMMON_END_ARG_POINTERS            \
-  char *__ptr32 pProfile_name;             \
-  /* Result area for the service */        \
-  uint32_t *__ptr32 pACEE;                 \
-  uint8_t *__ptr32 pResult_buffer_subpool; \
-  /* R_admin returns data here */          \
-  char *__ptr32 *__ptr32 ppResult_buffer;
-
-#define SET_COMMON_ARGS               \
-  args->ALET_SAF_rc           = ALET; \
-  args->ALET_RACF_rc          = ALET; \
-  args->ALET_RACF_rsn         = ALET; \
-  args->ACEE                  = ACEE; \
-  args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
-
-#define SET_COMMON_ARG_POINTERS                                              \
-  arg_pointers->pWork_area =                                                 \
-      reinterpret_cast<char *__ptr32>(&args->RACF_work_area);                \
-  arg_pointers->pALET_SAF_rc   = &(args->ALET_SAF_rc);                       \
-  arg_pointers->pSAF_rc        = &(args->SAF_rc);                            \
-  arg_pointers->pALET_RACF_rc  = &(args->ALET_RACF_rc);                      \
-  arg_pointers->pRACF_rc       = &(args->RACF_rc);                           \
-  arg_pointers->pALET_RACF_rsn = &(args->ALET_RACF_rsn);                     \
-  arg_pointers->pRACF_rsn      = &(args->RACF_rsn);                          \
-                                                                             \
-  arg_pointers->pFunction_code = &(args->function_code);                     \
-  /* Function specific parms between function code and profile name */       \
-  arg_pointers->pProfile_name          = &(args->profile_name[0]);           \
-  arg_pointers->pACEE                  = &(args->ACEE);                      \
-  arg_pointers->pResult_buffer_subpool = &(args->result_buffer_subpool);     \
-  arg_pointers->ppResult_buffer        = &(args->pResult_buffer);            \
-                                                                             \
-  /* Turn on the hight order bit of the last argument - marks the end of the \
-   */                                                                        \
-  /* argument list. */                                                       \
-  *(reinterpret_cast<uint32_t *__ptr32>(&arg_pointers->ppResult_buffer)) |=  \
-      0x80000000;
-
 #pragma pack(push, 1)  // Don't byte align structure members.
 
 /*************************************************************************/
@@ -148,15 +81,44 @@ typedef struct {
 // Note: This structure is used for both input & output.
 
 typedef struct {
-  COMMON_START_ARGS
+  char RACF_work_area[1024];
+  // return and reason codes
+  uint32_t ALET_SAF_rc;
+  uint32_t SAF_rc;
+  uint32_t ALET_RACF_rc;
+  uint32_t RACF_rc;
+  uint32_t ALET_RACF_rsn;
+  uint32_t RACF_rsn;
+  // extract function to perform
+  uint8_t function_code;
   generic_extract_parms_results_t profile_extract_parms;
-  COMMON_END_ARGS
+  // Max of 247 + 1 for null terimnator
+  char profile_name[PROFILE_NAME_MAX_LENGTH + 1];
+  // Result area for the service
+  uint32_t ACEE;
+  uint8_t result_buffer_subpool;
+  // R_admin returns data here
+  char *__ptr32 p_result_buffer;
 } generic_extract_args_t;
 
 typedef struct {
-  COMMON_START_ARG_POINTERS
-  generic_extract_parms_results_t *__ptr32 pProfile_extract_parms;
-  COMMON_END_ARG_POINTERS
+  char *__ptr32 p_work_area;
+  // return and reason code
+  uint32_t *__ptr32 p_ALET_SAF_rc;
+  uint32_t *__ptr32 p_SAF_rc;
+  uint32_t *__ptr32 p_ALET_RACF_rc;
+  uint32_t *__ptr32 p_RACF_rc;
+  uint32_t *__ptr32 p_ALET_RACF_rsn;
+  uint32_t *__ptr32 p_RACF_rsn;
+  // extract function to perform
+  uint8_t *__ptr32 p_function_code;
+  generic_extract_parms_results_t *__ptr32 p_profile_extract_parms;
+  char *__ptr32 p_profile_name;
+  // Result area for the service
+  uint32_t *__ptr32 p_ACEE;
+  uint8_t *__ptr32 p_result_buffer_subpool;
+  // R_admin returns data here
+  char *__ptr32 *__ptr32 p_p_result_buffer;
 } generic_extract_arg_pointers_t;
 
 // 31-bit for IRRSEQ00 arguments.
@@ -215,15 +177,44 @@ typedef struct {
 } setropts_extract_parms_t;
 
 typedef struct {
-  COMMON_START_ARGS
+  char RACF_work_area[1024];
+  // return and reason codes
+  uint32_t ALET_SAF_rc;
+  uint32_t SAF_rc;
+  uint32_t ALET_RACF_rc;
+  uint32_t RACF_rc;
+  uint32_t ALET_RACF_rsn;
+  uint32_t RACF_rsn;
+  // extract function to perform
+  uint8_t function_code;
   setropts_extract_parms_t setropts_extract_parms;
-  COMMON_END_ARGS
+  // Max of 247 + 1 for null terimnator
+  char profile_name[PROFILE_NAME_MAX_LENGTH + 1];
+  // Result area for the service
+  uint32_t ACEE;
+  uint8_t result_buffer_subpool;
+  // R_admin returns data here
+  char *__ptr32 p_result_buffer;
 } setropts_extract_args_t;
 
 typedef struct {
-  COMMON_START_ARG_POINTERS
-  setropts_extract_parms_t *__ptr32 pSetropts_extract_parms;
-  COMMON_END_ARG_POINTERS
+  char *__ptr32 p_work_area;
+  // return and reason code
+  uint32_t *__ptr32 p_ALET_SAF_rc;
+  uint32_t *__ptr32 p_SAF_rc;
+  uint32_t *__ptr32 p_ALET_RACF_rc;
+  uint32_t *__ptr32 p_RACF_rc;
+  uint32_t *__ptr32 p_ALET_RACF_rsn;
+  uint32_t *__ptr32 p_RACF_rsn;
+  // extract function to perform
+  uint8_t *__ptr32 p_function_code;
+  setropts_extract_parms_t *__ptr32 p_setropts_extract_parms;
+  char *__ptr32 p_profile_name;
+  // Result area for the service
+  uint32_t *__ptr32 p_ACEE;
+  uint8_t *__ptr32 p_result_buffer_subpool;
+  // R_admin returns data here
+  char *__ptr32 *__ptr32 p_p_result_buffer;
 } setropts_extract_arg_pointers_t;
 
 // 31-bit for IRRSEQ00 arguments.
@@ -357,5 +348,19 @@ const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
 
 // Glue code to call IRRSEQ00 assembler code.
 extern "C" uint32_t callRadmin(char *__ptr32);
+
+struct DefaultDeleter {
+  void operator()(void *ptr) const { free(ptr); }
+};
+
+template <typename T, typename Deleter = DefaultDeleter, typename... Targs>
+auto make_unique31(Targs &&...args) -> std::unique_ptr<T, Deleter> {
+  T *p = static_cast<T *>(__malloc31(sizeof(T)));
+  if (p == nullptr) {
+    throw std::bad_alloc();
+  }
+  new (p) T(std::forward(args)...);
+  return std::unique_ptr<T, Deleter>(p);
+}
 
 #endif

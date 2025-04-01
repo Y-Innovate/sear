@@ -13,7 +13,7 @@
 /*************************************************************************/
 void test_generate_extract_user_request() {
   test_extract_request_generation(TEST_EXTRACT_USER_REQUEST_JSON,
-                                  TEST_EXTRACT_USER_REQUEST_RAW, false, false);
+                                  TEST_EXTRACT_USER_REQUEST_RAW, false, true);
 }
 
 void test_parse_extract_user_result() {

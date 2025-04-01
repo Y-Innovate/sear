@@ -1,4 +1,4 @@
-#include "post_process.hpp"
+#include "profile_post_processor.hpp"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -21,7 +21,8 @@
 #include "zoslib.h"
 #endif
 
-nlohmann::json post_process_generic(
+namespace RACFu {
+nlohmann::json ProfilePostProcessor::post_process_generic(
     generic_extract_parms_results_t *generic_result_buffer,
     const std::string &admin_type) {
   nlohmann::json profile;
@@ -102,7 +103,7 @@ nlohmann::json post_process_generic(
   return profile;
 }
 
-nlohmann::json post_process_setropts(
+nlohmann::json ProfilePostProcessor::post_process_setropts(
     setropts_extract_results_t *setropts_result_buffer) {
   nlohmann::json profile;
   profile["profile"]    = nlohmann::json::object();
@@ -182,9 +183,9 @@ nlohmann::json post_process_setropts(
   return profile;
 }
 
-void process_generic_field(nlohmann::json &json_field,
-                           generic_field_descriptor_t *field, char *field_key,
-                           char *profile_address, const char racfu_field_type) {
+void ProfilePostProcessor::process_generic_field(
+    nlohmann::json &json_field, generic_field_descriptor_t *field,
+    char *field_key, char *profile_address, const char racfu_field_type) {
   char field_data[1025];  // we may want to make this dynamic using a VLA or
                           // malloc()/calloc()
   // Post Process Boolean Fields
@@ -225,15 +226,16 @@ void process_generic_field(nlohmann::json &json_field,
   }
 }
 
-void process_setropts_field(char *field_data_destination,
-                            const char *field_data_source, int field_length) {
+void ProfilePostProcessor::process_setropts_field(char *field_data_destination,
+                                                  const char *field_data_source,
+                                                  int field_length) {
   memset(field_data_destination, 0, field_length + 1);
   copy_and_encode_string(field_data_destination, field_data_source,
                          field_length);
   trim_trailing_spaces(field_data_destination, field_length);
 }
 
-char get_setropts_field_type(const char *field_key) {
+char ProfilePostProcessor::get_setropts_field_type(const char *field_key) {
   int list_length =
       sizeof(SETROPTS_FIELD_TYPES) / sizeof(SETROPTS_FIELD_TYPES[0]);
   for (int i = 0; i < list_length; i++) {
@@ -244,10 +246,9 @@ char get_setropts_field_type(const char *field_key) {
   return SETROPTS_FIELD_TYPE_STRING;
 }
 
-std::string post_process_field_key(char *field_key,
-                                   const std::string &admin_type,
-                                   const char *segment,
-                                   const char *raw_field_key) {
+std::string ProfilePostProcessor::post_process_field_key(
+    char *field_key, const std::string &admin_type, const char *segment,
+    const char *raw_field_key) {
   post_process_key(field_key, raw_field_key, 8);
   const char *racfu_field_key =
       get_racfu_key(admin_type.c_str(), segment, field_key);
@@ -262,26 +263,28 @@ std::string post_process_field_key(char *field_key,
   return std::string(segment) + ":" + std::string(field_key);
 }
 
-void post_process_key(char *destination_key, const char *source_key,
-                      int length) {
+void ProfilePostProcessor::post_process_key(char *destination_key,
+                                            const char *source_key,
+                                            int length) {
   copy_and_encode_string(destination_key, source_key, length);
   convert_to_lowercase(destination_key, length);
   trim_trailing_spaces(destination_key, length);
 }
 
-void copy_and_encode_string(char *destination_string, const char *source_string,
-                            int length) {
+void ProfilePostProcessor::copy_and_encode_string(char *destination_string,
+                                                  const char *source_string,
+                                                  int length) {
   strncpy(destination_string, source_string, length);
   __e2a_l(destination_string, length);
 }
 
-void convert_to_lowercase(char *string, int length) {
+void ProfilePostProcessor::convert_to_lowercase(char *string, int length) {
   for (int i = 0; i < length; i++) {
     string[i] = tolower(string[i]);
   }
 }
 
-void trim_trailing_spaces(char *string, int length) {
+void ProfilePostProcessor::trim_trailing_spaces(char *string, int length) {
   int i = length - 1;
   while (i >= 0) {
     if (string[i] == ' ') {
@@ -292,3 +295,4 @@ void trim_trailing_spaces(char *string, int length) {
     i--;
   }
 }
+}  // namespace RACFu

@@ -2,7 +2,10 @@
 
 #include "security_admin.hpp"
 
-void racfu(racfu_result_t *result, const char *request_json, bool debug) {
-  RACFu::SecurityAdmin security_admin = RACFu::SecurityAdmin(result, debug);
+racfu_result_t *racfu(const char *request_json, bool debug) {
+  static racfu_result_t racfu_result = {NULL, 0, NULL, 0, NULL};
+  RACFu::SecurityAdmin security_admin =
+      RACFu::SecurityAdmin(&racfu_result, debug);
   security_admin.makeRequest(request_json);
+  return &racfu_result;
 }

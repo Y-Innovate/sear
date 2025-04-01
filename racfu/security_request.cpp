@@ -13,7 +13,17 @@ namespace RACFu {
 SecurityRequest::SecurityRequest() { p_result_ = nullptr; }
 
 SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
-  p_result_                     = p_result;
+  p_result_ = p_result;
+  // Free dynamically allocated memory from previous requests.
+  if (p_result->raw_request != nullptr) {
+    free(p_result->raw_request);
+  }
+  if (p_result->raw_result != nullptr) {
+    free(p_result->raw_result);
+  }
+  if (p_result->result_json != nullptr) {
+    free(p_result->result_json);
+  }
   p_result_->raw_request        = nullptr;
   p_result_->raw_request_length = 0;
   p_result_->raw_result         = nullptr;

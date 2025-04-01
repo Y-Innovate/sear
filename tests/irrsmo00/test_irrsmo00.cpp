@@ -62,7 +62,6 @@ void test_parse_add_user_trait_errors() {
 }
 
 void test_parse_add_user_no_xml_data_error() {
-  racfu_result_t result;
   std::string request_json = get_json_sample(TEST_ADD_USER_REQUEST_JSON);
   std::string result_json_expected =
       get_json_sample(TEST_ADD_USER_NO_RESPONSE_RESULT_JSON);
@@ -73,20 +72,15 @@ void test_parse_add_user_no_xml_data_error() {
   irrsmo64_racf_rc_mock     = 200;
   irrsmo64_racf_reason_mock = 16;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu_result_t *result    = racfu(request_json.c_str(), false);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
   // Cleanup
   free(irrsmo64_result_mock);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_alter_user_no_xml_data_error() {
-  racfu_result_t result;
   std::string request_json = get_json_sample(TEST_ALTER_USER_REQUEST_JSON);
   std::string result_json_expected =
       get_json_sample(TEST_ALTER_USER_NO_RESPONSE_RESULT_JSON);
@@ -97,16 +91,12 @@ void test_parse_alter_user_no_xml_data_error() {
   irrsmo64_racf_rc_mock     = 4;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu_result_t *result    = racfu(request_json.c_str(), false);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
   // Cleanup
   free(irrsmo64_result_mock);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_alter_user_traits_not_json_error() {
@@ -115,7 +105,6 @@ void test_parse_alter_user_traits_not_json_error() {
 }
 
 void test_parse_irrsmo00_errors_result() {
-  racfu_result_t result;
   std::string request_json = get_json_sample(TEST_ADD_USER_REQUEST_JSON);
   std::string result_json_expected =
       get_json_sample(TEST_IRRSMO00_ERROR_STRUCTURE_JSON);
@@ -129,18 +118,14 @@ void test_parse_irrsmo00_errors_result() {
   irrsmo64_racf_rc_mock     = 2000;
   irrsmo64_racf_reason_mock = 68;
 
-  racfu(&result, request_json.c_str(), false);
+  racfu_result_t *result    = racfu(request_json.c_str(), false);
 
-  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result.result_json);
+  TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result.result_json));
+                          strlen(result->result_json));
 
   // Cleanup
   free(irrsmo64_result_mock);
-
-  free(result.raw_request);
-  free(result.raw_result);
-  free(result.result_json);
 }
 
 void test_parse_delete_user_trait_error_result() {
