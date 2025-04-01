@@ -1,0 +1,16 @@
+#ifndef __IRRSMO00_ERROR_H_
+#define __IRRSMO00_ERROR_H_
+
+#include <exception>
+#include <vector>
+
+namespace RACFu {
+class IRRSMO00Error : public std::exception {
+ public:
+  std::vector<std::string> errors_;
+  explicit IRRSMO00Error(std::vector<std::string> errors);
+  explicit IRRSMO00Error(std::string error);
+};
+}  // namespace RACFu
+
+#endif

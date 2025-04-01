@@ -4,6 +4,7 @@
 
 #include "logger.hpp"
 #include "messages.h"
+#include "racfu_error.hpp"
 
 #ifdef __TOS_390__
 #include <unistd.h>
@@ -13,24 +14,18 @@
 
 // Public Methods of XmlParser
 nlohmann::json XmlParser::build_json_string(RACFu::SecurityRequest& request,
-                                            RACFu::Errors& errors,
                                             Logger& logger) {
   std::string xml_buffer;
-  char* xml_ascii_result = static_cast<char*>(
-      calloc(strlen(request.result->raw_result) + 1, sizeof(char)));
-  if (xml_ascii_result == NULL) {
-    request.return_codes.racfu_return_code = 8;
-    errors.add_racfu_error_message("Allocation of 'xml_ascii_result' failed");
-    return {};
-  }
+  char xml_ascii_result[strlen(request.p_result_->raw_result) + 1];
+  memset(xml_ascii_result, 0, strlen(request.p_result_->raw_result) + 1);
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
   logger.debug(MSG_RESULT_SMO_EBCDIC,
-               logger.cast_hex_string(request.result->raw_result));
+               logger.cast_hex_string(request.p_result_->raw_result));
 
-  int xml_result_length = strlen(request.result->raw_result);
-  memcpy(xml_ascii_result, request.result->raw_result, xml_result_length);
+  int xml_result_length = strlen(request.p_result_->raw_result);
+  memcpy(xml_ascii_result, request.p_result_->raw_result, xml_result_length);
   __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
@@ -57,15 +52,14 @@ nlohmann::json XmlParser::build_json_string(RACFu::SecurityRequest& request,
 
     parse_xml_tags(result_json, admin_xml_body);
 
-    request.return_codes.racfu_return_code = 0;
+    request.return_codes_.racfu_return_code = 0;
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    errors.add_racfu_error_message("unable to parse XML returned by IRRSMO00");
-    request.return_codes.racfu_return_code = 4;
+    request.return_codes_.racfu_return_code = 4;
+    throw RACFu::RACFuError("unable to parse XML returned by IRRSMO00");
   }
 
-  free(xml_ascii_result);
   return result_json;
 }
 

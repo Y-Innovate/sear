@@ -10,132 +10,129 @@
 #endif
 
 namespace RACFu {
-SecurityRequest::SecurityRequest() { this->result = nullptr; }
+SecurityRequest::SecurityRequest() { p_result_ = nullptr; }
 
-SecurityRequest::SecurityRequest(racfu_result_t *result) {
-  this->result                     = result;
-  this->result->raw_request        = nullptr;
-  this->result->raw_request_length = 0;
-  this->result->raw_result         = nullptr;
-  this->result->raw_result_length  = 0;
-  this->result->result_json        = nullptr;
+SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
+  p_result_                     = p_result;
+  p_result_->raw_request        = nullptr;
+  p_result_->raw_request_length = 0;
+  p_result_->raw_result         = nullptr;
+  p_result_->raw_result_length  = 0;
+  p_result_->result_json        = nullptr;
 }
 
 void SecurityRequest::load(const nlohmann::json &request) {
-  this->admin_type = request["admin_type"].get<std::string>();
-  this->operation  = request["operation"].get<std::string>();
+  admin_type_ = request["admin_type"].get<std::string>();
+  operation_  = request["operation"].get<std::string>();
 
   if (request.contains("traits")) {
-    this->traits = request["traits"].get<nlohmann::json>();
+    traits_ = request["traits"].get<nlohmann::json>();
   }
 
-  if (this->admin_type == "user") {
-    this->function_code = USER_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = request["userid"].get<std::string>();
-  } else if (this->admin_type == "group") {
-    this->function_code = GROUP_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = request["group"].get<std::string>();
-  } else if (this->admin_type == "group-connection") {
-    this->function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
-    if (this->operation == "extract") {
-      this->profile_name = request["userid"].get<std::string>() + "." +
-                           request["group"].get<std::string>();
+  if (admin_type_ == "user") {
+    function_code_ = USER_EXTRACT_FUNCTION_CODE;
+    profile_name_  = request["userid"].get<std::string>();
+  } else if (admin_type_ == "group") {
+    function_code_ = GROUP_EXTRACT_FUNCTION_CODE;
+    profile_name_  = request["group"].get<std::string>();
+  } else if (admin_type_ == "group-connection") {
+    function_code_ = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
+    if (operation_ == "extract") {
+      profile_name_ = request["userid"].get<std::string>() + "." +
+                      request["group"].get<std::string>();
     } else {
-      this->profile_name = request["userid"].get<std::string>();
-      this->group        = request["group"].get<std::string>();
+      profile_name_ = request["userid"].get<std::string>();
+      group_        = request["group"].get<std::string>();
     }
-  } else if (this->admin_type == "resource") {
-    this->function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = request["resource"].get<std::string>();
-    this->class_name    = request["class"].get<std::string>();
-  } else if (this->admin_type == "data-set") {
-    this->function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = request["data_set"].get<std::string>();
-  } else if (this->admin_type == "racf-options") {
-    this->function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
-  } else if (this->admin_type == "permission") {
+  } else if (admin_type_ == "resource") {
+    function_code_ = RESOURCE_EXTRACT_FUNCTION_CODE;
+    profile_name_  = request["resource"].get<std::string>();
+    class_name_    = request["class"].get<std::string>();
+  } else if (admin_type_ == "data-set") {
+    function_code_ = DATA_SET_EXTRACT_FUNCTION_CODE;
+    profile_name_  = request["data_set"].get<std::string>();
+  } else if (admin_type_ == "racf-options") {
+    function_code_ = SETROPTS_EXTRACT_FUNCTION_CODE;
+  } else if (admin_type_ == "permission") {
     if (request.contains("data_set")) {
-      this->profile_name = request["data_set"].get<std::string>();
-      this->class_name   = "DATASET";
+      profile_name_ = request["data_set"].get<std::string>();
+      class_name_   = "DATASET";
     } else {
-      this->profile_name = request["resource"].get<std::string>();
-      this->class_name   = request["class"].get<std::string>();
+      profile_name_ = request["resource"].get<std::string>();
+      class_name_   = request["class"].get<std::string>();
     }
     if (request.contains("group")) {
-      this->traits["base:authid"] = request["group"].get<std::string>();
+      traits_["base:authid"] = request["group"].get<std::string>();
     } else {
-      this->traits["base:authid"] = request["userid"].get<std::string>();
+      traits_["base:authid"] = request["userid"].get<std::string>();
     }
   }
 
   // set to 15 to enable precheck
-  if (this->operation == "add") {
-    this->irrsmo00_options = 15;
-  } else if (this->operation == "alter") {
-    if (this->admin_type != "group-connection" or
-        this->admin_type != "racf-options" or
-        this->admin_type != "permission") {
-      this->irrsmo00_options = 15;
+  if (operation_ == "add") {
+    irrsmo00_options_ = 15;
+  } else if (operation_ == "alter") {
+    if (admin_type_ != "group-connection" or admin_type_ != "racf-options" or
+        admin_type_ != "permission") {
+      irrsmo00_options_ = 15;
     }
   }
 
   if (request.contains("volume")) {
-    this->volume = request["volume"].get<std::string>();
+    volume_ = request["volume"].get<std::string>();
   }
 
   if (request.contains("generic")) {
     if (request["generic"].get<bool>() == true) {
-      this->generic = "yes";
+      generic_ = "yes";
     } else {
-      this->generic = "no";
+      generic_ = "no";
     }
   }
 
   if (request.contains("run_as_userid")) {
     std::string run_as_userid_string = request.get<std::string>();
     const int userid_length          = run_as_userid_string.length();
-    strncpy(this->run_as_userid, run_as_userid_string.c_str(), userid_length);
-    __a2e_l(this->run_as_userid, userid_length);
+    strncpy(run_as_userid_, run_as_userid_string.c_str(), userid_length);
+    __a2e_l(run_as_userid_, userid_length);
   }
 }
 
-void SecurityRequest::build_result(
-    const nlohmann::json &intermediate_result_json, const Errors &errors,
-    const Logger &logger) {
+void SecurityRequest::buildResult(const Logger &logger) {
   logger.debug(MSG_BUILD_RESULT);
   // Build Result JSON starting with Return Codes
   nlohmann::json result_json = {
       {"return_codes",
-       {{"saf_return_code", this->return_codes.saf_return_code},
-        {"racf_return_code", this->return_codes.racf_return_code},
-        {"racf_reason_code", this->return_codes.racf_reason_code},
-        {"racfu_return_code", this->return_codes.racfu_return_code}}}
+       {{"saf_return_code", return_codes_.saf_return_code},
+        {"racf_return_code", return_codes_.racf_return_code},
+        {"racf_reason_code", return_codes_.racf_reason_code},
+        {"racfu_return_code", return_codes_.racfu_return_code}}}
   };
 
   // Convert '-1' to 'nullptr'
-  if (this->return_codes.saf_return_code == -1) {
+  if (return_codes_.saf_return_code == -1) {
     result_json["return_codes"]["saf_return_code"] = nullptr;
   }
-  if (this->return_codes.racf_return_code == -1) {
+  if (return_codes_.racf_return_code == -1) {
     result_json["return_codes"]["racf_return_code"] = nullptr;
   }
-  if (this->return_codes.racf_reason_code == -1) {
+  if (return_codes_.racf_reason_code == -1) {
     result_json["return_codes"]["racf_reason_code"] = nullptr;
   }
-  if (this->return_codes.racf_return_code == -1) {
+  if (return_codes_.racf_return_code == -1) {
     result_json["return_codes"]["racf_return_code"] = nullptr;
   }
-  if (this->return_codes.racfu_return_code == -1) {
+  if (return_codes_.racfu_return_code == -1) {
     result_json["return_codes"]["racfu_return_code"] = nullptr;
   }
 
-  if (!errors.empty()) {
-    result_json["errors"] = errors.error_messages;
+  if (!errors_.empty()) {
+    result_json["errors"] = errors_;
   }
 
-  if (intermediate_result_json != nullptr && errors.empty()) {
-    if (!intermediate_result_json.empty()) {
-      result_json.merge_patch(intermediate_result_json);
+  if (intermediate_result_json_ != nullptr && errors_.empty()) {
+    if (!intermediate_result_json_.empty()) {
+      result_json.merge_patch(intermediate_result_json_);
     }
   }
 
@@ -148,7 +145,7 @@ void SecurityRequest::build_result(
   }
 
   // Save Result JSON
-  this->result->result_json = result_json_string;
+  p_result_->result_json = result_json_string;
 
   logger.debug(MSG_DONE);
 }

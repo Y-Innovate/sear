@@ -6,7 +6,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "errors.hpp"
 #include "racfu_result.h"
 #include "security_request.hpp"
 
@@ -40,12 +39,11 @@ void IRRSMO64(char *,               // Workarea
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-void call_irrsmo00(RACFu::SecurityRequest &request, const RACFu::Errors &errors,
-                   bool profile_exists_check);
+void call_irrsmo00(RACFu::SecurityRequest &request, bool profile_exists_check);
 
-bool does_profile_exist(RACFu::SecurityRequest &request, RACFu::Errors &errors);
+bool does_profile_exist(RACFu::SecurityRequest &request);
 
-int post_process_smo_json(const RACFu::SecurityRequest &request,
-                          RACFu::Errors &errors, nlohmann::json &results);
+void post_process_smo_json(RACFu::SecurityRequest &request,
+                           nlohmann::json &results);
 
 #endif /* IRRSMO00_H_ */

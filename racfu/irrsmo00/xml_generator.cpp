@@ -5,6 +5,7 @@
 #include "key_map.hpp"
 #include "logger.hpp"
 #include "messages.h"
+#include "racfu_error.hpp"
 #include "trait_validation.hpp"
 
 #ifdef __TOS_390__
@@ -14,8 +15,8 @@
 #endif
 
 // Public Functions of XmlGenerator
-void XmlGenerator::build_xml_string(const RACFu::SecurityRequest& request,
-                                    RACFu::Errors& errors, Logger& logger) {
+void XmlGenerator::build_xml_string(RACFu::SecurityRequest& request,
+                                    Logger& logger) {
   // Main body function that builds an xml string
 
   // Build the securityrequest tag (Consistent)
@@ -24,24 +25,22 @@ void XmlGenerator::build_xml_string(const RACFu::SecurityRequest& request,
   build_attribute("xmlns:racf", "http://www.ibm.com/systems/zos/racf");
   build_end_nested_tag();
 
-  std::string true_admin_type = convert_admin_type(request.admin_type);
+  std::string true_admin_type = convert_admin_type(request.admin_type_);
   build_open_tag(true_admin_type);
 
   build_xml_header_attributes(request, true_admin_type);
 
   build_attribute("requestid", true_admin_type + "_request");
 
-  if (!request.traits.empty()) {
+  if (!request.traits_.empty()) {
     build_end_nested_tag();
 
     logger.debug(MSG_VALIDATING_TRAITS);
 
-    validate_traits(request.admin_type, request.traits, errors);
-    if (errors.empty()) {
-      build_request_data(true_admin_type, request.admin_type, request.traits);
-    } else {
-      return;
-    }
+    validate_traits(request.admin_type_, request);
+
+    build_request_data(true_admin_type, request.admin_type_, request.traits_);
+
     logger.debug(MSG_DONE);
 
     // Close the admin object
@@ -60,18 +59,19 @@ void XmlGenerator::build_xml_string(const RACFu::SecurityRequest& request,
 
   // convert our c++ string to a char * buffer
   const int length = xml_buffer.length();
-  request.result->raw_request =
+  request.p_result_->raw_request =
       static_cast<char*>(malloc(sizeof(char) * (length + 1)));
-  if (request.result->raw_request == NULL) {
-    return;
+  if (request.p_result_->raw_request == NULL) {
+    request.return_codes_.racfu_return_code = 8;
+    throw RACFu::RACFuError("Unable to allocate request buffer for IRRSMO00");
   }
-  strncpy(request.result->raw_request, xml_buffer.c_str(), length + 1);
-  __a2e_l(request.result->raw_request, length);
+  strncpy(request.p_result_->raw_request, xml_buffer.c_str(), length + 1);
+  __a2e_l(request.p_result_->raw_request, length);
 
-  request.result->raw_request_length = length;
+  request.p_result_->raw_request_length = length;
 
   logger.debug(MSG_REQUEST_SMO_EBCDIC,
-               logger.cast_hex_string(request.result->raw_request));
+               logger.cast_hex_string(request.p_result_->raw_request));
 }
 
 // Private Functions of XmlGenerator
@@ -148,10 +148,10 @@ void XmlGenerator::build_xml_header_attributes(
     const RACFu::SecurityRequest& request, const std::string& true_admin_type) {
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
-  if (request.operation == "add") {
+  if (request.operation_ == "add") {
     build_attribute("override", "no");
   }
-  std::string irrsmo00_operation = convert_operation(request.operation);
+  std::string irrsmo00_operation = convert_operation(request.operation_);
   build_attribute("operation", irrsmo00_operation);
   /*
   if (request.contains("run")) {
@@ -161,23 +161,23 @@ void XmlGenerator::build_xml_header_attributes(
   if (true_admin_type == "systemsettings") {
     return;
   }
-  build_attribute("name", request.profile_name);
+  build_attribute("name", request.profile_name_);
   if ((true_admin_type == "user") || (true_admin_type == "group")) {
     return;
   }
   if (true_admin_type == "groupconnection") {
-    build_attribute("group", request.group);
+    build_attribute("group", request.group_);
     return;
   }
   if ((true_admin_type == "resource") || (true_admin_type == "permission")) {
-    build_attribute("class", request.class_name);
+    build_attribute("class", request.class_name_);
   }
   if ((true_admin_type == "dataset") || (true_admin_type == "permission")) {
-    if (!request.volume.empty()) {
-      build_attribute("volume", request.volume);
+    if (!request.volume_.empty()) {
+      build_attribute("volume", request.volume_);
     }
-    if (!request.generic.empty()) {
-      build_attribute("generic", request.generic);
+    if (!request.generic_.empty()) {
+      build_attribute("generic", request.generic_);
     }
     return;
   }

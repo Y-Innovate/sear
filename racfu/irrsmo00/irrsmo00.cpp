@@ -3,7 +3,10 @@
 #include <stdlib.h>
 
 #include <cstring>
+#include <vector>
 
+#include "irrsmo00_error.hpp"
+#include "racfu_error.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
@@ -13,44 +16,49 @@
 #include "zoslib.h"
 #endif
 
-void call_irrsmo00(RACFu::SecurityRequest &request, const RACFu::Errors &errors,
-                   bool profile_exists_check) {
+void call_irrsmo00(RACFu::SecurityRequest &request, bool profile_exists_check) {
   char work_area[1024];
   char req_handle[64]                    = {0};
   running_userid_t running_userid_struct = {
-      (unsigned char)strlen(request.run_as_userid), {0}};
-  unsigned int alet          = 0;
-  unsigned int acee          = 0;
-  request.result->raw_result = static_cast<char *>(
-      calloc(request.result->raw_result_length, sizeof(char)));
+      (unsigned char)strlen(request.run_as_userid_), {0}};
+  unsigned int alet             = 0;
+  unsigned int acee             = 0;
+  request.p_result_->raw_result = static_cast<char *>(
+      calloc(request.p_result_->raw_result_length, sizeof(char)));
+  if (request.p_result_->raw_result == NULL) {
+    request.return_codes_.racfu_return_code = 8;
+    throw RACFu::RACFuError(
+        "Unable to allocate a result buffer for the IRRSMO00 result");
+  }
   int num_parms        = 17;
   int fn               = 1;
 
-  int irrsmo00_options = request.irrsmo00_options;
+  int irrsmo00_options = request.irrsmo00_options_;
   if (profile_exists_check == true) {
     irrsmo00_options = 13;
   }
 
-  strncpy(running_userid_struct.running_userid, request.run_as_userid,
+  strncpy(running_userid_struct.running_userid, request.run_as_userid_,
           running_userid_struct.running_userid_length);
 
-  IRRSMO64(work_area, alet, &request.return_codes.saf_return_code, alet,
-           &request.return_codes.racf_return_code, alet,
-           &request.return_codes.racf_reason_code, &num_parms, &fn,
-           &irrsmo00_options, &request.result->raw_request_length,
-           request.result->raw_request, req_handle,
+  IRRSMO64(work_area, alet, &request.return_codes_.saf_return_code, alet,
+           &request.return_codes_.racf_return_code, alet,
+           &request.return_codes_.racf_reason_code, &num_parms, &fn,
+           &irrsmo00_options, &request.p_result_->raw_request_length,
+           request.p_result_->raw_request, req_handle,
            reinterpret_cast<char *>(&running_userid_struct), acee,
-           &request.result->raw_result_length, request.result->raw_result);
+           &request.p_result_->raw_result_length,
+           request.p_result_->raw_result);
 
   // 'knownConditionTrueFalse' is a false positive. These conditionals work as
   // intended
-  if (((request.return_codes.saf_return_code != 8) ||
-       (request.return_codes.racf_return_code != 4000)) ||
+  if (((request.return_codes_.saf_return_code != 8) ||
+       (request.return_codes_.racf_return_code != 4000)) ||
       // cppcheck-suppress knownConditionTrueFalse
-      ((request.return_codes.saf_return_code == 8) &&
+      ((request.return_codes_.saf_return_code == 8) &&
        // cppcheck-suppress knownConditionTrueFalse
-       (request.return_codes.racf_return_code == 4000) &&
-       (request.return_codes.racf_reason_code > 100000000))) {
+       (request.return_codes_.racf_return_code == 4000) &&
+       (request.return_codes_.racf_reason_code > 100000000))) {
     return;
   }
 
@@ -84,89 +92,91 @@ void call_irrsmo00(RACFu::SecurityRequest &request, const RACFu::Errors &errors,
   */
 }
 
-bool does_profile_exist(RACFu::SecurityRequest &request,
-                        RACFu::Errors &errors) {
+bool does_profile_exist(RACFu::SecurityRequest &request) {
   std::string xml_buffer;
 
-  if (request.admin_type == "resource") {
+  if (request.admin_type_ == "resource") {
     xml_buffer =
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
-        request.admin_type + R"( name=")" + request.profile_name +
-        R"(" class=")" + request.class_name +
-        R"("operation="listdata" requestid=")" + request.admin_type +
+        request.admin_type_ + R"( name=")" + request.profile_name_ +
+        R"(" class=")" + request.class_name_ +
+        R"("operation="listdata" requestid=")" + request.admin_type_ +
         R"(_request"/></securityrequest>)";
   } else {
     xml_buffer =
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
-        request.admin_type + R"( name=")" + request.profile_name +
-        R"(" operation="listdata" requestid=")" + request.admin_type +
+        request.admin_type_ + R"( name=")" + request.profile_name_ +
+        R"(" operation="listdata" requestid=")" + request.admin_type_ +
         R"(_request"/></securityrequest>)";
   }
 
-  request.result->raw_result_length = 10000;
+  request.p_result_->raw_result_length = 10000;
 
   // convert our c++ string to a char * buffer
-  request.result->raw_request_length = xml_buffer.length();
-  request.result->raw_request        = static_cast<char *>(
-      malloc(sizeof(char) * (request.result->raw_request_length + 1)));
-  if (request.result->raw_request == NULL) {
-    errors.add_racfu_error_message("Allocation of 'request_buffer' failed");
+  request.p_result_->raw_request_length = xml_buffer.length();
+  request.p_result_->raw_request        = static_cast<char *>(
+      malloc(sizeof(char) * (request.p_result_->raw_request_length + 1)));
+  if (request.p_result_->raw_request == NULL) {
+    request.return_codes_.racfu_return_code = 8;
+    throw RACFu::RACFuError(
+        "Unable to allocate a request buffer for profile check request");
+  }
+  strncpy(request.p_result_->raw_request, xml_buffer.c_str(),
+          request.p_result_->raw_request_length);
+  __a2e_l(request.p_result_->raw_request,
+          request.p_result_->raw_request_length);
+
+  call_irrsmo00(request, true);
+
+  if (request.p_result_->raw_result == NULL) {
     return false;
   }
-  strncpy(request.result->raw_request, xml_buffer.c_str(),
-          request.result->raw_request_length);
-  __a2e_l(request.result->raw_request, request.result->raw_request_length);
 
-  call_irrsmo00(request, errors, true);
-
-  if (request.result->raw_result == NULL) {
-    return false;
-  }
-
-  if ((request.return_codes.racf_return_code > 0) ||
-      (request.return_codes.saf_return_code > 0)) {
+  if ((request.return_codes_.racf_return_code > 0) ||
+      (request.return_codes_.saf_return_code > 0)) {
     return false;
   }
 
   return true;
 }
 
-int post_process_smo_json(const RACFu::SecurityRequest &request,
-                          RACFu::Errors &errors, nlohmann::json &results) {
+void post_process_smo_json(RACFu::SecurityRequest &request,
+                           nlohmann::json &results) {
   nlohmann::json commands = nlohmann::json::array();
 
   if (results.contains("error")) {
+    request.return_codes_.racfu_return_code = 4;
     // Only expected for irrsmo00 errors which are not expected, but possible
     if (results["error"].contains("textinerror")) {
-      errors.add_irrsmo00_error_message(
+      throw RACFu::IRRSMO00Error(
           results["error"]["errormessage"].get<std::string>() +
           " Text in error: " +
           results["error"]["textinerror"].get<std::string>());
-      return 4;
     }
-    errors.add_irrsmo00_error_message(
+    throw RACFu::IRRSMO00Error(
         results["error"]["errormessage"].get<std::string>());
-    return 4;
   }
 
   if (results.contains("errors")) {
     // Only expected for "XML Parse Error"
-    return 4;
+    request.return_codes_.racfu_return_code = 4;
+    throw RACFu::IRRSMO00Error(
+        results["errors"].get<std::vector<std::string>>());
   }
 
   if (!results.contains("command")) {
     // Only expected for "Add Protection" cases
-    if (request.class_name.empty()) {
-      errors.add_racfu_error_message("unable to add '" + request.profile_name +
-                                     "' because a '" + request.admin_type +
-                                     "' profile already exists with that name");
+    request.return_codes_.racfu_return_code = 4;
+    if (request.class_name_.empty()) {
+      throw RACFu::RACFuError("unable to add '" + request.profile_name_ +
+                              "' because a '" + request.admin_type_ +
+                              "' profile already exists with that name");
     } else {
-      errors.add_racfu_error_message(
-          "unable to add '" + request.profile_name + "' in the '" +
-          request.class_name +
+      throw RACFu::RACFuError(
+          "unable to add '" + request.profile_name_ + "' in the '" +
+          request.class_name_ +
           "' class because a profile already exists with that name");
     }
-    return 4;
   }
 
   for (auto item = results.begin(); item != results.end();) {
@@ -210,5 +220,4 @@ int post_process_smo_json(const RACFu::SecurityRequest &request,
   }
   results.erase("command");
   results["commands"] = commands;
-  return 0;
 }

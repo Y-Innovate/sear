@@ -24,7 +24,7 @@ void extract(RACFu::SecurityRequest &request, const Logger &logger) {
   /*************************************************************************/
   /* Setropts Extract                                                      */
   /*************************************************************************/
-  if (request.function_code == SETROPTS_EXTRACT_FUNCTION_CODE) {
+  if (request.function_code_ == SETROPTS_EXTRACT_FUNCTION_CODE) {
     // Build 31-bit Arg Area
     setropts_extract_underbar_arg_area_t *arg_area_setropts;
     arg_area_setropts = build_setropts_extract_parms();
@@ -32,16 +32,16 @@ void extract(RACFu::SecurityRequest &request, const Logger &logger) {
       return;
     }
     // Preserve the raw request data
-    request.result->raw_request_length =
+    request.p_result_->raw_request_length =
         (int)sizeof(setropts_extract_underbar_arg_area_t);
     logger.debug(
         MSG_REQUEST_SEQ_SETROPTS,
         logger.cast_hex_string(reinterpret_cast<char *>(arg_area_setropts),
-                               request.result->raw_request_length));
+                               request.p_result_->raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_setropts),
-                         &request.result->raw_request,
-                         request.result->raw_request_length);
+                         &request.p_result_->raw_request,
+                         request.p_result_->raw_request_length);
 
     logger.debug(MSG_CALLING_SEQ);
 
@@ -50,13 +50,13 @@ void extract(RACFu::SecurityRequest &request, const Logger &logger) {
         reinterpret_cast<char *__ptr32>(&arg_area_setropts->arg_pointers));
     logger.debug(MSG_DONE);
 
-    request.result->raw_result = arg_area_setropts->args.pResult_buffer;
+    request.p_result_->raw_result = arg_area_setropts->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    request.return_codes.saf_return_code =
+    request.return_codes_.saf_return_code =
         ntohl(arg_area_setropts->args.SAF_rc);
-    request.return_codes.racf_return_code =
+    request.return_codes_.racf_return_code =
         ntohl(arg_area_setropts->args.RACF_rc);
-    request.return_codes.racf_reason_code =
+    request.return_codes_.racf_reason_code =
         ntohl(arg_area_setropts->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_setropts);
@@ -75,21 +75,21 @@ void extract(RACFu::SecurityRequest &request, const Logger &logger) {
     // Build 31-bit Arg Area
     generic_extract_underbar_arg_area_t *arg_area_generic;
     arg_area_generic = build_generic_extract_parms(
-        request.profile_name, request.class_name, request.function_code);
+        request.profile_name_, request.class_name_, request.function_code_);
     if (arg_area_generic == NULL) {
       return;
     }
     // Preserve the raw request data
-    request.result->raw_request_length =
+    request.p_result_->raw_request_length =
         (int)sizeof(generic_extract_underbar_arg_area_t);
     logger.debug(
         MSG_REQUEST_SEQ_GENERIC,
         logger.cast_hex_string(reinterpret_cast<char *>(arg_area_generic),
-                               request.result->raw_request_length));
+                               request.p_result_->raw_request_length));
 
     preserve_raw_request(reinterpret_cast<char *>(arg_area_generic),
-                         &request.result->raw_request,
-                         request.result->raw_request_length);
+                         &request.p_result_->raw_request,
+                         request.p_result_->raw_request_length);
     logger.debug(MSG_CALLING_SEQ);
 
     // Call R_Admin
@@ -97,24 +97,25 @@ void extract(RACFu::SecurityRequest &request, const Logger &logger) {
         reinterpret_cast<char *__ptr32>(&arg_area_generic->arg_pointers));
     logger.debug(MSG_DONE);
 
-    request.result->raw_result = arg_area_generic->args.pResult_buffer;
+    request.p_result_->raw_result = arg_area_generic->args.pResult_buffer;
     // Preserve Return & Reason Codes
-    request.return_codes.saf_return_code = ntohl(arg_area_generic->args.SAF_rc);
-    request.return_codes.racf_return_code =
+    request.return_codes_.saf_return_code =
+        ntohl(arg_area_generic->args.SAF_rc);
+    request.return_codes_.racf_return_code =
         ntohl(arg_area_generic->args.RACF_rc);
-    request.return_codes.racf_reason_code =
+    request.return_codes_.racf_reason_code =
         ntohl(arg_area_generic->args.RACF_rsn);
     // Free Arg Area
     free(arg_area_generic);
   }
 
   // Check Return Codes
-  if (request.return_codes.saf_return_code != 0 ||
-      request.return_codes.racf_return_code != 0 ||
-      request.return_codes.racf_reason_code != 0 || rc != 0) {
+  if (request.return_codes_.saf_return_code != 0 ||
+      request.return_codes_.racf_return_code != 0 ||
+      request.return_codes_.racf_reason_code != 0 || rc != 0) {
     // Free Result Buffer & Set it to NULL if uncessussful.
-    free(request.result->raw_result);
-    request.result->raw_result = NULL;
+    free(request.p_result_->raw_result);
+    request.p_result_->raw_result = NULL;
   }
 }
 

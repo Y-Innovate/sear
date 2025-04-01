@@ -4,7 +4,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
 #include "security_request.hpp"
@@ -33,8 +32,7 @@ class XmlGenerator {
   std::string json_value_to_string(const nlohmann::json& trait);
 
  public:
-  void build_xml_string(const RACFu::SecurityRequest& request,
-                        RACFu::Errors& errors, Logger& logger);
+  void build_xml_string(RACFu::SecurityRequest& request, Logger& logger);
 };
 
 #endif

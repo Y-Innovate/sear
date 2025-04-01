@@ -4,7 +4,6 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "errors.hpp"
 #include "logger.hpp"
 #include "messages.h"
 #include "security_request.hpp"
@@ -25,7 +24,7 @@ class XmlParser {
 
  public:
   nlohmann::json build_json_string(RACFu::SecurityRequest& request,
-                                   RACFu::Errors& errors, Logger& logger);
+                                   Logger& logger);
 };
 
 #endif
