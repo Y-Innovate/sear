@@ -1,8 +1,6 @@
 #include "security_request.hpp"
 
 #include "irrseq00.hpp"
-#include "messages.h"
-
 #ifdef __TOS_390__
 #include <unistd.h>
 #else
@@ -16,13 +14,19 @@ SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
   p_result_ = p_result;
   // Free dynamically allocated memory from previous requests.
   if (p_result->raw_request != nullptr) {
+    Logger::getInstance().debugFree(p_result->raw_request, 64);
     free(p_result->raw_request);
+    Logger::getInstance().debug("Done");
   }
   if (p_result->raw_result != nullptr) {
+    Logger::getInstance().debugFree(p_result->raw_result, 31);
     free(p_result->raw_result);
+    Logger::getInstance().debug("Done");
   }
   if (p_result->result_json != nullptr) {
+    Logger::getInstance().debugFree(p_result->result_json, 64);
     free(p_result->result_json);
+    Logger::getInstance().debug("Done");
   }
   p_result_->raw_request        = nullptr;
   p_result_->raw_request_length = 0;
@@ -62,7 +66,7 @@ void SecurityRequest::load(const nlohmann::json &request) {
     function_code_ = DATA_SET_EXTRACT_FUNCTION_CODE;
     profile_name_  = request["data_set"].get<std::string>();
   } else if (admin_type_ == "racf-options") {
-    function_code_ = SETROPTS_EXTRACT_FUNCTION_CODE;
+    function_code_ = RACF_OPTIONS_EXTRACT_FUNCTION_CODE;
   } else if (admin_type_ == "permission") {
     if (request.contains("data_set")) {
       profile_name_ = request["data_set"].get<std::string>();
@@ -102,14 +106,16 @@ void SecurityRequest::load(const nlohmann::json &request) {
 
   if (request.contains("run_as_userid")) {
     std::string run_as_userid_string = request.get<std::string>();
-    const int userid_length          = run_as_userid_string.length();
+    Logger::getInstance().debug("Running under the authority of user: " +
+                                run_as_userid_string);
+    const int userid_length = run_as_userid_string.length();
     strncpy(run_as_userid_, run_as_userid_string.c_str(), userid_length);
     __a2e_l(run_as_userid_, userid_length);
   }
 }
 
-void SecurityRequest::buildResult(const Logger &logger) {
-  logger.debug(MSG_BUILD_RESULT);
+void SecurityRequest::buildResult() {
+  Logger::getInstance().debug("Building result JSON ...");
   // Build Result JSON starting with Return Codes
   nlohmann::json result_json = {
       {"return_codes",
@@ -147,16 +153,20 @@ void SecurityRequest::buildResult(const Logger &logger) {
   }
 
   // Convert profile JSON to C string.
-  std::string result_json_cpp_string = result_json.dump();
-  char *result_json_string           = static_cast<char *>(
-      malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
-  if (result_json_string != NULL) {
-    std::strcpy(result_json_string, result_json_cpp_string.c_str());
+  std::string result_json_string = result_json.dump();
+  char *p_result_json            = static_cast<char *>(
+      malloc(sizeof(char) * (result_json_string.size() + 1)));
+  if (p_result_json == NULL) {
+    perror("Warn - Unable to allocate space for the result JSON string.\n");
+  } else {
+    Logger::getInstance().debugAllocate(p_result_json, 64,
+                                        result_json_string.size() + 1);
+    std::strcpy(p_result_json, result_json_string.c_str());
   }
 
   // Save Result JSON
-  p_result_->result_json = result_json_string;
+  p_result_->result_json = p_result_json;
 
-  logger.debug(MSG_DONE);
+  Logger::getInstance().debug("Done");
 }
 }  // namespace RACFu

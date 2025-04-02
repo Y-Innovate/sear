@@ -42,22 +42,12 @@ const char *get_racf_key(const char *profile_type, const char *segment,
   return key_mapping->racf_key;
 }
 
-const char get_racfu_trait_type(const char *profile_type, const char *segment,
-                                const char *racf_key) {
+const char get_trait_type(const std::string &profile_type,
+                          const std::string &segment,
+                          const std::string &racfu_key) {
   const trait_key_mapping_t *key_mapping =
-      get_key_mapping(profile_type, segment, racf_key, NULL, TRAIT_TYPE_NULL,
-                      OPERATOR_ANY, true);
-  if (key_mapping == NULL) {
-    return TRAIT_TYPE_BAD;
-  }
-  return key_mapping->trait_type;
-}
-
-const char get_racf_trait_type(const char *profile_type, const char *segment,
-                               const char *racfu_key) {
-  const trait_key_mapping_t *key_mapping =
-      get_key_mapping(profile_type, segment, NULL, racfu_key, TRAIT_TYPE_NULL,
-                      OPERATOR_ANY, false);
+      get_key_mapping(profile_type.c_str(), segment.c_str(), NULL,
+                      racfu_key.c_str(), TRAIT_TYPE_NULL, OPERATOR_ANY, false);
   if (key_mapping == NULL) {
     return TRAIT_TYPE_BAD;
   }

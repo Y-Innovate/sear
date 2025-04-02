@@ -5,11 +5,11 @@
 #include <string>
 
 #include "logger.hpp"
-#include "messages.h"
 #include "security_request.hpp"
 
-// XmlParser Parses an XML String and forms a JSON String
-class XmlParser {
+namespace RACFu {
+// XMLParser Parses an XML String and forms a JSON String
+class XMLParser {
  private:
   void parse_xml_tags(nlohmann::json& input_json, std::string input_xml_string);
   void parse_xml_data(nlohmann::json& input_json,
@@ -23,8 +23,8 @@ class XmlParser {
                                        std::size_t start);
 
  public:
-  nlohmann::json build_json_string(RACFu::SecurityRequest& request,
-                                   Logger& logger);
+  nlohmann::json build_json_string(SecurityRequest& request);
 };
+}  // namespace RACFu
 
 #endif

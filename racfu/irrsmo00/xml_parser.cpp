@@ -3,7 +3,6 @@
 #include <regex>
 
 #include "logger.hpp"
-#include "messages.h"
 #include "racfu_error.hpp"
 
 #ifdef __TOS_390__
@@ -12,24 +11,25 @@
 #include "zoslib.h"
 #endif
 
-// Public Methods of XmlParser
-nlohmann::json XmlParser::build_json_string(RACFu::SecurityRequest& request,
-                                            Logger& logger) {
+namespace RACFu {
+// Public Methods of XMLParser
+nlohmann::json XMLParser::build_json_string(SecurityRequest& request) {
   std::string xml_buffer;
   char xml_ascii_result[strlen(request.p_result_->raw_result) + 1];
   memset(xml_ascii_result, 0, strlen(request.p_result_->raw_result) + 1);
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
-  logger.debug(MSG_RESULT_SMO_EBCDIC,
-               logger.cast_hex_string(request.p_result_->raw_result));
+  Logger::getInstance().debug(
+      "Raw EBCDIC encoded result XML:",
+      Logger::getInstance().castHexString(request.p_result_->raw_result));
 
   int xml_result_length = strlen(request.p_result_->raw_result);
   memcpy(xml_ascii_result, request.p_result_->raw_result, xml_result_length);
   __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
-  logger.debug(MSG_RESULT_SMO_ASCII, xml_buffer);
+  Logger::getInstance().debug("Decoded result XML:", xml_buffer);
 
   // Regular expression designed to match the header attributes, generic body,
   // and closing tags of the xml
@@ -57,14 +57,14 @@ nlohmann::json XmlParser::build_json_string(RACFu::SecurityRequest& request,
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
     request.return_codes_.racfu_return_code = 4;
-    throw RACFu::RACFuError("unable to parse XML returned by IRRSMO00");
+    throw RACFuError("unable to parse XML returned by IRRSMO00");
   }
 
   return result_json;
 }
 
-// Private Methods of XmlParser
-void XmlParser::parse_xml_tags(nlohmann::json& input_json,
+// Private Methods of XMLParser
+void XMLParser::parse_xml_tags(nlohmann::json& input_json,
                                std::string input_xml_string) {
   // Parse the outer layer of the XML (the tags) for attributes and tag names
   // with regex Ex:
@@ -106,7 +106,7 @@ void XmlParser::parse_xml_tags(nlohmann::json& input_json,
   }
 };
 
-void XmlParser::parse_xml_data(nlohmann::json& input_json,
+void XMLParser::parse_xml_data(nlohmann::json& input_json,
                                const std::string& data_within_outer_tags,
                                const std::string& outer_tag) {
   // Parse data from within XML tags and add the values to the JSON
@@ -122,7 +122,7 @@ void XmlParser::parse_xml_data(nlohmann::json& input_json,
   update_json(input_json, nested_json, outer_tag);
 }
 
-void XmlParser::update_json(nlohmann::json& input_json,
+void XMLParser::update_json(nlohmann::json& input_json,
                             nlohmann::json& inner_data, std::string outer_tag) {
   // Add specified information (inner_data) to the input_json_p JSON object
   // using the specified key (outer_tag)
@@ -145,7 +145,7 @@ void XmlParser::update_json(nlohmann::json& input_json,
   }
 }
 
-std::string XmlParser::replace_xml_chars(std::string xml_data) {
+std::string XMLParser::replace_xml_chars(std::string xml_data) {
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
               apos = "&apos;";
   std::size_t index;
@@ -165,7 +165,7 @@ std::string XmlParser::replace_xml_chars(std::string xml_data) {
   return xml_data;
 }
 
-std::string XmlParser::replace_substring(std::string data,
+std::string XMLParser::replace_substring(std::string data,
                                          std::string substring,
                                          std::string replacement,
                                          std::size_t start) {
@@ -180,3 +180,4 @@ std::string XmlParser::replace_substring(std::string data,
   data.replace(match, substring.length(), replacement);
   return data;
 }
+}  // namespace RACFu

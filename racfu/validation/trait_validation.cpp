@@ -68,9 +68,8 @@ void validate_traits(const std::string& admin_type,
       // Set operator based on boolean value
       trait_operator = (item.value()) ? OPERATOR_SET : OPERATOR_DELETE;
     }
-    int8_t expected_type =
-        get_racf_trait_type(admin_type.c_str(), item_segment.c_str(),
-                            (item_segment + ":" + item_trait).c_str());
+    int8_t expected_type = get_trait_type(admin_type, item_segment,
+                                          item_segment + ":" + item_trait);
     // Validate Segment-Trait by ensuring a TRAIT_TYPE is found
     if (expected_type == TRAIT_TYPE_BAD) {
       errors.push_back("'" + item_segment + ":" + item_trait +
@@ -96,9 +95,14 @@ void validate_traits(const std::string& admin_type,
     if ((trait_type != expected_type) && !(trait_type == TRAIT_TYPE_NULL) &&
         ((expected_type != TRAIT_TYPE_PSEUDO_BOOLEAN) ||
          (trait_type != TRAIT_TYPE_BOOLEAN))) {
-      errors.push_back("'" + item.key() + "' must be " +
-                       decode_data_type(expected_type) + "' value");
-      continue;
+      if (expected_type == TRAIT_TYPE_REPEAT &&
+          trait_type == TRAIT_TYPE_STRING) {
+        trait_type = TRAIT_TYPE_REPEAT;
+      } else {
+        errors.push_back("'" + item.key() + "' must be " +
+                         decode_data_type(expected_type) + "' value");
+        continue;
+      }
     }
     if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN) {
       trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;

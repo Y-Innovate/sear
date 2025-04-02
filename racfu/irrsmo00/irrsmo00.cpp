@@ -28,8 +28,12 @@ void call_irrsmo00(RACFu::SecurityRequest &request, bool profile_exists_check) {
   if (request.p_result_->raw_result == NULL) {
     request.return_codes_.racfu_return_code = 8;
     throw RACFu::RACFuError(
-        "Unable to allocate a result buffer for the IRRSMO00 result");
+        "Unable to allocate memory for the IRRSMO00 result");
   }
+
+  RACFu::Logger::getInstance().debugAllocate(
+      request.p_result_->raw_result, 64, request.p_result_->raw_result_length);
+
   int num_parms        = 17;
   int fn               = 1;
 

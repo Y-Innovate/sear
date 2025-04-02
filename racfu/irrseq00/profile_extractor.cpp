@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include <cstring>
+#include <sstream>
 
 #include "racfu_error.hpp"
 
@@ -21,33 +22,33 @@
 #include <arpa/inet.h>
 
 namespace RACFu {
-void ProfileExtractor::extract(SecurityRequest &request, const Logger &logger) {
+void ProfileExtractor::extract(SecurityRequest &request) {
   uint32_t rc;
 
   /*************************************************************************/
   /* RACF Options Extract                                                  */
   /*************************************************************************/
-  if (request.function_code_ == SETROPTS_EXTRACT_FUNCTION_CODE) {
+  if (request.function_code_ == RACF_OPTIONS_EXTRACT_FUNCTION_CODE) {
     // Build 31-bit Arg Area
-    auto unique_ptr = make_unique31<setropts_extract_underbar_arg_area_t>();
-    setropts_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
-    build_racf_options_extract_request(p_arg_area);
+    auto unique_ptr = make_unique31<racf_options_extract_underbar_arg_area_t>();
+    racf_options_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
+    ProfileExtractor::buildRACFOptionsExtractRequest(p_arg_area);
     // Preserve the raw request data
     request.p_result_->raw_request_length =
-        (int)sizeof(setropts_extract_underbar_arg_area_t);
-    logger.debug(MSG_REQUEST_SEQ_SETROPTS,
-                 logger.cast_hex_string(reinterpret_cast<char *>(p_arg_area),
-                                        request.p_result_->raw_request_length));
+        (int)sizeof(racf_options_extract_underbar_arg_area_t);
+    Logger::getInstance().debug("RACF Options extract request buffer:",
+                                Logger::getInstance().castHexString(
+                                    reinterpret_cast<char *>(p_arg_area),
+                                    request.p_result_->raw_request_length));
 
-    preserve_raw_request(reinterpret_cast<char *>(p_arg_area),
-                         &request.p_result_->raw_request,
-                         request.p_result_->raw_request_length);
-
-    logger.debug(MSG_CALLING_SEQ);
+    request.p_result_->raw_request = ProfileExtractor::preserveRawRequest(
+        reinterpret_cast<char *>(p_arg_area),
+        request.p_result_->raw_request_length);
 
     // Call R_Admin
+    Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
-    logger.debug(MSG_DONE);
+    Logger::getInstance().debug("Done");
 
     request.p_result_->raw_result = p_arg_area->args.p_result_buffer;
     // Preserve Return & Reason Codes
@@ -69,23 +70,25 @@ void ProfileExtractor::extract(SecurityRequest &request, const Logger &logger) {
     // Build 31-bit Arg Area
     auto unique_ptr = make_unique31<generic_extract_underbar_arg_area_t>();
     generic_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
-    build_generic_extract_request(p_arg_area, request.profile_name_,
-                                  request.class_name_, request.function_code_);
+    ProfileExtractor::buildGenericExtractRequest(
+        p_arg_area, request.profile_name_, request.class_name_,
+        request.function_code_);
     // Preserve the raw request data
     request.p_result_->raw_request_length =
         (int)sizeof(generic_extract_underbar_arg_area_t);
-    logger.debug(MSG_REQUEST_SEQ_GENERIC,
-                 logger.cast_hex_string(reinterpret_cast<char *>(p_arg_area),
-                                        request.p_result_->raw_request_length));
+    Logger::getInstance().debug("Generic extract request buffer:",
+                                Logger::getInstance().castHexString(
+                                    reinterpret_cast<char *>(p_arg_area),
+                                    request.p_result_->raw_request_length));
 
-    preserve_raw_request(reinterpret_cast<char *>(p_arg_area),
-                         &request.p_result_->raw_request,
-                         request.p_result_->raw_request_length);
-    logger.debug(MSG_CALLING_SEQ);
+    request.p_result_->raw_request = ProfileExtractor::preserveRawRequest(
+        reinterpret_cast<char *>(p_arg_area),
+        request.p_result_->raw_request_length);
 
     // Call R_Admin
+    Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
-    logger.debug(MSG_DONE);
+    Logger::getInstance().debug("Done");
 
     request.p_result_->raw_result = p_arg_area->args.p_result_buffer;
     // Preserve Return & Reason Codes
@@ -102,17 +105,22 @@ void ProfileExtractor::extract(SecurityRequest &request, const Logger &logger) {
     request.return_codes_.racfu_return_code = 4;
     // Raise Exception if Extract Failed.
     if (request.admin_type_ != "racf-options") {
-      throw RACFu::RACFuError("unable to extract '" + request.admin_type_ +
-                              "' profile '" + request.profile_name_ + "'");
+      throw RACFuError("unable to extract '" + request.admin_type_ +
+                       "' profile '" + request.profile_name_ + "'");
     } else {
-      throw RACFu::RACFuError("unable to extract '" + request.admin_type_ +
-                              "'");
+      throw RACFuError("unable to extract '" + request.admin_type_ + "'");
     }
   }
+
+  std::ostringstream oss;
+  oss << "IRRSEQ00 allocated in 31-bit memory at address "
+      << static_cast<void *>(request.p_result_->raw_result);
+  Logger::getInstance().debug(oss.str());
+
   request.return_codes_.racfu_return_code = 0;
 }
 
-void ProfileExtractor::build_generic_extract_request(
+void ProfileExtractor::buildGenericExtractRequest(
     generic_extract_underbar_arg_area_t *arg_area,
     const std::string &profile_name, const std::string &class_name,
     uint8_t function_code) {
@@ -176,15 +184,15 @@ void ProfileExtractor::build_generic_extract_request(
   arg_pointers->p_profile_extract_parms = profile_extract_parms;
 }
 
-void ProfileExtractor::build_racf_options_extract_request(
-    setropts_extract_underbar_arg_area_t *arg_area) {
+void ProfileExtractor::buildRACFOptionsExtractRequest(
+    racf_options_extract_underbar_arg_area_t *arg_area) {
   // Make sure buffer is clear.
-  memset(arg_area, 0, sizeof(setropts_extract_underbar_arg_area_t));
+  memset(arg_area, 0, sizeof(racf_options_extract_underbar_arg_area_t));
 
-  setropts_extract_args_t *args                 = &arg_area->args;
-  setropts_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
-  setropts_extract_parms_t *setropts_extract_parms =
-      &args->setropts_extract_parms;
+  racf_options_extract_args_t *args                 = &arg_area->args;
+  racf_options_extract_arg_pointers_t *arg_pointers = &arg_area->arg_pointers;
+  racf_options_extract_parms_t *racf_options_extract_parms =
+      &args->racf_options_extract_parms;
 
   /***************************************************************************/
   /* Set Extract Arguments                                                   */
@@ -194,7 +202,7 @@ void ProfileExtractor::build_racf_options_extract_request(
   args->ALET_RACF_rsn         = ALET;
   args->ACEE                  = ACEE;
   args->result_buffer_subpool = RESULT_BUFFER_SUBPOOL;
-  args->function_code         = SETROPTS_EXTRACT_FUNCTION_CODE;
+  args->function_code         = RACF_OPTIONS_EXTRACT_FUNCTION_CODE;
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */
@@ -221,17 +229,19 @@ void ProfileExtractor::build_racf_options_extract_request(
   // which marks the end of the argument list.
   *(reinterpret_cast<uint32_t *__ptr32>(&arg_pointers->p_p_result_buffer)) |=
       0x80000000;
-  arg_pointers->p_setropts_extract_parms = setropts_extract_parms;
+  arg_pointers->p_racf_options_extract_parms = racf_options_extract_parms;
 }
 
-void ProfileExtractor::preserve_raw_request(const char *arg_area,
-                                            char **raw_request,
-                                            const int &raw_request_length) {
-  *raw_request = static_cast<char *>(calloc(raw_request_length, sizeof(char)));
-  if (*raw_request == NULL) {
+char *ProfileExtractor::preserveRawRequest(const char *p_arg_area,
+                                           const int &raw_request_length) {
+  char *p_raw_request =
+      static_cast<char *>(calloc(raw_request_length, sizeof(char)));
+  if (p_raw_request == NULL) {
     perror("Warn - Unable to allocate space to preserve the raw request.\n");
-    return;
+    return NULL;
   }
-  memcpy(*raw_request, arg_area, raw_request_length);
+  Logger::getInstance().debugAllocate(p_raw_request, 64, raw_request_length);
+  memcpy(p_raw_request, p_arg_area, raw_request_length);
+  return p_raw_request;
 }
 }  // namespace RACFu

@@ -5,13 +5,13 @@
 #include <string>
 
 #include "logger.hpp"
-#include "messages.h"
 #include "security_request.hpp"
 
-// XmlGenerator Generates an XML String from a JSON string
-class XmlGenerator {
+namespace RACFu {
+// XMLGenerator Generates an XML String from a JSON string
+class XMLGenerator {
  private:
-  std::string xml_buffer;
+  std::string xml_buffer_;
   static std::string replace_xml_chars(std::string data);
   void build_open_tag(std::string tag);
   void build_attribute(std::string name, std::string value);
@@ -32,7 +32,8 @@ class XmlGenerator {
   std::string json_value_to_string(const nlohmann::json& trait);
 
  public:
-  void build_xml_string(RACFu::SecurityRequest& request, Logger& logger);
+  void build_xml_string(RACFu::SecurityRequest& request);
 };
+}  // namespace RACFu
 
 #endif

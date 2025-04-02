@@ -3,7 +3,10 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#include <algorithm>
+#include <cctype>
 #include <cstring>
+#include <string>
 #include <vector>
 
 // Use ntohl() to convert 32-bit values from big endian to little endian.
@@ -22,25 +25,29 @@
 #endif
 
 namespace RACFu {
-nlohmann::json ProfilePostProcessor::post_process_generic(
-    generic_extract_parms_results_t *generic_result_buffer,
-    const std::string &admin_type) {
+void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   nlohmann::json profile;
-  profile["profile"]    = nlohmann::json::object();
-  char *profile_address = reinterpret_cast<char *>(generic_result_buffer);
+  profile["profile"] = nlohmann::json::object();
+
+  // Profile Pointers and Information
+  const char *p_profile = request.p_result_->raw_result;
+  const generic_extract_parms_results_t *p_generic_result =
+      reinterpret_cast<const generic_extract_parms_results_t *>(p_profile);
+  request.p_result_->raw_result_length =
+      ntohl(p_generic_result->result_buffer_length);
+
+  Logger::getInstance().debug(
+      "Raw generic profile extract result:",
+      Logger::getInstance().castHexString(
+          request.p_result_->raw_result, request.p_result_->raw_result_length));
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
-  first_segment_offset += ntohl(generic_result_buffer->profile_name_length);
-  generic_segment_descriptor_t *segment =
-      reinterpret_cast<generic_segment_descriptor_t *>(profile_address +
-                                                       first_segment_offset);
-  char segment_key[9];
-  segment_key[8] = 0;  // add null terminator
-
+  first_segment_offset += ntohl(p_generic_result->profile_name_length);
+  const generic_segment_descriptor_t *p_segment =
+      reinterpret_cast<const generic_segment_descriptor_t *>(
+          p_profile + first_segment_offset);
   // Field Variables
-  char field_key[9];
-  field_key[8] = 0;  // add null terminator
   std::string racfu_field_key;
   char racfu_field_type;
 
@@ -48,251 +55,226 @@ nlohmann::json ProfilePostProcessor::post_process_generic(
   std::vector<nlohmann::json> repeat_group;
   int repeat_group_count;
   int repeat_group_element_count;
-  char repeat_field_key[9];
-  repeat_field_key[8] = 0;  // add null terminator
   std::string racfu_repeat_field_key;
   char racfu_repeat_field_type;
 
   // Post Process Segments
-  for (int i = 1; i <= ntohl(generic_result_buffer->segment_count); i++) {
-    post_process_key(segment_key, segment->name, 8);
+  for (int i = 1; i <= ntohl(p_generic_result->segment_count); i++) {
+    std::string segment_key =
+        ProfilePostProcessor::postProcessKey(p_segment->name, 8);
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
-    generic_field_descriptor_t *field =
-        reinterpret_cast<generic_field_descriptor_t *>(
-            profile_address + ntohl(segment->field_descriptor_offset));
-    for (int j = 1; j <= ntohl(segment->field_count); j++) {
-      racfu_field_key = post_process_field_key(field_key, admin_type,
-                                               segment_key, field->name);
+    const generic_field_descriptor_t *p_field =
+        reinterpret_cast<const generic_field_descriptor_t *>(
+            p_profile + ntohl(p_segment->field_descriptor_offset));
+    for (int j = 1; j <= ntohl(p_segment->field_count); j++) {
+      racfu_field_key = ProfilePostProcessor::postProcessFieldKey(
+          request.admin_type_, segment_key, p_field->name);
       racfu_field_type =
-          get_racfu_trait_type(admin_type.c_str(), segment_key, field_key);
-      // Post Process Non-Repeat Fields
-      if (!(ntohs(field->type) & t_repeat_field_header)) {
-        process_generic_field(profile["profile"][segment_key][racfu_field_key],
-                              field, field_key, profile_address,
-                              racfu_field_type);
-        // Post Process Repeat Fields
+          get_trait_type(request.admin_type_, segment_key, racfu_field_key);
+      if (!(ntohs(p_field->type) & t_repeat_field_header)) {
+        // Post Process Non-Repeat Fields
+        ProfilePostProcessor::processGenericField(
+            profile["profile"][segment_key][racfu_field_key], p_field,
+            p_profile, racfu_field_type);
       } else {
+        // Post Process Repeat Fields
         repeat_group_count = ntohl(
-            field->field_data_length_repeat_group_count.repeat_group_count);
+            p_field->field_data_length_repeat_group_count.repeat_group_count);
         repeat_group_element_count =
-            ntohl(field->field_data_offset_repeat_group_element_count
+            ntohl(p_field->field_data_offset_repeat_group_element_count
                       .repeat_group_element_count);
         // Post Process Each Repeat Group
         for (int k = 1; k <= repeat_group_count; k++) {
           repeat_group.push_back(nlohmann::json::object());
           // Post Process Each Repeat Group Field
           for (int l = 1; l <= repeat_group_element_count; l++) {
-            field++;
-            racfu_repeat_field_key = post_process_field_key(
-                repeat_field_key, admin_type, segment_key, field->name);
-            racfu_repeat_field_type = get_racfu_trait_type(
-                admin_type.c_str(), segment_key, repeat_field_key);
-            process_generic_field(repeat_group[k - 1][racfu_repeat_field_key],
-                                  field, repeat_field_key, profile_address,
-                                  racfu_repeat_field_type);
+            p_field++;
+            racfu_repeat_field_key = ProfilePostProcessor::postProcessFieldKey(
+                request.admin_type_, segment_key, p_field->name);
+            racfu_repeat_field_type = get_trait_type(
+                request.admin_type_, segment_key, racfu_repeat_field_key);
+            ProfilePostProcessor::processGenericField(
+                repeat_group[k - 1][racfu_repeat_field_key], p_field, p_profile,
+                racfu_repeat_field_type);
           }
         }
         profile["profile"][segment_key][racfu_field_key] = repeat_group;
         repeat_group.clear();
       }
-      field++;
+      p_field++;
     }
-    segment++;
+    p_segment++;
   }
-  return profile;
+  request.intermediate_result_json_ = profile;
 }
 
-nlohmann::json ProfilePostProcessor::post_process_setropts(
-    setropts_extract_results_t *setropts_result_buffer) {
+void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   nlohmann::json profile;
-  profile["profile"]    = nlohmann::json::object();
-  char *profile_address = reinterpret_cast<char *>(setropts_result_buffer);
+  profile["profile"] = nlohmann::json::object();
+
+  // Profile Pointers and Information
+  const char *p_profile = request.p_result_->raw_result;
+  const racf_options_extract_results_t *p_setropts_result =
+      reinterpret_cast<const racf_options_extract_results_t *>(p_profile);
+  request.p_result_->raw_result_length =
+      ntohl(p_setropts_result->result_buffer_length);
+
+  Logger::getInstance().debug(
+      "Raw RACF Options extract result:",
+      Logger::getInstance().castHexString(
+          request.p_result_->raw_result, request.p_result_->raw_result_length));
 
   // Segment Variables
-  setropts_segment_descriptor_t *segment =
-      reinterpret_cast<setropts_segment_descriptor_t *>(
-          profile_address + sizeof(setropts_extract_results_t));
-  char segment_key[9];
-  segment_key[8] = 0;  // add null terminator
+  const racf_options_segment_descriptor_t *p_segment =
+      reinterpret_cast<const racf_options_segment_descriptor_t *>(
+          p_profile + sizeof(racf_options_extract_results_t));
 
   // Field Variables
-  setropts_field_descriptor_t *field =
-      reinterpret_cast<setropts_field_descriptor_t *>(
-          profile_address + sizeof(setropts_extract_results_t) +
-          sizeof(setropts_segment_descriptor_t));
-  char field_key[9];
-  field_key[8] = 0;        // add null terminator
-  char field_data[10025];  // we may want to make this dynamic using a VLA or
-                           // malloc()/calloc()
+  const racf_options_field_descriptor_t *p_field =
+      reinterpret_cast<const racf_options_field_descriptor_t *>(
+          p_profile + sizeof(racf_options_extract_results_t) +
+          sizeof(racf_options_segment_descriptor_t));
   std::vector<std::string> list_field_data;
-  char *list_field_data_pointer;
+  const char *p_list_field_data;
 
   // Post Process Base Segment
-  post_process_key(segment_key, segment->name, 8);
+  std::string segment_key =
+      ProfilePostProcessor::postProcessKey(p_segment->name, 8);
   profile["profile"][segment_key] = nlohmann::json::object();
 
   // Post Process Fields
-  for (int i = 1; i <= ntohs(segment->field_count); i++) {
-    std::string racfu_field_key = post_process_field_key(
-        field_key, "racf-options", segment_key, field->name);
-    char field_type  = get_setropts_field_type(field_key);
-    int field_length = ntohs(field->field_length);
+  for (int i = 1; i <= ntohs(p_segment->field_count); i++) {
+    std::string racfu_field_key = ProfilePostProcessor::postProcessFieldKey(
+        "racf-options", segment_key, p_field->name);
+    char field_type =
+        get_trait_type("racf-options", segment_key, racfu_field_key);
+    int field_length = ntohs(p_field->field_length);
     if (field_length != 0) {
-      // Post Process List Fields
-      if (field_type == SETROPTS_FIELD_TYPE_LIST) {
-        list_field_data_pointer = reinterpret_cast<char *>(field) +
-                                  sizeof(setropts_field_descriptor_t);
+      if (field_type == TRAIT_TYPE_REPEAT) {
+        // Post Process List Fields
+        p_list_field_data = reinterpret_cast<const char *>(p_field) +
+                            sizeof(racf_options_field_descriptor_t);
         for (int j = 0; j < field_length / 9; j++) {
-          process_setropts_field(field_data, list_field_data_pointer, 8);
-          list_field_data.push_back(field_data);
-          list_field_data_pointer += 9;
+          list_field_data.push_back(
+              ProfilePostProcessor::decodeEBCDICBytes(p_list_field_data, 8));
+          p_list_field_data += 9;
         }
         profile["profile"][segment_key][racfu_field_key] = list_field_data;
         list_field_data.clear();
-        // Post Process String & Number Fields
       } else {
-        process_setropts_field(field_data,
-                               reinterpret_cast<char *>(field) +
-                                   sizeof(setropts_field_descriptor_t),
-                               field_length);
-        // Number
-        if (field_type == SETROPTS_FIELD_TYPE_NUMBER) {
+        // Post Process String & Number Fields
+        std::string field_data = ProfilePostProcessor::decodeEBCDICBytes(
+            reinterpret_cast<const char *>(p_field) +
+                sizeof(racf_options_field_descriptor_t),
+            field_length);
+        if (field_type == TRAIT_TYPE_UINT) {
+          // Number
           profile["profile"][segment_key][racfu_field_key] =
-              strtol(field_data, NULL, 10);
-          // String
+              std::stoi(field_data);
         } else {
+          // String
           profile["profile"][segment_key][racfu_field_key] = field_data;
         }
       }
+    } else if (field_type == TRAIT_TYPE_BOOLEAN) {
       // Post Process Boolean Fields
-    } else if (field_type == SETROPTS_FIELD_TYPE_BOOLEAN) {
-      if (field->flag == 0xe8) {  // 0xe8 is 'Y' in EBCDIC.
+      if (p_field->flag == 0xe8) {  // 0xe8 is 'Y' in EBCDIC.
         profile["profile"][segment_key][racfu_field_key] = true;
       } else {
         profile["profile"][segment_key][racfu_field_key] = false;
       }
-      // Post Process All Non-Boolean Fields Without a Value
     } else {
+      // Post Process All Non-Boolean Fields Without a Value
       profile["profile"][segment_key][racfu_field_key] = nullptr;
     }
-    field = reinterpret_cast<setropts_field_descriptor_t *>(
-        reinterpret_cast<char *>(field) + sizeof(setropts_field_descriptor_t) +
-        field_length);
+    p_field = reinterpret_cast<const racf_options_field_descriptor_t *>(
+        reinterpret_cast<const char *>(p_field) +
+        sizeof(racf_options_field_descriptor_t) + field_length);
   }
-  return profile;
+  request.intermediate_result_json_ = profile;
 }
 
-void ProfilePostProcessor::process_generic_field(
-    nlohmann::json &json_field, generic_field_descriptor_t *field,
-    char *field_key, char *profile_address, const char racfu_field_type) {
-  char field_data[1025];  // we may want to make this dynamic using a VLA or
-                          // malloc()/calloc()
-  // Post Process Boolean Fields
-  if (ntohs(field->type) & t_boolean_field) {
-    if (ntohl(field->flags) & f_boolean_field) {
+void ProfilePostProcessor::processGenericField(
+    nlohmann::json &json_field, const generic_field_descriptor_t *p_field,
+    const char *p_profile, const char racfu_field_type) {
+  if (ntohs(p_field->type) & t_boolean_field) {
+    // Post Process Boolean Fields
+    if (ntohl(p_field->flags) & f_boolean_field) {
       json_field = true;
     } else {
       json_field = false;
     }
-    // Post Process Generic Fields
   } else {
+    // Post Process Generic Fields
     int field_length =
-        ntohl(field->field_data_length_repeat_group_count.field_data_length);
-    memset(field_data, 0, field_length + 1);
-    copy_and_encode_string(
-        field_data,
-        profile_address +
-            ntohl(field->field_data_offset_repeat_group_element_count
-                      .field_data_offset),
+        ntohl(p_field->field_data_length_repeat_group_count.field_data_length);
+    std::string field_data = ProfilePostProcessor::decodeEBCDICBytes(
+        p_profile + ntohl(p_field->field_data_offset_repeat_group_element_count
+                              .field_data_offset),
         field_length);
-    // Set Empty Fields to 'null'
-    if (strcmp(field_data, "") == 0) {
+    if (field_data == "") {
+      // Set Empty Fields to 'null'
       json_field = nullptr;
-      // Cast Integer Fields
     } else if (racfu_field_type == TRAIT_TYPE_UINT) {
-      json_field = strtol(field_data, NULL, 10);
-      // Convert Pseudo Boolean Fields
+      // Cast Integer Fields
+      json_field = std::stoi(field_data);
     } else if (racfu_field_type == TRAIT_TYPE_PSEUDO_BOOLEAN) {
-      if (strcmp(field_data, "YES") == 0) {
+      // Convert Pseudo Boolean Fields
+      if (field_data == "YES") {
         json_field = true;
       } else {
         json_field = false;
       }
-      // Treat All Other Fields as Strings
     } else {
+      // Treat All Other Fields as Strings
       json_field = field_data;
     }
   }
 }
 
-void ProfilePostProcessor::process_setropts_field(char *field_data_destination,
-                                                  const char *field_data_source,
-                                                  int field_length) {
-  memset(field_data_destination, 0, field_length + 1);
-  copy_and_encode_string(field_data_destination, field_data_source,
-                         field_length);
-  trim_trailing_spaces(field_data_destination, field_length);
-}
-
-char ProfilePostProcessor::get_setropts_field_type(const char *field_key) {
-  int list_length =
-      sizeof(SETROPTS_FIELD_TYPES) / sizeof(SETROPTS_FIELD_TYPES[0]);
-  for (int i = 0; i < list_length; i++) {
-    if (strcmp(field_key, SETROPTS_FIELD_TYPES[i].key) == 0) {
-      return SETROPTS_FIELD_TYPES[i].type;
-    }
-  }
-  return SETROPTS_FIELD_TYPE_STRING;
-}
-
-std::string ProfilePostProcessor::post_process_field_key(
-    char *field_key, const std::string &admin_type, const char *segment,
-    const char *raw_field_key) {
-  post_process_key(field_key, raw_field_key, 8);
+std::string ProfilePostProcessor::postProcessFieldKey(
+    const std::string &admin_type, const std::string &segment,
+    const char *p_raw_field_key) {
+  std::string field_key =
+      ProfilePostProcessor::postProcessKey(p_raw_field_key, 8);
   const char *racfu_field_key =
-      get_racfu_key(admin_type.c_str(), segment, field_key);
+      get_racfu_key(admin_type.c_str(), segment.c_str(), field_key.c_str());
   if (racfu_field_key == NULL) {
-    return std::string("experimental:") + std::string(field_key);
+    return "experimental:" + field_key;
   }
   if (racfu_field_key + strlen(racfu_field_key) - 1) {
     if (!(*(racfu_field_key + strlen(racfu_field_key) - 1) == '*')) {
-      return std::string(racfu_field_key);
+      return racfu_field_key;
     }
   }
-  return std::string(segment) + ":" + std::string(field_key);
+  return segment + ":" + field_key;
 }
 
-void ProfilePostProcessor::post_process_key(char *destination_key,
-                                            const char *source_key,
-                                            int length) {
-  copy_and_encode_string(destination_key, source_key, length);
-  convert_to_lowercase(destination_key, length);
-  trim_trailing_spaces(destination_key, length);
+std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
+                                                 int length) {
+  std::string post_processed_key =
+      ProfilePostProcessor::decodeEBCDICBytes(p_source_key, length);
+  // Convert to lowercase
+  std::transform(post_processed_key.begin(), post_processed_key.end(),
+                 post_processed_key.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+  return post_processed_key;
 }
 
-void ProfilePostProcessor::copy_and_encode_string(char *destination_string,
-                                                  const char *source_string,
-                                                  int length) {
-  strncpy(destination_string, source_string, length);
-  __e2a_l(destination_string, length);
-}
-
-void ProfilePostProcessor::convert_to_lowercase(char *string, int length) {
-  for (int i = 0; i < length; i++) {
-    string[i] = tolower(string[i]);
+std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
+                                                    int length) {
+  char ascii_bytes[length + 1];
+  ascii_bytes[length] = 0;
+  // Decode bytes
+  strncpy(ascii_bytes, p_ebcdic_bytes, length);
+  __e2a_l(ascii_bytes, length);
+  std::string ascii_string = std::string(ascii_bytes);
+  // Convert to lowercase
+  size_t end = ascii_string.find_last_not_of(" ");
+  if (end != std::string::npos) {
+    return ascii_string.substr(0, end + 1);
   }
-}
-
-void ProfilePostProcessor::trim_trailing_spaces(char *string, int length) {
-  int i = length - 1;
-  while (i >= 0) {
-    if (string[i] == ' ') {
-      string[i] = 0;
-    } else {
-      return;
-    }
-    i--;
-  }
+  return ascii_string;
 }
 }  // namespace RACFu

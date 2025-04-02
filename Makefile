@@ -8,7 +8,6 @@ SRC				= ${PWD}/racfu
 IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
-LOGGER			= ${PWD}/racfu/logger
 VALIDATION		= ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
@@ -40,8 +39,7 @@ ifeq ($(UNAME), OS/390)
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
 				-I $(JSON) \
-				-I $(JSON_SCHEMA) \
-				-I $(LOGGER)
+				-I $(JSON_SCHEMA)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
@@ -62,8 +60,7 @@ else
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
 				-I $(JSON) \
-				-I $(JSON_SCHEMA) \
-				-I $(LOGGER)
+				-I $(JSON_SCHEMA)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
@@ -87,7 +84,6 @@ racfu: clean mkdirs
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
-			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
@@ -102,7 +98,6 @@ test: clean mkdirs
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
-			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp \
 			$(TESTS)/*.cpp \
@@ -138,7 +133,6 @@ check:
 		-I $(IRRSEQ00_SRC) \
 		-I $(KEY_MAP) \
 		-I $(VALIDATION) \
-		-I $(LOGGER) \
 		-I $(ZOSLIB) \
 		$(SRC)/
 

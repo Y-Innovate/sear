@@ -15,7 +15,7 @@
 /*************************************************************************/
 /* Function Codes                                                        */
 /*************************************************************************/
-const uint8_t SETROPTS_EXTRACT_FUNCTION_CODE         = 0x16;
+const uint8_t RACF_OPTIONS_EXTRACT_FUNCTION_CODE     = 0x16;
 const uint8_t USER_EXTRACT_FUNCTION_CODE             = 0x19;
 const uint8_t GROUP_EXTRACT_FUNCTION_CODE            = 0x1b;
 const uint8_t GROUP_CONNECTION_EXTRACT_FUNCTION_CODE = 0x1d;
@@ -41,14 +41,6 @@ const uint32_t f_output_only   = 0x40000000;  // output-only field
 const uint8_t RESULT_BUFFER_SUBPOOL = 127;
 const uint32_t ALET                 = 0x00000000;  // primary address space
 const uint32_t ACEE                 = 0x00000000;
-
-/*************************************************************************/
-/* Setropts Constants                                                    */
-/*************************************************************************/
-const char SETROPTS_FIELD_TYPE_LIST    = 0;
-const char SETROPTS_FIELD_TYPE_STRING  = 1;
-const char SETROPTS_FIELD_TYPE_NUMBER  = 2;
-const char SETROPTS_FIELD_TYPE_BOOLEAN = 3;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -167,14 +159,14 @@ typedef struct {
 } generic_field_descriptor_t;
 
 /*************************************************************************/
-/* Setropts Extract Structures                                           */
+/* RACF Options Extract Structures                                       */
 /*                                                                       */
-/* Specific to Setropts Extract.                                         */
+/* Specific to RACF Options Extract.                                     */
 /*************************************************************************/
 typedef struct {
   uint32_t request_flags;
   uint8_t reserved_1[10];
-} setropts_extract_parms_t;
+} racf_options_extract_parms_t;
 
 typedef struct {
   char RACF_work_area[1024];
@@ -187,7 +179,7 @@ typedef struct {
   uint32_t RACF_rsn;
   // extract function to perform
   uint8_t function_code;
-  setropts_extract_parms_t setropts_extract_parms;
+  racf_options_extract_parms_t racf_options_extract_parms;
   // Max of 247 + 1 for null terimnator
   char profile_name[PROFILE_NAME_MAX_LENGTH + 1];
   // Result area for the service
@@ -195,7 +187,7 @@ typedef struct {
   uint8_t result_buffer_subpool;
   // R_admin returns data here
   char *__ptr32 p_result_buffer;
-} setropts_extract_args_t;
+} racf_options_extract_args_t;
 
 typedef struct {
   char *__ptr32 p_work_area;
@@ -208,25 +200,25 @@ typedef struct {
   uint32_t *__ptr32 p_RACF_rsn;
   // extract function to perform
   uint8_t *__ptr32 p_function_code;
-  setropts_extract_parms_t *__ptr32 p_setropts_extract_parms;
+  racf_options_extract_parms_t *__ptr32 p_racf_options_extract_parms;
   char *__ptr32 p_profile_name;
   // Result area for the service
   uint32_t *__ptr32 p_ACEE;
   uint8_t *__ptr32 p_result_buffer_subpool;
   // R_admin returns data here
   char *__ptr32 *__ptr32 p_p_result_buffer;
-} setropts_extract_arg_pointers_t;
+} racf_options_extract_arg_pointers_t;
 
 // 31-bit for IRRSEQ00 arguments.
 typedef struct {
-  setropts_extract_args_t args;
-  setropts_extract_arg_pointers_t arg_pointers;
-} setropts_extract_underbar_arg_area_t;
+  racf_options_extract_args_t args;
+  racf_options_extract_arg_pointers_t arg_pointers;
+} racf_options_extract_underbar_arg_area_t;
 
 /*************************************************************************/
-/* Setropts Segment/Field Descriptor Structures                          */
+/* RACF Options Segment/Field Descriptor Structures                      */
 /*                                                                       */
-/* Used to interpret extracted setropts profile data                     */
+/* Used to interpret extracted RACF Options profile data                 */
 /*************************************************************************/
 typedef struct {
   char eyecatcher[4];
@@ -234,133 +226,30 @@ typedef struct {
   char reserved_2[4];
   uint16_t segment_count;
   // Start of first segment descriptor.
-} setropts_extract_results_t;
+} racf_options_extract_results_t;
 
 typedef struct {
   char name[8];
   uint8_t flag;
   uint16_t field_count;
   // Start of first field descriptor
-} setropts_segment_descriptor_t;
+} racf_options_segment_descriptor_t;
 
 typedef struct {
   char name[8];
   uint8_t flag;
   uint16_t field_length;
   // Start of next field descriptor, next segment, or end of data
-} setropts_field_descriptor_t;
+} racf_options_field_descriptor_t;
 
 typedef struct {
   char key[8 + 1];
   char type;
-} setropts_field_type_t;
+} racf_options_field_type_t;
 
 #pragma pack(pop)  // Restore default structure packing options.
 
-// Since the setropts field descriptor structure in the extracted
-// setropts data do not describe what kind of data is in each field,
-// we need to use this list to look up the field type for each
-// setropts field.
-const setropts_field_type_t SETROPTS_FIELD_TYPES[]{
-    {"addcreat", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {    "adsp", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"applaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {   "audit",    SETROPTS_FIELD_TYPE_LIST},
-    { "catdsns",  SETROPTS_FIELD_TYPE_STRING},
-    {"classact",    SETROPTS_FIELD_TYPE_LIST},
-    {"classtat",    SETROPTS_FIELD_TYPE_LIST},
-    { "cmdviol", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"compmode", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {     "egn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {   "erase", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"eraseall", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"erasesec",  SETROPTS_FIELD_TYPE_STRING},
-    {  "gencmd",    SETROPTS_FIELD_TYPE_LIST},
-    { "generic",    SETROPTS_FIELD_TYPE_LIST},
-    { "genlist",    SETROPTS_FIELD_TYPE_LIST},
-    {"genowner", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {  "global",    SETROPTS_FIELD_TYPE_LIST},
-    { "grplist", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "history",  SETROPTS_FIELD_TYPE_STRING},
-    {"inactive",  SETROPTS_FIELD_TYPE_NUMBER},
-    {"initstat", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"interval",  SETROPTS_FIELD_TYPE_NUMBER},
-    {"jesbatch", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"jesearly", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {  "jesnje",  SETROPTS_FIELD_TYPE_STRING},
-    {"jesundef",  SETROPTS_FIELD_TYPE_STRING},
-    {  "jesxbm", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "kerblvl",  SETROPTS_FIELD_TYPE_NUMBER},
-    {    "list", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"logalwys",    SETROPTS_FIELD_TYPE_LIST},
-    {"logdeflt",    SETROPTS_FIELD_TYPE_LIST},
-    { "logfail",    SETROPTS_FIELD_TYPE_LIST},
-    {"lognever",    SETROPTS_FIELD_TYPE_LIST},
-    { "logsucc",    SETROPTS_FIELD_TYPE_LIST},
-    {"minchang",  SETROPTS_FIELD_TYPE_NUMBER},
-    {"mixdcase", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"mlactive",  SETROPTS_FIELD_TYPE_STRING},
-    {    "mlfs",  SETROPTS_FIELD_TYPE_STRING},
-    {   "mlipc",  SETROPTS_FIELD_TYPE_STRING},
-    { "mlnames", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "mlquiet", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {     "mls",  SETROPTS_FIELD_TYPE_STRING},
-    {"mlstable", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {   "model", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {  "modgdg", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"modgroup", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "moduser", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"operaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {  "phrint",  SETROPTS_FIELD_TYPE_NUMBER},
-    {  "prefix",  SETROPTS_FIELD_TYPE_STRING},
-    {"primlang",  SETROPTS_FIELD_TYPE_STRING},
-    { "protall",  SETROPTS_FIELD_TYPE_STRING},
-    {  "pwdalg",  SETROPTS_FIELD_TYPE_STRING},
-    { "pwdspec", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "raclist",    SETROPTS_FIELD_TYPE_LIST},
-    { "realdsn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {   "retpd",  SETROPTS_FIELD_TYPE_NUMBER},
-    {  "revoke",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule1",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule2",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule3",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule4",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule5",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule6",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule7",  SETROPTS_FIELD_TYPE_STRING},
-    {   "rule8",  SETROPTS_FIELD_TYPE_STRING},
-    {"rvarstfm",  SETROPTS_FIELD_TYPE_STRING},
-    {"rvarstpw",  SETROPTS_FIELD_TYPE_STRING},
-    {"rvarswfm",  SETROPTS_FIELD_TYPE_STRING},
-    {"rvarswpw",  SETROPTS_FIELD_TYPE_STRING},
-    {  "saudit", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"seclabct", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "seclang",  SETROPTS_FIELD_TYPE_STRING},
-    { "sessint",  SETROPTS_FIELD_TYPE_NUMBER},
-    {"slabaudt", SETROPTS_FIELD_TYPE_BOOLEAN},
-    { "slbysys", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"slevaudt",  SETROPTS_FIELD_TYPE_STRING},
-    { "tapedsn", SETROPTS_FIELD_TYPE_BOOLEAN},
-    {"terminal",  SETROPTS_FIELD_TYPE_STRING},
-    { "warning",  SETROPTS_FIELD_TYPE_NUMBER},
-    {"whenprog", SETROPTS_FIELD_TYPE_BOOLEAN}
-};
-
 // Glue code to call IRRSEQ00 assembler code.
 extern "C" uint32_t callRadmin(char *__ptr32);
-
-struct DefaultDeleter {
-  void operator()(void *ptr) const { free(ptr); }
-};
-
-template <typename T, typename Deleter = DefaultDeleter, typename... Targs>
-auto make_unique31(Targs &&...args) -> std::unique_ptr<T, Deleter> {
-  T *p = static_cast<T *>(__malloc31(sizeof(T)));
-  if (p == nullptr) {
-    throw std::bad_alloc();
-  }
-  new (p) T(std::forward(args)...);
-  return std::unique_ptr<T, Deleter>(p);
-}
 
 #endif

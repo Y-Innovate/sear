@@ -7,7 +7,6 @@
 
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"
-#include "messages.h"
 #include "profile_extractor.hpp"
 #include "profile_post_processor.hpp"
 #include "racfu_error.hpp"
@@ -15,8 +14,10 @@
 #include "xml_parser.hpp"
 
 namespace RACFu {
-SecurityAdmin::SecurityAdmin(racfu_result_t *p_result, bool debug)
-    : request_(SecurityRequest(p_result)), logger_(Logger(debug)) {}
+SecurityAdmin::SecurityAdmin(racfu_result_t *p_result, bool debug) {
+  Logger::getInstance().setDebug(debug);
+  request_ = SecurityRequest(p_result);
+}
 
 void SecurityAdmin::makeRequest(const char *p_request_json_string) {
   nlohmann::json request_json;
@@ -31,7 +32,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
                        std::to_string(ex.byte));
     }
 
-    logger_.debug(MSG_VALIDATING_PARAMETERS);
+    Logger::getInstance().debug("Validating parameters ...");
     try {
       parameter_validator.validate(request_json);
     } catch (const std::exception &ex) {
@@ -39,18 +40,18 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
       throw RACFuError(
           "The provided request JSON does not contain a valid request");
     }
-    logger_.debug(MSG_DONE);
+    Logger::getInstance().debug("Done");
 
     // Load Request
     request_.load(request_json);
 
     // Make Request To Corresponding Callable Service
     if (request_.operation_ == "extract") {
-      logger_.debug(MSG_SEQ_PATH);
-      this->doExtract();
+      Logger::getInstance().debug("Entering IRRSEQ00 path");
+      SecurityAdmin::doExtract();
     } else {
-      logger_.debug(MSG_SMO_PATH);
-      this->doAddAlterDelete();
+      Logger::getInstance().debug("Entering IRRSMO00 path");
+      SecurityAdmin::doAddAlterDelete();
     }
   } catch (const RACFuError &ex) {
     request_.errors_ = ex.errors_;
@@ -59,44 +60,24 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
   } catch (const std::exception &ex) {
     request_.errors_ = {ex.what()};
   }
-  request_.buildResult(logger_);
+  request_.buildResult();
 }
 
 void SecurityAdmin::doExtract() {
   // Extract Profile
   ProfileExtractor extractor;
-  extractor.extract(request_, logger_);
+  extractor.extract(request_);
 
   ProfilePostProcessor post_processor;
   if (request_.admin_type_ != "racf-options") {
     // Post Process Generic Extract Result
-    generic_extract_parms_results_t *p_generic_result =
-        reinterpret_cast<generic_extract_parms_results_t *>(
-            request_.p_result_->raw_result);
-    request_.p_result_->raw_result_length =
-        ntohl(p_generic_result->result_buffer_length);
-    logger_.debug(
-        MSG_RESULT_SEQ_GENERIC,
-        logger_.cast_hex_string(request_.p_result_->raw_result,
-                                request_.p_result_->raw_result_length));
-    request_.intermediate_result_json_ = post_processor.post_process_generic(
-        p_generic_result, request_.admin_type_);
+    post_processor.postProcessGeneric(request_);
   } else {
     // Post Process RACF Options Extract Result
-    setropts_extract_results_t *p_setropts_result =
-        reinterpret_cast<setropts_extract_results_t *>(
-            request_.p_result_->raw_result);
-    request_.p_result_->raw_result_length =
-        ntohl(p_setropts_result->result_buffer_length);
-    logger_.debug(
-        MSG_RESULT_SEQ_SETROPTS,
-        logger_.cast_hex_string(request_.p_result_->raw_result,
-                                request_.p_result_->raw_result_length));
-    request_.intermediate_result_json_ =
-        post_processor.post_process_setropts(p_setropts_result);
+    post_processor.postProcessRACFOptions(request_);
   }
 
-  logger_.debug(MSG_SEQ_POST_PROCESS);
+  Logger::getInstance().debug("Profile extract result has been post-processed");
 }
 
 void SecurityAdmin::doAddAlterDelete() {
@@ -105,7 +86,7 @@ void SecurityAdmin::doAddAlterDelete() {
       ((request_.admin_type_ == "group") || (request_.admin_type_ == "user") ||
        (request_.admin_type_ == "data-set") ||
        (request_.admin_type_ == "resource"))) {
-    logger_.debug(MSG_SMO_VALIDATE_EXIST);
+    Logger::getInstance().debug("Verifying that profile existis for alter ...");
     if (!does_profile_exist(request_)) {
       request_.return_codes_.racfu_return_code = 8;
       if (request_.class_name_.empty()) {
@@ -127,31 +108,30 @@ void SecurityAdmin::doAddAlterDelete() {
     request_.p_result_->raw_result        = nullptr;
     request_.p_result_->raw_result_length = 0;
 
-    logger_.debug(MSG_DONE);
+    Logger::getInstance().debug("Done");
   }
 
   // Build Request
   request_.p_result_->raw_result_length = 10000;
-  XmlGenerator generator                = XmlGenerator();
+  XMLGenerator generator;
 
-  generator.build_xml_string(request_, logger_);
+  generator.build_xml_string(request_);
 
-  logger_.debug(MSG_CALLING_SMO);
+  Logger::getInstance().debug("Calling IRRSMO00 ...");
   call_irrsmo00(request_, false);
 
-  logger_.debug(MSG_DONE);
+  Logger::getInstance().debug("Done");
 
   // Parse Result
-  XmlParser parser = XmlParser();
-  request_.intermediate_result_json_ =
-      parser.build_json_string(request_, logger_);
+  XMLParser parser;
+  request_.intermediate_result_json_ = parser.build_json_string(request_);
 
-  logger_.debug(MSG_SMO_POST_PROCESS);
-  logger_.debug(request_.intermediate_result_json_.dump());
+  Logger::getInstance().debug("Post-processing decoded result ...");
+  Logger::getInstance().debug(request_.intermediate_result_json_.dump());
 
   // Post-Process Result
   post_process_smo_json(request_, request_.intermediate_result_json_);
 
-  logger_.debug(MSG_DONE);
+  Logger::getInstance().debug("Done");
 }
 }  // namespace RACFu

@@ -11,10 +11,6 @@ namespace RACFu {
 
 class SecurityRequest {
  public:
-  SecurityRequest();
-  explicit SecurityRequest(racfu_result_t* p_result);
-  void load(const nlohmann::json& request);
-  void buildResult(const Logger& logger);
   // Request
   std::string admin_type_;
   std::string operation_;
@@ -32,6 +28,10 @@ class SecurityRequest {
   racfu_return_codes_t return_codes_ = {-1, -1, -1, -1};
   std::vector<std::string> errors_;
   nlohmann::json intermediate_result_json_;
+  SecurityRequest();
+  explicit SecurityRequest(racfu_result_t* p_result);
+  void load(const nlohmann::json& request);
+  void buildResult();
 };
 
 }  // namespace RACFu

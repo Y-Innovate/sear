@@ -15,15 +15,14 @@ static nlohmann::json_schema::json_validator parameter_validator{
     parameters_schema};
 
 class SecurityAdmin {
+ private:
+  SecurityRequest request_;
+  void doExtract();
+  void doAddAlterDelete();
+
  public:
   SecurityAdmin(racfu_result_t *p_result, bool debug);
   void makeRequest(const char *p_request_json_string);
-
- private:
-  SecurityRequest request_;
-  Logger logger_;
-  void doExtract();
-  void doAddAlterDelete();
 };
 }  // namespace RACFu
 

@@ -4,7 +4,6 @@
 
 #include "key_map.hpp"
 #include "logger.hpp"
-#include "messages.h"
 #include "racfu_error.hpp"
 #include "trait_validation.hpp"
 
@@ -14,9 +13,9 @@
 #include "zoslib.h"
 #endif
 
-// Public Functions of XmlGenerator
-void XmlGenerator::build_xml_string(RACFu::SecurityRequest& request,
-                                    Logger& logger) {
+namespace RACFu {
+// Public Functions of XMLGenerator
+void XMLGenerator::build_xml_string(SecurityRequest& request) {
   // Main body function that builds an xml string
 
   // Build the securityrequest tag (Consistent)
@@ -35,13 +34,13 @@ void XmlGenerator::build_xml_string(RACFu::SecurityRequest& request,
   if (!request.traits_.empty()) {
     build_end_nested_tag();
 
-    logger.debug(MSG_VALIDATING_TRAITS);
+    Logger::getInstance().debug("Validating traits ...");
 
     validate_traits(request.admin_type_, request);
 
     build_request_data(true_admin_type, request.admin_type_, request.traits_);
 
-    logger.debug(MSG_DONE);
+    Logger::getInstance().debug("Done");
 
     // Close the admin object
     build_full_close_tag(true_admin_type);
@@ -55,27 +54,28 @@ void XmlGenerator::build_xml_string(RACFu::SecurityRequest& request,
     build_full_close_tag("securityrequest");
   }
 
-  logger.debug(MSG_REQUEST_SMO_ASCII, xml_buffer);
+  Logger::getInstance().debug("Request XML:", xml_buffer_);
 
   // convert our c++ string to a char * buffer
-  const int length = xml_buffer.length();
+  const int length = xml_buffer_.length();
   request.p_result_->raw_request =
       static_cast<char*>(malloc(sizeof(char) * (length + 1)));
   if (request.p_result_->raw_request == NULL) {
     request.return_codes_.racfu_return_code = 8;
-    throw RACFu::RACFuError("Unable to allocate request buffer for IRRSMO00");
+    throw RACFuError("Unable to allocate request buffer for IRRSMO00");
   }
-  strncpy(request.p_result_->raw_request, xml_buffer.c_str(), length + 1);
+  strncpy(request.p_result_->raw_request, xml_buffer_.c_str(), length + 1);
   __a2e_l(request.p_result_->raw_request, length);
 
   request.p_result_->raw_request_length = length;
 
-  logger.debug(MSG_REQUEST_SMO_EBCDIC,
-               logger.cast_hex_string(request.p_result_->raw_request));
+  Logger::getInstance().debug(
+      "EBCDIC encoded request XML:",
+      Logger::getInstance().castHexString(request.p_result_->raw_request));
 }
 
-// Private Functions of XmlGenerator
-std::string XmlGenerator::replace_xml_chars(std::string data) {
+// Private Functions of XMLGenerator
+std::string XMLGenerator::replace_xml_chars(std::string data) {
   // Replace xml-substituted characters with their substitution strings
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
               apos = "&apos;";
@@ -103,30 +103,30 @@ std::string XmlGenerator::replace_xml_chars(std::string data) {
   }
   return data;
 }
-void XmlGenerator::build_open_tag(std::string tag) {
+void XMLGenerator::build_open_tag(std::string tag) {
   // Ex: "<base:universal_access"
   tag = replace_xml_chars(tag);
-  xml_buffer.append("<" + tag);
+  xml_buffer_.append("<" + tag);
 }
-void XmlGenerator::build_attribute(std::string name, std::string value) {
+void XMLGenerator::build_attribute(std::string name, std::string value) {
   // Ex: " operation=set"
   name  = replace_xml_chars(name);
   value = replace_xml_chars(value);
-  xml_buffer.append(" " + name + "=\"" + value + "\"");
+  xml_buffer_.append(" " + name + "=\"" + value + "\"");
 }
-void XmlGenerator::build_value(std::string value) {
+void XMLGenerator::build_value(std::string value) {
   // Ex: ">Read"
   value = replace_xml_chars(value);
-  xml_buffer.append(">" + value);
+  xml_buffer_.append(">" + value);
 }
-void XmlGenerator::build_end_nested_tag() { xml_buffer.append(">"); }
-void XmlGenerator::build_full_close_tag(std::string tag) {
+void XMLGenerator::build_end_nested_tag() { xml_buffer_.append(">"); }
+void XMLGenerator::build_full_close_tag(std::string tag) {
   // Ex: "</base:universal_access>"
   tag = replace_xml_chars(tag);
-  xml_buffer.append("</" + tag + ">");
+  xml_buffer_.append("</" + tag + ">");
 }
-void XmlGenerator::build_close_tag_no_value() { xml_buffer.append("/>"); }
-void XmlGenerator::build_single_trait(const std::string& tag,
+void XMLGenerator::build_close_tag_no_value() { xml_buffer_.append("/>"); }
+void XMLGenerator::build_single_trait(const std::string& tag,
                                       const std::string& operation,
                                       const std::string& value) {
   // Combines above functions to build "trait" tags with added options and
@@ -144,8 +144,8 @@ void XmlGenerator::build_single_trait(const std::string& tag,
   }
 }
 
-void XmlGenerator::build_xml_header_attributes(
-    const RACFu::SecurityRequest& request, const std::string& true_admin_type) {
+void XMLGenerator::build_xml_header_attributes(
+    const SecurityRequest& request, const std::string& true_admin_type) {
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
   if (request.operation_ == "add") {
@@ -184,7 +184,7 @@ void XmlGenerator::build_xml_header_attributes(
   return;
 }
 
-void XmlGenerator::build_request_data(const std::string& true_admin_type,
+void XMLGenerator::build_request_data(const std::string& true_admin_type,
                                       const std::string& admin_type,
                                       nlohmann::json request_data) {
   // Builds the xml for request data (segment-trait information) passed in a
@@ -223,10 +223,9 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
         // Build each individual trait
         int8_t trait_operator = map_operator(item_operator);
         // Need to obtain the actual data
-        int8_t trait_type = map_trait_type(item.value());
-        int8_t expected_type =
-            get_racf_trait_type(admin_type.c_str(), item_segment.c_str(),
-                                (item_segment + ":" + item_trait).c_str());
+        int8_t trait_type    = map_trait_type(item.value());
+        int8_t expected_type = get_trait_type(admin_type, item_segment,
+                                              item_segment + ":" + item_trait);
         if (expected_type == TRAIT_TYPE_PSEUDO_BOOLEAN and
             trait_type != TRAIT_TYPE_NULL) {
           trait_type = TRAIT_TYPE_PSEUDO_BOOLEAN;
@@ -234,6 +233,13 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
         translated_key = get_racf_key(admin_type.c_str(), item_segment.c_str(),
                                       (item_segment + ":" + item_trait).c_str(),
                                       trait_type, trait_operator);
+        if (translated_key == nullptr) {
+          // Temporary to get list/repeat traits working for RACF Options
+          translated_key =
+              get_racf_key(admin_type.c_str(), item_segment.c_str(),
+                           (item_segment + ":" + item_trait).c_str(),
+                           TRAIT_TYPE_REPEAT, trait_operator);
+        }
         std::string trait_operator_str, value;
         switch (trait_type) {
           case TRAIT_TYPE_NULL:
@@ -275,7 +281,7 @@ void XmlGenerator::build_request_data(const std::string& true_admin_type,
   }
 }
 
-std::string XmlGenerator::convert_operation(const std::string& operation) {
+std::string XMLGenerator::convert_operation(const std::string& operation) {
   // Converts the designated function to the correct IRRSMO00 operation.
   if (operation == "add") {
     return "set";
@@ -292,7 +298,7 @@ std::string XmlGenerator::convert_operation(const std::string& operation) {
   return "";
 }
 
-std::string XmlGenerator::convert_operator(const std::string& trait_operator) {
+std::string XMLGenerator::convert_operator(const std::string& trait_operator) {
   // Converts the designated function to the correct IRRSMO00 operator
   if (trait_operator == "delete") {
     return "del";
@@ -300,7 +306,7 @@ std::string XmlGenerator::convert_operator(const std::string& trait_operator) {
   return trait_operator;
 }
 
-std::string XmlGenerator::convert_admin_type(const std::string& admin_type) {
+std::string XMLGenerator::convert_admin_type(const std::string& admin_type) {
   // Converts the admin type between racfu's definitions and IRRSMO00's
   // definitions. group-connection to groupconnection, racf-options to
   // systemsettings and data-set to dataset. All other admin types should be
@@ -317,7 +323,7 @@ std::string XmlGenerator::convert_admin_type(const std::string& admin_type) {
   return admin_type;
 }
 
-std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait) {
+std::string XMLGenerator::json_value_to_string(const nlohmann::json& trait) {
   if (trait.is_string()) {
     return trait.get<std::string>();
   }
@@ -335,3 +341,4 @@ std::string XmlGenerator::json_value_to_string(const nlohmann::json& trait) {
   }
   return trait.dump();
 }
+}  // namespace RACFu
