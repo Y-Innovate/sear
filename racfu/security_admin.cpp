@@ -81,13 +81,15 @@ void SecurityAdmin::doExtract() {
 }
 
 void SecurityAdmin::doAddAlterDelete() {
+  IRRSMO00 irrsmo00;
+
   // Check if profile exists already for some alter operations
-  if ((request_.operation_ == "alter") &&
-      ((request_.admin_type_ == "group") || (request_.admin_type_ == "user") ||
-       (request_.admin_type_ == "data-set") ||
+  if ((request_.operation_ == "alter") and
+      ((request_.admin_type_ == "group") or (request_.admin_type_ == "user") or
+       (request_.admin_type_ == "data-set") or
        (request_.admin_type_ == "resource"))) {
     Logger::getInstance().debug("Verifying that profile existis for alter ...");
-    if (!does_profile_exist(request_)) {
+    if (!irrsmo00.does_profile_exist(request_)) {
       request_.return_codes_.racfu_return_code = 8;
       if (request_.class_name_.empty()) {
         throw RACFuError("unable to alter '" + request_.profile_name_ +
@@ -114,23 +116,19 @@ void SecurityAdmin::doAddAlterDelete() {
   // Build Request
   request_.p_result_->raw_result_length = 10000;
   XMLGenerator generator;
-
-  generator.build_xml_string(request_);
-
+  generator.buildXMLString(request_);
   Logger::getInstance().debug("Calling IRRSMO00 ...");
-  call_irrsmo00(request_, false);
-
+  irrsmo00.call_irrsmo00(request_, false);
   Logger::getInstance().debug("Done");
 
   // Parse Result
   XMLParser parser;
-  request_.intermediate_result_json_ = parser.build_json_string(request_);
-
-  Logger::getInstance().debug("Post-processing decoded result ...");
+  request_.intermediate_result_json_ = parser.buildJSONString(request_);
+  Logger::getInstance().debug("Decoded Result:");
   Logger::getInstance().debug(request_.intermediate_result_json_.dump());
 
   // Post-Process Result
-  post_process_smo_json(request_, request_.intermediate_result_json_);
+  irrsmo00.post_process_smo_json(request_, request_.intermediate_result_json_);
 
   Logger::getInstance().debug("Done");
 }

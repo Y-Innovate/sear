@@ -11,28 +11,28 @@ namespace RACFu {
 // XMLGenerator Generates an XML String from a JSON string
 class XMLGenerator {
  private:
-  std::string xml_buffer_;
-  static std::string replace_xml_chars(std::string data);
-  void build_open_tag(std::string tag);
-  void build_attribute(std::string name, std::string value);
-  void build_value(std::string value);
-  void build_end_nested_tag();
-  void build_full_close_tag(std::string tag);
-  void build_close_tag_no_value();
-  void build_single_trait(const std::string& tag, const std::string& operation,
-                          const std::string& value);
-  void build_xml_header_attributes(const RACFu::SecurityRequest& request,
-                                   const std::string& true_admin_type);
-  void build_request_data(const std::string& true_admin_type,
-                          const std::string& admin_type,
-                          nlohmann::json request_data);
-  static std::string convert_operation(const std::string& operation);
-  static std::string convert_operator(const std::string& trait_operator);
-  static std::string convert_admin_type(const std::string& admin_type);
-  std::string json_value_to_string(const nlohmann::json& trait);
+  std::string xml_string_;
+  static std::string replaceXMLChars(std::string data);
+  void buildOpenTag(std::string tag);
+  void buildAttribute(std::string name, std::string value);
+  void buildValue(std::string value);
+  void buildEndNestedTag();
+  void buildFullCloseTag(std::string tag);
+  void buildCloseTagNoValue();
+  void buildSingleTrait(const std::string& tag, const std::string& operation,
+                        const std::string& value);
+  void buildXMLHeaderAttributes(const RACFu::SecurityRequest& request,
+                                const std::string& true_admin_type);
+  void buildRequestData(const std::string& true_admin_type,
+                        const std::string& admin_type,
+                        nlohmann::json request_data);
+  static std::string convertOperation(const std::string& operation);
+  static std::string convertOperator(const std::string& trait_operator);
+  static std::string convertAdminType(const std::string& admin_type);
+  std::string JSONValueToString(const nlohmann::json& trait);
 
  public:
-  void build_xml_string(RACFu::SecurityRequest& request);
+  void buildXMLString(RACFu::SecurityRequest& request);
 };
 }  // namespace RACFu
 

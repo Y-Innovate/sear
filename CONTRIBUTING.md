@@ -101,6 +101,26 @@ Code branches should use the following naming conventions:
 
 The use of the `clang-format` code formatter is required.
 
+The following code style conventions should be followed:
+* Varible names should use snake case *(i.e., `my_variable`)*.
+* Class variables should end with an `_` to help differentiate between class variables and function variables *(i.e., `my_class_variable_`)*.
+* Class name should use pascal case *(i.e., `MyClass`)*.
+* Function names should use camel case *(i.e., `myFunction()`)*.
+* When calling a class function within the same class that function is a member of, the following syntax should be used to make it clear that a function within the same class is being called.
+
+  ```cpp
+  MyClass::myFunction();
+  ```
+
+* Structs should use the following naming convention.
+
+  ```cpp
+  typedef struct {
+    int member_1;
+    char member_2[5];
+  } my_struct_t;
+  ```
+
 ## Static Code Analysis
 
 :bulb: _These steps can be done automatically using the [pre-commit Hooks](#pre-commit-hooks)._

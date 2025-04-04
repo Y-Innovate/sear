@@ -1,8 +1,6 @@
 #ifndef __IRRSMO00_H_
 #define __IRRSMO00_H_
 
-#include <stdbool.h>
-
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -39,11 +37,13 @@ void IRRSMO64(char *,               // Workarea
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-void call_irrsmo00(RACFu::SecurityRequest &request, bool profile_exists_check);
-
-bool does_profile_exist(RACFu::SecurityRequest &request);
-
-void post_process_smo_json(RACFu::SecurityRequest &request,
-                           nlohmann::json &results);
+namespace RACFu {
+class IRRSMO00 {
+ public:
+  void call_irrsmo00(SecurityRequest &request, bool profile_exists_check);
+  bool does_profile_exist(SecurityRequest &request);
+  void post_process_smo_json(SecurityRequest &request, nlohmann::json &results);
+};
+}  // namespace RACFu
 
 #endif /* IRRSMO00_H_ */

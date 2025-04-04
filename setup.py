@@ -42,7 +42,7 @@ class build_with_asm_ext(build_ext):
         os.environ["CC"] = "ibm-clang64"
         os.environ["CFLAGS"] = "-std=c99"
         os.environ["CXX"] = "ibm-clang++64"
-        os.environ["CXXFLAGS"] = "-std=c++11"
+        os.environ["CXXFLAGS"] = "-std=c++14"
         racfu_source_path = Path("racfu")
         assemble("irrseq00.s", racfu_source_path / "irrseq00")
         super().run()

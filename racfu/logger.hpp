@@ -8,9 +8,11 @@ namespace RACFu {
 class Logger {
  private:
   bool debug_;
-  char max_line_length_    = 80;
-  std::string ansi_yellow_ = "\033[33m";
-  std::string ansi_reset_  = "\033[0m";
+  char max_line_length_          = 80;
+  std::string ansi_red_          = "\033[31m";
+  std::string ansi_yellow_       = "\033[33m";
+  std::string ansi_bright_green_ = "\033[92m";
+  std::string ansi_reset_        = "\033[0m";
   explicit Logger();
 
  public:
@@ -21,7 +23,7 @@ class Logger {
   void debug(const std::string& message, const std::string& body = "") const;
   void debugAllocate(const void* ptr, int rmode, int byte_count) const;
   void debugFree(const void* ptr, int rmode) const;
-  std::string castHexString(const char* input, int buffer_len = 0) const;
+  void hexDump(const char* p_buffer, int length) const;
 };
 }  // namespace RACFu
 

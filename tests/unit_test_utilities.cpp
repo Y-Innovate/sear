@@ -4,12 +4,19 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
+#include <fstream>
 #include <nlohmann/json.hpp>
 
 #include "racfu/racfu.h"
 #include "tests/mock/irrseq00.hpp"
 #include "tests/mock/irrsmo64.hpp"
 #include "tests/unity/unity.h"
+
+#ifdef __TOS_390__
+#include <unistd.h>
+#else
+#include "zoslib.h"
+#endif
 
 /*************************************************************************/
 /* Common                                                                */
@@ -43,6 +50,38 @@ char *get_sample(const char *filename, const char *mode) {
 
 char *get_raw_sample(const char *filename) {
   return get_sample(filename, "rb");
+}
+
+char *get_xml_sample(const char *filename, int *length) {
+  // open file
+  std::ifstream f(filename);
+  if (!f.is_open()) {
+    std::cerr << "Unable to open sample file " << filename << "." << std::endl;
+    exit(1);
+  }
+  // build minified xml
+  std::string line;
+  std::string xml_string;
+  while (getline(f, line)) {
+    size_t end = line.find_first_not_of(" ");
+    if (end != std::string::npos) {
+      line = line.substr(end, line.length());
+    }
+    xml_string += line;
+  }
+  // std::cout << xml_string << std::endl;
+  *length = xml_string.length();
+  // Create EBCDIC encoded XML in a buffer.
+  char *ebcdic_xml_bytes = (char *)calloc(*length + 1, sizeof(char));
+  if (ebcdic_xml_bytes == NULL) {
+    perror("");
+    printf("Unable to allocate space to load data from '%s'.\n", filename);
+    exit(1);
+  }
+  memcpy(ebcdic_xml_bytes, xml_string.c_str(), *length);
+  __a2e_l(ebcdic_xml_bytes, *length);
+
+  return ebcdic_xml_bytes;
 }
 
 std::string get_json_sample(const char *filename) {
@@ -251,13 +290,13 @@ void check_arg_pointers(char *raw_request, bool racf_options) {
 /*************************************************************************/
 void test_generate_add_alter_delete_request_generation(
     const char *test_add_alter_delete_request_json,
-    const char *test_add_alter_delete_request_raw, bool debug) {
+    const char *test_add_alter_delete_request_xml,
+    int irrsmo00_options_expected, bool debug) {
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
-  char *raw_request_expected =
-      get_raw_sample(test_add_alter_delete_request_raw);
-  struct stat raw_request_size_expected;
-  stat(test_add_alter_delete_request_raw, &raw_request_size_expected);
+  int raw_request_length_expected;
+  char *raw_request_expected = get_xml_sample(test_add_alter_delete_request_xml,
+                                              &raw_request_length_expected);
 
   // Mock IRRSMO64 result
   irrsmo64_result_mock      = NULL;
@@ -268,10 +307,11 @@ void test_generate_add_alter_delete_request_generation(
 
   racfu_result_t *result    = racfu(request_json.c_str(), debug);
 
-  TEST_ASSERT_EQUAL_INT32(raw_request_size_expected.st_size,
+  TEST_ASSERT_EQUAL_INT32(raw_request_length_expected,
                           result->raw_request_length);
   TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result->raw_request,
-                           raw_request_size_expected.st_size);
+                           raw_request_length_expected);
+  TEST_ASSERT_EQUAL_INT32(irrsmo00_options_expected, irrsmo00_options_actual);
 
   // Cleanup
   free(raw_request_expected);
@@ -280,17 +320,18 @@ void test_generate_add_alter_delete_request_generation(
 void test_parse_add_alter_delete_result(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_result_json,
-    const char *test_add_alter_delete_result_raw, bool debug) {
+    const char *test_add_alter_delete_result_xml, bool debug) {
   std::string request_json =
       get_json_sample(test_add_alter_delete_request_json);
   std::string result_json_expected =
       get_json_sample(test_add_alter_delete_result_json);
 
   // Mock IRRSMO64 result
-  irrsmo64_result_mock = get_raw_sample(test_add_alter_delete_result_raw);
+  int raw_result_length_expected;
+  irrsmo64_result_mock = get_xml_sample(test_add_alter_delete_result_xml,
+                                        &raw_result_length_expected);
   struct stat raw_request_size_expected;
-  stat(test_add_alter_delete_result_raw, &raw_request_size_expected);
-  irrsmo64_result_size_mock = raw_request_size_expected.st_size;
+  irrsmo64_result_size_mock = raw_result_length_expected;
   irrsmo64_saf_rc_mock      = 0;
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;

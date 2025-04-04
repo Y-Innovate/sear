@@ -1,10 +1,8 @@
 #include "profile_post_processor.hpp"
 
-#include <ctype.h>
-#include <stdio.h>
-
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -36,10 +34,9 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   request.p_result_->raw_result_length =
       ntohl(p_generic_result->result_buffer_length);
 
-  Logger::getInstance().debug(
-      "Raw generic profile extract result:",
-      Logger::getInstance().castHexString(
-          request.p_result_->raw_result, request.p_result_->raw_result_length));
+  Logger::getInstance().debug("Raw generic profile extract result:");
+  Logger::getInstance().hexDump(request.p_result_->raw_result,
+                                request.p_result_->raw_result_length);
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -120,10 +117,9 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   request.p_result_->raw_result_length =
       ntohl(p_setropts_result->result_buffer_length);
 
-  Logger::getInstance().debug(
-      "Raw RACF Options extract result:",
-      Logger::getInstance().castHexString(
-          request.p_result_->raw_result, request.p_result_->raw_result_length));
+  Logger::getInstance().debug("Raw RACF Options extract result:");
+  Logger::getInstance().hexDump(request.p_result_->raw_result,
+                                request.p_result_->raw_result_length);
 
   // Segment Variables
   const racf_options_segment_descriptor_t *p_segment =
@@ -240,11 +236,11 @@ std::string ProfilePostProcessor::postProcessFieldKey(
       ProfilePostProcessor::postProcessKey(p_raw_field_key, 8);
   const char *racfu_field_key =
       get_racfu_key(admin_type.c_str(), segment.c_str(), field_key.c_str());
-  if (racfu_field_key == NULL) {
+  if (racfu_field_key == nullptr) {
     return "experimental:" + field_key;
   }
-  if (racfu_field_key + strlen(racfu_field_key) - 1) {
-    if (!(*(racfu_field_key + strlen(racfu_field_key) - 1) == '*')) {
+  if (racfu_field_key + std::strlen(racfu_field_key) - 1) {
+    if (!(*(racfu_field_key + std::strlen(racfu_field_key) - 1) == '*')) {
       return racfu_field_key;
     }
   }
@@ -267,7 +263,7 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   char ascii_bytes[length + 1];
   ascii_bytes[length] = 0;
   // Decode bytes
-  strncpy(ascii_bytes, p_ebcdic_bytes, length);
+  std::strncpy(ascii_bytes, p_ebcdic_bytes, length);
   __e2a_l(ascii_bytes, length);
   std::string ascii_string = std::string(ascii_bytes);
   // Convert to lowercase

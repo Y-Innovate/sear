@@ -1,5 +1,11 @@
 #include "security_request.hpp"
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <memory>
+#include <new>
+
 #include "irrseq00.hpp"
 #ifdef __TOS_390__
 #include <unistd.h>
@@ -15,17 +21,17 @@ SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
   // Free dynamically allocated memory from previous requests.
   if (p_result->raw_request != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_request, 64);
-    free(p_result->raw_request);
+    std::free(p_result->raw_request);
     Logger::getInstance().debug("Done");
   }
   if (p_result->raw_result != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_result, 31);
-    free(p_result->raw_result);
+    std::free(p_result->raw_result);
     Logger::getInstance().debug("Done");
   }
   if (p_result->result_json != nullptr) {
     Logger::getInstance().debugFree(p_result->result_json, 64);
-    free(p_result->result_json);
+    std::free(p_result->result_json);
     Logger::getInstance().debug("Done");
   }
   p_result_->raw_request        = nullptr;
@@ -86,7 +92,7 @@ void SecurityRequest::load(const nlohmann::json &request) {
   if (operation_ == "add") {
     irrsmo00_options_ = 15;
   } else if (operation_ == "alter") {
-    if (admin_type_ != "group-connection" or admin_type_ != "racf-options" or
+    if (admin_type_ != "group-connection" and admin_type_ != "racf-options" and
         admin_type_ != "permission") {
       irrsmo00_options_ = 15;
     }
@@ -146,7 +152,7 @@ void SecurityRequest::buildResult() {
     result_json["errors"] = errors_;
   }
 
-  if (intermediate_result_json_ != nullptr && errors_.empty()) {
+  if (intermediate_result_json_ != nullptr and errors_.empty()) {
     if (!intermediate_result_json_.empty()) {
       result_json.merge_patch(intermediate_result_json_);
     }
@@ -154,19 +160,19 @@ void SecurityRequest::buildResult() {
 
   // Convert profile JSON to C string.
   std::string result_json_string = result_json.dump();
-  char *p_result_json            = static_cast<char *>(
-      malloc(sizeof(char) * (result_json_string.size() + 1)));
-  if (p_result_json == NULL) {
-    perror("Warn - Unable to allocate space for the result JSON string.\n");
-  } else {
-    Logger::getInstance().debugAllocate(p_result_json, 64,
+  try {
+    auto result_json_unique_ptr =
+        std::make_unique<char[]>(result_json_string.size() + 1);
+    Logger::getInstance().debugAllocate(result_json_unique_ptr.get(), 64,
                                         result_json_string.size() + 1);
-    std::strcpy(p_result_json, result_json_string.c_str());
+    std::memset(result_json_unique_ptr.get(), 0, result_json_string.size() + 1);
+    std::strcpy(result_json_unique_ptr.get(), result_json_string.c_str());
+    p_result_->result_json = result_json_unique_ptr.get();
+    result_json_unique_ptr.release();
+    Logger::getInstance().debug("Done");
+  } catch (const std::bad_alloc &ex) {
+    std::perror(
+        "Warn - Unable to allocate space for the result JSON string.\n");
   }
-
-  // Save Result JSON
-  p_result_->result_json = p_result_json;
-
-  Logger::getInstance().debug("Done");
 }
 }  // namespace RACFu

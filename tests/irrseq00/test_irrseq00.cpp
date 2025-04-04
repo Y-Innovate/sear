@@ -19,7 +19,7 @@ void test_generate_extract_user_request() {
 void test_parse_extract_user_result() {
   test_parse_extract_result(TEST_EXTRACT_USER_REQUEST_JSON,
                             TEST_EXTRACT_USER_RESULT_JSON,
-                            TEST_EXTRACT_USER_RESULT_RAW, true);
+                            TEST_EXTRACT_USER_RESULT_RAW, false);
 }
 
 void test_parse_extract_user_result_csdata() {

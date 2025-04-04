@@ -1,5 +1,6 @@
 #include "xml_parser.hpp"
 
+#include <cstring>
 #include <regex>
 
 #include "logger.hpp"
@@ -13,19 +14,21 @@
 
 namespace RACFu {
 // Public Methods of XMLParser
-nlohmann::json XMLParser::build_json_string(SecurityRequest& request) {
+nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
   std::string xml_buffer;
-  char xml_ascii_result[strlen(request.p_result_->raw_result) + 1];
-  memset(xml_ascii_result, 0, strlen(request.p_result_->raw_result) + 1);
+  char xml_ascii_result[std::strlen(request.p_result_->raw_result) + 1];
+  std::memset(xml_ascii_result, 0,
+              std::strlen(request.p_result_->raw_result) + 1);
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
-  Logger::getInstance().debug(
-      "Raw EBCDIC encoded result XML:",
-      Logger::getInstance().castHexString(request.p_result_->raw_result));
+  Logger::getInstance().debug("Raw EBCDIC encoded result XML:");
+  Logger::getInstance().hexDump(request.p_result_->raw_result,
+                                std::strlen(request.p_result_->raw_result));
 
-  int xml_result_length = strlen(request.p_result_->raw_result);
-  memcpy(xml_ascii_result, request.p_result_->raw_result, xml_result_length);
+  int xml_result_length = std::strlen(request.p_result_->raw_result);
+  std::memcpy(xml_ascii_result, request.p_result_->raw_result,
+              xml_result_length);
   __e2a_l(xml_ascii_result, xml_result_length);
   xml_buffer = xml_ascii_result;
 
@@ -50,7 +53,7 @@ nlohmann::json XMLParser::build_json_string(SecurityRequest& request) {
     admin_xml_body.erase(admin_xml_body.find(admin_close_tag),
                          admin_close_tag.length());
 
-    parse_xml_tags(result_json, admin_xml_body);
+    XMLParser::parseXMLTags(result_json, admin_xml_body);
 
     request.return_codes_.racfu_return_code = 0;
   } else {
@@ -64,8 +67,8 @@ nlohmann::json XMLParser::build_json_string(SecurityRequest& request) {
 }
 
 // Private Methods of XMLParser
-void XMLParser::parse_xml_tags(nlohmann::json& input_json,
-                               std::string input_xml_string) {
+void XMLParser::parseXMLTags(nlohmann::json& input_json,
+                             std::string input_xml_string) {
   // Parse the outer layer of the XML (the tags) for attributes and tag names
   // with regex Ex:
   // <safreturncode>0</safreturncode><returncode>0</returncode><reasoncode>0</reasoncode><image>ADDUSER
@@ -95,7 +98,8 @@ void XMLParser::parse_xml_tags(nlohmann::json& input_json,
                     current_tags_regex)) {
       // Ex: 1) 0 2) </safreturncode> 3) <returncode>  4) returncode
       std::string data_within_current_tags = data_around_current_tag[1];
-      parse_xml_data(input_json, data_within_current_tags, current_tag);
+      XMLParser::parseXMLData(input_json, data_within_current_tags,
+                              current_tag);
       start_index += current_tag.length() * 2 +
                      ((std::string) "<></>").length() +
                      data_within_current_tags.length();
@@ -106,29 +110,29 @@ void XMLParser::parse_xml_tags(nlohmann::json& input_json,
   }
 };
 
-void XMLParser::parse_xml_data(nlohmann::json& input_json,
-                               const std::string& data_within_outer_tags,
-                               const std::string& outer_tag) {
+void XMLParser::parseXMLData(nlohmann::json& input_json,
+                             const std::string& data_within_outer_tags,
+                             const std::string& outer_tag) {
   // Parse data from within XML tags and add the values to the JSON
   if (data_within_outer_tags.find("<") == std::string::npos) {
     nlohmann::json data_as_json = data_within_outer_tags;
-    update_json(input_json, data_as_json, outer_tag);
+    XMLParser::updateJSON(input_json, data_as_json, outer_tag);
     return;
   }
   // If we did not return, there is another xml tag within this data (nested)
   nlohmann::json nested_json;
   std::string nested_xml = data_within_outer_tags;
-  parse_xml_tags(nested_json, nested_xml);
-  update_json(input_json, nested_json, outer_tag);
+  XMLParser::parseXMLTags(nested_json, nested_xml);
+  XMLParser::updateJSON(input_json, nested_json, outer_tag);
 }
 
-void XMLParser::update_json(nlohmann::json& input_json,
-                            nlohmann::json& inner_data, std::string outer_tag) {
+void XMLParser::updateJSON(nlohmann::json& input_json,
+                           nlohmann::json& inner_data, std::string outer_tag) {
   // Add specified information (inner_data) to the input_json_p JSON object
   // using the specified key (outer_tag)
-  outer_tag = replace_xml_chars(outer_tag);
+  outer_tag = XMLParser::replaceXMLChars(outer_tag);
   if (inner_data.is_string()) {
-    inner_data = replace_xml_chars(inner_data);
+    inner_data = XMLParser::replaceXMLChars(inner_data);
   }
   if (!input_json.contains(outer_tag)) {
     // If we do not already have this tag used in our object (at this
@@ -145,7 +149,7 @@ void XMLParser::update_json(nlohmann::json& input_json,
   }
 }
 
-std::string XMLParser::replace_xml_chars(std::string xml_data) {
+std::string XMLParser::replaceXMLChars(std::string xml_data) {
   std::string amp = "&amp;", gt = "&gt;", lt = "&lt;", quot = "&quot;",
               apos = "&apos;";
   std::size_t index;
@@ -155,20 +159,19 @@ std::string XMLParser::replace_xml_chars(std::string xml_data) {
     return xml_data;
   }
   do {
-    xml_data = replace_substring(xml_data, gt, ">", index);
-    xml_data = replace_substring(xml_data, lt, "<", index);
-    xml_data = replace_substring(xml_data, apos, "'", index);
-    xml_data = replace_substring(xml_data, quot, "\"", index);
-    xml_data = replace_substring(xml_data, amp, "&", index);
+    xml_data = XMLParser::replaceSubstring(xml_data, gt, ">", index);
+    xml_data = XMLParser::replaceSubstring(xml_data, lt, "<", index);
+    xml_data = XMLParser::replaceSubstring(xml_data, apos, "'", index);
+    xml_data = XMLParser::replaceSubstring(xml_data, quot, "\"", index);
+    xml_data = XMLParser::replaceSubstring(xml_data, amp, "&", index);
     index    = xml_data.find("&", index + 1);
   } while (index != std::string::npos);
   return xml_data;
 }
 
-std::string XMLParser::replace_substring(std::string data,
-                                         std::string substring,
-                                         std::string replacement,
-                                         std::size_t start) {
+std::string XMLParser::replaceSubstring(std::string data, std::string substring,
+                                        std::string replacement,
+                                        std::size_t start) {
   std::size_t match;
   if ((data.length() - start) < substring.length()) {
     return data;

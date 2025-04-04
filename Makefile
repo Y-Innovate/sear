@@ -17,7 +17,7 @@ ZOSLIB			= $(TESTS)/zoslib
 SCHEMAS			= ${PWD}/schemas
 
 CSTANDARD		= c99
-CXXSTANDARD		= c++11
+CXXSTANDARD		= c++14
 
 # JSON Schemas
 RACFU_PARAMETERS_SCHEMA	= $(shell cat $(SCHEMAS)/parameters.json | jq -c)

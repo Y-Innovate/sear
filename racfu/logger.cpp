@@ -1,6 +1,8 @@
 #include "logger.hpp"
 
+#include <cctype>
 #include <csignal>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 
@@ -55,40 +57,79 @@ void Logger::debugFree(const void* ptr, int rmode) const {
   Logger::debug(oss.str());
 }
 
-std::string Logger::castHexString(const char* input, int buffer_len) const {
-  // Cast data to hex so that small strings and buffers of hex values can be
-  // printed to represent EBCDIC data
-  char hex_char_size = 6;
-
-  std::string output = "";
-  char buff[hex_char_size - 1];
-  int running_pad_len = 0;
-
-  if (input == nullptr) {
-    return "NULL";
+void Logger::hexDump(const char* p_buffer, int length) const {
+  if (!debug_) {
+    return;
   }
 
-  if (buffer_len == 0) {
-    buffer_len = strlen(input);
+  if (p_buffer == nullptr) {
+    std::cout << std::endl << "N/A" << std::endl << std::endl;
+    return;
   }
 
-  for (int i = 0; i < buffer_len; i++) {
-    std::snprintf(buff, hex_char_size - 1, "0x%02x",
-                  (unsigned char)*(input + i));
-    output += buff;
-    if (i < (buffer_len - 1)) {
-      output += ", ";
-      if (((i + 2) * hex_char_size + running_pad_len) % max_line_length_ <
-          ((i + 1) * hex_char_size + running_pad_len) % max_line_length_) {
-        size_t pad =
-            max_line_length_ -
-            ((i + 1) * hex_char_size + running_pad_len) % max_line_length_;
-        output += std::string(pad, ' ');
-        running_pad_len += pad;
+  char p_decoded[length];
+  std::memcpy(p_decoded, p_buffer, length);
+  __e2a_l(p_decoded, length);
+
+  std::string hex_dump = "\n";
+  std::ostringstream hex_stream;
+  std::ostringstream decoded_stream;
+  for (int i = 0; i < length; i++) {
+    if (i % 16 == 0) {
+      std::string hex_string = hex_stream.str();
+      if (isatty(fileno(stdout))) {
+        hex_string.resize(195, ' ');
+      } else {
+        hex_string.resize(51, ' ');
       }
+      if (i != 0) {
+        hex_dump += hex_string + decoded_stream.str() + "\n";
+      }
+      hex_stream.str("");
+      hex_stream.clear();
+      decoded_stream.str("");
+      decoded_stream.clear();
+      hex_stream << std::hex << std::setw(8) << std::setfill('0') << i << ":";
+    }
+    if (i % 2 == 0) {
+      hex_stream << " ";
+    }
+    if (std::isprint(static_cast<unsigned char>(p_decoded[i]))) {
+      if (isatty(fileno(stdout))) {
+        hex_stream << ansi_bright_green_;
+        decoded_stream << ansi_bright_green_ << p_decoded[i] << ansi_reset_;
+      } else {
+        decoded_stream << p_decoded[i];
+      }
+    } else {
+      if (isatty(fileno(stdout))) {
+        if (p_decoded[i] == '\t' or p_decoded[i] == '\r' or
+            p_decoded[i] == '\n') {
+          hex_stream << ansi_yellow_;
+          decoded_stream << ansi_yellow_ << '.' << ansi_reset_;
+        } else {
+          hex_stream << ansi_red_;
+          decoded_stream << ansi_red_ << '.' << ansi_reset_;
+        }
+      } else {
+        decoded_stream << '.';
+      }
+    }
+    hex_stream << std::hex << std::setw(2) << std::setfill('0')
+               << (static_cast<int>(p_buffer[i]) & 0xff);
+    if (isatty(fileno(stdout))) {
+      hex_stream << ansi_reset_;
     }
   }
 
-  return output;
+  std::string hex_string = hex_stream.str();
+  if (isatty(fileno(stdout))) {
+    hex_string.resize(51 + ((length % 16) * 5) + ((length % 16) * 4), ' ');
+  } else {
+    hex_string.resize(51, ' ');
+  }
+  hex_dump += hex_string + decoded_stream.str() + "\n";
+
+  std::cout << hex_dump << std::endl;
 }
 };  // namespace RACFu
