@@ -15,7 +15,7 @@ class SecurityRequest {
   std::string admin_type_;
   std::string operation_;
   std::string profile_name_;
-  std::string group_;  // Only used for group connection
+  std::string group_;  // Only used by IRRSMO00 for group connection
   std::string volume_;
   std::string generic_;
   std::string class_name_;

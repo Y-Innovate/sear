@@ -116,18 +116,12 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
   request.p_result_->raw_result_length = 10000;
 
   // convert our c++ string to a char * buffer
-  try {
-    auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
-    Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
-                                        xml_string.length());
-    request.p_result_->raw_request_length = xml_string.length();
-    request.p_result_->raw_request        = request_unique_ptr.get();
-    request_unique_ptr.release();
-  } catch (const std::bad_alloc &ex) {
-    request.return_codes_.racfu_return_code = 8;
-    // cppcheck-suppress exceptRethrowCopy
-    throw ex;
-  }
+  auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
+  Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
+                                      xml_string.length());
+  request.p_result_->raw_request_length = xml_string.length();
+  request.p_result_->raw_request        = request_unique_ptr.get();
+  request_unique_ptr.release();
   std::strncpy(request.p_result_->raw_request, xml_string.c_str(),
                request.p_result_->raw_request_length);
   __a2e_l(request.p_result_->raw_request,

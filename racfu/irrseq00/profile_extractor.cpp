@@ -1,5 +1,7 @@
 #include "profile_extractor.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -120,9 +122,8 @@ void ProfileExtractor::extract(SecurityRequest &request) {
 }
 
 void ProfileExtractor::buildGenericExtractRequest(
-    generic_extract_underbar_arg_area_t *arg_area,
-    const std::string &profile_name, const std::string &class_name,
-    uint8_t function_code) {
+    generic_extract_underbar_arg_area_t *arg_area, std::string profile_name,
+    std::string class_name, uint8_t function_code) {
   // Make sure buffer is clear.
   std::memset(arg_area, 0, sizeof(generic_extract_underbar_arg_area_t));
 
@@ -142,10 +143,19 @@ void ProfileExtractor::buildGenericExtractRequest(
   args->function_code         = function_code;
 
   // Copy profile name and class name.
+
+  // Automatically convert lowercase profile names to uppercase.
+  std::transform(profile_name.begin(), profile_name.end(), profile_name.begin(),
+                 [](unsigned char c) { return std::toupper(c); });
+
   std::memcpy(args->profile_name, profile_name.c_str(), profile_name.length());
   // Encode profile name as IBM-1047.
   __a2e_l(args->profile_name, profile_name.length());
   if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE) {
+    // Automatically convert lowercase class names to uppercase.
+    std::transform(class_name.begin(), class_name.end(), class_name.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
+
     // Class name must be padded with blanks.
     std::memset(&profile_extract_parms->class_name, ' ', 8);
     std::memcpy(profile_extract_parms->class_name, class_name.c_str(),

@@ -32,11 +32,11 @@ def assemble(asm_file: str, asm_directory: Path) -> None:
     subprocess.run(assemble_command, shell=True, check=True)
     
 def build_json_schema_header() -> None:
-    schema_absolute_path = Path.cwd() / "racfu_schema.json"
+    schema_absolute_path = Path.cwd() / "schema.json"
     with open(schema_absolute_path, "r") as f:
         schema = json.dumps(json.load(f), separators=(",", ":"))
     schema_header_absolute_path = Path.cwd() / "racfu" / "racfu_schema.hpp"
-    with open(schema_header_absolute_path) as f:
+    with open(schema_header_absolute_path, "w") as f:
         f.write(
             "\n".join(
                 [

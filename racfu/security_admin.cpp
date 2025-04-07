@@ -58,7 +58,8 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
   } catch (const IRRSMO00Error &ex) {
     request_.errors_ = ex.errors_;
   } catch (const std::exception &ex) {
-    request_.errors_ = {ex.what()};
+    request_.return_codes_.racfu_return_code = 8;
+    request_.errors_                         = {ex.what()};
   }
   request_.buildResult();
 }

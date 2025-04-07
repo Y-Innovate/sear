@@ -2,6 +2,7 @@
 #define __RACFU_PROFILE_EXTRACTOR_H_
 
 #include <cstdint>
+#include <cstdlib>
 #include <string>
 
 #include "irrseq00.hpp"
@@ -13,9 +14,8 @@ namespace RACFu {
 class ProfileExtractor {
  private:
   static void buildGenericExtractRequest(
-      generic_extract_underbar_arg_area_t *arg_area,
-      const std::string &profile_name, const std::string &class_name,
-      uint8_t function_code);
+      generic_extract_underbar_arg_area_t *arg_area, std::string profile_name,
+      std::string class_name, uint8_t function_code);
   static void buildRACFOptionsExtractRequest(
       racf_options_extract_underbar_arg_area_t *arg_area);
   static char *preserveRawRequest(const char *p_arg_area,
@@ -28,7 +28,7 @@ class ProfileExtractor {
 struct DefaultDeleter {
   void operator()(void *ptr) const {
     Logger::getInstance().debugFree(ptr, 31);
-    free(ptr);
+    std::free(ptr);
     Logger::getInstance().debug("Done");
   }
 };

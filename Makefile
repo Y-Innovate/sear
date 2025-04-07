@@ -19,7 +19,7 @@ CSTANDARD		= c99
 CXXSTANDARD		= c++14
 
 # JSON Schemas
-RACFU_SCHEMA	= $(shell cat ${PWD}/racfu_schema.json | jq -c)
+RACFU_SCHEMA	= $(shell cat ${PWD}/schema.json | jq -c)
 
 ifeq ($(UNAME), OS/390)
 	AS			= as

@@ -10,6 +10,9 @@
 // User
 #define TEST_EXTRACT_USER_REQUEST_JSON \
   IRRSEQ00_REQUEST_SAMPLES "user/test_extract_user_request.json"
+#define TEST_EXTRACT_USER_REQUEST_LOWERCASE_USERID_JSON \
+  IRRSEQ00_REQUEST_SAMPLES                              \
+  "user/test_extract_user_request_lowercase_userid.json"
 #define TEST_EXTRACT_USER_REQUEST_RAW \
   IRRSEQ00_REQUEST_SAMPLES "user/test_extract_user_request.bin"
 #define TEST_EXTRACT_USER_REQUEST_REQUIRED_PARAMETER_MISSING_JSON \
@@ -74,6 +77,10 @@
 // Resource
 #define TEST_EXTRACT_RESOURCE_REQUEST_JSON \
   IRRSEQ00_REQUEST_SAMPLES "resource/test_extract_resource_request.json"
+#define TEST_EXTRACT_RESOURCE_REQUEST_LOWERCASE_RESOURCE_NAME_AND_CLASS_NAME_JSON \
+  IRRSEQ00_REQUEST_SAMPLES                                                        \
+  "resource/"                                                                     \
+  "test_extract_resource_request_lowercase_resource_name_and_class_name.json"
 #define TEST_EXTRACT_RESOURCE_REQUEST_RAW \
   IRRSEQ00_REQUEST_SAMPLES "resource/test_extract_resource_request.bin"
 #define TEST_EXTRACT_RESOURCE_REQUEST_REQUIRED_PARAMETER_MISSING_JSON \
@@ -91,7 +98,7 @@
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result.json"
 #define TEST_EXTRACT_USER_RESULT_RAW \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result.bin"
-  #define TEST_EXTRACT_USER_RESULT_CSDATA_JSON \
+#define TEST_EXTRACT_USER_RESULT_CSDATA_JSON \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_csdata.json"
 #define TEST_EXTRACT_USER_RESULT_CSDATA_RAW \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_csdata.bin"
@@ -168,6 +175,7 @@
 /*************************************************************************/
 // User
 void test_generate_extract_user_request();
+void test_generate_extract_user_request_lowercase_userid();
 void test_parse_extract_user_result();
 void test_parse_extract_user_result_csdata();
 void test_parse_extract_user_result_user_not_found();
@@ -206,6 +214,7 @@ void test_parse_extract_data_set_result_extraneous_parameter_provided();
 
 // Resource
 void test_generate_extract_resource_request();
+void test_generate_extract_resource_request_lowercase_resource_name_and_class_name();
 void test_parse_extract_resource_result();
 void test_parse_extract_resource_result_csdata();
 void test_parse_extract_resource_result_resource_not_found();

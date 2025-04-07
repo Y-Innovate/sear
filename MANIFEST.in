@@ -1,4 +1,4 @@
 graft externals
 graft racfu
-graft schemas
+include schema.json
 exclude externals/.clang-format

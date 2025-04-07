@@ -1,8 +1,6 @@
 #ifndef __RACFU_H_
 #define __RACFU_H_
 
-#include <stdio.h>
-
 #include "racfu_result.h"
 
 #ifdef __cplusplus

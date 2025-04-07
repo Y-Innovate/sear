@@ -16,6 +16,12 @@ void test_generate_extract_user_request() {
                                   TEST_EXTRACT_USER_REQUEST_RAW, false, false);
 }
 
+void test_generate_extract_user_request_lowercase_userid() {
+  test_extract_request_generation(
+      TEST_EXTRACT_USER_REQUEST_LOWERCASE_USERID_JSON,
+      TEST_EXTRACT_USER_REQUEST_RAW, false, false);
+}
+
 void test_parse_extract_user_result() {
   test_parse_extract_result(TEST_EXTRACT_USER_REQUEST_JSON,
                             TEST_EXTRACT_USER_RESULT_JSON,
@@ -199,6 +205,12 @@ void test_generate_extract_resource_request() {
   test_extract_request_generation(TEST_EXTRACT_RESOURCE_REQUEST_JSON,
                                   TEST_EXTRACT_RESOURCE_REQUEST_RAW, false,
                                   false);
+}
+
+void test_generate_extract_resource_request_lowercase_resource_name_and_class_name() {
+  test_extract_request_generation(
+      TEST_EXTRACT_RESOURCE_REQUEST_LOWERCASE_RESOURCE_NAME_AND_CLASS_NAME_JSON,
+      TEST_EXTRACT_RESOURCE_REQUEST_RAW, false, false);
 }
 
 void test_parse_extract_resource_result() {
