@@ -4,6 +4,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -260,12 +261,12 @@ std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
 
 std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
                                                     int length) {
-  char ascii_bytes[length + 1];
-  ascii_bytes[length] = 0;
+  auto ascii_bytes_unique_ptr          = std::make_unique<char[]>(length);
+  ascii_bytes_unique_ptr.get()[length] = 0;
   // Decode bytes
-  std::strncpy(ascii_bytes, p_ebcdic_bytes, length);
-  __e2a_l(ascii_bytes, length);
-  std::string ascii_string = std::string(ascii_bytes);
+  std::strncpy(ascii_bytes_unique_ptr.get(), p_ebcdic_bytes, length);
+  __e2a_l(ascii_bytes_unique_ptr.get(), length);
+  std::string ascii_string = std::string(ascii_bytes_unique_ptr.get());
   // Convert to lowercase
   size_t end = ascii_string.find_last_not_of(" ");
   if (end != std::string::npos) {

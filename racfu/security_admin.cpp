@@ -103,10 +103,10 @@ void SecurityAdmin::doAddAlterDelete() {
 
     // Since the profile exists check was successful,
     // we can clean up the preserved result information.
-    free(request_.p_result_->raw_request);
+    std::free(request_.p_result_->raw_request);
     request_.p_result_->raw_request        = nullptr;
     request_.p_result_->raw_request_length = 0;
-    free(request_.p_result_->raw_result);
+    std::free(request_.p_result_->raw_result);
     request_.p_result_->raw_result        = nullptr;
     request_.p_result_->raw_result_length = 0;
 

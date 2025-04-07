@@ -8,11 +8,10 @@ namespace RACFu {
 class Logger {
  private:
   bool debug_;
-  char max_line_length_          = 80;
-  std::string ansi_red_          = "\033[31m";
-  std::string ansi_yellow_       = "\033[33m";
-  std::string ansi_bright_green_ = "\033[92m";
-  std::string ansi_reset_        = "\033[0m";
+  std::string ansi_bright_red_    = "\033[91m";
+  std::string ansi_bright_green_  = "\033[92m";
+  std::string ansi_bright_yellow_ = "\033[93m";
+  std::string ansi_reset_         = "\033[0m";
   explicit Logger();
 
  public:

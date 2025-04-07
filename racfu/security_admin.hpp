@@ -7,10 +7,11 @@
 
 #include "logger.hpp"
 #include "racfu_result.h"
+#include "racfu_schema.hpp"
 #include "security_request.hpp"
 
 namespace RACFu {
-static nlohmann::json parameters_schema = RACFU_PARAMETERS_SCHEMA;
+static nlohmann::json parameters_schema = RACFU_SCHEMA;
 static nlohmann::json_schema::json_validator parameter_validator{
     parameters_schema};
 

@@ -4,6 +4,7 @@
 #include <csignal>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <sstream>
 
 #ifdef __TOS_390__
@@ -28,12 +29,13 @@ void Logger::debug(const std::string& message, const std::string& body) const {
   }
   std::string racfu_header = "racfu:";
   if (isatty(fileno(stdout))) {
-    racfu_header = ansi_yellow_ + racfu_header + ansi_reset_;
+    racfu_header = ansi_bright_yellow_ + racfu_header + ansi_reset_;
   }
   std::cout << racfu_header << " " << message << "\n";
   if (body != "") {
-    for (size_t i = 0; i < body.length(); i += max_line_length_) {
-      std::cout << body.substr(i, max_line_length_) << "\n";
+    char max_line_length = 80;
+    for (size_t i = 0; i < body.length(); i += max_line_length) {
+      std::cout << body.substr(i, max_line_length) << "\n";
     }
   }
 }
@@ -67,9 +69,9 @@ void Logger::hexDump(const char* p_buffer, int length) const {
     return;
   }
 
-  char p_decoded[length];
-  std::memcpy(p_decoded, p_buffer, length);
-  __e2a_l(p_decoded, length);
+  auto decoded_unique_ptr = std::make_unique<char[]>(length);
+  std::memcpy(decoded_unique_ptr.get(), p_buffer, length);
+  __e2a_l(decoded_unique_ptr.get(), length);
 
   std::string hex_dump = "\n";
   std::ostringstream hex_stream;
@@ -94,22 +96,24 @@ void Logger::hexDump(const char* p_buffer, int length) const {
     if (i % 2 == 0) {
       hex_stream << " ";
     }
-    if (std::isprint(static_cast<unsigned char>(p_decoded[i]))) {
+    if (std::isprint(static_cast<unsigned char>(decoded_unique_ptr.get()[i]))) {
       if (isatty(fileno(stdout))) {
         hex_stream << ansi_bright_green_;
-        decoded_stream << ansi_bright_green_ << p_decoded[i] << ansi_reset_;
+        decoded_stream << ansi_bright_green_ << decoded_unique_ptr.get()[i]
+                       << ansi_reset_;
       } else {
-        decoded_stream << p_decoded[i];
+        decoded_stream << decoded_unique_ptr.get()[i];
       }
     } else {
       if (isatty(fileno(stdout))) {
-        if (p_decoded[i] == '\t' or p_decoded[i] == '\r' or
-            p_decoded[i] == '\n') {
-          hex_stream << ansi_yellow_;
-          decoded_stream << ansi_yellow_ << '.' << ansi_reset_;
+        if (decoded_unique_ptr.get()[i] == '\t' or
+            decoded_unique_ptr.get()[i] == '\r' or
+            decoded_unique_ptr.get()[i] == '\n') {
+          hex_stream << ansi_bright_yellow_;
+          decoded_stream << ansi_bright_yellow_ << '.' << ansi_reset_;
         } else {
-          hex_stream << ansi_red_;
-          decoded_stream << ansi_red_ << '.' << ansi_reset_;
+          hex_stream << ansi_bright_red_;
+          decoded_stream << ansi_bright_red_ << '.' << ansi_reset_;
         }
       } else {
         decoded_stream << '.';
