@@ -28,35 +28,36 @@ namespace RACFu {
 void ProfileExtractor::extract(SecurityRequest &request) {
   uint32_t rc;
 
+  uint8_t function_code = request.getFunctionCode();
+
   /*************************************************************************/
   /* RACF Options Extract                                                  */
   /*************************************************************************/
-  if (request.function_code_ == RACF_OPTIONS_EXTRACT_FUNCTION_CODE) {
+  if (function_code == RACF_OPTIONS_EXTRACT_FUNCTION_CODE) {
     // Build 31-bit Arg Area
     auto unique_ptr = make_unique31<racf_options_extract_underbar_arg_area_t>();
     racf_options_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
     ProfileExtractor::buildRACFOptionsExtractRequest(p_arg_area);
     // Preserve the raw request data
-    request.p_result_->raw_request_length =
-        (int)sizeof(racf_options_extract_underbar_arg_area_t);
+    request.setRawRequestLength(
+        (int)sizeof(racf_options_extract_underbar_arg_area_t));
     Logger::getInstance().debug("RACF Options extract request buffer:");
     Logger::getInstance().hexDump(reinterpret_cast<char *>(p_arg_area),
-                                  request.p_result_->raw_request_length);
+                                  request.getRawRequestLength());
 
-    request.p_result_->raw_request = ProfileExtractor::preserveRawRequest(
-        reinterpret_cast<char *>(p_arg_area),
-        request.p_result_->raw_request_length);
+    request.setRawRequestPointer(ProfileExtractor::preserveRawRequest(
+        reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
     // Call R_Admin
     Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
     Logger::getInstance().debug("Done");
 
-    request.p_result_->raw_result = p_arg_area->args.p_result_buffer;
+    request.setRawResultPointer(p_arg_area->args.p_result_buffer);
     // Preserve Return & Reason Codes
-    request.return_codes_.saf_return_code  = ntohl(p_arg_area->args.SAF_rc);
-    request.return_codes_.racf_return_code = ntohl(p_arg_area->args.RACF_rc);
-    request.return_codes_.racf_reason_code = ntohl(p_arg_area->args.RACF_rsn);
+    request.setSAFReturnCode(ntohl(p_arg_area->args.SAF_rc));
+    request.setRACFReturnCode(ntohl(p_arg_area->args.RACF_rc));
+    request.setRACFReasonCode(ntohl(p_arg_area->args.RACF_rsn));
   }
   /***************************************************************************/
   /* Generic Extract                                                         */
@@ -73,52 +74,51 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     auto unique_ptr = make_unique31<generic_extract_underbar_arg_area_t>();
     generic_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
     ProfileExtractor::buildGenericExtractRequest(
-        p_arg_area, request.profile_name_, request.class_name_,
-        request.function_code_);
+        p_arg_area, request.getProfileName(), request.getClassName(),
+        function_code);
     // Preserve the raw request data
-    request.p_result_->raw_request_length =
-        (int)sizeof(generic_extract_underbar_arg_area_t);
+    request.setRawRequestLength(
+        (int)sizeof(generic_extract_underbar_arg_area_t));
     Logger::getInstance().debug("Generic extract request buffer:");
     Logger::getInstance().hexDump(reinterpret_cast<char *>(p_arg_area),
-                                  request.p_result_->raw_request_length);
+                                  request.getRawRequestLength());
 
-    request.p_result_->raw_request = ProfileExtractor::preserveRawRequest(
-        reinterpret_cast<char *>(p_arg_area),
-        request.p_result_->raw_request_length);
+    request.setRawRequestPointer(ProfileExtractor::preserveRawRequest(
+        reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
     // Call R_Admin
     Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
     Logger::getInstance().debug("Done");
 
-    request.p_result_->raw_result = p_arg_area->args.p_result_buffer;
+    request.setRawResultPointer(p_arg_area->args.p_result_buffer);
     // Preserve Return & Reason Codes
-    request.return_codes_.saf_return_code  = ntohl(p_arg_area->args.SAF_rc);
-    request.return_codes_.racf_return_code = ntohl(p_arg_area->args.RACF_rc);
-    request.return_codes_.racf_reason_code = ntohl(p_arg_area->args.RACF_rsn);
+    request.setSAFReturnCode(ntohl(p_arg_area->args.SAF_rc));
+    request.setRACFReturnCode(ntohl(p_arg_area->args.RACF_rc));
+    request.setRACFReasonCode(ntohl(p_arg_area->args.RACF_rsn));
   }
 
   // Check Return Codes
-  if (request.return_codes_.saf_return_code != 0 or
-      request.return_codes_.racf_return_code != 0 or
-      request.return_codes_.racf_reason_code != 0 or rc != 0 or
-      request.p_result_->raw_result == nullptr) {
-    request.return_codes_.racfu_return_code = 4;
+  if (request.getSAFReturnCode() != 0 or request.getRACFReturnCode() != 0 or
+      request.getRACFReasonCode() != 0 or rc != 0 or
+      request.getRawResultPointer() == nullptr) {
+    request.setRACFuReturnCode(4);
     // Raise Exception if Extract Failed.
-    if (request.admin_type_ != "racf-options") {
-      throw RACFuError("unable to extract '" + request.admin_type_ +
-                       "' profile '" + request.profile_name_ + "'");
+    const std::string &admin_type = request.getAdminType();
+    if (admin_type != "racf-options") {
+      throw RACFuError("unable to extract '" + admin_type + "' profile '" +
+                       request.getProfileName() + "'");
     } else {
-      throw RACFuError("unable to extract '" + request.admin_type_ + "'");
+      throw RACFuError("unable to extract '" + admin_type + "'");
     }
   }
 
   std::ostringstream oss;
   oss << "IRRSEQ00 allocated in 31-bit memory at address "
-      << static_cast<void *>(request.p_result_->raw_result);
+      << static_cast<void *>(request.getRawResultPointer());
   Logger::getInstance().debug(oss.str());
 
-  request.return_codes_.racfu_return_code = 0;
+  request.setRACFuReturnCode(0);
 }
 
 void ProfileExtractor::buildGenericExtractRequest(

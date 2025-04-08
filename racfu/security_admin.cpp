@@ -27,7 +27,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
     try {
       request_json = nlohmann::json::parse(p_request_json_string);
     } catch (const nlohmann::json::parse_error &ex) {
-      request_.return_codes_.racfu_return_code = 8;
+      request_.setRACFuReturnCode(8);
       throw RACFuError(std::string("Syntax error in request JSON at byte ") +
                        std::to_string(ex.byte));
     }
@@ -36,7 +36,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
     try {
       parameter_validator.validate(request_json);
     } catch (const std::exception &ex) {
-      request_.return_codes_.racfu_return_code = 8;
+      request_.setRACFuReturnCode(8);
       throw RACFuError(
           "The provided request JSON does not contain a valid request");
     }
@@ -46,7 +46,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
     request_.load(request_json);
 
     // Make Request To Corresponding Callable Service
-    if (request_.operation_ == "extract") {
+    if (request_.getOperation() == "extract") {
       Logger::getInstance().debug("Entering IRRSEQ00 path");
       SecurityAdmin::doExtract();
     } else {
@@ -54,12 +54,12 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
       SecurityAdmin::doAddAlterDelete();
     }
   } catch (const RACFuError &ex) {
-    request_.errors_ = ex.errors_;
+    request_.setErrors(ex.getErrors());
   } catch (const IRRSMO00Error &ex) {
-    request_.errors_ = ex.errors_;
+    request_.setErrors(ex.getErrors());
   } catch (const std::exception &ex) {
-    request_.return_codes_.racfu_return_code = 8;
-    request_.errors_                         = {ex.what()};
+    request_.setRACFuReturnCode(8);
+    request_.setErrors({ex.what()});
   }
   request_.buildResult();
 }
@@ -70,7 +70,7 @@ void SecurityAdmin::doExtract() {
   extractor.extract(request_);
 
   ProfilePostProcessor post_processor;
-  if (request_.admin_type_ != "racf-options") {
+  if (request_.getAdminType() != "racf-options") {
     // Post Process Generic Extract Result
     post_processor.postProcessGeneric(request_);
   } else {
@@ -85,37 +85,44 @@ void SecurityAdmin::doAddAlterDelete() {
   IRRSMO00 irrsmo00;
 
   // Check if profile exists already for some alter operations
-  if ((request_.operation_ == "alter") and
-      ((request_.admin_type_ == "group") or (request_.admin_type_ == "user") or
-       (request_.admin_type_ == "data-set") or
-       (request_.admin_type_ == "resource"))) {
+  const std::string &operation    = request_.getOperation();
+  const std::string &admin_type   = request_.getAdminType();
+  const std::string &profile_name = request_.getProfileName();
+  const std::string &class_name   = request_.getClassName();
+  if ((operation == "alter") and
+      ((admin_type == "group") or (admin_type == "user") or
+       (admin_type == "data-set") or (admin_type == "resource"))) {
     Logger::getInstance().debug("Verifying that profile existis for alter ...");
     if (!irrsmo00.does_profile_exist(request_)) {
-      request_.return_codes_.racfu_return_code = 8;
-      if (request_.class_name_.empty()) {
-        throw RACFuError("unable to alter '" + request_.profile_name_ +
+      request_.setRACFuReturnCode(8);
+      if (class_name.empty()) {
+        throw RACFuError("unable to alter '" + profile_name +
                          "' because the profile does not exist");
       } else {
-        throw RACFuError("unable to alter '" + request_.profile_name_ +
-                         "' in the '" + request_.class_name_ +
+        throw RACFuError("unable to alter '" + profile_name + "' in the '" +
+                         class_name +
                          "' class because the profile does not exist");
       }
     }
 
     // Since the profile exists check was successful,
     // we can clean up the preserved result information.
-    std::free(request_.p_result_->raw_request);
-    request_.p_result_->raw_request        = nullptr;
-    request_.p_result_->raw_request_length = 0;
-    std::free(request_.p_result_->raw_result);
-    request_.p_result_->raw_result        = nullptr;
-    request_.p_result_->raw_result_length = 0;
+    Logger::getInstance().debugFree(request_.getRawRequestPointer(), 64);
+    std::free(request_.getRawRequestPointer());
+    Logger::getInstance().debug("Done");
+    request_.setRawRequestPointer(nullptr);
+    request_.setRawRequestLength(0);
+    Logger::getInstance().debugFree(request_.getRawResultPointer(), 64);
+    std::free(request_.getRawResultPointer());
+    Logger::getInstance().debug("Done");
+    request_.setRawResultPointer(nullptr);
+    request_.setRawResultLength(0);
 
     Logger::getInstance().debug("Done");
   }
 
   // Build Request
-  request_.p_result_->raw_result_length = 10000;
+  request_.setRawResultLength(10000);
   XMLGenerator generator;
   generator.buildXMLString(request_);
   Logger::getInstance().debug("Calling IRRSMO00 ...");
@@ -124,12 +131,12 @@ void SecurityAdmin::doAddAlterDelete() {
 
   // Parse Result
   XMLParser parser;
-  request_.intermediate_result_json_ = parser.buildJSONString(request_);
+  request_.setIntermediateResultJSON(parser.buildJSONString(request_));
   Logger::getInstance().debug("Decoded Result:");
-  Logger::getInstance().debug(request_.intermediate_result_json_.dump());
+  Logger::getInstance().debug(request_.getIntermediateResultJSON().dump());
 
   // Post-Process Result
-  irrsmo00.post_process_smo_json(request_, request_.intermediate_result_json_);
+  irrsmo00.post_process_smo_json(request_);
 
   Logger::getInstance().debug("Done");
 }

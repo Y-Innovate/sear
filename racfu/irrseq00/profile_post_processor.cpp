@@ -26,18 +26,18 @@
 namespace RACFu {
 void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   nlohmann::json profile;
-  profile["profile"] = nlohmann::json::object();
+  profile["profile"]            = nlohmann::json::object();
+
+  const std::string &admin_type = request.getAdminType();
 
   // Profile Pointers and Information
-  const char *p_profile = request.p_result_->raw_result;
+  const char *p_profile = request.getRawResultPointer();
   const generic_extract_parms_results_t *p_generic_result =
       reinterpret_cast<const generic_extract_parms_results_t *>(p_profile);
-  request.p_result_->raw_result_length =
-      ntohl(p_generic_result->result_buffer_length);
+  request.setRawResultLength(ntohl(p_generic_result->result_buffer_length));
 
   Logger::getInstance().debug("Raw generic profile extract result:");
-  Logger::getInstance().hexDump(request.p_result_->raw_result,
-                                request.p_result_->raw_result_length);
+  Logger::getInstance().hexDump(p_profile, request.getRawResultLength());
 
   // Segment Variables
   int first_segment_offset = sizeof(generic_extract_parms_results_t);
@@ -67,9 +67,9 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
             p_profile + ntohl(p_segment->field_descriptor_offset));
     for (int j = 1; j <= ntohl(p_segment->field_count); j++) {
       racfu_field_key = ProfilePostProcessor::postProcessFieldKey(
-          request.admin_type_, segment_key, p_field->name);
+          admin_type, segment_key, p_field->name);
       racfu_field_type =
-          get_trait_type(request.admin_type_, segment_key, racfu_field_key);
+          get_trait_type(admin_type, segment_key, racfu_field_key);
       if (!(ntohs(p_field->type) & t_repeat_field_header)) {
         // Post Process Non-Repeat Fields
         ProfilePostProcessor::processGenericField(
@@ -89,9 +89,9 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
           for (int l = 1; l <= repeat_group_element_count; l++) {
             p_field++;
             racfu_repeat_field_key = ProfilePostProcessor::postProcessFieldKey(
-                request.admin_type_, segment_key, p_field->name);
-            racfu_repeat_field_type = get_trait_type(
-                request.admin_type_, segment_key, racfu_repeat_field_key);
+                admin_type, segment_key, p_field->name);
+            racfu_repeat_field_type =
+                get_trait_type(admin_type, segment_key, racfu_repeat_field_key);
             ProfilePostProcessor::processGenericField(
                 repeat_group[k - 1][racfu_repeat_field_key], p_field, p_profile,
                 racfu_repeat_field_type);
@@ -104,7 +104,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
     }
     p_segment++;
   }
-  request.intermediate_result_json_ = profile;
+  request.setIntermediateResultJSON(profile);
 }
 
 void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
@@ -112,15 +112,13 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   profile["profile"] = nlohmann::json::object();
 
   // Profile Pointers and Information
-  const char *p_profile = request.p_result_->raw_result;
+  const char *p_profile = request.getRawResultPointer();
   const racf_options_extract_results_t *p_setropts_result =
       reinterpret_cast<const racf_options_extract_results_t *>(p_profile);
-  request.p_result_->raw_result_length =
-      ntohl(p_setropts_result->result_buffer_length);
+  request.setRawResultLength(ntohl(p_setropts_result->result_buffer_length));
 
   Logger::getInstance().debug("Raw RACF Options extract result:");
-  Logger::getInstance().hexDump(request.p_result_->raw_result,
-                                request.p_result_->raw_result_length);
+  Logger::getInstance().hexDump(p_profile, request.getRawResultLength());
 
   // Segment Variables
   const racf_options_segment_descriptor_t *p_segment =
@@ -189,7 +187,7 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
         reinterpret_cast<const char *>(p_field) +
         sizeof(racf_options_field_descriptor_t) + field_length);
   }
-  request.intermediate_result_json_ = profile;
+  request.setIntermediateResultJSON(profile);
 }
 
 void ProfilePostProcessor::processGenericField(

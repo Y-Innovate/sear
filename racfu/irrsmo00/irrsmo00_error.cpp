@@ -13,4 +13,9 @@ IRRSMO00Error::IRRSMO00Error(std::vector<std::string> errors)
 // cppcheck-suppress passedByValue
 IRRSMO00Error::IRRSMO00Error(std::string error)
     : errors_({"irrsmo00: " + error}) {}
+
+const std::vector<std::string>& IRRSMO00Error::getErrors() const {
+  return errors_;
+}
+
 }  // namespace RACFu

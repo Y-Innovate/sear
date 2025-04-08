@@ -17,21 +17,22 @@ namespace RACFu {
 // Public Methods of XMLParser
 nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
   std::string xml_buffer;
+
+  const char* p_raw_result = request.getRawResultPointer();
+  int raw_result_length    = request.getRawResultLength();
+
   auto xml_ascii_result_unique_ptr =
-      std::make_unique<char[]>(request.p_result_->raw_result_length + 1);
-  std::memset(xml_ascii_result_unique_ptr.get(), 0,
-              request.p_result_->raw_result_length + 1);
+      std::make_unique<char[]>(raw_result_length + 1);
+  std::memset(xml_ascii_result_unique_ptr.get(), 0, raw_result_length + 1);
 
   // Build a JSON string from the XML result string, SMO return and Reason
   // Codes
   Logger::getInstance().debug("Raw EBCDIC encoded result XML:");
-  Logger::getInstance().hexDump(request.p_result_->raw_result,
-                                request.p_result_->raw_result_length);
+  Logger::getInstance().hexDump(p_raw_result, raw_result_length);
 
-  std::memcpy(xml_ascii_result_unique_ptr.get(), request.p_result_->raw_result,
-              request.p_result_->raw_result_length);
-  __e2a_l(xml_ascii_result_unique_ptr.get(),
-          request.p_result_->raw_result_length);
+  std::memcpy(xml_ascii_result_unique_ptr.get(), p_raw_result,
+              raw_result_length);
+  __e2a_l(xml_ascii_result_unique_ptr.get(), raw_result_length);
   xml_buffer = xml_ascii_result_unique_ptr.get();
 
   Logger::getInstance().debug("Decoded result XML:", xml_buffer);
@@ -57,11 +58,11 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
 
     XMLParser::parseXMLTags(result_json, admin_xml_body);
 
-    request.return_codes_.racfu_return_code = 0;
+    request.setRACFuReturnCode(0);
   } else {
     // If the XML does not match the main regular expression, then return
     // this string to indicate an error
-    request.return_codes_.racfu_return_code = 4;
+    request.setRACFuReturnCode(4);
     throw RACFuError("unable to parse XML returned by IRRSMO00");
   }
 

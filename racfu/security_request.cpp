@@ -16,7 +16,7 @@
 namespace RACFu {
 SecurityRequest::SecurityRequest() { p_result_ = nullptr; }
 
-SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
+SecurityRequest::SecurityRequest(racfu_result_t* p_result) {
   p_result_ = p_result;
   // Free dynamically allocated memory from previous requests.
   if (p_result->raw_request != nullptr) {
@@ -41,7 +41,114 @@ SecurityRequest::SecurityRequest(racfu_result_t *p_result) {
   p_result_->result_json        = nullptr;
 }
 
-void SecurityRequest::load(const nlohmann::json &request) {
+/*************************************************************************/
+/* Request Getters                                                       */
+/*************************************************************************/
+const std::string& SecurityRequest::getAdminType() const { return admin_type_; }
+
+const std::string& SecurityRequest::getOperation() const { return operation_; }
+
+const std::string& SecurityRequest::getProfileName() const {
+  return profile_name_;
+}
+
+const std::string& SecurityRequest::getClassName() const { return class_name_; }
+
+const std::string& SecurityRequest::getGroup() const { return group_; }
+
+const std::string& SecurityRequest::getVolume() const { return volume_; }
+const std::string& SecurityRequest::getGeneric() const { return generic_; }
+
+const char* SecurityRequest::getSurrogateUserID() const {
+  return run_as_userid_;
+}
+
+const nlohmann::json& SecurityRequest::getTraits() const { return traits_; }
+
+uint8_t SecurityRequest::getFunctionCode() const { return function_code_; }
+
+int SecurityRequest::getIRRSMO00Options() const { return irrsmo00_options_; }
+
+/*************************************************************************/
+/* Result Getters & Setters                                              */
+/*************************************************************************/
+void SecurityRequest::setRawRequestPointer(char* p_raw_request) {
+  p_result_->raw_request = p_raw_request;
+}
+
+char* SecurityRequest::getRawRequestPointer() const {
+  return p_result_->raw_request;
+}
+
+void SecurityRequest::setRawRequestLength(int raw_request_length) {
+  p_result_->raw_request_length = raw_request_length;
+}
+
+int SecurityRequest::getRawRequestLength() const {
+  return p_result_->raw_request_length;
+}
+
+void SecurityRequest::setRawResultPointer(char* p_raw_result) {
+  p_result_->raw_result = p_raw_result;
+}
+
+char* SecurityRequest::getRawResultPointer() const {
+  return p_result_->raw_result;
+}
+
+void SecurityRequest::setRawResultLength(int raw_result_length) {
+  p_result_->raw_result_length = raw_result_length;
+}
+
+int SecurityRequest::getRawResultLength() const {
+  return p_result_->raw_result_length;
+}
+
+void SecurityRequest::setSAFReturnCode(int saf_return_code) {
+  return_codes_.saf_return_code = saf_return_code;
+}
+
+int SecurityRequest::getSAFReturnCode() const {
+  return return_codes_.saf_return_code;
+}
+
+void SecurityRequest::setRACFReturnCode(int racf_return_code) {
+  return_codes_.racf_return_code = racf_return_code;
+}
+
+int SecurityRequest::getRACFReturnCode() const {
+  return return_codes_.racf_return_code;
+}
+
+void SecurityRequest::setRACFReasonCode(int racf_reason_code) {
+  return_codes_.racf_reason_code = racf_reason_code;
+}
+
+int SecurityRequest::getRACFReasonCode() const {
+  return return_codes_.racf_reason_code;
+}
+
+void SecurityRequest::setRACFuReturnCode(int racfu_return_code) {
+  return_codes_.racfu_return_code = racfu_return_code;
+}
+
+void SecurityRequest::setErrors(const std::vector<std::string>& errors) {
+  errors_ = errors;
+}
+
+void SecurityRequest::setIntermediateResultJSON(
+    nlohmann::json intermediate_result_json) {
+  intermediate_result_json_ = intermediate_result_json;
+}
+
+const nlohmann::json& SecurityRequest::getIntermediateResultJSON() const {
+  return intermediate_result_json_;
+}
+
+/*************************************************************************/
+/* Load Request & Build Result                                           */
+/*************************************************************************/
+void SecurityRequest::load(const nlohmann::json& request) {
   admin_type_ = request["admin_type"].get<std::string>();
   operation_  = request["operation"].get<std::string>();
 
@@ -170,7 +277,7 @@ void SecurityRequest::buildResult() {
     p_result_->result_json = result_json_unique_ptr.get();
     result_json_unique_ptr.release();
     Logger::getInstance().debug("Done");
-  } catch (const std::bad_alloc &ex) {
+  } catch (const std::bad_alloc& ex) {
     std::perror(
         "Warn - Unable to allocate space for the result JSON string.\n");
   }

@@ -10,4 +10,9 @@ RACFuError::RACFuError(std::vector<std::string>& errors) : errors_(errors) {
 
 // cppcheck-suppress passedByValue
 RACFuError::RACFuError(std::string error) : errors_({"racfu: " + error}) {}
+
+const std::vector<std::string>& RACFuError::getErrors() const {
+  return errors_;
+}
+
 }  // namespace RACFu

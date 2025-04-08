@@ -42,7 +42,7 @@ class IRRSMO00 {
  public:
   void call_irrsmo00(SecurityRequest &request, bool profile_exists_check);
   bool does_profile_exist(SecurityRequest &request);
-  void post_process_smo_json(SecurityRequest &request, nlohmann::json &results);
+  void post_process_smo_json(SecurityRequest &request);
 };
 }  // namespace RACFu
 

@@ -6,10 +6,13 @@
 
 namespace RACFu {
 class RACFuError : public std::exception {
- public:
+ private:
   std::vector<std::string> errors_;
-  explicit RACFuError(std::vector<std::string> &errors);
+
+ public:
+  explicit RACFuError(std::vector<std::string>& errors);
   explicit RACFuError(std::string error);
+  const std::vector<std::string>& getErrors() const;
 };
 }  // namespace RACFu
 

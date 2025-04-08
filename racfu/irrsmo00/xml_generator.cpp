@@ -20,6 +20,8 @@ namespace RACFu {
 // Public Functions of XMLGenerator
 void XMLGenerator::buildXMLString(SecurityRequest& request) {
   // Main body function that builds an xml string
+  const std::string& admin_type = request.getAdminType();
+  const nlohmann::json& traits  = request.getTraits();
 
   // Build the securityrequest tag (Consistent)
   XMLGenerator::buildOpenTag("securityrequest");
@@ -28,22 +30,21 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
                                "http://www.ibm.com/systems/zos/racf");
   XMLGenerator::buildEndNestedTag();
 
-  std::string true_admin_type = convertAdminType(request.admin_type_);
+  std::string true_admin_type = convertAdminType(admin_type);
   XMLGenerator::buildOpenTag(true_admin_type);
 
   XMLGenerator::buildXMLHeaderAttributes(request, true_admin_type);
 
   XMLGenerator::buildAttribute("requestid", true_admin_type + "_request");
 
-  if (!request.traits_.empty()) {
+  if (!traits.empty()) {
     XMLGenerator::buildEndNestedTag();
 
     Logger::getInstance().debug("Validating traits ...");
 
-    validate_traits(request.admin_type_, request);
+    validate_traits(admin_type, request);
 
-    XMLGenerator::buildRequestData(true_admin_type, request.admin_type_,
-                                   request.traits_);
+    XMLGenerator::buildRequestData(true_admin_type, admin_type, traits);
 
     Logger::getInstance().debug("Done");
 
@@ -69,14 +70,14 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
     std::strncpy(request_unique_ptr.get(), xml_string_.c_str(),
                  xml_string_.length());
     __a2e_l(request_unique_ptr.get(), xml_string_.length());
-    request.p_result_->raw_request_length = xml_string_.length();
     Logger::getInstance().debug("EBCDIC encoded request XML:");
     Logger::getInstance().hexDump(request_unique_ptr.get(),
                                   xml_string_.length());
-    request.p_result_->raw_request = request_unique_ptr.get();
+    request.setRawRequestPointer(request_unique_ptr.get());
     request_unique_ptr.release();
+    request.setRawRequestLength(xml_string_.length());
   } catch (const std::bad_alloc& ex) {
-    request.return_codes_.racfu_return_code = 8;
+    request.setRACFuReturnCode(8);
     // cppcheck-suppress exceptRethrowCopy
     throw ex;
   }
@@ -156,11 +157,17 @@ void XMLGenerator::buildXMLHeaderAttributes(
     const SecurityRequest& request, const std::string& true_admin_type) {
   // Obtain JSON Header information and Build into Admin Object where
   // appropriate
-  if (request.operation_ == "add") {
+  const std::string& operation    = request.getOperation();
+  const std::string& profile_name = request.getProfileName();
+  const std::string& class_name   = request.getClassName();
+  const std::string& group        = request.getGroup();
+  const std::string& volume       = request.getVolume();
+  const std::string& generic      = request.getGeneric();
+
+  if (operation == "add") {
     XMLGenerator::buildAttribute("override", "no");
   }
-  std::string irrsmo00_operation =
-      XMLGenerator::convertOperation(request.operation_);
+  std::string irrsmo00_operation = XMLGenerator::convertOperation(operation);
   XMLGenerator::buildAttribute("operation", irrsmo00_operation);
   /*
   if (request.contains("run")) {
@@ -170,23 +177,23 @@ void XMLGenerator::buildXMLHeaderAttributes(
   if (true_admin_type == "systemsettings") {
     return;
   }
-  XMLGenerator::buildAttribute("name", request.profile_name_);
+  XMLGenerator::buildAttribute("name", profile_name);
   if ((true_admin_type == "user") or (true_admin_type == "group")) {
     return;
   }
   if (true_admin_type == "groupconnection") {
-    XMLGenerator::buildAttribute("group", request.group_);
+    XMLGenerator::buildAttribute("group", group);
     return;
   }
   if ((true_admin_type == "resource") or (true_admin_type == "permission")) {
-    XMLGenerator::buildAttribute("class", request.class_name_);
+    XMLGenerator::buildAttribute("class", class_name);
   }
   if ((true_admin_type == "dataset") or (true_admin_type == "permission")) {
-    if (!request.volume_.empty()) {
-      XMLGenerator::buildAttribute("volume", request.volume_);
+    if (!volume.empty()) {
+      XMLGenerator::buildAttribute("volume", volume);
     }
-    if (!request.generic_.empty()) {
-      XMLGenerator::buildAttribute("generic", request.generic_);
+    if (!generic.empty()) {
+      XMLGenerator::buildAttribute("generic", generic);
     }
     return;
   }

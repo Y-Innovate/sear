@@ -21,7 +21,9 @@ void validate_traits(const std::string& admin_type,
 
   std::vector<std::string> errors;
 
-  for (const auto& item : request.traits_.items()) {
+  const nlohmann::json& traits = request.getTraits();
+
+  for (const auto& item : traits.items()) {
     if (!regex_match(item.key(), segment_trait_key_data,
                      segment_trait_key_regex)) {
       // Track any entries that do not match proper syntax
@@ -129,7 +131,7 @@ void validate_traits(const std::string& admin_type,
     // Passed all of our validation so we go around the loop again
   }
   if (!errors.empty()) {
-    request.return_codes_.racfu_return_code = 8;
+    request.setRACFuReturnCode(8);
     throw RACFu::RACFuError(errors);
   }
 }

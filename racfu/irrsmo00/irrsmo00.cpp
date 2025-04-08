@@ -21,134 +21,140 @@ void IRRSMO00::call_irrsmo00(SecurityRequest &request,
                              bool profile_exists_check) {
   char work_area[1024];
   char req_handle[64]                    = {0};
+
+  const char *surrogate_userid           = request.getSurrogateUserID();
   running_userid_t running_userid_struct = {
-      (unsigned char)std::strlen(request.run_as_userid_), {0}};
+      (unsigned char)std::strlen(surrogate_userid), {0}};
+  std::strncpy(running_userid_struct.running_userid, surrogate_userid,
+               running_userid_struct.running_userid_length);
+
   unsigned int alet    = 0;
   unsigned int acee    = 0;
   int num_parms        = 17;
   int fn               = 1;
 
-  int irrsmo00_options = request.irrsmo00_options_;
+  int irrsmo00_options = request.getIRRSMO00Options();
   if (profile_exists_check == true) {
     irrsmo00_options = 13;
   }
 
-  std::strncpy(running_userid_struct.running_userid, request.run_as_userid_,
-               running_userid_struct.running_userid_length);
+  int raw_request_length = request.getRawRequestLength();
+  int raw_result_length  = request.getRawResultLength();
 
-  auto result_unique_ptr =
-      std::make_unique<char[]>(request.p_result_->raw_result_length);
-  std::memset(result_unique_ptr.get(), 0, request.p_result_->raw_result_length);
+  int saf_return_code;
+  int racf_return_code;
+  int racf_reason_code;
 
-  IRRSMO64(work_area, alet, &request.return_codes_.saf_return_code, alet,
-           &request.return_codes_.racf_return_code, alet,
-           &request.return_codes_.racf_reason_code, &num_parms, &fn,
-           &irrsmo00_options, &request.p_result_->raw_request_length,
-           request.p_result_->raw_request, req_handle,
+  auto result_unique_ptr = std::make_unique<char[]>(raw_result_length);
+  std::memset(result_unique_ptr.get(), 0, raw_result_length);
+
+  IRRSMO64(work_area, alet, &saf_return_code, alet, &racf_return_code, alet,
+           &racf_reason_code, &num_parms, &fn, &irrsmo00_options,
+           &raw_request_length, request.getRawRequestPointer(), req_handle,
            reinterpret_cast<char *>(&running_userid_struct), acee,
-           &request.p_result_->raw_result_length, result_unique_ptr.get());
+           &raw_result_length, result_unique_ptr.get());
 
   // 'knownConditionTrueFalse' is a false positive. These conditionals work as
   // intended
-  if (((request.return_codes_.saf_return_code != 8) or
-       (request.return_codes_.racf_return_code != 4000)) or
+  if (((saf_return_code != 8) or (racf_return_code != 4000)) or
       // cppcheck-suppress knownConditionTrueFalse
-      ((request.return_codes_.saf_return_code == 8) and
+      ((saf_return_code == 8) and
        // cppcheck-suppress knownConditionTrueFalse
-       (request.return_codes_.racf_return_code == 4000) and
-       (request.return_codes_.racf_reason_code > 100000000))) {
-    request.p_result_->raw_result = result_unique_ptr.get();
+       (racf_return_code == 4000) and (racf_reason_code > 100000000))) {
+    request.setSAFReturnCode(saf_return_code);
+    request.setRACFReturnCode(racf_return_code);
+    request.setRACFReasonCode(racf_reason_code);
+    request.setRawResultPointer(result_unique_ptr.get());
     result_unique_ptr.release();
     return;
   }
 
   // Handle result buffer too small scenario.
-  int bytes_remaining = request.return_codes_.racf_reason_code;
-  int new_result_length =
-      request.p_result_->raw_result_length + bytes_remaining + 1;
+  int bytes_remaining         = racf_reason_code;
+  int new_result_length       = raw_result_length + bytes_remaining + 1;
   auto full_result_unique_ptr = std::make_unique<char[]>(new_result_length);
   std::memset(full_result_unique_ptr.get(), 0, new_result_length);
   std::memcpy(full_result_unique_ptr.get(), result_unique_ptr.get(),
-              request.p_result_->raw_result_length);
+              raw_result_length);
 
   char *p_next_byte =
-      full_result_unique_ptr.get() +
-      request.p_result_->raw_result_length * sizeof(unsigned char);
+      full_result_unique_ptr.get() + raw_result_length * sizeof(unsigned char);
 
-  IRRSMO64(work_area, alet, &request.return_codes_.saf_return_code, alet,
-           &request.return_codes_.racf_return_code, alet,
-           &request.return_codes_.racf_reason_code, &num_parms, &fn,
-           &irrsmo00_options, &request.p_result_->raw_request_length,
-           request.p_result_->raw_request, req_handle,
+  IRRSMO64(work_area, alet, &saf_return_code, alet, &racf_return_code, alet,
+           &racf_reason_code, &num_parms, &fn, &irrsmo00_options,
+           &raw_request_length, request.getRawRequestPointer(), req_handle,
            reinterpret_cast<char *>(&running_userid_struct), acee,
            &bytes_remaining, p_next_byte);
 
-  request.p_result_->raw_result_length = new_result_length;
-  request.p_result_->raw_result        = full_result_unique_ptr.get();
+  request.setSAFReturnCode(saf_return_code);
+  request.setRACFReturnCode(racf_return_code);
+  request.setRACFReasonCode(racf_reason_code);
+  request.setRawResultPointer(full_result_unique_ptr.get());
   full_result_unique_ptr.release();
+  request.setRawResultLength(new_result_length);
 }
 
 bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
+  const std::string &admin_type   = request.getAdminType();
+  const std::string &profile_name = request.getProfileName();
+  const std::string &class_name   = request.getClassName();
+
   std::string xml_string;
 
-  if (request.admin_type_ == "resource") {
-    Logger::getInstance().debug("Checking if '" + request.admin_type_ +
-                                "' profile '" + request.profile_name_ +
-                                "' already exists in the '" +
-                                request.class_name_ + "' ...");
+  if (admin_type == "resource") {
+    Logger::getInstance().debug("Checking if '" + admin_type + "' profile '" +
+                                profile_name + "' already exists in the '" +
+                                class_name + "' ...");
     xml_string =
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
-        request.admin_type_ + R"( name=")" + request.profile_name_ +
-        R"(" class=")" + request.class_name_ +
-        R"("operation="listdata" requestid=")" + request.admin_type_ +
+        admin_type + R"( name=")" + profile_name + R"(" class=")" + class_name +
+        R"("operation="listdata" requestid=")" + admin_type +
         R"(_request"/></securityrequest>)";
   } else {
-    Logger::getInstance().debug("Checking if '" + request.admin_type_ +
-                                "' profile '" + request.profile_name_ +
-                                "' already exists ...");
+    Logger::getInstance().debug("Checking if '" + admin_type + "' profile '" +
+                                profile_name + "' already exists ...");
     xml_string =
         R"(<securityrequest xmlns="http://www.ibm.com/systems/zos/saf" xmlns:racf="http://www.ibm.com/systems/zos/racf"><)" +
-        request.admin_type_ + R"( name=")" + request.profile_name_ +
-        R"(" operation="listdata" requestid=")" + request.admin_type_ +
+        admin_type + R"( name=")" + profile_name +
+        R"(" operation="listdata" requestid=")" + admin_type +
         R"(_request"/></securityrequest>)";
   }
 
-  request.p_result_->raw_result_length = 10000;
+  request.setRawResultLength(10000);
 
   // convert our c++ string to a char * buffer
   auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
   Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
                                       xml_string.length());
-  request.p_result_->raw_request_length = xml_string.length();
-  request.p_result_->raw_request        = request_unique_ptr.get();
+  std::strncpy(request_unique_ptr.get(), xml_string.c_str(),
+               xml_string.length());
+  __a2e_l(request_unique_ptr.get(), xml_string.length());
+
+  request.setRawRequestLength(xml_string.length());
+  request.setRawRequestPointer(request_unique_ptr.get());
   request_unique_ptr.release();
-  std::strncpy(request.p_result_->raw_request, xml_string.c_str(),
-               request.p_result_->raw_request_length);
-  __a2e_l(request.p_result_->raw_request,
-          request.p_result_->raw_request_length);
 
   IRRSMO00::call_irrsmo00(request, true);
 
   Logger::getInstance().debug("Done");
 
-  if (request.p_result_->raw_result == nullptr) {
+  if (request.getRawResultPointer() == nullptr) {
     return false;
   }
 
-  if ((request.return_codes_.racf_return_code > 0) or
-      (request.return_codes_.saf_return_code > 0)) {
+  if ((request.getRACFReturnCode() > 0) or (request.getSAFReturnCode() > 0)) {
     return false;
   }
 
   return true;
 }
 
-void IRRSMO00::post_process_smo_json(SecurityRequest &request,
-                                     nlohmann::json &results) {
+void IRRSMO00::post_process_smo_json(SecurityRequest &request) {
+  nlohmann::json results  = request.getIntermediateResultJSON();
   nlohmann::json commands = nlohmann::json::array();
 
   if (results.contains("error")) {
-    request.return_codes_.racfu_return_code = 4;
+    request.setRACFuReturnCode(4);
     // Only expected for irrsmo00 errors which are not expected, but possible
     if (results["error"].contains("textinerror")) {
       throw IRRSMO00Error(results["error"]["errormessage"].get<std::string>() +
@@ -160,22 +166,24 @@ void IRRSMO00::post_process_smo_json(SecurityRequest &request,
 
   if (results.contains("errors")) {
     // Only expected for "XML Parse Error"
-    request.return_codes_.racfu_return_code = 4;
+    request.setRACFuReturnCode(4);
     throw IRRSMO00Error(results["errors"].get<std::vector<std::string>>());
   }
 
   if (!results.contains("command")) {
     // Only expected for "Add Protection" cases
-    request.return_codes_.racfu_return_code = 4;
-    if (request.class_name_.empty()) {
-      throw RACFuError("unable to add '" + request.profile_name_ +
-                       "' because a '" + request.admin_type_ +
-                       "' profile already exists with that name");
+    request.setRACFuReturnCode(4);
+    const std::string &admin_type   = request.getAdminType();
+    const std::string &profile_name = request.getProfileName();
+    const std::string &class_name   = request.getClassName();
+    if (class_name.empty()) {
+      throw RACFuError("unable to add '" + profile_name + "' because a '" +
+                       admin_type + "' profile already exists with that name");
     } else {
-      throw RACFuError(
-          "unable to add '" + request.profile_name_ + "' in the '" +
-          request.class_name_ +
-          "' class because a profile already exists with that name");
+      throw RACFuError("unable to add '" + profile_name + "' in the '" +
+                       class_name + "' class because a '" + admin_type +
+                       "' profile already exists in the '" + class_name +
+                       "' class with that name");
     }
   }
 
@@ -220,5 +228,6 @@ void IRRSMO00::post_process_smo_json(SecurityRequest &request,
   }
   results.erase("command");
   results["commands"] = commands;
+  request.setIntermediateResultJSON(results);
 }
 }  // namespace RACFu
