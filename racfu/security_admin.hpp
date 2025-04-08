@@ -11,9 +11,9 @@
 #include "security_request.hpp"
 
 namespace RACFu {
-static nlohmann::json parameters_schema = RACFU_SCHEMA;
-static nlohmann::json_schema::json_validator parameter_validator{
-    parameters_schema};
+static const nlohmann::json RACFU_SCHEMA_JSON = RACFU_SCHEMA;
+static const nlohmann::json_schema::json_validator RACFU_SCHEMA_VALIDATOR{
+    RACFU_SCHEMA_JSON};
 
 class SecurityAdmin {
  private:

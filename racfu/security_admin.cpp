@@ -34,7 +34,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string) {
 
     Logger::getInstance().debug("Validating parameters ...");
     try {
-      parameter_validator.validate(request_json);
+      RACFU_SCHEMA_VALIDATOR.validate(request_json);
     } catch (const std::exception &ex) {
       request_.setRACFuReturnCode(8);
       throw RACFuError(

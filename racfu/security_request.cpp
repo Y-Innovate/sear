@@ -60,7 +60,7 @@ const std::string& SecurityRequest::getVolume() const { return volume_; }
 const std::string& SecurityRequest::getGeneric() const { return generic_; }
 
 const char* SecurityRequest::getSurrogateUserID() const {
-  return run_as_userid_;
+  return surrogate_userid_;
 }
 
 const nlohmann::json& SecurityRequest::getTraits() const { return traits_; }
@@ -218,12 +218,12 @@ void SecurityRequest::load(const nlohmann::json& request) {
   }
 
   if (request.contains("run_as_userid")) {
-    std::string run_as_userid_string = request.get<std::string>();
+    std::string surrogate_userid_string = request.get<std::string>();
     Logger::getInstance().debug("Running under the authority of user: " +
-                                run_as_userid_string);
-    const int userid_length = run_as_userid_string.length();
-    strncpy(run_as_userid_, run_as_userid_string.c_str(), userid_length);
-    __a2e_l(run_as_userid_, userid_length);
+                                surrogate_userid_string);
+    const int userid_length = surrogate_userid_string.length();
+    strncpy(surrogate_userid_, surrogate_userid_string.c_str(), userid_length);
+    __a2e_l(surrogate_userid_, userid_length);
   }
 }
 

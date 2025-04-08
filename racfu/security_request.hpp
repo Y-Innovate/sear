@@ -19,7 +19,7 @@ class SecurityRequest {
   std::string group_;  // Only used by IRRSMO00 for group connection
   std::string volume_;
   std::string generic_;
-  char run_as_userid_[8] = {0};
+  char surrogate_userid_[8] = {0};
   nlohmann::json traits_;
   uint8_t function_code_ = 0;
   int irrsmo00_options_  = 13;
