@@ -125,6 +125,8 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
         R"(_request"/></securityrequest>)";
   }
 
+  Logger::getInstance().debug("Request XML:", xml_string);
+
   // convert our c++ string to a char * buffer
   auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
   Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
@@ -136,6 +138,9 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
   request.setRawRequestPointer(request_unique_ptr.get());
   request_unique_ptr.release();
   request.setRawRequestLength(xml_string.length());
+
+  Logger::getInstance().debug("EBCDIC encoded request XML:");
+  Logger::getInstance().hexDump(request_unique_ptr.get(), xml_string.length());
 
   IRRSMO00::call_irrsmo00(request, true);
 
