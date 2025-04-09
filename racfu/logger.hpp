@@ -21,7 +21,7 @@ class Logger {
   void setDebug(bool debug);
   void debug(const std::string& message, const std::string& body = "") const;
   void debugAllocate(const void* ptr, int rmode, int byte_count) const;
-  void debugFree(const void* ptr, int rmode) const;
+  void debugFree(const void* ptr) const;
   void hexDump(const char* p_buffer, int length) const;
 };
 }  // namespace RACFu

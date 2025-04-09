@@ -52,12 +52,12 @@ void Logger::debugAllocate(const void* ptr, int rmode, int byte_count) const {
   Logger::debug(oss.str());
 }
 
-void Logger::debugFree(const void* ptr, int rmode) const {
+void Logger::debugFree(const void* ptr) const {
   if (!debug_) {
     return;
   }
   std::ostringstream oss;
-  oss << "Freeing " << rmode << "-bit memory at address " << ptr << " ...";
+  oss << "Freeing memory at address " << ptr << " ...";
   Logger::debug(oss.str());
 }
 

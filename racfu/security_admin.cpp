@@ -107,12 +107,12 @@ void SecurityAdmin::doAddAlterDelete() {
 
     // Since the profile exists check was successful,
     // we can clean up the preserved result information.
-    Logger::getInstance().debugFree(request_.getRawRequestPointer(), 64);
+    Logger::getInstance().debugFree(request_.getRawRequestPointer());
     std::free(request_.getRawRequestPointer());
     Logger::getInstance().debug("Done");
     request_.setRawRequestPointer(nullptr);
     request_.setRawRequestLength(0);
-    Logger::getInstance().debugFree(request_.getRawResultPointer(), 64);
+    Logger::getInstance().debugFree(request_.getRawResultPointer());
     std::free(request_.getRawResultPointer());
     Logger::getInstance().debug("Done");
     request_.setRawResultPointer(nullptr);
@@ -122,7 +122,6 @@ void SecurityAdmin::doAddAlterDelete() {
   }
 
   // Build Request
-  request_.setRawResultLength(10000);
   XMLGenerator generator;
   generator.buildXMLString(request_);
   Logger::getInstance().debug("Calling IRRSMO00 ...");

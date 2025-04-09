@@ -39,13 +39,15 @@ void IRRSMO00::call_irrsmo00(SecurityRequest &request,
   }
 
   int raw_request_length = request.getRawRequestLength();
-  int raw_result_length  = request.getRawResultLength();
+  int raw_result_length  = 10000;
 
   int saf_return_code;
   int racf_return_code;
   int racf_reason_code;
 
   auto result_unique_ptr = std::make_unique<char[]>(raw_result_length);
+  Logger::getInstance().debugAllocate(result_unique_ptr.get(), 64,
+                                      raw_result_length);
   std::memset(result_unique_ptr.get(), 0, raw_result_length);
 
   IRRSMO64(work_area, alet, &saf_return_code, alet, &racf_return_code, alet,
@@ -66,6 +68,7 @@ void IRRSMO00::call_irrsmo00(SecurityRequest &request,
     request.setRACFReasonCode(racf_reason_code);
     request.setRawResultPointer(result_unique_ptr.get());
     result_unique_ptr.release();
+    request.setRawResultLength(raw_result_length);
     return;
   }
 
@@ -73,6 +76,8 @@ void IRRSMO00::call_irrsmo00(SecurityRequest &request,
   int bytes_remaining         = racf_reason_code;
   int new_result_length       = raw_result_length + bytes_remaining + 1;
   auto full_result_unique_ptr = std::make_unique<char[]>(new_result_length);
+  Logger::getInstance().debugAllocate(full_result_unique_ptr.get(), 64,
+                                      new_result_length);
   std::memset(full_result_unique_ptr.get(), 0, new_result_length);
   std::memcpy(full_result_unique_ptr.get(), result_unique_ptr.get(),
               raw_result_length);
@@ -120,8 +125,6 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
         R"(_request"/></securityrequest>)";
   }
 
-  request.setRawResultLength(10000);
-
   // convert our c++ string to a char * buffer
   auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
   Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
@@ -130,9 +133,9 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
                xml_string.length());
   __a2e_l(request_unique_ptr.get(), xml_string.length());
 
-  request.setRawRequestLength(xml_string.length());
   request.setRawRequestPointer(request_unique_ptr.get());
   request_unique_ptr.release();
+  request.setRawRequestLength(xml_string.length());
 
   IRRSMO00::call_irrsmo00(request, true);
 
