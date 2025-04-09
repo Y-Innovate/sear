@@ -132,8 +132,6 @@ void SecurityAdmin::doAddAlterDelete() {
   // Parse Result
   XMLParser parser;
   request_.setIntermediateResultJSON(parser.buildJSONString(request_));
-  Logger::getInstance().debug("Decoded Result:");
-  Logger::getInstance().debug(request_.getIntermediateResultJSON().dump());
 
   // Post-Process Result
   irrsmo00.post_process_smo_json(request_);

@@ -267,6 +267,7 @@ void SecurityRequest::buildResult() {
 
   // Convert profile JSON to C string.
   std::string result_json_string = result_json.dump();
+  Logger::getInstance().debug("Result JSON:", result_json_string);
   try {
     auto result_json_unique_ptr =
         std::make_unique<char[]>(result_json_string.size() + 1);

@@ -31,12 +31,14 @@ void Logger::debug(const std::string& message, const std::string& body) const {
   if (isatty(fileno(stdout))) {
     racfu_header = ansi_bright_yellow_ + racfu_header + ansi_reset_;
   }
-  std::cout << racfu_header << " " << message << "\n";
+  std::cout << racfu_header << " " << message << std::endl;
   if (body != "") {
     char max_line_length = 80;
+    std::cout << std::endl;
     for (size_t i = 0; i < body.length(); i += max_line_length) {
-      std::cout << body.substr(i, max_line_length) << "\n";
+      std::cout << body.substr(i, max_line_length) << std::endl;
     }
+    std::cout << std::endl;
   }
 }
 
@@ -128,7 +130,11 @@ void Logger::hexDump(const char* p_buffer, int length) const {
 
   std::string hex_string = hex_stream.str();
   if (isatty(fileno(stdout))) {
-    hex_string.resize(51 + ((length % 16) * 5) + ((length % 16) * 4), ' ');
+    if (length % 16 == 0) {
+      hex_string.resize(195, ' ');
+    } else {
+      hex_string.resize(51 + ((length % 16) * 5) + ((length % 16) * 4), ' ');
+    }
   } else {
     hex_string.resize(51, ' ');
   }
