@@ -135,12 +135,12 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
                xml_string.length());
   __a2e_l(request_unique_ptr.get(), xml_string.length());
 
+  Logger::getInstance().debug("EBCDIC encoded request XML:");
+  Logger::getInstance().hexDump(request_unique_ptr.get(), xml_string.length());
+
   request.setRawRequestPointer(request_unique_ptr.get());
   request_unique_ptr.release();
   request.setRawRequestLength(xml_string.length());
-
-  Logger::getInstance().debug("EBCDIC encoded request XML:");
-  Logger::getInstance().hexDump(request_unique_ptr.get(), xml_string.length());
 
   IRRSMO00::call_irrsmo00(request, true);
 

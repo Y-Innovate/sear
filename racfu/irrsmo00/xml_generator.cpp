@@ -69,8 +69,10 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   std::strncpy(request_unique_ptr.get(), xml_string_.c_str(),
                xml_string_.length());
   __a2e_l(request_unique_ptr.get(), xml_string_.length());
+
   Logger::getInstance().debug("EBCDIC encoded request XML:");
   Logger::getInstance().hexDump(request_unique_ptr.get(), xml_string_.length());
+
   request.setRawRequestPointer(request_unique_ptr.get());
   request_unique_ptr.release();
   request.setRawRequestLength(xml_string_.length());
