@@ -3,13 +3,14 @@
 #include <algorithm>
 
 namespace RACFu {
-RACFuError::RACFuError(std::vector<std::string>& errors) : errors_(errors) {
+RACFuError::RACFuError(const std::vector<std::string>& errors)
+    : errors_(errors) {
   std::for_each(errors_.begin(), errors_.end(),
                 [](std::string& error) { error = "racfu: " + error; });
 }
 
-// cppcheck-suppress passedByValue
-RACFuError::RACFuError(std::string error) : errors_({"racfu: " + error}) {}
+RACFuError::RACFuError(const std::string& error)
+    : errors_({"racfu: " + error}) {}
 
 const std::vector<std::string>& RACFuError::getErrors() const {
   return errors_;

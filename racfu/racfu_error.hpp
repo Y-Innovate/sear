@@ -10,8 +10,8 @@ class RACFuError : public std::exception {
   std::vector<std::string> errors_;
 
  public:
-  explicit RACFuError(std::vector<std::string>& errors);
-  explicit RACFuError(std::string error);
+  explicit RACFuError(const std::vector<std::string>& errors);
+  explicit RACFuError(const std::string& error);
   const std::vector<std::string>& getErrors() const;
 };
 }  // namespace RACFu
