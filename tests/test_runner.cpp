@@ -107,6 +107,7 @@ int main() {
   /*************************************************************************/
   // User
   RUN_TEST(test_generate_extract_user_request);
+  RUN_TEST(test_generate_extract_user_request_lowercase_userid);
   RUN_TEST(test_parse_extract_user_result);
   RUN_TEST(test_parse_extract_user_result_csdata);
   RUN_TEST(test_parse_extract_user_result_user_not_found);
@@ -144,6 +145,8 @@ int main() {
   RUN_TEST(test_parse_extract_data_set_result_extraneous_parameter_provided);
   // Resource
   RUN_TEST(test_generate_extract_resource_request);
+  RUN_TEST(
+      test_generate_extract_resource_request_lowercase_resource_name_and_class_name);
   RUN_TEST(test_parse_extract_resource_result);
   RUN_TEST(test_parse_extract_resource_result_csdata);
   RUN_TEST(test_parse_extract_resource_result_resource_not_found);

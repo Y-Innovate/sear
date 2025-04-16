@@ -30,19 +30,32 @@ def assemble(asm_file: str, asm_directory: Path) -> None:
     assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
     print(assemble_command)
     subprocess.run(assemble_command, shell=True, check=True)
-
-def load_json_schema(schema_relative_path: Path) -> str:
-    """Load a JSON schema as a minified JSON string."""
-    schema_absolute_path = Path.cwd() / "schemas" / schema_relative_path
-    with open(schema_absolute_path, "r") as file_handle:
-        return json.dumps(json.load(file_handle), separators=(",", ":"))
+    
+def build_json_schema_header() -> None:
+    schema_absolute_path = Path.cwd() / "schema.json"
+    with open(schema_absolute_path, "r") as f:
+        schema = json.dumps(json.load(f), separators=(",", ":"))
+    schema_header_absolute_path = Path.cwd() / "racfu" / "racfu_schema.hpp"
+    with open(schema_header_absolute_path, "w") as f:
+        f.write(
+            "\n".join(
+                [
+                    "#ifndef __RACFU_SCHEMA_H_",
+	                "#define __RACFU_SCHEMA_H_",
+                    "",
+	                f"#define RACFU_SCHEMA R\"({schema})\"_json",
+                    "",
+	                "#endif"
+                ]
+            )
+        )
 
 class build_with_asm_ext(build_ext):
     def run(self):
         os.environ["CC"] = "ibm-clang64"
         os.environ["CFLAGS"] = "-std=c99"
         os.environ["CXX"] = "ibm-clang++64"
-        os.environ["CXXFLAGS"] = "-std=c++11"
+        os.environ["CXXFLAGS"] = "-std=c++14"
         racfu_source_path = Path("racfu")
         assemble("irrseq00.s", racfu_source_path / "irrseq00")
         super().run()
@@ -51,15 +64,11 @@ def main():
     """Python extension build entrypoint."""
     cwd = Path.cwd()
     assembled_object_path = cwd / "artifacts" / "irrseq00.o"
-    racfu_parameters_schema = load_json_schema(Path("parameters.json"))
+    build_json_schema_header()
     setup_args = {
         "ext_modules": [
                 Extension(
                     "racfu._C",
-                    define_macros=[
-                        ("RACFU_PARAMETERS_SCHEMA", 
-                        f"R\"({racfu_parameters_schema})\"_json")
-                    ],
                     sources=(
                         glob("racfu/**/*.cpp")
                         + glob("racfu/*.cpp")

@@ -1,302 +1,140 @@
 #include "security_admin.hpp"
 
+#include <stdexcept>
+
 #define _POSIX_C_SOURCE 200112L
 #include <arpa/inet.h>
 
-#include "extract.hpp"
 #include "irrsmo00.hpp"
-#include "messages.h"
-#include "post_process.hpp"
+#include "irrsmo00_error.hpp"
+#include "profile_extractor.hpp"
+#include "profile_post_processor.hpp"
+#include "racfu_error.hpp"
 #include "xml_generator.hpp"
 #include "xml_parser.hpp"
 
 namespace RACFu {
-SecurityAdmin::SecurityAdmin(racfu_result_t *result, bool debug) {
-  this->result       = result;
-
-  this->logger       = Logger(debug);
-  this->errors       = Errors();
-  this->return_codes = {-1, -1, -1, -1};
+SecurityAdmin::SecurityAdmin(racfu_result_t *p_result, bool debug) {
+  Logger::getInstance().setDebug(debug);
+  request_ = SecurityRequest(p_result);
 }
 
-void SecurityAdmin::make_request(const char *request_json) {
-  // Parse Request JSON
-  try {
-    this->request = nlohmann::json::parse(request_json);
-  } catch (const nlohmann::json::parse_error &ex) {
-    this->errors.add_racfu_error_message(
-        "Syntax error in request JSON at byte " + std::to_string(ex.byte));
-    this->return_codes.racfu_return_code = 8;
-    this->build_result(nullptr, 0, nullptr, 0, {});
-    return;
-  }
+void SecurityAdmin::makeRequest(const char *p_request_json_string) {
+  nlohmann::json request_json;
 
-  this->logger.debug(MSG_VALIDATING_PARAMETERS);
   try {
-    parameter_validator.validate(this->request);
+    // Parse Request JSON
+    try {
+      request_json = nlohmann::json::parse(p_request_json_string);
+    } catch (const nlohmann::json::parse_error &ex) {
+      request_.setRACFuReturnCode(8);
+      throw RACFuError(std::string("Syntax error in request JSON at byte ") +
+                       std::to_string(ex.byte));
+    }
+
+    Logger::getInstance().debug("Validating parameters ...");
+    try {
+      RACFU_SCHEMA_VALIDATOR.validate(request_json);
+    } catch (const std::exception &ex) {
+      request_.setRACFuReturnCode(8);
+      throw RACFuError(
+          "The provided request JSON does not contain a valid request");
+    }
+    Logger::getInstance().debug("Done");
+
+    // Load Request
+    request_.load(request_json);
+
+    // Make Request To Corresponding Callable Service
+    if (request_.getOperation() == "extract") {
+      Logger::getInstance().debug("Entering IRRSEQ00 path");
+      SecurityAdmin::doExtract();
+    } else {
+      Logger::getInstance().debug("Entering IRRSMO00 path");
+      SecurityAdmin::doAddAlterDelete();
+    }
+  } catch (const RACFuError &ex) {
+    request_.setErrors(ex.getErrors());
+  } catch (const IRRSMO00Error &ex) {
+    request_.setErrors(ex.getErrors());
   } catch (const std::exception &ex) {
-    this->errors.add_racfu_error_message(
-        "The provided request JSON does not contain a valid request");
-    this->return_codes.racfu_return_code = 8;
-    this->build_result(nullptr, 0, nullptr, 0, {});
-    return;
+    request_.setRACFuReturnCode(8);
+    request_.setErrors({ex.what()});
   }
-  this->logger.debug(MSG_DONE);
-
-  this->prepare();
-
-  // Make Request To Corresponding Callable Service
-  if (this->request["operation"].get<std::string>() == "extract") {
-    this->logger.debug(MSG_SEQ_PATH);
-    this->do_extract();
-  } else {
-    this->logger.debug(MSG_SMO_PATH);
-    this->do_add_alter_delete();
-  }
+  request_.buildResult();
 }
 
-void SecurityAdmin::prepare() {
-  this->admin_type = this->request["admin_type"].get<std::string>();
-  this->operation  = this->request["operation"].get<std::string>();
-
-  if (this->admin_type == "user") {
-    this->function_code = USER_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = this->request["userid"].get<std::string>();
-  } else if (this->admin_type == "group") {
-    this->function_code = GROUP_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = this->request["group"].get<std::string>();
-  } else if (this->admin_type == "group-connection") {
-    this->function_code = GROUP_CONNECTION_EXTRACT_FUNCTION_CODE;
-    if (this->operation == "extract") {
-      this->profile_name = this->request["userid"].get<std::string>() + "." +
-                           this->request["group"].get<std::string>();
-    } else {
-      this->profile_name = this->request["userid"].get<std::string>();
-    }
-  } else if (this->admin_type == "resource") {
-    this->function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = this->request["resource"].get<std::string>();
-    this->class_name    = this->request["class"].get<std::string>();
-  } else if (this->admin_type == "data-set") {
-    this->function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
-    this->profile_name  = this->request["data_set"].get<std::string>();
-  } else if (this->admin_type == "racf-options") {
-    this->function_code = SETROPTS_EXTRACT_FUNCTION_CODE;
-  } else if (this->admin_type == "permission") {
-    if (this->request.contains("data_set")) {
-      this->profile_name = this->request["data_set"].get<std::string>();
-      this->class_name   = "DATASET";
-    } else {
-      this->profile_name = this->request["resource"].get<std::string>();
-      this->class_name   = this->request["class"].get<std::string>();
-    }
-    if (this->request.contains("group")) {
-      this->auth_id = this->request["group"].get<std::string>();
-    } else {
-      this->auth_id = this->request["userid"].get<std::string>();
-    }
-  }
-}
-
-void SecurityAdmin::do_extract() {
-  char *raw_result  = NULL;
-  char *raw_request = NULL;
-  int raw_result_length, raw_request_length;
-  nlohmann::json profile_json;
-
+void SecurityAdmin::doExtract() {
   // Extract Profile
-  raw_result = extract(this->profile_name, this->class_name,
-                       this->function_code, &raw_request, raw_request_length,
-                       this->return_codes, this->logger);
-  if (raw_result == NULL) {
-    this->return_codes.racfu_return_code = 4;
+  ProfileExtractor extractor;
+  extractor.extract(request_);
+
+  ProfilePostProcessor post_processor;
+  if (request_.getAdminType() != "racf-options") {
+    // Post Process Generic Extract Result
+    post_processor.postProcessGeneric(request_);
   } else {
-    this->return_codes.racfu_return_code = 0;
+    // Post Process RACF Options Extract Result
+    post_processor.postProcessRACFOptions(request_);
   }
 
-  // Build Failure Result
-  if (raw_result == NULL) {
-    if (this->admin_type != "racf-options") {
-      this->errors.add_racfu_error_message("unable to extract '" +
-                                           this->admin_type + "' profile '" +
-                                           this->profile_name + "'");
-    } else {
-      this->errors.add_racfu_error_message("unable to extract '" +
-                                           this->admin_type + "'");
-    }
-    this->build_result(raw_request, raw_request_length, nullptr, 0,
-                       profile_json);
-    return;
-  }
-
-  // Post Process Generic Result
-  if (this->admin_type != "racf-options") {
-    generic_extract_parms_results_t *generic_result_buffer =
-        reinterpret_cast<generic_extract_parms_results_t *>(raw_result);
-    raw_result_length = ntohl(generic_result_buffer->result_buffer_length);
-    this->logger.debug(
-        MSG_RESULT_SEQ_GENERIC,
-        this->logger.cast_hex_string(raw_result, raw_result_length));
-    profile_json =
-        post_process_generic(generic_result_buffer, this->admin_type);
-    // Post Process Setropts Result
-  } else {
-    setropts_extract_results_t *setropts_result_buffer =
-        reinterpret_cast<setropts_extract_results_t *>(raw_result);
-    raw_result_length = ntohl(setropts_result_buffer->result_buffer_length);
-    this->logger.debug(
-        MSG_RESULT_SEQ_SETROPTS,
-        this->logger.cast_hex_string(raw_result, raw_result_length));
-    profile_json = post_process_setropts(setropts_result_buffer);
-  }
-
-  this->logger.debug(MSG_SEQ_POST_PROCESS);
-
-  // Build Success Result
-  this->build_result(raw_request, raw_request_length, raw_result,
-                     raw_result_length, profile_json);
+  Logger::getInstance().debug("Profile extract result has been post-processed");
 }
 
-void SecurityAdmin::do_add_alter_delete() {
-  char running_userid[8] = {0};
-  char *xml_response_string, *xml_request_string;
-  int irrsmo00_options            = 13;
-  unsigned int result_buffer_size = 10000;
-  unsigned int request_length;
+void SecurityAdmin::doAddAlterDelete() {
+  IRRSMO00 irrsmo00;
 
-  nlohmann::json intermediate_result_json;
-  XmlParser parser       = XmlParser();
-  XmlGenerator generator = XmlGenerator();
-
-  xml_request_string     = generator.build_xml_string(
-      this->admin_type, this->request, this->errors, this->profile_name,
-      this->auth_id, running_userid, irrsmo00_options, request_length,
-      this->logger);
-
-  if (!this->errors.empty()) {
-    this->return_codes.racfu_return_code = 8;
-    this->build_result(xml_request_string, request_length, nullptr, 0, {});
-    return;
-  }
-
-  if ((this->operation == "alter") &&
-      ((this->admin_type == "group") || (this->admin_type == "user") ||
-       (this->admin_type == "data-set") || (this->admin_type == "resource"))) {
-    this->logger.debug(MSG_SMO_VALIDATE_EXIST);
-    if (!does_profile_exist(this->admin_type, this->profile_name,
-                            this->class_name, running_userid, errors)) {
+  // Check if profile exists already for some alter operations
+  const std::string &operation    = request_.getOperation();
+  const std::string &admin_type   = request_.getAdminType();
+  const std::string &profile_name = request_.getProfileName();
+  const std::string &class_name   = request_.getClassName();
+  if ((operation == "alter") and
+      ((admin_type == "group") or (admin_type == "user") or
+       (admin_type == "data-set") or (admin_type == "resource"))) {
+    Logger::getInstance().debug("Verifying that profile existis for alter ...");
+    if (!irrsmo00.does_profile_exist(request_)) {
+      request_.setRACFuReturnCode(8);
       if (class_name.empty()) {
-        this->errors.add_racfu_error_message(
-            "unable to alter '" + this->profile_name +
-            "' because the profile does not exist");
+        throw RACFuError("unable to alter '" + profile_name +
+                         "' because the profile does not exist");
       } else {
-        this->errors.add_racfu_error_message(
-            "Unable to alter '" + this->profile_name + "' in the '" +
-            this->class_name + "' class because the profile does not exist");
+        throw RACFuError("unable to alter '" + profile_name + "' in the '" +
+                         class_name +
+                         "' class because the profile does not exist");
       }
     }
-    if (!this->errors.empty()) {
-      this->return_codes.racfu_return_code = 8;
-      this->build_result(xml_request_string, request_length, nullptr, 0, {});
-      return;
-    }
-    this->logger.debug(MSG_DONE);
+
+    // Since the profile exists check was successful,
+    // we can clean up the preserved result information.
+    Logger::getInstance().debugFree(request_.getRawRequestPointer());
+    std::free(request_.getRawRequestPointer());
+    Logger::getInstance().debug("Done");
+    request_.setRawRequestPointer(nullptr);
+    request_.setRawRequestLength(0);
+    Logger::getInstance().debugFree(request_.getRawResultPointer());
+    std::free(request_.getRawResultPointer());
+    Logger::getInstance().debug("Done");
+    request_.setRawResultPointer(nullptr);
+    request_.setRawResultLength(0);
+
+    Logger::getInstance().debug("Done");
   }
 
-  this->logger.debug(MSG_CALLING_SMO);
+  // Build Request
+  XMLGenerator generator;
+  generator.buildXMLString(request_);
+  Logger::getInstance().debug("Calling IRRSMO00 ...");
+  irrsmo00.call_irrsmo00(request_, false);
+  Logger::getInstance().debug("Done");
 
-  xml_response_string =
-      call_irrsmo00(xml_request_string, running_userid, result_buffer_size,
-                    irrsmo00_options, this->return_codes, errors);
+  // Parse Result
+  XMLParser parser;
+  request_.setIntermediateResultJSON(parser.buildJSONString(request_));
 
-  if (!this->errors.empty()) {
-    this->return_codes.racfu_return_code = 8;
-    this->build_result(xml_request_string, request_length, nullptr, 0, {});
-    return;
-  }
+  // Post-Process Result
+  irrsmo00.post_process_smo_json(request_);
 
-  this->logger.debug(MSG_DONE);
-
-  intermediate_result_json = parser.build_json_string(
-      xml_response_string, this->return_codes.racfu_return_code, this->errors,
-      this->logger);
-
-  if (!this->errors.empty()) {
-    this->build_result(xml_request_string, request_length, nullptr, 0, {});
-    return;
-  }
-
-  this->logger.debug(MSG_SMO_POST_PROCESS);
-  this->logger.debug(intermediate_result_json.dump());
-  // Maintain any RC 4's from parsing xml or post-processing json
-  this->return_codes.racfu_return_code =
-      this->return_codes.racfu_return_code |
-      post_process_smo_json(this->errors, intermediate_result_json,
-                            this->profile_name, this->admin_type,
-                            this->class_name);
-
-  this->logger.debug(MSG_DONE);
-
-  // Build Success Result
-  this->build_result(xml_request_string, request_length, xml_response_string,
-                     result_buffer_size, intermediate_result_json);
-}
-
-void SecurityAdmin::build_result(
-    char *raw_request, int raw_request_length, char *raw_result,
-    int raw_result_length, const nlohmann::json &intermediate_result_json) {
-  this->logger.debug(MSG_BUILD_RESULT);
-  // Build Result JSON starting with Return Codes
-  nlohmann::json result_json = {
-      {"return_codes",
-       {{"saf_return_code", this->return_codes.saf_return_code},
-        {"racf_return_code", this->return_codes.racf_return_code},
-        {"racf_reason_code", this->return_codes.racf_reason_code},
-        {"racfu_return_code", this->return_codes.racfu_return_code}}}
-  };
-
-  // Convert '-1' to 'nullptr'
-  if (this->return_codes.saf_return_code == -1) {
-    result_json["return_codes"]["saf_return_code"] = nullptr;
-  }
-  if (this->return_codes.racf_return_code == -1) {
-    result_json["return_codes"]["racf_return_code"] = nullptr;
-  }
-  if (this->return_codes.racf_reason_code == -1) {
-    result_json["return_codes"]["racf_reason_code"] = nullptr;
-  }
-  if (this->return_codes.racf_return_code == -1) {
-    result_json["return_codes"]["racf_return_code"] = nullptr;
-  }
-  if (this->return_codes.racfu_return_code == -1) {
-    result_json["return_codes"]["racfu_return_code"] = nullptr;
-  }
-
-  if (!this->errors.empty()) {
-    result_json["errors"] = this->errors.error_messages;
-  }
-
-  if (intermediate_result_json != nullptr && this->errors.empty()) {
-    if (!intermediate_result_json.empty()) {
-      result_json.merge_patch(intermediate_result_json);
-    }
-  }
-
-  // Convert profile JSON to C string.
-  std::string result_json_cpp_string = result_json.dump();
-  char *result_json_string           = static_cast<char *>(
-      malloc(sizeof(char) * (result_json_cpp_string.size() + 1)));
-  if (result_json_string != NULL) {
-    std::strcpy(result_json_string, result_json_cpp_string.c_str());
-  }
-
-  // Build RACFu Result Structure
-  this->result->raw_result         = raw_result;
-  this->result->raw_result_length  = raw_result_length;
-  this->result->raw_request        = raw_request;
-  this->result->raw_request_length = raw_request_length;
-  this->result->result_json        = result_json_string;
-
-  this->logger.debug(MSG_DONE);
+  Logger::getInstance().debug("Done");
 }
 }  // namespace RACFu

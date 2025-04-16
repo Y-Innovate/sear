@@ -1,13 +1,11 @@
 #ifndef __IRRSMO00_H_
 #define __IRRSMO00_H_
 
-#include <stdbool.h>
-
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "errors.hpp"
 #include "racfu_result.h"
+#include "security_request.hpp"
 
 typedef struct {
   unsigned char running_userid_length;
@@ -39,18 +37,13 @@ void IRRSMO64(char *,               // Workarea
 #pragma linkage(IRRSMO64, OS_NOSTACK)
 #endif
 
-char *call_irrsmo00(char *request_xml, const char *running_userid,
-                    unsigned int &result_buffer_size, int irrsmo00_options,
-                    racfu_return_codes_t &return_codes, RACFu::Errors &errors);
-
-bool does_profile_exist(const std::string &admin_type,
-                        const std::string &profile_name,
-                        const std::string &class_name,
-                        const char *running_userid, RACFu::Errors &errors);
-
-int post_process_smo_json(RACFu::Errors &errors, nlohmann::json &results,
-                          const std::string &profile_name,
-                          const std::string &admin_type,
-                          const std::string &class_name);
+namespace RACFu {
+class IRRSMO00 {
+ public:
+  void call_irrsmo00(SecurityRequest &request, bool profile_exists_check);
+  bool does_profile_exist(SecurityRequest &request);
+  void post_process_smo_json(SecurityRequest &request);
+};
+}  // namespace RACFu
 
 #endif /* IRRSMO00_H_ */

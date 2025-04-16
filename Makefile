@@ -8,20 +8,18 @@ SRC				= ${PWD}/racfu
 IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
 IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
 KEY_MAP			= ${PWD}/racfu/key_map
-LOGGER			= ${PWD}/racfu/logger
 VALIDATION		= ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
 JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
 TESTS			= ${PWD}/tests
 ZOSLIB			= $(TESTS)/zoslib
-SCHEMAS			= ${PWD}/schemas
 
 CSTANDARD		= c99
-CXXSTANDARD		= c++11
+CXXSTANDARD		= c++14
 
 # JSON Schemas
-RACFU_PARAMETERS_SCHEMA	= $(shell cat $(SCHEMAS)/parameters.json | jq -c)
+RACFU_SCHEMA	= $(shell cat ${PWD}/schema.json | jq -c)
 
 ifeq ($(UNAME), OS/390)
 	AS			= as
@@ -32,7 +30,6 @@ ifeq ($(UNAME), OS/390)
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
-				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
 				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
@@ -40,8 +37,7 @@ ifeq ($(UNAME), OS/390)
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
 				-I $(JSON) \
-				-I $(JSON_SCHEMA) \
-				-I $(LOGGER)
+				-I $(JSON_SCHEMA)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
@@ -54,7 +50,6 @@ else
 	SRCZOSLIB	= $(ZOSLIB)/*.c
 
 	CFLAGS		= \
-				-DRACFU_PARAMETERS_SCHEMA='R"($(RACFU_PARAMETERS_SCHEMA))"_json' \
 				-std=$(CXXSTANDARD) -D__ptr32= \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
@@ -62,8 +57,7 @@ else
 				-I $(KEY_MAP) \
 				-I $(VALIDATION) \
 				-I $(JSON) \
-				-I $(JSON_SCHEMA) \
-				-I $(LOGGER)
+				-I $(JSON_SCHEMA)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
@@ -79,7 +73,13 @@ mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
 
-racfu: clean mkdirs
+schema:
+	@echo "#ifndef __RACFU_SCHEMA_H_\n"\
+	"#define __RACFU_SCHEMA_H_\n\n"\
+	"#define RACFU_SCHEMA" 'R"($(RACFU_SCHEMA))"_json'\
+	"\n\n#endif" > $(SRC)/racfu_schema.hpp
+
+racfu: clean mkdirs schema
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
 	cd $(ARTIFACTS) \
 		&& $(CXX) -c $(CFLAGS) \
@@ -87,12 +87,11 @@ racfu: clean mkdirs
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
-			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp
 	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
 
-test: clean mkdirs
+test: clean mkdirs schema
 	cd $(ARTIFACTS) \
 		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
 			$(TESTS)/unity/unity.c \
@@ -102,7 +101,6 @@ test: clean mkdirs
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
 			$(KEY_MAP)/*.cpp \
-			$(LOGGER)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp \
 			$(TESTS)/*.cpp \
@@ -120,7 +118,7 @@ dbg:
 		-o $(DIST)/debug \
 		${PWD}/debug/debug.c
 
-check:
+check: schema
 	cppcheck \
 		--suppress='missingIncludeSystem' \
 		--suppress='useStlAlgorithm' \
@@ -138,9 +136,8 @@ check:
 		-I $(IRRSEQ00_SRC) \
 		-I $(KEY_MAP) \
 		-I $(VALIDATION) \
-		-I $(LOGGER) \
 		-I $(ZOSLIB) \
 		$(SRC)/
 
 clean:
-	$(RM) $(ARTIFACTS) $(DIST)
+	$(RM) $(ARTIFACTS) $(DIST) $(SRC)/racfu_schema.hpp

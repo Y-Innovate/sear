@@ -25,6 +25,7 @@
 // Common
 char *get_sample(const char *filename, const char *mode);
 char *get_raw_sample(const char *filename);
+char *get_xml_sample(const char *filename, int *length);
 std::string get_json_sample(const char *filename);
 void test_validation_errors(const char *test_request_json,
                             const char *test_validation_errors_result_json,
@@ -45,7 +46,8 @@ void test_parse_extract_result_profile_not_found(
 // IRRSMO00
 void test_generate_add_alter_delete_request_generation(
     const char *test_add_alter_delete_request_json,
-    const char *test_add_alter_delete_request_raw, bool debug);
+    const char *test_add_alter_delete_request_raw,
+    int irrsmo00_options_expected, bool debug);
 void test_parse_add_alter_delete_result(
     const char *test_add_alter_delete_request_json,
     const char *test_add_alter_delete_result_json,
