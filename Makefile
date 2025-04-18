@@ -21,6 +21,12 @@ CXXSTANDARD		= c++14
 # JSON Schemas
 RACFU_SCHEMA	= $(shell cat ${PWD}/schema.json | jq -c)
 
+ifeq ($(UNAME), Linux)
+	CLANG_FORMAT	= clang-format-19
+else
+	CLANG_FORMAT	= clang-format
+endif
+
 ifeq ($(UNAME), OS/390)
 	AS			= as
 	CC			= ibm-clang64
@@ -143,7 +149,7 @@ check: schema
 		$(SRC)/
 
 lint:
-	clang-format --Werror --dry-run -i ./**/*.cpp ./**/*.c ./**/*.hpp ./**/*.h
+	$(CLANG_FORMAT) --Werror --dry-run -i ./**/*.cpp ./**/*.c ./**/*.hpp ./**/*.h
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST) $(SRC)/racfu_schema.hpp
