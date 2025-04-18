@@ -228,9 +228,8 @@ def publish(
       touch dist/${checksums_file}
       chtag -t -c ISO8859-1 dist/${checksums_file}
     """
-
-    def python = python_executables_and_wheels_map.keySet()[-1]
-    def tar_publish = python_executables_and_wheels_map[python]["tarPublish"]
+    
+    def tar_publish
     def tar_published = false
 
     for (python in python_executables_and_wheels_map.keySet()) {
@@ -247,6 +246,7 @@ def publish(
       """
 
       if (tar_published == false) {
+        tar_publish = python_executables_and_wheels_map[python]["tarPublish"]
         echo "Building '${tar_publish}' ..."
         sh "${python} -m build -s"
         
