@@ -232,6 +232,9 @@ def publish(
     def tar_publish
     def tar_published = false
 
+    echo "Cleaning repo ..."
+    sh "git clean -fdx"
+
     for (python in python_executables_and_wheels_map.keySet()) {
       def wheel_default = python_executables_and_wheels_map[python]["wheelDefault"]
       def wheel_publish = python_executables_and_wheels_map[python]["wheelPublish"]
@@ -239,7 +242,6 @@ def publish(
       echo "Building '${wheel_default}' ..."
 
       sh """
-        git clean -fdx
         ${python} -m pip install build>=1.2.2
         ${python} -m build -w
         mv dist/${wheel_default} dist/${wheel_publish}
@@ -257,14 +259,14 @@ def publish(
       upload_asset(release_id, wheel_publish)
 
       echo "Adding sha256 checksum for '${wheel_publish}' to ${checksums_file}..."
-      sh "sha256sum -t dist/${wheel_publish} >> dist/${checksums_file}"
+      sh "cd dist && sha256sum -t ${wheel_publish} >> ${checksums_file}"
     }
 
     echo "Uploading '${tar_publish}' to '${release}' GitHub release ..."
     upload_asset(release_id, tar_publish)
 
     echo "Adding sha256 checksum for '${tar_publish}' to ${checksums_file}..."
-    sh "sha256sum -t dist/${tar_publish} >> dist/${checksums_file}"
+    sh "cd dist && sha256sum -t ${tar_publish} >> ${checksums_file}"
 
     echo "Uploading '${checksums_file}' to '${release}' GitHub release ..."
     upload_asset(release_id, checksums_file)
