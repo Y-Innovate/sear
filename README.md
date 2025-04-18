@@ -1,5 +1,12 @@
 ![RACFu Logo](logo.png)
 
+[![test](https://github.com/ambitus/racfu/actions/workflows/test.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/test.yml)
+[![cppcheck](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml)
+[![clang-format](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml)
+[![Version](https://img.shields.io/pypi/v/racfu?label=alpha)](https://pypi.org/project/racfu/#history)
+[![Python Versions](https://img.shields.io/pypi/pyversions/racfu)](https://pypi.org/project/racfu/)
+[![Downloads](https://img.shields.io/pypi/dm/racfu)](https://pypistats.org/packages/racfu)
+
 A standardized JSON interface for RACF that enables seemless exploitation by programming languages that have a foreign language interface for C/C++ and native JSON support.
 
 ## Description
