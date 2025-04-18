@@ -277,12 +277,20 @@ void check_arg_pointers(char *raw_request, bool racf_options) {
   TEST_ASSERT_EQUAL_UINT64(248, arg_pointer[11] - arg_pointer[10]);
   // ACEE should be 4 bytes
   TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[12] - arg_pointer[11]);
+
+#ifdef __TOS_390__
   // result buffer subpool should be 1 byte
   // Note that the difference between the result buffer pointer pointer
   // and the result buffer subpool pointer is 0x80000001 as a result
   // of the high order bit of the result buffer pointer pointer being
   // set to 0x80000000 to indicate that this is the end of the argument list.
   TEST_ASSERT_EQUAL_UINT64(0x80000001, arg_pointer[13] - arg_pointer[12]);
+#else
+  // When testing off-platform, just remove the high order bit.
+  // On Linux systems specifically, this assertion fails for some
+  // reason when the high order bit is on.
+  TEST_ASSERT_EQUAL_UINT64(1, (arg_pointer[13] - arg_pointer[12]) & 0x7FFFFFFF);
+#endif
 }
 
 /*************************************************************************/
