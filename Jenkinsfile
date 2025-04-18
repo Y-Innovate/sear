@@ -177,9 +177,10 @@ def publish(
   }
   withCredentials(
     [
-      string(
+      usernamePassword(
         credentialsId: 'pyracf-racfu-github-access-token',
-        variable: 'github_access_token'
+        usernameVariable: 'github_user'
+        passwordVariable: 'github_access_token'
       )
     ]
   ) {
