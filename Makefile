@@ -31,6 +31,7 @@ ifeq ($(UNAME), OS/390)
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
 				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii \
+				-D_POSIX_C_SOURCE=200112L \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
@@ -51,6 +52,7 @@ else
 
 	CFLAGS		= \
 				-std=$(CXXSTANDARD) -D__ptr32= \
+				-D_POSIX_C_SOURCE=200112L \
 				-I $(SRC) \
 				-I $(IRRSMO00_SRC) \
 				-I $(IRRSEQ00_SRC) \
@@ -131,6 +133,7 @@ check: schema
 		--inconclusive \
 		--error-exitcode=1 \
 		-U __TOS_390__ -D __ptr32= \
+		-D _POSIX_C_SOURCE=200112L \
 		-I $(SRC) \
 		-I $(IRRSMO00_SRC) \
 		-I $(IRRSEQ00_SRC) \
@@ -138,6 +141,9 @@ check: schema
 		-I $(VALIDATION) \
 		-I $(ZOSLIB) \
 		$(SRC)/
+
+lint:
+	clang-format --Werror --dry-run -i ./**/*.cpp ./**/*.c ./**/*.hpp ./**/*.h
 
 clean:
 	$(RM) $(ARTIFACTS) $(DIST) $(SRC)/racfu_schema.hpp

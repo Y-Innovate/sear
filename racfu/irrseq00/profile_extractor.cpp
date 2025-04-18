@@ -21,7 +21,6 @@
 // use ntohl() to convert 16-bit values from big endian to little endian.
 // On z/OS these macros do nothing since "network order" and z/Architecture are
 // both big endian. This is only necessary for unit testing off platform.
-#define _POSIX_C_SOURCE 200112L
 #include <arpa/inet.h>
 
 namespace RACFu {

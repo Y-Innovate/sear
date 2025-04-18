@@ -2,6 +2,7 @@
 #define __IRRSMO00_ERROR_H_
 
 #include <exception>
+#include <string>
 #include <vector>
 
 namespace RACFu {

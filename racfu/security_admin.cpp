@@ -1,9 +1,8 @@
 #include "security_admin.hpp"
 
-#include <stdexcept>
-
-#define _POSIX_C_SOURCE 200112L
 #include <arpa/inet.h>
+
+#include <stdexcept>
 
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"

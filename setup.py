@@ -69,6 +69,9 @@ def main():
         "ext_modules": [
                 Extension(
                     "racfu._C",
+                    define_macros=[
+                        ("_POSIX_C_SOURCE", "200112L")
+                    ],
                     sources=(
                         glob("racfu/**/*.cpp")
                         + glob("racfu/*.cpp")
