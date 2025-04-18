@@ -87,6 +87,9 @@ pipeline {
       }
     }
     stage('Create Python Distribution Metadata') {
+      when { 
+        expression { params.createRelease == true }    
+      }
       steps {
         script {
           python_versions = params.pythonVersions.split(",")
@@ -219,6 +222,13 @@ def publish(
       )
     ).trim()
 
+    def checksums_file = "SHASUMS256.txt.asc"
+
+    sh """
+      touch dist/${checksums_file}
+      chtag -t -c ISO8859-1 dist/${checksums_file}
+    """
+
     def tar_published = false
 
     for (python in python_executables_and_wheels_map.keySet()) {
@@ -236,15 +246,26 @@ def publish(
       """
 
       echo "Uploading '${wheel_default}' as '${wheel_publish}' to '${release}' GitHub release ..."
-
       upload_asset(release_id, wheel_publish)
+
+      echo "Adding sha256 checksum for '${wheel_publish}' to ${checksums_file}..."
+      sh "sha256sum -t dist/${wheel_publish} >> dist/${checksums_file}"
+
       if (tar_published == false) {
+        echo "Uploading '${tar_publish}' to '${release}' GitHub release ..."
         upload_asset(release_id, tar_publish)
+
+        echo "Adding sha256 checksum for '${tar_publish}' to ${checksums_file}..."
+        sh "sha256sum -t dist/${tar_publish} >> dist/${checksums_file}"
+        
         tar_published = true
       }
       else {
         sh "rm dist/${tar_publish}"
       }
+
+      echo "Uploading '${checksums_file}' to '${release}' GitHub release ..."
+      upload_asset(release_id, checksums_file)
     }
   }
 }
