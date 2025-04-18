@@ -229,44 +229,45 @@ def publish(
       chtag -t -c ISO8859-1 dist/${checksums_file}
     """
 
+    def python = python_executables_and_wheels_map.keySet()[-1]
+    def tar_publish = python_executables_and_wheels_map[python]["tarPublish"]
     def tar_published = false
 
     for (python in python_executables_and_wheels_map.keySet()) {
       def wheel_default = python_executables_and_wheels_map[python]["wheelDefault"]
       def wheel_publish = python_executables_and_wheels_map[python]["wheelPublish"]
-      def tar_publish = python_executables_and_wheels_map[python]["tarPublish"]
 
-      echo "Cleaning repo and building '${wheel_default}' ..."
+      echo "Building '${wheel_default}' ..."
 
       sh """
         git clean -fdx
         ${python} -m pip install build>=1.2.2
-        ${python} -m build
+        ${python} -m build -w
         mv dist/${wheel_default} dist/${wheel_publish}
       """
+
+      if (tar_published == false) {
+        echo "Building '${tar_publish}' ..."
+        sh "${python} -m build -s"
+        
+        tar_published = true
+      }
 
       echo "Uploading '${wheel_default}' as '${wheel_publish}' to '${release}' GitHub release ..."
       upload_asset(release_id, wheel_publish)
 
       echo "Adding sha256 checksum for '${wheel_publish}' to ${checksums_file}..."
       sh "sha256sum -t dist/${wheel_publish} >> dist/${checksums_file}"
-
-      if (tar_published == false) {
-        echo "Uploading '${tar_publish}' to '${release}' GitHub release ..."
-        upload_asset(release_id, tar_publish)
-
-        echo "Adding sha256 checksum for '${tar_publish}' to ${checksums_file}..."
-        sh "sha256sum -t dist/${tar_publish} >> dist/${checksums_file}"
-        
-        tar_published = true
-      }
-      else {
-        sh "rm dist/${tar_publish}"
-      }
-
-      echo "Uploading '${checksums_file}' to '${release}' GitHub release ..."
-      upload_asset(release_id, checksums_file)
     }
+
+    echo "Uploading '${tar_publish}' to '${release}' GitHub release ..."
+    upload_asset(release_id, tar_publish)
+
+    echo "Adding sha256 checksum for '${tar_publish}' to ${checksums_file}..."
+    sh "sha256sum -t dist/${tar_publish} >> dist/${checksums_file}"
+
+    echo "Uploading '${checksums_file}' to '${release}' GitHub release ..."
+    upload_asset(release_id, checksums_file)
   }
 }
 
