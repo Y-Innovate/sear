@@ -21,8 +21,8 @@ class SecurityResult:
 def racfu(request: dict, debug: bool = False) -> SecurityResult:
     response = call_racfu(json.dumps(request), debug=debug)
     return SecurityResult(
-        request = request,
-        raw_request = response["raw_request"],
-        raw_result = response["raw_result"],
-        result = json.loads(response['result_json'])
+        request=request,
+        raw_request=response["raw_request"],
+        raw_result=response["raw_result"],
+        result=json.loads(response["result_json"]),
     )
