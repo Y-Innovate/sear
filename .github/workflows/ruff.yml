@@ -14,4 +14,4 @@ jobs:
     - name: Install ruff
       run: python3 -m pip install --upgrade pip ruff
     - name: Run ruff
-      run: ruff ./python/racfu setup.py
+      run: ruff check ./python/racfu setup.py

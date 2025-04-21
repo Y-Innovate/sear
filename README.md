@@ -50,13 +50,13 @@ python3 -m pip install racfu
 ## Help
 * [GitHub Discussions](https://github.com/ambitus/racfu/discussions)
 
-## Maintainers
-* Leonard Carcaramo: lcarcaramo@ibm.com
-* Elijah Swift: Elijah.Swift@ibm.com
-
 ## Authors
 
 * Leonard Carcaramo: lcarcaramo@ibm.com
 * Elijah Swift: Elijah.Swift@ibm.com
 * Frank De Gilio: degilio@us.ibm.com
 * Joe Bostian: jbostian@ibm.com
+
+## Maintainers
+* Leonard Carcaramo: lcarcaramo@ibm.com
+* Elijah Swift: Elijah.Swift@ibm.com
