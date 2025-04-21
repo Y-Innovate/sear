@@ -11,7 +11,7 @@ from setuptools.command.build_ext import build_ext
 
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
-    """Python extension assembling underlying objects."""
+    """Assemble assembler code."""
     obj_file = asm_file.split(".")[0] + ".o"
     cwd = Path.cwd()
     source_file = cwd / asm_directory / asm_file
@@ -34,7 +34,8 @@ def assemble(asm_file: str, asm_directory: Path) -> None:
     subprocess.run(assemble_command, shell=True, check=True)
 
 
-def build_json_schema_header() -> None:
+def generate_json_schema_header() -> None:
+    """Generate RACFu JSON schema header."""
     schema_absolute_path = Path.cwd() / "schema.json"
     with open(schema_absolute_path, "r") as f:
         schema = json.dumps(json.load(f), separators=(",", ":"))
@@ -55,6 +56,7 @@ def build_json_schema_header() -> None:
 
 
 class build_with_asm_ext(build_ext):
+    """Build Python extension that includes assembler code."""
     def run(self):
         os.environ["CC"] = "ibm-clang64"
         os.environ["CFLAGS"] = "-std=c99"
@@ -69,7 +71,7 @@ def main():
     """Python extension build entrypoint."""
     cwd = Path.cwd()
     assembled_object_path = cwd / "artifacts" / "irrseq00.o"
-    build_json_schema_header()
+    generate_json_schema_header()
     setup_args = {
         "ext_modules": [
             Extension(

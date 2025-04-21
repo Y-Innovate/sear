@@ -1,3 +1,5 @@
+"""Python code to interface with RACFu."""
+
 import json
 from typing import Any
 
@@ -5,6 +7,7 @@ from racfu._C import call_racfu
 
 
 class SecurityResult:
+    """Container for RACFu result information."""
     def __init__(
             self,
             request: dict,
@@ -19,6 +22,7 @@ class SecurityResult:
 
 
 def racfu(request: dict, debug: bool = False) -> SecurityResult:
+    """Call RACFu Python extenion."""
     response = call_racfu(json.dumps(request), debug=debug)
     return SecurityResult(
         request=request,
