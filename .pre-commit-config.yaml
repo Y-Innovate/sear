@@ -15,6 +15,14 @@ repos:
         verbose: true
   - repo: local
     hooks:
+      - id: fuzz
+        name: fuzz
+        entry: make fuzz
+        language: system
+        pass_filenames: false
+        always_run: true
+  - repo: local
+    hooks:
       - id: unit-test
         name: unit-test
         entry: make test

@@ -2,6 +2,7 @@
 
 #include <arpa/inet.h>
 
+#include <memory>
 #include <stdexcept>
 
 #include "irrsmo00.hpp"
@@ -18,13 +19,17 @@ SecurityAdmin::SecurityAdmin(racfu_result_t *p_result, bool debug) {
   request_ = SecurityRequest(p_result);
 }
 
-void SecurityAdmin::makeRequest(const char *p_request_json_string) {
+void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
   nlohmann::json request_json;
 
   try {
+    // Ensure Request JSON is a NULL terminated string.
+    auto request_json_unique_ptr = std::make_unique<char[]>(length + 1);
+    std::memset(request_json_unique_ptr.get(), 0, length + 1);
+    std::strncpy(request_json_unique_ptr.get(), p_request_json_string, length);
     // Parse Request JSON
     try {
-      request_json = nlohmann::json::parse(p_request_json_string);
+      request_json = nlohmann::json::parse(request_json_unique_ptr.get());
     } catch (const nlohmann::json::parse_error &ex) {
       request_.setRACFuReturnCode(8);
       throw RACFuError(std::string("Syntax error in request JSON at byte ") +

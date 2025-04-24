@@ -73,6 +73,11 @@ else
 				-I $(ZOSLIB)
 endif
 
+FUZZFLGS	= \
+			-fsanitize=fuzzer \
+			-fsanitize=undefined \
+			-fsanitize=address
+
 RM				= rm -rf
 
 all: racfu
@@ -117,6 +122,21 @@ test: clean mkdirs schema
 			$(TESTS)/validation/*.cpp \
 		&& $(CXX) $(LDFLAGS) *.o -o $(DIST)/test_runner
 	$(DIST)/test_runner
+
+fuzz: clean mkdirs schema
+	cd $(ARTIFACTS) \
+		&& $(CXX) -c $(CFLAGS) $(TFLAGS) $(FUZZFLGS) \
+			${PWD}/fuzz/fuzz.cpp \
+			$(TESTS)/mock/*.cpp \
+			$(SRCZOSLIB) \
+			$(SRC)/*.cpp \
+			$(IRRSMO00_SRC)/*.cpp \
+			$(IRRSEQ00_SRC)/*.cpp \
+			$(KEY_MAP)/*.cpp \
+			$(VALIDATION)/*.cpp \
+			$(JSON_SCHEMA)/*.cpp \
+		&& $(CXX) $(LDFLAGS) $(FUZZFLGS) *.o -o $(DIST)/fuzz
+	$(DIST)/fuzz -runs=65536 -artifact_prefix=$(ARTIFACTS)/
 
 fvt: 
 	python3 $(TESTS)/fvt/fvt.py

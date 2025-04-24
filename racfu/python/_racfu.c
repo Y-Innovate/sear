@@ -1,32 +1,45 @@
 #define PY_SSIZE_T_CLEAN
 
 #include <Python.h>
+#include <pthread.h>
 #include <stdbool.h>
 
 #include "racfu.h"
+
+pthread_mutex_t racfu_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // Entry point to the call_racfu() function
 static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
   PyObject* result_dictionary;
   PyObject* debug_pyobj;
   const char* request_as_string;
+  Py_ssize_t request_length;
   bool debug            = false;
 
   static char* kwlist[] = {"request", "debug", NULL};
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s|O", kwlist,
-                                   &request_as_string, &debug_pyobj)) {
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#|O", kwlist,
+                                   &request_as_string, &request_length,
+                                   &debug_pyobj)) {
     return NULL;
   }
 
-  debug                  = PyObject_IsTrue(debug_pyobj);
+  debug = PyObject_IsTrue(debug_pyobj);
 
-  racfu_result_t* result = racfu(request_as_string, debug);
+  // Since RACFu manages racfu_result_t as a static structure,
+  // we need to use a mutex to make this thread safe.
+  // Technically we shouldn't need this because the Python GIL,
+  // but we will set this up anyways to be safe.
+  pthread_mutex_lock(&racfu_mutex);
+
+  racfu_result_t* result = racfu(request_as_string, request_length, debug);
 
   result_dictionary      = Py_BuildValue(
       "{s:y#,s:y#,s:s}", "raw_request", result->raw_request,
       result->raw_request_length, "raw_result", result->raw_result,
       result->raw_result_length, "result_json", result->result_json);
+
+  pthread_mutex_unlock(&racfu_mutex);
 
   return result_dictionary;
 }
