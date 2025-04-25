@@ -44,7 +44,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     Logger::getInstance().hexDump(reinterpret_cast<char *>(p_arg_area),
                                   request.getRawRequestLength());
 
-    request.setRawRequestPointer(ProfileExtractor::preserveRawRequest(
+    request.setRawRequestPointer(ProfileExtractor::cloneBuffer(
         reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
     // Call R_Admin
@@ -82,7 +82,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     Logger::getInstance().hexDump(reinterpret_cast<char *>(p_arg_area),
                                   request.getRawRequestLength());
 
-    request.setRawRequestPointer(ProfileExtractor::preserveRawRequest(
+    request.setRawRequestPointer(ProfileExtractor::cloneBuffer(
         reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
     // Call R_Admin
@@ -116,6 +116,31 @@ void ProfileExtractor::extract(SecurityRequest &request) {
   oss << "IRRSEQ00 allocated in 31-bit memory at address "
       << static_cast<void *>(request.getRawResultPointer());
   Logger::getInstance().debug(oss.str());
+
+  // We need to create a new buffer for the raw result to ensure
+  // that it is allocated using "new" since the cleanup done later
+  // will assume that the buffer was allocated using "new" and
+  // will free the buffer using "delete". Since the 31-bit buffer
+  // is allocated by irrseq00.s using '__malloc31()', we can't free
+  // it using "delete" since that will result in undefined behavior.
+  // Instead just create a new buffer using "make_unique()", which is
+  // allocated using "new" under the covers, and free the original
+  // buffer using "free()"".
+  char *p_raw_result = request.getRawResultPointer();
+  int raw_result_length;
+  if (request.getAdminType() != "racf-options") {
+    const generic_extract_parms_results_t *p_generic_result =
+        reinterpret_cast<const generic_extract_parms_results_t *>(p_raw_result);
+    raw_result_length = ntohl(p_generic_result->result_buffer_length);
+  } else {
+    const racf_options_extract_results_t *p_setropts_result =
+        reinterpret_cast<const racf_options_extract_results_t *>(p_raw_result);
+    raw_result_length = ntohl(p_setropts_result->result_buffer_length);
+  }
+  request.setRawResultPointer(
+      ProfileExtractor::cloneBuffer(p_raw_result, raw_result_length));
+  std::free(p_raw_result);
+  request.setRawResultLength(raw_result_length);
 
   request.setRACFuReturnCode(0);
 }
@@ -240,21 +265,13 @@ void ProfileExtractor::buildRACFOptionsExtractRequest(
   arg_pointers->p_racf_options_extract_parms = racf_options_extract_parms;
 }
 
-char *ProfileExtractor::preserveRawRequest(const char *p_arg_area,
-                                           const int &raw_request_length) {
-  try {
-    auto request_unique_ptr = std::make_unique<char[]>(raw_request_length);
-    Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
-                                        raw_request_length);
-    std::memset(request_unique_ptr.get(), 0, raw_request_length);
-    std::memcpy(request_unique_ptr.get(), p_arg_area, raw_request_length);
-    char *p_raw_request = request_unique_ptr.get();
-    request_unique_ptr.release();
-    return p_raw_request;
-  } catch (const std::bad_alloc &ex) {
-    std::perror(
-        "Warn - Unable to allocate space to preserve the raw request.\n");
-    return nullptr;
-  }
+char *ProfileExtractor::cloneBuffer(const char *p_buffer, const int &length) {
+  auto request_unique_ptr = std::make_unique<char[]>(length);
+  Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64, length);
+  std::memset(request_unique_ptr.get(), 0, length);
+  std::memcpy(request_unique_ptr.get(), p_buffer, length);
+  char *p_raw_request = request_unique_ptr.get();
+  request_unique_ptr.release();
+  return p_raw_request;
 }
 }  // namespace RACFu

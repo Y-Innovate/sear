@@ -18,8 +18,7 @@ class ProfileExtractor {
       std::string class_name, uint8_t function_code);
   static void buildRACFOptionsExtractRequest(
       racf_options_extract_underbar_arg_area_t *arg_area);
-  static char *preserveRawRequest(const char *p_arg_area,
-                                  const int &raw_request_length);
+  static char *cloneBuffer(const char *p_buffer, const int &length);
 
  public:
   void extract(SecurityRequest &request);

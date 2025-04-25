@@ -21,17 +21,17 @@ SecurityRequest::SecurityRequest(racfu_result_t* p_result) {
   // Free dynamically allocated memory from previous requests.
   if (p_result->raw_request != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_request);
-    std::free(p_result->raw_request);
+    delete[] p_result->raw_request;
     Logger::getInstance().debug("Done");
   }
   if (p_result->raw_result != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_result);
-    std::free(p_result->raw_result);
+    delete[] p_result->raw_result;
     Logger::getInstance().debug("Done");
   }
   if (p_result->result_json != nullptr) {
     Logger::getInstance().debugFree(p_result->result_json);
-    std::free(p_result->result_json);
+    delete[] p_result->result_json;
     Logger::getInstance().debug("Done");
   }
   p_result_->raw_request        = nullptr;

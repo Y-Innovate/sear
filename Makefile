@@ -95,7 +95,7 @@ schema:
 racfu: clean mkdirs schema
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
 	cd $(ARTIFACTS) \
-		&& $(CXX) -c $(CFLAGS) \
+		&& $(CXX) -g -c $(CFLAGS) \
 			$(SRC)/*.cpp \
 			$(IRRSMO00_SRC)/*.cpp \
 			$(IRRSEQ00_SRC)/*.cpp \
@@ -106,7 +106,7 @@ racfu: clean mkdirs schema
 
 test: clean mkdirs schema
 	cd $(ARTIFACTS) \
-		&& $(CXX) -c $(CFLAGS) $(TFLAGS) \
+		&& $(CXX) -g -c $(CFLAGS) $(TFLAGS) \
 			$(TESTS)/unity/unity.c \
 			$(TESTS)/mock/*.cpp \
 			$(SRCZOSLIB) \
@@ -125,8 +125,8 @@ test: clean mkdirs schema
 
 fuzz: clean mkdirs schema
 	cd $(ARTIFACTS) \
-		&& $(CXX) -c $(CFLAGS) $(TFLAGS) $(FUZZFLGS) \
-			${PWD}/fuzz/fuzz.cpp \
+		&& $(CXX) -g -c $(CFLAGS) $(TFLAGS) $(FUZZFLGS) \
+			$(TESTS)/fuzz.cpp \
 			$(TESTS)/mock/*.cpp \
 			$(SRCZOSLIB) \
 			$(SRC)/*.cpp \
@@ -136,6 +136,7 @@ fuzz: clean mkdirs schema
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp \
 		&& $(CXX) $(LDFLAGS) $(FUZZFLGS) *.o -o $(DIST)/fuzz
+	ASAN_OPTIONS=alloc_dealloc_mismatch=1 \
 	$(DIST)/fuzz -runs=65536 -artifact_prefix=$(ARTIFACTS)/
 
 fvt: 

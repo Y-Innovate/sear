@@ -1,9 +1,9 @@
 ![RACFu Logo](https://raw.githubusercontent.com/ambitus/racfu/refs/heads/main/logo.png)
 
 [![test](https://github.com/ambitus/racfu/actions/workflows/test.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/test.yml)
+[![fuzz](https://github.com/ambitus/racfu/actions/workflows/fuzz.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/fuzz.yml)
 [![cppcheck](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml)
 [![clang-format](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml)
-[fuzz](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/fuzz.yml)
 [![ruff](https://github.com/ambitus/racfu/actions/workflows/ruff.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/ruff.yml)
 [![Version](https://img.shields.io/pypi/v/racfu?label=alpha)](https://pypi.org/project/racfu/#history)
 [![Python Versions](https://img.shields.io/pypi/pyversions/racfu)](https://pypi.org/project/racfu/)
@@ -17,7 +17,7 @@ As automation becomes more and more prevalent, the need to manage the security e
 
 While there are a number of languages that can be used to manage RACF, _(from low level lnaguages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing indurstry standard programming languages and even programming languages that don't exist yet is paramount. The RACFu project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the forseeable future.
 
-RACfu uses [JSON for Modern C++](https://github.com/nlohmann/json) for working with JSON, and [JSON schema validator for JSON for Modern C++](https://github.com/pboettch/json-schema-validator) for [Draft-7 JSON Schema Validation](https://json-schema.org/draft-07).
+RACFu uses [JSON for Modern C++](https://github.com/nlohmann/json) for working with JSON and [JSON schema validator for JSON for Modern C++](https://github.com/pboettch/json-schema-validator) for [Draft-7 JSON Schema Validation](https://json-schema.org/draft-07).
 
 ## Getting Started
 
