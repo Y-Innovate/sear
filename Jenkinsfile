@@ -51,6 +51,10 @@ pipeline {
     ansiColor('css')
   }
 
+  environment {
+    ZOPEN_ROOTFS = "${env.WORKSPACE}/zopen/zopen"
+  }
+
   stages {
     stage('Parameter Validation') {
       steps {
@@ -72,6 +76,45 @@ pipeline {
     stage('Prepare') {
       steps {
         clean_python_environment()
+      }
+    }
+    stage('Get ZOSLIB and OpenSSL from zopen community') {
+      steps {
+        script {
+          zoslib_build_id = "20250425_143120"
+          openssl_version = "3.4.0"
+          openssl_build_id = "20250123_021310"
+
+          sh "mkdir zopen"
+          
+          dir('zopen') { 
+            echo "Installing zoslib ..."
+            sh """
+                curl -o zoslib-zopen2.${zoslib_build_id}.zos.pax.Z \\
+                    -L https://github.com/zopencommunity/zoslibport/releases/download/STABLE_zoslibport_3261/zoslib-zopen2.${zoslib_build_id}.zos.pax.Z 
+                pax -rf zoslib-zopen2.${zoslib_build_id}.zos.pax.Z
+            """
+            echo "Installing OpenSSL"
+            sh """
+                curl -o openssl-${openssl_version}.${openssl_build_id}.zos.pax.Z \\
+                    -L https://github.com/zopencommunity/opensslport/releases/download/STABLE_opensslport_2838/openssl-${openssl_version}.${openssl_build_id}.zos.pax.Z
+                pax -rf openssl-${openssl_version}.${openssl_build_id}.zos.pax.Z
+            """
+            echo "Creating symbolic links ..."
+            sh """
+                mkdir -p zopen/usr/local/lib
+                mkdir -p zopen/usr/local/include
+                ln -s ${env.WORKSPACE}/zopen/zoslib-zopen2/lib/libzoslib.a \\
+                    ${env.WORKSPACE}/zopen/zopen/usr/local/lib/libzoslib.a
+                ln -s ${env.WORKSPACE}/zopen/openssl-${openssl_version}/lib/libcrypto.a \\
+                    ${env.WORKSPACE}/zopen/zopen/usr/local/lib/libcrypto.a
+                ln -s ${env.WORKSPACE}/zopen/openssl-${openssl_version}/lib/libssl.a \\
+                    ${env.WORKSPACE}/zopen/zopen/usr/local/lib/libssl.a
+                ln -s ${env.WORKSPACE}/zopen/openssl-${openssl_version}/include/openssl \\
+                    ${env.WORKSPACE}/zopen/zopen/usr/local/include/openssl
+            """
+          }
+        }
       }
     }
     stage('Cppcheck') {

@@ -13,7 +13,6 @@ VALIDATION		= ${PWD}/racfu/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
 JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
-OPENSSL         = ${ZOPEN_ROOTFS}/usr/local/include
 TESTS			= ${PWD}/tests
 ZOSLIB			= $(TESTS)/zoslib
 
@@ -49,9 +48,10 @@ ifeq ($(UNAME), OS/390)
 
 	ASFLAGS		= -mGOFF -I$(IRRSEQ00_SRC)
 	CFLAGS		= \
-				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii 
+				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii \
 				-D_POSIX_C_SOURCE=200112L \
-				$(COMMON_INC)
+				-I ${ZOPEN_ROOTFS}/usr/local/include \
+				$(COMMONv_INC)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \

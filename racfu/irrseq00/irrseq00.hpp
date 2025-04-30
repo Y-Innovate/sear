@@ -83,7 +83,7 @@ typedef struct {
   uint32_t ACEE;
   uint8_t result_buffer_subpool;
   // R_admin returns data here
-  char * __ptr32 p_result_buffer;
+  char *__ptr32 p_result_buffer;
 } generic_extract_args_t;
 
 typedef struct {
