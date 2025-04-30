@@ -86,7 +86,7 @@ pipeline {
           openssl_build_id = "20250123_021310"
 
           sh "mkdir zopen"
-          
+
           dir('zopen') { 
             echo "Installing zoslib ..."
             sh """
@@ -120,13 +120,13 @@ pipeline {
     stage('Cppcheck') {
       steps {
         echo "Running cppcheck ..."
-        sh "make check"
+        sh "gmake check"
       }
     }
     stage('Unit Test') {
       steps {
         echo "Running unit tests ..."
-        sh "make test"
+        sh "gmake test"
       }
     }
     stage('Create Python Distribution Metadata') {

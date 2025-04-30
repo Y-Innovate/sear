@@ -51,7 +51,7 @@ ifeq ($(UNAME), OS/390)
 				-std=$(CXXSTANDARD) -m64 -fzos-le-char-mode=ascii \
 				-D_POSIX_C_SOURCE=200112L \
 				-I ${ZOPEN_ROOTFS}/usr/local/include \
-				$(COMMONv_INC)
+				$(COMMON_INC)
 	TFLAGS		= \
 				-DUNIT_TEST -DUNITY_OUTPUT_COLOR \
 				-I ${PWD} \
