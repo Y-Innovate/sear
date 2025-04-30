@@ -37,7 +37,7 @@ def assemble(asm_file: str, asm_directory: Path) -> None:
 def generate_json_schema_header() -> None:
     """Generate RACFu JSON schema header."""
     schema_absolute_path = Path.cwd() / "schema.json"
-    with open(schema_absolute_path, "r") as f:
+    with open(schema_absolute_path) as f:
         schema = json.dumps(json.load(f), separators=(",", ":"))
     schema_header_absolute_path = Path.cwd() / "racfu" / "racfu_schema.hpp"
     with open(schema_header_absolute_path, "w") as f:
@@ -50,13 +50,14 @@ def generate_json_schema_header() -> None:
                     f'#define RACFU_SCHEMA R"({schema})"_json',
                     "",
                     "#endif",
-                ]
-            )
+                ],
+            ),
         )
 
 
-class build_with_asm_ext(build_ext):
+class BuildExtensionWithAssemblerAndC(build_ext):
     """Build Python extension that includes assembler code."""
+
     def run(self):
         os.environ["CC"] = "ibm-clang64"
         os.environ["CFLAGS"] = "-std=c99"
@@ -70,13 +71,22 @@ class build_with_asm_ext(build_ext):
 def main():
     """Python extension build entrypoint."""
     cwd = Path.cwd()
+    # Use ZOPEN_ROOTFS to find OpenSSL and zoslib.
+    if not os.environ["ZOPEN_ROOTFS"]:
+        raise RuntimeError(
+            "ZOPEN_ROOTFS not is not set, but is required in order to "
+            + "find the zopen community distributions of of OpenSSL "
+            + "and zoslib since they are build dependencies.\n"
+            + "You can find more information about setting up zopen "
+            + "community here: "
+            + "https://zopen.community/#/Guides/QuickStart?id=installing-zopen-package-manager",
+        )
     assembled_object_path = cwd / "artifacts" / "irrseq00.o"
     generate_json_schema_header()
     setup_args = {
         "ext_modules": [
             Extension(
                 "racfu._C",
-                define_macros=[("_POSIX_C_SOURCE", "200112L")],
                 sources=(
                     glob("racfu/**/*.cpp")
                     + glob("racfu/*.cpp")
@@ -85,13 +95,24 @@ def main():
                 ),
                 include_dirs=(
                     glob("racfu/**/")
-                    + ["racfu", "externals/json", "externals/json-schema-validator"]
+                    + [
+                        "racfu",
+                        "externals/json",
+                        "externals/json-schema-validator",
+                        os.environ["ZOPEN_ROOTFS"] + "/usr/local/include",
+                    ]
                 ),
-                extra_link_args=["-m64", "-Wl,-b,edit=no"],
+                extra_link_args=[
+                    "-m64",
+                    "-Wl,-b,edit=no",
+                    "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libcrypto.a",
+                    "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libssl.a",
+                    "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libzoslib.a",
+                ],
                 extra_objects=[f"{assembled_object_path}"],
-            )
+            ),
         ],
-        "cmdclass": {"build_ext": build_with_asm_ext},
+        "cmdclass": {"build_ext": BuildExtensionWithAssemblerAndC},
     }
     setup(**setup_args)
 

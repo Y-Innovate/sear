@@ -7,6 +7,8 @@
 
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"
+#include "keyring_extractor.hpp"
+#include "keyring_post_processor.hpp"
 #include "profile_extractor.hpp"
 #include "profile_post_processor.hpp"
 #include "racfu_error.hpp"
@@ -51,8 +53,15 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
 
     // Make Request To Corresponding Callable Service
     if (request_.getOperation() == "extract") {
-      Logger::getInstance().debug("Entering IRRSEQ00 path");
-      SecurityAdmin::doExtract();
+      if (request_.getAdminType() != "keyring") {
+        Logger::getInstance().debug("Entering IRRSEQ00 path");
+        ProfileExtractor profile_extractor;
+        SecurityAdmin::doExtract(profile_extractor);
+      } else {
+        Logger::getInstance().debug("Entering IRRSDL00 path");
+        KeyringExtractor keyring_extractor;
+        SecurityAdmin::doExtract(keyring_extractor);
+      }
     } else {
       Logger::getInstance().debug("Entering IRRSMO00 path");
       SecurityAdmin::doAddAlterDelete();
@@ -68,21 +77,24 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
   request_.buildResult();
 }
 
-void SecurityAdmin::doExtract() {
-  // Extract Profile
-  ProfileExtractor extractor;
+void SecurityAdmin::doExtract(Extractor &extractor) {
   extractor.extract(request_);
 
-  ProfilePostProcessor post_processor;
-  if (request_.getAdminType() != "racf-options") {
-    // Post Process Generic Extract Result
-    post_processor.postProcessGeneric(request_);
+  if (request_.getAdminType() != "keyring") {
+    ProfilePostProcessor post_processor;
+    if (request_.getAdminType() == "racf-options") {
+      // Post Process RACF Options Extract Result
+      post_processor.postProcessRACFOptions(request_);
+    } else {
+      // Post Process Generic Extract Result
+      post_processor.postProcessGeneric(request_);
+    }
   } else {
-    // Post Process RACF Options Extract Result
-    post_processor.postProcessRACFOptions(request_);
+    KeyringPostProcessor post_processor;
+    post_processor.postProcessKeyring(request_);
   }
 
-  Logger::getInstance().debug("Profile extract result has been post-processed");
+  Logger::getInstance().debug("Extract result has been post-processed");
 }
 
 void SecurityAdmin::doAddAlterDelete() {

@@ -2,6 +2,7 @@
 #define __IRRSMO00_ERROR_H_
 
 #include <exception>
+#include <iostream>
 #include <string>
 #include <vector>
 

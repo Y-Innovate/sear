@@ -25,7 +25,7 @@
 
 namespace RACFu {
 void ProfileExtractor::extract(SecurityRequest &request) {
-  uint32_t rc;
+  uint32_t rc           = 0;
 
   uint8_t function_code = request.getFunctionCode();
 
