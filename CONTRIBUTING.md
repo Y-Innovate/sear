@@ -138,8 +138,9 @@ When contributing to RACFu, think about the following:
 * Add any necessary test cases to `/tests`.
 * Ensure that you have **pre-commit Hooks** setup to ensure that `clang-format`, `cppcheck`, and **unit tests** are run against the code for every commit you make.
 * Run unit tests by running `make test`.
+* Run LLVM LibFuzzer by running `make fuzz`.
 * Run functional verification tests by running `make fvt`.
-* Run `cppcheck` static code analysis cans by running `make check`
+* Run `cppcheck` static code analysis cans by running `make check`.
 
 ## Found a bug?
 

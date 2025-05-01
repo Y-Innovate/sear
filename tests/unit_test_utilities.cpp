@@ -100,7 +100,8 @@ void test_validation_errors(const char *test_request_json,
   std::string result_json_expected =
       get_json_sample(test_validation_errors_result_json);
 
-  racfu_result_t *result = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 }
@@ -122,10 +123,11 @@ void test_extract_request_generation(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu_result_t *result   = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
-  int request_buffer_size  = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
-  int arg_area_size        = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
+  int request_buffer_size = TEST_IRRSEQ00_GENERIC_REQUEST_BUFFER_SIZE;
+  int arg_area_size       = TEST_IRRSEQ00_GENERIC_ARG_AREA_SIZE;
 
   if (racf_options == true) {
     request_buffer_size = TEST_IRRSEQ00_RACF_OPTIONS_REQUEST_BUFFER_SIZE;
@@ -161,11 +163,13 @@ void test_parse_extract_result(const char *test_extract_request_json,
   r_admin_racf_rc_mock     = 0;
   r_admin_racf_reason_mock = 0;
 
-  racfu_result_t *result   = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
   TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result->raw_result_length);
 
   // Cleanup
@@ -190,11 +194,13 @@ void test_parse_extract_result_profile_not_found(
   r_admin_racf_rc_mock     = 4;
   r_admin_racf_reason_mock = 4;
 
-  racfu_result_t *result   = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
 
 void check_arg_pointers(char *raw_request, bool racf_options) {
@@ -278,12 +284,20 @@ void check_arg_pointers(char *raw_request, bool racf_options) {
   TEST_ASSERT_EQUAL_UINT64(248, arg_pointer[11] - arg_pointer[10]);
   // ACEE should be 4 bytes
   TEST_ASSERT_EQUAL_UINT64(4, arg_pointer[12] - arg_pointer[11]);
+
+#ifdef __TOS_390__
   // result buffer subpool should be 1 byte
   // Note that the difference between the result buffer pointer pointer
   // and the result buffer subpool pointer is 0x80000001 as a result
   // of the high order bit of the result buffer pointer pointer being
   // set to 0x80000000 to indicate that this is the end of the argument list.
+  TEST_ASSERT_EQUAL_UINT64(0x80000001, arg_pointer[13] - arg_pointer[12]);
+#else
+  // When testing off-platform, just remove the high order bit.
+  // On Linux systems specifically, this assertion fails for some
+  // reason when the high order bit is on.
   TEST_ASSERT_EQUAL_UINT64(1, (arg_pointer[13] - arg_pointer[12]) & 0x7FFFFFFF);
+#endif
 }
 
 /*************************************************************************/
@@ -306,7 +320,8 @@ void test_generate_add_alter_delete_request_generation(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu_result_t *result    = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_INT32(raw_request_length_expected,
                           result->raw_request_length);
@@ -337,11 +352,13 @@ void test_parse_add_alter_delete_result(
   irrsmo64_racf_rc_mock     = 0;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu_result_t *result    = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 
   // Cleanup
   free(irrsmo64_result_mock);
@@ -363,10 +380,11 @@ void test_extract_request_irrsdl00_generation(
   irrsdl64_racf_rc_mock     = 0;
   irrsdl64_racf_reason_mock = 0;
 
-  racfu_result_t *result    = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
-  int request_buffer_size   = TEST_IRRSDL00_KEYRING_REQUEST_BUFFER_SIZE;
-  int arg_area_size         = TEST_IRRSDL00_KEYRING_ARG_AREA_SIZE;
+  int request_buffer_size = TEST_IRRSDL00_KEYRING_REQUEST_BUFFER_SIZE;
+  int arg_area_size       = TEST_IRRSDL00_KEYRING_ARG_AREA_SIZE;
 
   // Check the size of the buffer
   TEST_ASSERT_EQUAL_INT32(request_buffer_size, result->raw_request_length);
@@ -394,11 +412,13 @@ void test_parse_extract_irrsdl00_result(const char *test_extract_request_json,
   irrsdl64_racf_rc_mock     = 0;
   irrsdl64_racf_reason_mock = 0;
 
-  racfu_result_t *result    = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
   TEST_ASSERT_EQUAL_INT32(irrsdl64_result_size_mock, result->raw_result_length);
 
   // Cleanup
@@ -422,9 +442,11 @@ void test_parse_extract_irrsdl00_result_keyring_not_found(
   irrsdl64_racf_rc_mock     = 8;
   irrsdl64_racf_reason_mock = 32;
 
-  racfu_result_t *result    = racfu(request_json.c_str(), debug);
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }

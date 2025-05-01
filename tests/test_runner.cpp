@@ -1,7 +1,7 @@
 #include "irrseq00.hpp"
+#include "tests/irrsdl00/test_irrsdl00.hpp"
 #include "tests/irrseq00/test_irrseq00.hpp"
 #include "tests/irrsmo00/test_irrsmo00.hpp"
-#include "tests/irrsdl00/test_irrsdl00.hpp"
 #include "tests/unity/unity.h"
 #include "tests/validation/test_parameter_validation.hpp"
 

@@ -1,4 +1,13 @@
-![RACFu Logo](logo.png)
+![RACFu Logo](https://raw.githubusercontent.com/ambitus/racfu/refs/heads/main/logo.png)
+
+[![test](https://github.com/ambitus/racfu/actions/workflows/test.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/test.yml)
+[![fuzz](https://github.com/ambitus/racfu/actions/workflows/fuzz.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/fuzz.yml)
+[![cppcheck](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/cppcheck.yml)
+[![clang-format](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/clang-format.yml)
+[![ruff](https://github.com/ambitus/racfu/actions/workflows/ruff.yml/badge.svg)](https://github.com/ambitus/racfu/actions/workflows/ruff.yml)
+[![Version](https://img.shields.io/pypi/v/racfu?label=alpha)](https://pypi.org/project/racfu/#history)
+[![Python Versions](https://img.shields.io/pypi/pyversions/racfu)](https://pypi.org/project/racfu/)
+[![Downloads](https://img.shields.io/pypi/dm/racfu)](https://pypistats.org/packages/racfu)
 
 A standardized JSON interface for RACF that enables seemless exploitation by programming languages that have a foreign language interface for C/C++ and native JSON support.
 
@@ -8,10 +17,14 @@ As automation becomes more and more prevalent, the need to manage the security e
 
 While there are a number of languages that can be used to manage RACF, _(from low level lnaguages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing indurstry standard programming languages and even programming languages that don't exist yet is paramount. The RACFu project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the forseeable future.
 
+RACFu uses [JSON for Modern C++](https://github.com/nlohmann/json) for working with JSON and [JSON schema validator for JSON for Modern C++](https://github.com/pboettch/json-schema-validator) for [Draft-7 JSON Schema Validation](https://json-schema.org/draft-07).
+
+RACFu's certificate management cababilities leverage the [zopen community](https://zopen.community/#/) distributions of [OpenSSL](https://github.com/openssl/openssl) and [ZOSLIB](https://github.com/ibmruntimes/zoslib) to create checksum digests and encode certificates.
+
 ## Getting Started
 
 
-## Minimum z/OS & Language Versions
+### Minimum z/OS & Language Versions
 
 All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are fully supported by IBM are supported by RACFu.
 * [z/OS Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search/?q=5655-ZOS,%205650-ZOS)
@@ -46,3 +59,7 @@ python3 -m pip install racfu
 * Elijah Swift: Elijah.Swift@ibm.com
 * Frank De Gilio: degilio@us.ibm.com
 * Joe Bostian: jbostian@ibm.com
+
+## Maintainers
+* Leonard Carcaramo: lcarcaramo@ibm.com
+* Elijah Swift: Elijah.Swift@ibm.com

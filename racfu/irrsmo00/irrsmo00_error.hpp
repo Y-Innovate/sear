@@ -1,8 +1,9 @@
 #ifndef __IRRSMO00_ERROR_H_
 #define __IRRSMO00_ERROR_H_
 
-#include <iostream>
 #include <exception>
+#include <iostream>
+#include <string>
 #include <vector>
 
 namespace RACFu {

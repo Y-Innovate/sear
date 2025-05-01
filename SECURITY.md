@@ -1,0 +1,1 @@
+To report a security vulenaribily, use the [Report a vulnerability](https://github.com/ambitus/racfu/security/advisories/new) feature in GitHub.

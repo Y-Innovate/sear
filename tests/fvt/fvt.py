@@ -16,7 +16,7 @@ if "RACFU_FVT_USERID" not in os.environ:
 extract_request = {
   "admin_type": "user",
   "operation": "extract",
-  "userid": getpass.getuser()
+  "userid": getpass.getuser(),
 }
 
 # This request will fail, but it demonstrates that

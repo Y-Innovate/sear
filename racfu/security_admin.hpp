@@ -24,7 +24,7 @@ class SecurityAdmin {
 
  public:
   SecurityAdmin(racfu_result_t *p_result, bool debug);
-  void makeRequest(const char *p_request_json_string);
+  void makeRequest(const char *p_request_json_string, int length);
 };
 }  // namespace RACFu
 
