@@ -68,4 +68,8 @@ void test_parse_extract_irrsdl00_result_keyring_not_found(
     const char *test_extract_request_json,
     const char *test_extract_result_keyring_not_found_json, bool debug);
 
+void test_add_request_irrsdl00_generation(const char *test_add_request_json,
+                                          const char *test_add_request_raw,
+                                          bool debug);
+
 #endif
