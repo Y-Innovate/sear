@@ -71,12 +71,12 @@ class BuildExtensionWithAssemblerAndC(build_ext):
 def main():
     """Python extension build entrypoint."""
     cwd = Path.cwd()
-    # Use ZOPEN_ROOTFS to find OpenSSL and zoslib.
-    if not os.environ["ZOPEN_ROOTFS"]:
+    # Use ZOPEN_ROOTFS to find OpenSSL and ZOSLIB.
+    if "ZOPEN_ROOTFS" not in os.environ:
         raise RuntimeError(
-            "ZOPEN_ROOTFS not is not set, but is required in order to "
+            "ZOPEN_ROOTFS is not set, but is required in order to "
             + "find the zopen community distributions of of OpenSSL "
-            + "and zoslib since they are build dependencies.\n"
+            + "and ZOSLIB since they are build dependencies.\n"
             + "You can find more information about setting up zopen "
             + "community here: "
             + "https://zopen.community/#/Guides/QuickStart?id=installing-zopen-package-manager",
