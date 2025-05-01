@@ -3,12 +3,6 @@
 #include "irrsdl00.hpp"
 #include "racfu_error.hpp"
 
-#ifdef __TOS_390__
-#include <unistd.h>
-#else
-#include "zoslib.h"
-#endif
-
 namespace RACFu {
 void KeyringExtractor::extract(SecurityRequest &request) {
   uint8_t function_code = request.getFunctionCode();

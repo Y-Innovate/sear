@@ -450,3 +450,61 @@ void test_parse_extract_irrsdl00_result_keyring_not_found(
                           result->result_json_length);
   TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
+
+void test_add_request_irrsdl00_generation(const char *test_add_request_json,
+                                          const char *test_add_request_raw,
+                                          bool debug) {
+  std::string request_json   = get_json_sample(test_add_request_json);
+  char *raw_request_expected = get_raw_sample(test_add_request_raw);
+
+  // Mock R_datalib result
+  irrsdl64_result_mock      = NULL;
+  irrsdl64_result_size_mock = 0;
+  irrsdl64_saf_rc_mock      = 0;
+  irrsdl64_racf_rc_mock     = 0;
+  irrsdl64_racf_reason_mock = 0;
+
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
+
+  int request_buffer_size = TEST_IRRSDL00_KEYRING_REQUEST_BUFFER_SIZE;
+  int arg_area_size       = TEST_IRRSDL00_KEYRING_ARG_AREA_SIZE;
+
+  // Check the size of the buffer
+  TEST_ASSERT_EQUAL_INT32(request_buffer_size, result->raw_request_length);
+  // Check the "arg area" (excludes the "arg pointers" at the end)
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result->raw_request,
+                           arg_area_size);
+
+  // Cleanup
+  free(raw_request_expected);
+}
+
+void test_delete_request_irrsdl00_generation(
+    const char *test_delete_request_json, const char *test_delete_request_raw,
+    bool debug) {
+  std::string request_json   = get_json_sample(test_delete_request_json);
+  char *raw_request_expected = get_raw_sample(test_delete_request_raw);
+
+  // Mock R_datalib result
+  irrsdl64_result_mock      = NULL;
+  irrsdl64_result_size_mock = 0;
+  irrsdl64_saf_rc_mock      = 0;
+  irrsdl64_racf_rc_mock     = 0;
+  irrsdl64_racf_reason_mock = 0;
+
+  racfu_result_t *result =
+      racfu(request_json.c_str(), request_json.length(), debug);
+
+  int request_buffer_size = TEST_IRRSDL00_KEYRING_REQUEST_BUFFER_SIZE;
+  int arg_area_size       = TEST_IRRSDL00_KEYRING_ARG_AREA_SIZE;
+
+  // Check the size of the buffer
+  TEST_ASSERT_EQUAL_INT32(request_buffer_size, result->raw_request_length);
+  // Check the "arg area" (excludes the "arg pointers" at the end)
+  TEST_ASSERT_EQUAL_MEMORY(raw_request_expected, result->raw_request,
+                           arg_area_size);
+
+  // Cleanup
+  free(raw_request_expected);
+}

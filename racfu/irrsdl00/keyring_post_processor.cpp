@@ -1,18 +1,16 @@
 #include "keyring_post_processor.hpp"
 
 namespace RACFu {
-void KeyringPostProcessor::postProcessKeyring(SecurityRequest &request) {
-  nlohmann::json keyrings;
+void KeyringPostProcessor::postProcessExtractKeyring(SecurityRequest &request) {
+  nlohmann::json keyring;
+  keyring["keyring"] = nlohmann::json::object();
 
   union {
     char RACF_user_id[9];
-    char ring_name[238];
     char label[256];
     char datestr[128];
   } union_work;
 
-  std::vector<nlohmann::json> repeat_group_keyrings;
-  int repeat_group_keyrings_count;
   std::vector<nlohmann::json> repeat_group_certs;
   std::vector<nlohmann::json> repeat_group_extensions;
 
@@ -21,31 +19,23 @@ void KeyringPostProcessor::postProcessKeyring(SecurityRequest &request) {
           request.getRawResultPointer());
   request.setRawResultLength(p_result_buffer->result_buffer_length);
 
-  repeat_group_keyrings_count =
+  uint32_t keyrings_count =
       ntohl(p_result_buffer->union_ring_result.ring_result.ring_count);
   char *work = reinterpret_cast<char *>(
       &p_result_buffer->union_ring_result.ring_result.ring_info);
 
-  for (int i = 0; i < repeat_group_keyrings_count; i++) {
-    repeat_group_keyrings.push_back(nlohmann::json::object());
-
+  if (keyrings_count > 0) {
     int help_len;
     int cert_index = 0;
 
-    std::memset(&union_work.RACF_user_id[0], 0, 9);
+    // skip user_id
     help_len = *work;
     work++;
-    std::strncpy(&union_work.RACF_user_id[0], work, help_len);
-    __e2a_l(&union_work.RACF_user_id[0], help_len);
-    repeat_group_keyrings[i]["ring_owner"] = union_work.RACF_user_id;
     work += help_len;
 
-    std::memset(&union_work.ring_name[0], 0, 238);
+    // skip ring name
     help_len = *work;
     work++;
-    std::strncpy(&union_work.ring_name[0], work, help_len);
-    __e2a_l(&union_work.ring_name[0], help_len);
-    repeat_group_keyrings[i]["ring_name"] = union_work.ring_name;
     work += help_len;
 
     int repeat_group_certs_count = ntohl(*(reinterpret_cast<uint32_t *>(work)));
@@ -249,13 +239,11 @@ void KeyringPostProcessor::postProcessKeyring(SecurityRequest &request) {
       cert_index++;
     }
 
-    repeat_group_keyrings[i]["certificates"] = repeat_group_certs;
+    keyring["keyring"]["certificates"] = repeat_group_certs;
     repeat_group_certs.clear();
   }
 
-  keyrings["keyrings"] = repeat_group_keyrings;
-
-  request.setIntermediateResultJSON(keyrings);
+  request.setIntermediateResultJSON(keyring);
 }
 
 void KeyringPostProcessor::convertASN1TIME(ASN1_TIME *t, char *p_buf,
@@ -525,6 +513,9 @@ bool KeyringPostProcessor::addGenericExtension(nlohmann::json &add_to_json,
 
   return ret;
 }
+
+void KeyringPostProcessor::postProcessAddOrDeleteKeyring(
+    SecurityRequest &request) {}
 
 std::string KeyringPostProcessor::strToHex(const std::uint8_t *data,
                                            const std::size_t len) {

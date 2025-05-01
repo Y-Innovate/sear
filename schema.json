@@ -632,6 +632,155 @@
         "owner",
         "keyring"
       ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
+            "add",
+            "delete"
+          ]
+        },
+        "admin_type": {
+          "const": "keyring"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring"
+      ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "add"
+        },
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/thirtytwoCharacterString"
+        },
+        "certificate_file": {
+          "type": "string"
+        },
+        "private_key_file": {
+          "type": "string"
+        },
+        "usage": {
+          "enum": [
+            "PERSONAL",
+            "personal",
+            "SITE",
+            "site",
+            "CERTAUTH",
+            "certauth"
+          ]
+        },
+        "default": {
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
+        "status": {
+          "enum": [
+            "TRUST",
+            "trust",
+            "HIGHTRUST",
+            "hightrust",
+            "NOTRUST",
+            "notrust"
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label",
+        "usage",
+        "status"
+      ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "delete"
+        },
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/thirtytwoCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label"
+      ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "remove"
+        },
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/thirtytwoCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label"
+      ]
     }
   ],
   "$defs": {
@@ -639,6 +788,11 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 8
+    },
+    "thirtytwoCharacterString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
     },
     "twohundredthirtysevenCharacterString": {
       "type": "string",

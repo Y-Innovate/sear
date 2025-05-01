@@ -8,6 +8,7 @@
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"
 #include "keyring_extractor.hpp"
+#include "keyring_modifier.hpp"
 #include "keyring_post_processor.hpp"
 #include "profile_extractor.hpp"
 #include "profile_post_processor.hpp"
@@ -63,8 +64,25 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
         SecurityAdmin::doExtract(keyring_extractor);
       }
     } else {
-      Logger::getInstance().debug("Entering IRRSMO00 path");
-      SecurityAdmin::doAddAlterDelete();
+      if (request_.getAdminType() == "keyring" ||
+          request_.getAdminType() == "certificate") {
+        Logger::getInstance().debug("Entering IRRSDL00 path");
+        KeyringModifier keyring_modifier;
+        if (request_.getAdminType() == "keyring") {
+          SecurityAdmin::doAddAlterDeleteKeyring(keyring_modifier);
+        } else {
+          if (request_.getOperation() == "add") {
+            SecurityAdmin::doAddCertificate(keyring_modifier);
+          } else if (request_.getOperation() == "delete") {
+            SecurityAdmin::doDeleteCertificate(keyring_modifier);
+          } else if (request_.getOperation() == "remove") {
+            SecurityAdmin::doRemoveCertificate(keyring_modifier);
+          }
+        }
+      } else {
+        Logger::getInstance().debug("Entering IRRSMO00 path");
+        SecurityAdmin::doAddAlterDelete();
+      }
     }
   } catch (const RACFuError &ex) {
     request_.setErrors(ex.getErrors());
@@ -91,7 +109,7 @@ void SecurityAdmin::doExtract(Extractor &extractor) {
     }
   } else {
     KeyringPostProcessor post_processor;
-    post_processor.postProcessKeyring(request_);
+    post_processor.postProcessExtractKeyring(request_);
   }
 
   Logger::getInstance().debug("Extract result has been post-processed");
@@ -152,5 +170,35 @@ void SecurityAdmin::doAddAlterDelete() {
   irrsmo00.post_process_smo_json(request_);
 
   Logger::getInstance().debug("Done");
+}
+
+void SecurityAdmin::doAddAlterDeleteKeyring(KeyringModifier &modifier) {
+  modifier.addOrDeleteKeyring(request_);
+
+  KeyringPostProcessor post_processor;
+  post_processor.postProcessAddOrDeleteKeyring(request_);
+
+  Logger::getInstance().debug(
+      "Add/delete keyring result has been post-processed");
+}
+
+void SecurityAdmin::doAddCertificate(KeyringModifier &modifier) {
+  modifier.addCertificate(request_);
+
+  Logger::getInstance().debug("Add certificate result has been post-processed");
+}
+
+void SecurityAdmin::doDeleteCertificate(KeyringModifier &modifier) {
+  modifier.deleteOrRemoveCertificate(request_);
+
+  Logger::getInstance().debug(
+      "Delete certificate result has been post-processed");
+}
+
+void SecurityAdmin::doRemoveCertificate(KeyringModifier &modifier) {
+  modifier.deleteOrRemoveCertificate(request_);
+
+  Logger::getInstance().debug(
+      "Remove certificate result has been post-processed");
 }
 }  // namespace RACFu

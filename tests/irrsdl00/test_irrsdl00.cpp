@@ -33,3 +33,13 @@ void test_parse_extract_keyring_result_required_parameter_missing() {
       TEST_EXTRACT_KEYRING_REQUEST_REQUIRED_PARAMETER_MISSING_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
+
+void test_generate_add_keyring_request() {
+  test_add_request_irrsdl00_generation(TEST_ADD_KEYRING_REQUEST_JSON,
+                                       TEST_ADD_KEYRING_REQUEST_RAW, false);
+}
+
+void test_generate_delete_keyring_request() {
+  test_delete_request_irrsdl00_generation(
+      TEST_DELETE_KEYRING_REQUEST_JSON, TEST_DELETE_KEYRING_REQUEST_RAW, false);
+}

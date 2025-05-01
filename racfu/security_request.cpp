@@ -66,6 +66,26 @@ const std::string& SecurityRequest::getOwner() const { return owner_; }
 
 const std::string& SecurityRequest::getKeyring() const { return keyring_; }
 
+const std::string& SecurityRequest::getKeyringOwner() const {
+  return keyring_owner_;
+}
+
+const std::string& SecurityRequest::getLabel() const { return label_; }
+
+const std::string& SecurityRequest::getCertificateFile() const {
+  return certificate_file_;
+}
+
+const std::string& SecurityRequest::getPrivateKeyFile() const {
+  return private_key_file_;
+}
+
+const std::string& SecurityRequest::getDefault() const { return default_; }
+
+const std::string& SecurityRequest::getUsage() const { return usage_; }
+
+const std::string& SecurityRequest::getStatus() const { return status_; }
+
 const char* SecurityRequest::getSurrogateUserID() const {
   return surrogate_userid_;
 }
@@ -201,12 +221,39 @@ void SecurityRequest::load(const nlohmann::json& request) {
       traits_["base:authid"] = request["userid"].get<std::string>();
     }
   } else if (admin_type_ == "keyring") {
-    function_code_ = KEYRING_EXTRACT_FUNCTION_CODE;
-    if (request.contains("owner")) {
-      owner_ = request["owner"].get<std::string>();
+    if (operation_ == "extract") {
+      function_code_ = KEYRING_EXTRACT_FUNCTION_CODE;
+    } else if (operation_ == "add") {
+      function_code_ = KEYRING_ADD_FUNCTION_CODE;
+    } else if (operation_ == "delete") {
+      function_code_ = KEYRING_DELETE_FUNCTION_CODE;
     }
-    if (request.contains("keyring")) {
-      keyring_ = request["keyring"].get<std::string>();
+    owner_   = request["owner"].get<std::string>();
+    keyring_ = request["keyring"].get<std::string>();
+  } else if (admin_type_ == "certificate") {
+    if (operation_ == "add") {
+      function_code_ = CERTIFICATE_ADD_FUNCTION_CODE;
+    } else if (operation_ == "delete") {
+      function_code_ = CERTIFICATE_DELETE_FUNCTION_CODE;
+    } else if (operation_ == "remove") {
+      function_code_ = CERTIFICATE_REMOVE_FUNCTION_CODE;
+    }
+    owner_         = request["owner"].get<std::string>();
+    keyring_       = request["keyring"].get<std::string>();
+    keyring_owner_ = request["keyring_owner"].get<std::string>();
+    label_         = request["label"].get<std::string>();
+    if (operation_ == "add") {
+      usage_  = request["usage"].get<std::string>();
+      status_ = request["status"].get<std::string>();
+      if (request.contains("certificate_file")) {
+        certificate_file_ = request["certificate_file"].get<std::string>();
+      }
+      if (request.contains("private_key_file")) {
+        private_key_file_ = request["private_key_file"].get<std::string>();
+      }
+      if (request.contains("default")) {
+        default_ = request["default"].get<std::string>();
+      }
     }
   }
 

@@ -1,0 +1,8 @@
+{
+  "operation": "delete",
+  "admin_type": "certificate",
+  "owner": "YBTKS",
+  "keyring": "RACFUTESTRING",
+  "keyring_owner": "YBTKS",
+  "label": "NewTrustedCert"
+}

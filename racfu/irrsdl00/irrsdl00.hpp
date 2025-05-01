@@ -2,6 +2,7 @@
 #define __IRRSDL00_H_
 
 #include "extractor.hpp"
+#include "racfu_error.hpp"
 
 #ifdef __TOS_390__
 #include <unistd.h>
@@ -25,7 +26,12 @@
 /*************************************************************************/
 /* Function Codes                                                        */
 /*************************************************************************/
-const uint8_t KEYRING_EXTRACT_FUNCTION_CODE = 0x25;
+const uint8_t KEYRING_EXTRACT_FUNCTION_CODE    = 0x25;
+const uint8_t KEYRING_ADD_FUNCTION_CODE        = 0x28;
+const uint8_t KEYRING_DELETE_FUNCTION_CODE     = 0x2B;
+const uint8_t CERTIFICATE_ADD_FUNCTION_CODE    = 0x2E;
+const uint8_t CERTIFICATE_DELETE_FUNCTION_CODE = 0x30;
+const uint8_t CERTIFICATE_REMOVE_FUNCTION_CODE = 0X33;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -143,6 +149,73 @@ typedef struct {                        /* Parameter list for DataGetFirst and
                                   NOTRUST x'00000000' - ANY (input only)    */
 } cddlx_get_cert_t;
 
+typedef struct { /* FSPL for DataPut function              */
+  unsigned char cddlx_pcert_usage[4]; /* 4 byte input area containing
+                                   certificate usage flags x'00000000' - Usage
+                                   is SITE x'00000002' - Usage is CERTAUTH
+                                   x'00000008' - Usage is PERSONAL x'80000000'
+                                   - Usage is defaulted to the usage of the
+                                   cert x'7FFFFFF5' - reserved bits must be set
+                                   to 0                                      */
+  uint32_t cddlx_pcert_default;       /* Input default cert indicator. Non-zero
+                                      value indicates input certificate is to made
+                                      the default cert for the ring, zero
+                                      indicates to not set the certificate as the
+                                      default                                   */
+  uint32_t cddlx_pcert_len;        /* Input value containing the length of the
+                                   certificate pointed to by CDDLX_PCERT_PTR.
+                                                                             */
+  int32_t irrpcomx_dummy_20;       /* reserved for alignment                 */
+  void *cddlx_pcert_ptr;           /* Input value specifying address of input
+                                     certificate data area                     */
+  uint32_t cddlx_pkey_len;         /* Input value containing the size of the
+                                   private key pointed to by the
+                                   CDDLX_PKEY_PTR. A value of zero indicates a
+                                   private key is not being added.           */
+  int32_t irrpcomx_dummy_21;       /* reserved for alignment                 */
+  void *cddlx_pkey_ptr;            /* Input value specifying address of private
+                                     key, ignored if CDDLX_PKEY_LEN value is zero
+                                                                               */
+  int32_t cddlx_plabel_len;        /* On input, it contains the length of the
+                                   label to be assigned to the added
+                                   certificate. On output, it contains the
+                                   length of the label of the existing
+                                   certificate if the input certificate is
+                                   already installed in RACF.                */
+  int32_t irrpcomx_dummy_22;       /* reserved for alignment                 */
+  unsigned char *cddlx_plabel_ptr; /* On input, it contains the address of the
+                            label area. On output, it contains the label
+                            of the existing certificate if the input
+                            certificate is already installed in RACF.
+                            The label area must be 32 bytes.          */
+  unsigned char cddlx_pcert_userid[9]; /* On input, it indicates the owner of
+                                   the certificate, in the format of a 1 byte
+                                   length followed by the user ID. On output it
+                                   contains the owner of the existing
+                                   certificate if the input certificate is
+                                   already installed in RACF. The 1 byte length
+                                   must be 8 and the user ID must be
+                                   left-justified and padded with blanks.    */
+  unsigned char irrpcomx_dummy_23[3];  /* Reserved space                      */
+} cddlx_put_cert_t;
+
+typedef struct {             /* FSPL for DataRemove function@L3A       */
+  uint32_t cddlx_rlabel_len; /* A 4 byte input value contains the length
+                             of the label of the certificate to be
+                             removed pointed to by CDDLX_RLABEL_PTR    */
+  int32_t irrpcomx_dummy_24; /* reserved for alignment                 */
+  void *cddlx_rlabel_ptr;    /* An input value contains the address of
+                               the label of the certificate to be removed
+                                                                         */
+  unsigned char cddlx_rcert_userid[9]; /* A 9 byte input value indicates the
+                                   owner of the certificate to be removed, in
+                                   the format of a 1 byte length followed by
+                                   the user ID. The 1 byte length must be 8 and
+                                   the user ID must be left-justified and
+                                   padded with blanks.                       */
+  unsigned char irrpcomx_dummy_25[3];  /* Reserved space                      */
+} cddlx_remove_cert_t;
+
 typedef struct {
   cddlx_get_cert_t result_buffer_get_cert;
   uint32_t filler_01;
@@ -171,6 +244,18 @@ typedef struct {
 } keyring_extract_parms_results_t;
 
 typedef struct {
+  uint32_t result_buffer_length;
+  cddlx_put_cert_t result_buffer_add_certificate;
+  uint8_t label_buffer[32];
+} certificate_add_parms_results_t;
+
+typedef struct {
+  uint32_t result_buffer_length;
+  cddlx_remove_cert_t result_buffer_delete_certificate;
+  uint8_t label_buffer[32];
+} certificate_delete_parms_results_t;
+
+typedef struct {
   char RACF_work_area[1024];
   // return and reason codes
   uint32_t ALET_SAF_rc;
@@ -185,12 +270,31 @@ typedef struct {
   uint32_t attributes;
   char RACF_user_id[10];
   char ring_name[239];
-  keyring_extract_parms_results_t *p_result_buffer;
-} keyring_extract_args_t;
+} keyring_args_t;
 
 typedef struct {
-  keyring_extract_args_t args;
+  keyring_args_t args;
+  keyring_extract_parms_results_t *p_result_buffer;
 } keyring_extract_arg_area_t;
+
+typedef struct {
+  uint32_t result_buffer_length;
+} keyring_modify_parms_results_t;
+
+typedef struct {
+  keyring_args_t args;
+  keyring_modify_parms_results_t *p_result_buffer;
+} keyring_modify_arg_area_t;
+
+typedef struct {
+  keyring_args_t args;
+  certificate_add_parms_results_t *p_result_buffer;
+} certificate_add_arg_area_t;
+
+typedef struct {
+  keyring_args_t args;
+  certificate_delete_parms_results_t *p_result_buffer;
+} certificate_delete_arg_area_t;
 
 #pragma pack(pop)  // Restore default structure packing options.
 
@@ -219,16 +323,26 @@ void IRRSDL64(uint32_t *,            // Num parms
 namespace RACFu {
 class IRRSDL00 {
  private:
-  static void callIRRSDL00(keyring_extract_arg_area_t *p_arg_area,
-                           uint32_t *p_parmlist_version, void *p_parmlist);
+  static void callIRRSDL00(keyring_args_t *p_args, uint32_t *p_parmlist_version,
+                           void *p_parmlist);
   static void extractCert(const SecurityRequest &request,
                           keyring_extract_arg_area_t *p_arg_area_keyring,
                           get_cert_buffer_t *p_get_cert_buffer,
                           unsigned char *p_owner, unsigned char *p_label);
+  static void readFile(const std::string &filename, void **p_p_data,
+                       uint32_t *p_len);
 
  public:
   static void extractKeyring(SecurityRequest &request,
                              keyring_extract_arg_area_t *p_arg_area_keyring);
+  static void addOrDeleteKeyring(SecurityRequest &request,
+                                 keyring_modify_arg_area_t *p_arg_area_keyring);
+  static void addCertificate(SecurityRequest &request,
+                             certificate_add_arg_area_t *p_arg_area_keyring);
+  static void deleteCertificate(
+      SecurityRequest &request,
+      certificate_delete_arg_area_t *p_arg_area_keyring,
+      bool delete_from_keyring_only);
 };
 }  // namespace RACFu
 
