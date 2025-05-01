@@ -48,14 +48,15 @@ static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
 // Method definition
 static PyMethodDef _C_methods[] = {
     {"call_racfu", (PyCFunction)call_racfu, METH_VARARGS | METH_KEYWORDS,
-     "Python interface to RACF administration APIs"},
+     "A unified and standardized interface to RACF callable services"},
     {NULL}
 };
 
 // Module definition
 static struct PyModuleDef _C_module_def = {
-    PyModuleDef_HEAD_INIT, "_C", "Python interface to RACF administration APIs",
-    -1, _C_methods};
+    PyModuleDef_HEAD_INIT, "_C",
+    "A unified and standardized interface to RACF callable services", -1,
+    _C_methods};
 
 // Module initialization function
 // 'unusedFunction' is a false positive since 'PyInit__C()' is used by the
