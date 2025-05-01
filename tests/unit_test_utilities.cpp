@@ -168,7 +168,8 @@ void test_parse_extract_result(const char *test_extract_request_json,
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
   TEST_ASSERT_EQUAL_INT32(r_admin_result_size_mock, result->raw_result_length);
 
   // Cleanup
@@ -198,7 +199,8 @@ void test_parse_extract_result_profile_not_found(
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
 
 void check_arg_pointers(char *raw_request, bool racf_options) {
@@ -355,7 +357,8 @@ void test_parse_add_alter_delete_result(
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 
   // Cleanup
   free(irrsmo64_result_mock);
@@ -414,7 +417,8 @@ void test_parse_extract_irrsdl00_result(const char *test_extract_request_json,
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
   TEST_ASSERT_EQUAL_INT32(irrsdl64_result_size_mock, result->raw_result_length);
 
   // Cleanup
@@ -443,5 +447,6 @@ void test_parse_extract_irrsdl00_result_keyring_not_found(
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }

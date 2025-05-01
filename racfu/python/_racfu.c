@@ -35,9 +35,10 @@ static PyObject* call_racfu(PyObject* self, PyObject* args, PyObject* kwargs) {
   racfu_result_t* result = racfu(request_as_string, request_length, debug);
 
   result_dictionary      = Py_BuildValue(
-      "{s:y#,s:y#,s:s}", "raw_request", result->raw_request,
+      "{s:y#,s:y#,s:s#}", "raw_request", result->raw_request,
       result->raw_request_length, "raw_result", result->raw_result,
-      result->raw_result_length, "result_json", result->result_json);
+      result->raw_result_length, "result_json", result->result_json,
+      result->result_json_length);
 
   pthread_mutex_unlock(&racfu_mutex);
 

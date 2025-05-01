@@ -19,6 +19,8 @@ While there are a number of languages that can be used to manage RACF, _(from lo
 
 RACFu uses [JSON for Modern C++](https://github.com/nlohmann/json) for working with JSON and [JSON schema validator for JSON for Modern C++](https://github.com/pboettch/json-schema-validator) for [Draft-7 JSON Schema Validation](https://json-schema.org/draft-07).
 
+RACFu's certificate management cababilities leverage the [zopen community](https://zopen.community/#/) distributions of [OpenSSL](https://github.com/openssl/openssl) and [ZOSLIB](https://github.com/ibmruntimes/zoslib) to create checksum digests and encode certificates.
+
 ## Getting Started
 
 

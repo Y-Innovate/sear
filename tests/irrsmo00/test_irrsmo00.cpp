@@ -128,7 +128,8 @@ void test_parse_irrsmo00_errors_result() {
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
-                          strlen(result->result_json));
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 
   // Cleanup
   free(irrsmo64_result_mock);

@@ -7,6 +7,7 @@ typedef struct {
   char *raw_result;
   int raw_result_length;
   char *result_json;
+  int result_json_length;
 } racfu_result_t;
 
 typedef struct {
