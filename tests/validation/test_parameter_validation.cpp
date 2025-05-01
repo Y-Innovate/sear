@@ -13,9 +13,12 @@ void test_handle_syntax_error() {
   std::string result_json_expected =
       get_json_sample(TEST_SYNTAX_ERROR_RESULT_JSON);
 
-  racfu_result_t *result = racfu(request_json, false);
+  racfu_result_t *result = racfu(request_json, strlen(request_json), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
 
 void test_handle_syntax_error_not_json() {
@@ -23,9 +26,12 @@ void test_handle_syntax_error_not_json() {
   std::string result_json_expected =
       get_json_sample(TEST_SYNTAX_ERROR_NOT_JSON_RESULT_JSON);
 
-  racfu_result_t *result = racfu(request_json, false);
+  racfu_result_t *result = racfu(request_json, strlen(request_json), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
 
 void test_handle_syntax_error_binary_data() {
@@ -34,9 +40,12 @@ void test_handle_syntax_error_binary_data() {
   std::string result_json_expected =
       get_json_sample(TEST_SYNTAX_ERROR_BINARY_DATA_RESULT_JSON);
 
-  racfu_result_t *result = racfu(request_json, false);
+  racfu_result_t *result = racfu(request_json, strlen(request_json), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
+  TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
+                          result->result_json_length);
+  TEST_ASSERT_EQUAL_CHAR(0, result->result_json[result->result_json_length]);
 }
 
 void test_parse_no_parameters_provided_error() {

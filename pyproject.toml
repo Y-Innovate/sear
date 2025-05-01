@@ -50,5 +50,37 @@ build-backend = "setuptools.build_meta"
     where = ["python"]
     include = ["racfu"]
 
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".github",
+    "externals",
+    "racfu",
+    "debug",
+    "dev_tools",
+    ]
+
+[tool.ruff.lint]
+# Ruff by default is not very aggressive, only enforcing a few rulesets like E and F.
+# To ensure well organized code a bunch more rulesets have been enabled
+select = [
+    "ERA", #Checks for commented out code
+    "E", 
+    "F", 
+    "B", 
+    "EM", #Error messages and exceptions
+    "SIM", #Comes with suggestions on simplifying things
+    "N",  #Checks if code conforms to the PEP8 naming conventions
+    "PLE", 
+    "UP", 
+    "TRY", #Best practices for try-except
+    "FLY", #Checks for string joins
+    "I",  #Comes with suggestions on organizing imports
+    "COM", #Checks for missing commas and unnecessary 
+    "A", 
+    ]
+
+
 [tool.setuptools.package-data]
     racfu = ["LICENSE", "NOTICES"]

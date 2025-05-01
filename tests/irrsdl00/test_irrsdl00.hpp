@@ -14,7 +14,7 @@
   IRRSDL00_REQUEST_SAMPLES "keyring/test_extract_keyring_request.bin"
 #define TEST_EXTRACT_KEYRING_REQUEST_KEYRING_NOT_FOUND_JSON \
   IRRSDL00_REQUEST_SAMPLES                                  \
-      "keyring/test_extract_keyring_request_keyring_not_found.json"
+  "keyring/test_extract_keyring_request_keyring_not_found.json"
 #define TEST_EXTRACT_KEYRING_REQUEST_REQUIRED_PARAMETER_MISSING_JSON \
   IRRSDL00_REQUEST_SAMPLES                                           \
   "keyring/test_extract_keyring_request_required_parameter_missing.json"
@@ -29,10 +29,10 @@
   IRRSDL00_RESULT_SAMPLES "keyring/test_extract_keyring_result.bin"
 #define TEST_EXTRACT_KEYRING_RESULT_KEYRING_NOT_FOUND_JSON \
   IRRSDL00_RESULT_SAMPLES                                  \
-      "keyring/test_extract_keyring_result_keyring_not_found.json"
+  "keyring/test_extract_keyring_result_keyring_not_found.json"
 #define TEST_EXTRACT_KEYRING_RESULT_KEYRING_NOT_FOUND_RAW \
   IRRSDL00_RESULT_SAMPLES                                 \
-      "keyring/test_extract_keyring_result_keyring_not_found.bin"
+  "keyring/test_extract_keyring_result_keyring_not_found.bin"
 
 /*************************************************************************/
 /* Prototypes                                                            */

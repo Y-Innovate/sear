@@ -23,17 +23,17 @@ SecurityRequest::SecurityRequest(racfu_result_t* p_result) {
   // Free dynamically allocated memory from previous requests.
   if (p_result->raw_request != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_request);
-    std::free(p_result->raw_request);
+    delete[] p_result->raw_request;
     Logger::getInstance().debug("Done");
   }
   if (p_result->raw_result != nullptr) {
     Logger::getInstance().debugFree(p_result->raw_result);
-    std::free(p_result->raw_result);
+    delete[] p_result->raw_result;
     Logger::getInstance().debug("Done");
   }
   if (p_result->result_json != nullptr) {
     Logger::getInstance().debugFree(p_result->result_json);
-    std::free(p_result->result_json);
+    delete[] p_result->result_json;
     Logger::getInstance().debug("Done");
   }
   p_result_->raw_request        = nullptr;
@@ -286,12 +286,15 @@ void SecurityRequest::buildResult() {
   Logger::getInstance().debug("Result JSON:", result_json_string);
   try {
     auto result_json_unique_ptr =
-        std::make_unique<char[]>(result_json_string.size() + 1);
+        std::make_unique<char[]>(result_json_string.length() + 1);
     Logger::getInstance().debugAllocate(result_json_unique_ptr.get(), 64,
-                                        result_json_string.size() + 1);
-    std::memset(result_json_unique_ptr.get(), 0, result_json_string.size() + 1);
-    std::strcpy(result_json_unique_ptr.get(), result_json_string.c_str());
-    p_result_->result_json = result_json_unique_ptr.get();
+                                        result_json_string.length() + 1);
+    std::memset(result_json_unique_ptr.get(), 0,
+                result_json_string.length() + 1);
+    std::strncpy(result_json_unique_ptr.get(), result_json_string.c_str(),
+                 result_json_string.length());
+    p_result_->result_json        = result_json_unique_ptr.get();
+    p_result_->result_json_length = result_json_string.length();
     result_json_unique_ptr.release();
     Logger::getInstance().debug("Done");
   } catch (const std::bad_alloc& ex) {

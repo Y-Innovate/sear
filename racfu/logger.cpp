@@ -1,8 +1,8 @@
 #include "logger.hpp"
 
-#include <cstring>
 #include <cctype>
 #include <csignal>
+#include <cstring>
 #include <iomanip>
 #include <iostream>
 #include <memory>

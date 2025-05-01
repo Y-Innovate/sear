@@ -33,7 +33,6 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   const char *p_profile = request.getRawResultPointer();
   const generic_extract_parms_results_t *p_generic_result =
       reinterpret_cast<const generic_extract_parms_results_t *>(p_profile);
-  request.setRawResultLength(ntohl(p_generic_result->result_buffer_length));
 
   Logger::getInstance().debug("Raw generic profile extract result:");
   Logger::getInstance().hexDump(p_profile, request.getRawResultLength());
@@ -112,9 +111,6 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
 
   // Profile Pointers and Information
   const char *p_profile = request.getRawResultPointer();
-  const racf_options_extract_results_t *p_setropts_result =
-      reinterpret_cast<const racf_options_extract_results_t *>(p_profile);
-  request.setRawResultLength(ntohl(p_setropts_result->result_buffer_length));
 
   Logger::getInstance().debug("Raw RACF Options extract result:");
   Logger::getInstance().hexDump(p_profile, request.getRawResultLength());
