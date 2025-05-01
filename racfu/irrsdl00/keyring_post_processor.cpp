@@ -1,7 +1,7 @@
 #include "keyring_post_processor.hpp"
 
 namespace RACFu {
-void KeyringPostProcessor::postProcessKeyring(SecurityRequest &request) {
+void KeyringPostProcessor::postProcessExtractKeyring(SecurityRequest &request) {
   nlohmann::json keyrings;
 
   union {
@@ -525,6 +525,8 @@ bool KeyringPostProcessor::addGenericExtension(nlohmann::json &add_to_json,
 
   return ret;
 }
+
+void KeyringPostProcessor::postProcessAddKeyring(SecurityRequest &request) {}
 
 std::string KeyringPostProcessor::strToHex(const std::uint8_t *data,
                                            const std::size_t len) {

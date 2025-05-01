@@ -8,6 +8,7 @@
 #include "irrsmo00.hpp"
 #include "irrsmo00_error.hpp"
 #include "keyring_extractor.hpp"
+#include "keyring_modifier.hpp"
 #include "keyring_post_processor.hpp"
 #include "profile_extractor.hpp"
 #include "profile_post_processor.hpp"
@@ -63,8 +64,14 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
         SecurityAdmin::doExtract(keyring_extractor);
       }
     } else {
-      Logger::getInstance().debug("Entering IRRSMO00 path");
-      SecurityAdmin::doAddAlterDelete();
+      if (request_.getAdminType() != "keyring") {
+        Logger::getInstance().debug("Entering IRRSMO00 path");
+        SecurityAdmin::doAddAlterDelete();
+      } else {
+        Logger::getInstance().debug("Entering IRRSDL00 path");
+        KeyringModifier keyring_modifier;
+        SecurityAdmin::doAddAlterDeleteKeyring(keyring_modifier);
+      }
     }
   } catch (const RACFuError &ex) {
     request_.setErrors(ex.getErrors());
@@ -91,7 +98,7 @@ void SecurityAdmin::doExtract(Extractor &extractor) {
     }
   } else {
     KeyringPostProcessor post_processor;
-    post_processor.postProcessKeyring(request_);
+    post_processor.postProcessExtractKeyring(request_);
   }
 
   Logger::getInstance().debug("Extract result has been post-processed");
@@ -153,4 +160,14 @@ void SecurityAdmin::doAddAlterDelete() {
 
   Logger::getInstance().debug("Done");
 }
+
+void SecurityAdmin::doAddAlterDeleteKeyring(KeyringModifier &modifier) {
+  modifier.addKeyring(request_);
+
+  KeyringPostProcessor post_processor;
+  post_processor.postProcessAddKeyring(request_);
+
+  Logger::getInstance().debug("Add keyring result has been post-processed");
+}
+
 }  // namespace RACFu

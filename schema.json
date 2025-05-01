@@ -632,6 +632,28 @@
         "owner",
         "keyring"
       ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "add"
+        },
+        "admin_type": {
+          "const": "keyring"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring"
+      ]
     }
   ],
   "$defs": {

@@ -26,6 +26,7 @@
 /* Function Codes                                                        */
 /*************************************************************************/
 const uint8_t KEYRING_EXTRACT_FUNCTION_CODE = 0x25;
+const uint8_t KEYRING_ADD_FUNCTION_CODE     = 0x28;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -185,12 +186,21 @@ typedef struct {
   uint32_t attributes;
   char RACF_user_id[10];
   char ring_name[239];
-  keyring_extract_parms_results_t *p_result_buffer;
-} keyring_extract_args_t;
+} keyring_args_t;
 
 typedef struct {
-  keyring_extract_args_t args;
+  keyring_args_t args;
+  keyring_extract_parms_results_t *p_result_buffer;
 } keyring_extract_arg_area_t;
+
+typedef struct {
+  uint32_t result_buffer_length;
+} keyring_modify_parms_results_t;
+
+typedef struct {
+  keyring_args_t args;
+  keyring_modify_parms_results_t *p_result_buffer;
+} keyring_modify_arg_area_t;
 
 #pragma pack(pop)  // Restore default structure packing options.
 
@@ -219,7 +229,7 @@ void IRRSDL64(uint32_t *,            // Num parms
 namespace RACFu {
 class IRRSDL00 {
  private:
-  static void callIRRSDL00(keyring_extract_arg_area_t *p_arg_area,
+  static void callIRRSDL00(keyring_args_t *p_arg_area,
                            uint32_t *p_parmlist_version, void *p_parmlist);
   static void extractCert(const SecurityRequest &request,
                           keyring_extract_arg_area_t *p_arg_area_keyring,
@@ -229,6 +239,8 @@ class IRRSDL00 {
  public:
   static void extractKeyring(SecurityRequest &request,
                              keyring_extract_arg_area_t *p_arg_area_keyring);
+  static void addKeyring(SecurityRequest &request,
+                         keyring_modify_arg_area_t *p_arg_area_keyring);
 };
 }  // namespace RACFu
 

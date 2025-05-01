@@ -6,6 +6,7 @@
 #include <nlohmann/json.hpp>
 
 #include "extractor.hpp"
+#include "keyring_modifier.hpp"
 #include "logger.hpp"
 #include "racfu_result.h"
 #include "racfu_schema.hpp"
@@ -21,6 +22,7 @@ class SecurityAdmin {
   SecurityRequest request_;
   void doExtract(Extractor &extractor);
   void doAddAlterDelete();
+  void doAddAlterDeleteKeyring(KeyringModifier &modifier);
 
  public:
   SecurityAdmin(racfu_result_t *p_result, bool debug);

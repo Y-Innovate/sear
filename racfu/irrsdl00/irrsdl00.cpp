@@ -1,16 +1,14 @@
 #include "irrsdl00.hpp"
 
 namespace RACFu {
-void IRRSDL00::callIRRSDL00(keyring_extract_arg_area_t *p_arg_area,
+void IRRSDL00::callIRRSDL00(keyring_args_t *p_args,
                             uint32_t *p_parmlist_version, void *p_parmlist) {
   uint32_t nNumParms = 14;
 
-  IRRSDL64(&nNumParms, &p_arg_area->args.RACF_work_area[0],
-           p_arg_area->args.ALET_SAF_rc, &p_arg_area->args.SAF_rc,
-           p_arg_area->args.ALET_RACF_rc, &p_arg_area->args.RACF_rc,
-           p_arg_area->args.ALET_RACF_rsn, &p_arg_area->args.RACF_rsn,
-           &p_arg_area->args.function_code, &p_arg_area->args.attributes,
-           &p_arg_area->args.RACF_user_id[0], &p_arg_area->args.ring_name[0],
+  IRRSDL64(&nNumParms, &p_args->RACF_work_area[0], p_args->ALET_SAF_rc,
+           &p_args->SAF_rc, p_args->ALET_RACF_rc, &p_args->RACF_rc,
+           p_args->ALET_RACF_rsn, &p_args->RACF_rsn, &p_args->function_code,
+           &p_args->attributes, &p_args->RACF_user_id[0], &p_args->ring_name[0],
            p_parmlist_version, p_parmlist);
 }
 
@@ -22,16 +20,16 @@ void IRRSDL00::extractKeyring(SecurityRequest &request,
       std::make_unique<char[]>(sizeof(keyring_extract_parms_results_t));
   std::memset(result_unique_ptr.get(), 0,
               sizeof(keyring_extract_parms_results_t));
-  p_arg_area_keyring->args.p_result_buffer =
+  p_arg_area_keyring->p_result_buffer =
       reinterpret_cast<keyring_extract_parms_results_t *>(
           result_unique_ptr.get());
-  p_arg_area_keyring->args.p_result_buffer->result_buffer_length =
+  p_arg_area_keyring->p_result_buffer->result_buffer_length =
       sizeof(keyring_extract_parms_results_t);
   request.setRawResultLength(
-      p_arg_area_keyring->args.p_result_buffer->result_buffer_length);
+      p_arg_area_keyring->p_result_buffer->result_buffer_length);
 
   keyring_extract_parms_results_t *p_result_buffer =
-      p_arg_area_keyring->args.p_result_buffer;
+      p_arg_area_keyring->p_result_buffer;
 
   cddlx_get_ring_t *p_parm_get_ring = &p_result_buffer->result_buffer_get_ring;
 
@@ -46,7 +44,7 @@ void IRRSDL00::extractKeyring(SecurityRequest &request,
   Logger::getInstance().hexDump(reinterpret_cast<char *>(p_parm_get_ring),
                                 sizeof(cddlx_get_ring_t));
 
-  IRRSDL00::callIRRSDL00(p_arg_area_keyring, &parmlist_version,
+  IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version,
                          p_parm_get_ring);
 
   Logger::getInstance().debug("cddlx_get_ring_t after call");
@@ -108,11 +106,11 @@ void IRRSDL00::extractKeyring(SecurityRequest &request,
       p_result_buffer = reinterpret_cast<keyring_extract_parms_results_t *>(
           result2_unique_ptr.get());
       std::memset(p_result_buffer, 0, result_len);
-      std::memcpy(p_result_buffer, p_arg_area_keyring->args.p_result_buffer,
+      std::memcpy(p_result_buffer, p_arg_area_keyring->p_result_buffer,
                   sizeof(keyring_extract_parms_results_t));
       result_unique_ptr.reset();
-      p_arg_area_keyring->args.p_result_buffer = p_result_buffer;
-      p_result_buffer->result_buffer_length    = result_len;
+      p_arg_area_keyring->p_result_buffer   = p_result_buffer;
+      p_result_buffer->result_buffer_length = result_len;
       p_result_buffer->result_buffer_get_ring.cddlx_ring_res_ptr =
           &p_result_buffer->union_ring_result.ring_result;
       p_ring_result = &p_result_buffer->union_ring_result.ring_result;
@@ -167,18 +165,18 @@ void IRRSDL00::extractKeyring(SecurityRequest &request,
       request.setRawResultPointer(result2_unique_ptr.get());
       result2_unique_ptr.release();
       request.setRawResultLength(
-          p_arg_area_keyring->args.p_result_buffer->result_buffer_length);
+          p_arg_area_keyring->p_result_buffer->result_buffer_length);
     } else {
       request.setRawResultPointer(result_unique_ptr.get());
       result_unique_ptr.release();
       request.setRawResultLength(
-          p_arg_area_keyring->args.p_result_buffer->result_buffer_length);
+          p_arg_area_keyring->p_result_buffer->result_buffer_length);
     }
   } else {
     request.setRawResultPointer(result_unique_ptr.get());
     result_unique_ptr.release();
     request.setRawResultLength(
-        p_arg_area_keyring->args.p_result_buffer->result_buffer_length);
+        p_arg_area_keyring->p_result_buffer->result_buffer_length);
   }
 
   request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
@@ -193,7 +191,7 @@ void IRRSDL00::extractCert(const SecurityRequest &request,
   uint32_t parmlist_version_ = 1;
 
   keyring_extract_parms_results_t *p_result_buffer =
-      p_arg_area_keyring->args.p_result_buffer;
+      p_arg_area_keyring->p_result_buffer;
 
   cddlx_get_cert_t *p_parm_get_cert =
       &p_get_cert_buffer->result_buffer_get_cert;
@@ -232,11 +230,26 @@ void IRRSDL00::extractCert(const SecurityRequest &request,
   Logger::getInstance().hexDump(reinterpret_cast<char *>(p_parm_get_cert),
                                 sizeof(cddlx_get_cert_t));
 
-  IRRSDL00::callIRRSDL00(p_arg_area_keyring, &parmlist_version_,
+  IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version_,
                          p_parm_get_cert);
 
   Logger::getInstance().debug("cddlx_get_cert_t after call");
   Logger::getInstance().hexDump(reinterpret_cast<char *>(p_parm_get_cert),
                                 sizeof(cddlx_get_cert_t));
+}
+
+void IRRSDL00::addKeyring(SecurityRequest &request,
+                          keyring_modify_arg_area_t *p_arg_area_keyring) {
+  uint32_t parmlist_version              = 0;
+
+  p_arg_area_keyring->args.function_code = 0x07;
+  p_arg_area_keyring->args.attributes    = 0;
+
+  IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version, nullptr);
+
+  if (p_arg_area_keyring->args.SAF_rc <= 4 &&
+      p_arg_area_keyring->args.RACF_rc <= 4 &&
+      p_arg_area_keyring->args.RACF_rsn == 0) {
+  }
 }
 }  // namespace RACFu

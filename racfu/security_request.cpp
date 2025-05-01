@@ -201,7 +201,11 @@ void SecurityRequest::load(const nlohmann::json& request) {
       traits_["base:authid"] = request["userid"].get<std::string>();
     }
   } else if (admin_type_ == "keyring") {
-    function_code_ = KEYRING_EXTRACT_FUNCTION_CODE;
+    if (operation_ == "extract") {
+      function_code_ = KEYRING_EXTRACT_FUNCTION_CODE;
+    } else if (operation_ == "add") {
+      function_code_ = KEYRING_ADD_FUNCTION_CODE;
+    }
     if (request.contains("owner")) {
       owner_ = request["owner"].get<std::string>();
     }
