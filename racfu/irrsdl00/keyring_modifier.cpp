@@ -4,13 +4,14 @@
 #include "racfu_error.hpp"
 
 namespace RACFu {
-void KeyringModifier::addKeyring(SecurityRequest &request) {
+void KeyringModifier::addOrDeleteKeyring(SecurityRequest &request) {
   uint8_t function_code = request.getFunctionCode();
 
   /*************************************************************************/
   /* Keyring Modify                                                        */
   /*************************************************************************/
-  if (function_code == KEYRING_ADD_FUNCTION_CODE) {
+  if (function_code == KEYRING_ADD_FUNCTION_CODE ||
+      function_code == KEYRING_DELETE_FUNCTION_CODE) {
     std::string owner   = request.getOwner();
     std::string keyring = request.getKeyring();
 
@@ -30,7 +31,7 @@ void KeyringModifier::addKeyring(SecurityRequest &request) {
         reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
     Logger::getInstance().debug("Calling IRRSDL00 ...");
-    IRRSDL00::addKeyring(request, p_arg_area);
+    IRRSDL00::addOrDeleteKeyring(request, p_arg_area);
     Logger::getInstance().debug("Done");
   }
 

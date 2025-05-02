@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
   fp                      = fopen(result_json_file, "wb");
   if (fp == NULL) {
     perror("");
-    printf("Unable to open '%s' for wirting.\n", "result_json_file");
+    printf("Unable to open '%s' for writing.\n", "result_json_file");
     return 7;
   }
   fwrite(racfu_result->result_json, strlen(racfu_result->result_json), 1, fp);

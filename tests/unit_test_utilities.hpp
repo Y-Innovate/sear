@@ -72,4 +72,7 @@ void test_add_request_irrsdl00_generation(const char *test_add_request_json,
                                           const char *test_add_request_raw,
                                           bool debug);
 
+void test_delete_request_irrsdl00_generation(
+    const char *test_delete_request_json, const char *test_delete_request_raw,
+    bool debug);
 #endif

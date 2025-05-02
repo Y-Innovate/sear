@@ -38,3 +38,8 @@ void test_generate_add_keyring_request() {
   test_add_request_irrsdl00_generation(TEST_ADD_KEYRING_REQUEST_JSON,
                                        TEST_ADD_KEYRING_REQUEST_RAW, false);
 }
+
+void test_generate_delete_keyring_request() {
+  test_delete_request_irrsdl00_generation(
+      TEST_DELETE_KEYRING_REQUEST_JSON, TEST_DELETE_KEYRING_REQUEST_RAW, false);
+}

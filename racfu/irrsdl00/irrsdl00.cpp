@@ -238,12 +238,16 @@ void IRRSDL00::extractCert(const SecurityRequest &request,
                                 sizeof(cddlx_get_cert_t));
 }
 
-void IRRSDL00::addKeyring(SecurityRequest &request,
-                          keyring_modify_arg_area_t *p_arg_area_keyring) {
-  uint32_t parmlist_version              = 0;
+void IRRSDL00::addOrDeleteKeyring(
+    SecurityRequest &request, keyring_modify_arg_area_t *p_arg_area_keyring) {
+  uint32_t parmlist_version = 0;
 
-  p_arg_area_keyring->args.function_code = 0x07;
-  p_arg_area_keyring->args.attributes    = 0;
+  if (request.getAdminType() == "add") {
+    p_arg_area_keyring->args.function_code = 0x07;
+  } else if (request.getAdminType() == "delete") {
+    p_arg_area_keyring->args.function_code = 0x0A;
+  }
+  p_arg_area_keyring->args.attributes = 0;
 
   IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version, nullptr);
 
@@ -251,5 +255,9 @@ void IRRSDL00::addKeyring(SecurityRequest &request,
       p_arg_area_keyring->args.RACF_rc <= 4 &&
       p_arg_area_keyring->args.RACF_rsn == 0) {
   }
+
+  request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
+  request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
+  request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
 }
 }  // namespace RACFu

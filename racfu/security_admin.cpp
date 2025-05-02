@@ -162,7 +162,7 @@ void SecurityAdmin::doAddAlterDelete() {
 }
 
 void SecurityAdmin::doAddAlterDeleteKeyring(KeyringModifier &modifier) {
-  modifier.addKeyring(request_);
+  modifier.addOrDeleteKeyring(request_);
 
   KeyringPostProcessor post_processor;
   post_processor.postProcessAddKeyring(request_);

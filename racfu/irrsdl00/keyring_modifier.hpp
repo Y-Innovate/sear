@@ -15,7 +15,7 @@ class KeyringModifier {
                                   const int &raw_request_length);
 
  public:
-  void addKeyring(SecurityRequest &request);
+  void addOrDeleteKeyring(SecurityRequest &request);
 };
 }  // namespace RACFu
 

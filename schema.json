@@ -636,7 +636,10 @@
     {
       "properties": {
         "operation": {
-          "const": "add"
+          "enum": [
+            "add",
+            "delete"
+          ]
         },
         "admin_type": {
           "const": "keyring"

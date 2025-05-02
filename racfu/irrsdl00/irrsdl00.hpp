@@ -27,6 +27,7 @@
 /*************************************************************************/
 const uint8_t KEYRING_EXTRACT_FUNCTION_CODE = 0x25;
 const uint8_t KEYRING_ADD_FUNCTION_CODE     = 0x28;
+const uint8_t KEYRING_DELETE_FUNCTION_CODE  = 0x2B;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -239,8 +240,8 @@ class IRRSDL00 {
  public:
   static void extractKeyring(SecurityRequest &request,
                              keyring_extract_arg_area_t *p_arg_area_keyring);
-  static void addKeyring(SecurityRequest &request,
-                         keyring_modify_arg_area_t *p_arg_area_keyring);
+  static void addOrDeleteKeyring(SecurityRequest &request,
+                                 keyring_modify_arg_area_t *p_arg_area_keyring);
 };
 }  // namespace RACFu
 

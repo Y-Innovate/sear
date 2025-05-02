@@ -24,6 +24,10 @@
 #define TEST_ADD_KEYRING_REQUEST_RAW \
   IRRSDL00_REQUEST_SAMPLES "keyring/test_add_keyring_request.bin"
 
+#define TEST_DELETE_KEYRING_REQUEST_JSON \
+  IRRSDL00_REQUEST_SAMPLES "keyring/test_delete_keyring_request.json"
+#define TEST_DELETE_KEYRING_REQUEST_RAW \
+  IRRSDL00_REQUEST_SAMPLES "keyring/test_delete_keyring_request.bin"
 /*************************************************************************/
 /* Result Samples                                                        */
 /*************************************************************************/
@@ -48,5 +52,6 @@ void test_parse_extract_keyring_result();
 void test_parse_extract_keyring_result_keyring_not_found();
 void test_parse_extract_keyring_result_required_parameter_missing();
 void test_generate_add_keyring_request();
+void test_generate_delete_keyring_request();
 
 #endif
