@@ -260,4 +260,102 @@ void IRRSDL00::addOrDeleteKeyring(
   request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
   request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
 }
+
+void IRRSDL00::addCertificate(SecurityRequest &request,
+                              certificate_add_arg_area_t *p_arg_area_keyring) {
+  uint32_t parmlist_version              = 0;
+
+  p_arg_area_keyring->args.function_code = 0x08;
+  p_arg_area_keyring->args.attributes    = 0;
+
+  auto result_unique_ptr =
+      std::make_unique<char[]>(sizeof(certificate_add_parms_results_t));
+  std::memset(result_unique_ptr.get(), 0,
+              sizeof(certificate_add_parms_results_t));
+  p_arg_area_keyring->p_result_buffer =
+      reinterpret_cast<certificate_add_parms_results_t *>(
+          result_unique_ptr.get());
+  p_arg_area_keyring->p_result_buffer->result_buffer_length =
+      sizeof(keyring_extract_parms_results_t);
+  request.setRawResultLength(
+      p_arg_area_keyring->p_result_buffer->result_buffer_length);
+
+  certificate_add_parms_results_t *p_result_buffer =
+      p_arg_area_keyring->p_result_buffer;
+
+  if (request.getUsage() == "personal") {
+    *(reinterpret_cast<uint32_t *>(
+        &p_result_buffer->result_buffer_add_certificate.cddlx_pcert_usage)) =
+        0x00000008;
+  } else if (request.getUsage() == "certauth") {
+    *(reinterpret_cast<uint32_t *>(
+        &p_result_buffer->result_buffer_add_certificate.cddlx_pcert_usage)) =
+        0x00000002;
+  }
+
+  if (request.getDefault() == "yes") {
+    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_default = 1;
+  }
+
+  std::string cert_file = request.getCertificateFile();
+  if (cert_file != "") {
+    unsigned char *p_cert_data = nullptr;
+    int cert_length;
+
+    // open file
+    FILE *fp = fopen(cert_file.c_str(), "r");
+    if (fp == nullptr) {
+      throw RACFuError(
+          std::string("Unable to open certificate file for reading."));
+    }
+    // get size of file
+    fseek(fp, 0L, SEEK_END);
+    cert_length = ftell(fp);
+    rewind(fp);
+    // allocate space to read in data from file
+    p_cert_data = reinterpret_cast<unsigned char *>(
+        calloc(cert_length + 1, sizeof(char)));
+    if (p_cert_data == nullptr) {
+      fclose(fp);
+      throw RACFuError(
+          std::string("Unable to allocate space for certificate data."));
+    }
+    // read file data
+    fread(p_cert_data, cert_length, 1, fp);
+    fclose(fp);
+
+    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_ptr =
+        p_cert_data;
+    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_len =
+        cert_length;
+  }
+
+  auto cert_label_unique_ptr = std::make_unique<char[]>(LABEL_BUFFER_SIZE);
+  char *p_cert_label         = cert_label_unique_ptr.get();
+  std::memset(p_cert_label, 0, LABEL_BUFFER_SIZE);
+  std::strncpy(p_cert_label, request.getLabel().c_str(), LABEL_BUFFER_SIZE - 1);
+  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_ptr =
+      reinterpret_cast<unsigned char *>(p_cert_label);
+  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len =
+      request.getLabel().length();
+
+  memset(&p_result_buffer->result_buffer_add_certificate.cddlx_pcert_userid[0],
+         ' ', 8);
+  strncpy(
+      reinterpret_cast<char *>(&p_result_buffer->result_buffer_add_certificate
+                                    .cddlx_pcert_userid[0]),
+      request.getOwner().c_str(), 8);
+
+  IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version,
+                         p_arg_area_keyring);
+
+  if (p_arg_area_keyring->args.SAF_rc <= 4 &&
+      p_arg_area_keyring->args.RACF_rc <= 4 &&
+      p_arg_area_keyring->args.RACF_rsn == 0) {
+  }
+
+  request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
+  request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
+  request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
+}
 }  // namespace RACFu

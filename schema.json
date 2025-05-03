@@ -688,9 +688,16 @@
             "certauth"
           ]
         },
+        "default": {
+          "enum": [
+            "yes",
+            "no"
+          ]
+        },
         "status": {
           "enum": [
             "TRUST",
+            "HIGHTRUST",
             "NOTRUST"
           ]
         }
