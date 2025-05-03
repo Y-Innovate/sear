@@ -31,7 +31,7 @@ namespace RACFu {
 class KeyringPostProcessor {
  public:
   static void postProcessExtractKeyring(SecurityRequest &request);
-  static void postProcessAddKeyring(SecurityRequest &request);
+  static void postProcessAddOrDeleteKeyring(SecurityRequest &request);
 
  private:
   static void convertASN1TIME(ASN1_TIME *t, char *p_buf, size_t buf_len);

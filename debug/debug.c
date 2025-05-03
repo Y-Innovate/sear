@@ -14,7 +14,7 @@ typedef struct {
   char *result_json;
 } racfu_result_t;
 
-typedef racfu_result_t *(*racfu_t)(const char *, bool);
+typedef racfu_result_t *(*racfu_t)(const char *, int, bool);
 
 int main(int argc, char **argv) {
   // Parameter Validation
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   fclose(fp);
 
   // Make Request;
-  racfu_result_t *racfu_result = racfu(request_json, true);
+  racfu_result_t *racfu_result = racfu(request_json, size, true);
   dlclose(lib_handle);
 
   // Write Raw Request

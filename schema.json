@@ -657,6 +657,54 @@
         "owner",
         "keyring"
       ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "add"
+        },
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "certificate_file": {
+          "type": "string"
+        },
+        "usage": {
+          "enum": [
+            "personal",
+            "site",
+            "certauth"
+          ]
+        },
+        "status": {
+          "enum": [
+            "TRUST",
+            "NOTRUST"
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label",
+        "usage",
+        "status"
+      ]
     }
   ],
   "$defs": {

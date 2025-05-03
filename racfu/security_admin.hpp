@@ -23,6 +23,7 @@ class SecurityAdmin {
   void doExtract(Extractor &extractor);
   void doAddAlterDelete();
   void doAddAlterDeleteKeyring(KeyringModifier &modifier);
+  void doAddCertificate(KeyringModifier &modifier);
 
  public:
   SecurityAdmin(racfu_result_t *p_result, bool debug);

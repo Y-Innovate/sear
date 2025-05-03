@@ -28,6 +28,7 @@
 const uint8_t KEYRING_EXTRACT_FUNCTION_CODE = 0x25;
 const uint8_t KEYRING_ADD_FUNCTION_CODE     = 0x28;
 const uint8_t KEYRING_DELETE_FUNCTION_CODE  = 0x2B;
+const uint8_t CERTIFICATE_ADD_FUNCTION_CODE = 0x2E;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 

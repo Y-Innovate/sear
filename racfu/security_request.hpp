@@ -21,6 +21,11 @@ class SecurityRequest {
   std::string generic_;
   std::string owner_;
   std::string keyring_;
+  std::string keyring_owner_;
+  std::string label_;
+  std::string certificate_file_;
+  std::string usage_;
+  std::string status_;
   char surrogate_userid_[8] = {0};
   nlohmann::json traits_;
   uint8_t function_code_ = 0;
@@ -44,6 +49,11 @@ class SecurityRequest {
   const std::string& getGeneric() const;
   const std::string& getOwner() const;
   const std::string& getKeyring() const;
+  const std::string& getKeyringOwner() const;
+  const std::string& getLabel() const;
+  const std::string& getCertificateFile() const;
+  const std::string& getUsage() const;
+  const std::string& getStatus() const;
   const char* getSurrogateUserID() const;
   const nlohmann::json& getTraits() const;
   uint8_t getFunctionCode() const;

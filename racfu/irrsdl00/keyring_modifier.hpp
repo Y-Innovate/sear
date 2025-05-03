@@ -16,6 +16,7 @@ class KeyringModifier {
 
  public:
   void addOrDeleteKeyring(SecurityRequest &request);
+  void addCertificate(SecurityRequest &request);
 };
 }  // namespace RACFu
 

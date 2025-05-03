@@ -97,4 +97,29 @@ char *KeyringModifier::preserveRawRequest(const char *p_arg_area,
     return nullptr;
   }
 }
+
+void KeyringModifier::addCertificate(SecurityRequest &request) {
+  uint8_t function_code = request.getFunctionCode();
+
+  /*************************************************************************/
+  /* Add certificate                                                       */
+  /*************************************************************************/
+  if (function_code == CERTIFICATE_ADD_FUNCTION_CODE) {
+    std::string owner   = request.getOwner();
+    std::string keyring = request.getKeyring();
+  }
+
+  // Check Return Codes
+  if (request.getSAFReturnCode() != 0 or request.getRACFReturnCode() != 0 or
+      request.getRACFReasonCode() != 0 or
+      request.getRawResultPointer() == nullptr) {
+    request.setRACFuReturnCode(4);
+    // Raise Exception if Modify Failed.
+    const std::string &admin_type = request.getAdminType();
+    throw RACFuError("unable to modify '" + admin_type + "'");
+  }
+
+  request.setRACFuReturnCode(0);
+}
+
 }  // namespace RACFu

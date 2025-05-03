@@ -526,7 +526,8 @@ bool KeyringPostProcessor::addGenericExtension(nlohmann::json &add_to_json,
   return ret;
 }
 
-void KeyringPostProcessor::postProcessAddKeyring(SecurityRequest &request) {}
+void KeyringPostProcessor::postProcessAddOrDeleteKeyring(
+    SecurityRequest &request) {}
 
 std::string KeyringPostProcessor::strToHex(const std::uint8_t *data,
                                            const std::size_t len) {

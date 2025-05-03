@@ -242,9 +242,9 @@ void IRRSDL00::addOrDeleteKeyring(
     SecurityRequest &request, keyring_modify_arg_area_t *p_arg_area_keyring) {
   uint32_t parmlist_version = 0;
 
-  if (request.getAdminType() == "add") {
+  if (request.getOperation() == "add") {
     p_arg_area_keyring->args.function_code = 0x07;
-  } else if (request.getAdminType() == "delete") {
+  } else if (request.getOperation() == "delete") {
     p_arg_area_keyring->args.function_code = 0x0A;
   }
   p_arg_area_keyring->args.attributes = 0;

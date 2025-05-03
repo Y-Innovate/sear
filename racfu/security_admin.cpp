@@ -64,13 +64,18 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
         SecurityAdmin::doExtract(keyring_extractor);
       }
     } else {
-      if (request_.getAdminType() != "keyring") {
-        Logger::getInstance().debug("Entering IRRSMO00 path");
-        SecurityAdmin::doAddAlterDelete();
-      } else {
+      if (request_.getAdminType() == "keyring" ||
+          request_.getAdminType() == "certificate") {
         Logger::getInstance().debug("Entering IRRSDL00 path");
         KeyringModifier keyring_modifier;
-        SecurityAdmin::doAddAlterDeleteKeyring(keyring_modifier);
+        if (request_.getAdminType() == "keyring") {
+          SecurityAdmin::doAddAlterDeleteKeyring(keyring_modifier);
+        } else {
+          SecurityAdmin::doAddCertificate(keyring_modifier);
+        }
+      } else {
+        Logger::getInstance().debug("Entering IRRSMO00 path");
+        SecurityAdmin::doAddAlterDelete();
       }
     }
   } catch (const RACFuError &ex) {
@@ -165,9 +170,16 @@ void SecurityAdmin::doAddAlterDeleteKeyring(KeyringModifier &modifier) {
   modifier.addOrDeleteKeyring(request_);
 
   KeyringPostProcessor post_processor;
-  post_processor.postProcessAddKeyring(request_);
+  post_processor.postProcessAddOrDeleteKeyring(request_);
 
-  Logger::getInstance().debug("Add keyring result has been post-processed");
+  Logger::getInstance().debug(
+      "Add/delete keyring result has been post-processed");
+}
+
+void SecurityAdmin::doAddCertificate(KeyringModifier &modifier) {
+  modifier.addCertificate(request_);
+
+  Logger::getInstance().debug("Add certificate result has been post-processed");
 }
 
 }  // namespace RACFu
