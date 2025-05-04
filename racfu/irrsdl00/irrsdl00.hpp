@@ -227,6 +227,7 @@ typedef struct {
 typedef struct {
   uint32_t result_buffer_length;
   cddlx_put_cert_t result_buffer_add_certificate;
+  uint8_t label_buffer[32];
 } certificate_add_parms_results_t;
 
 typedef struct {

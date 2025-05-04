@@ -330,6 +330,7 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
         cert_length;
   }
 
+  /*
   auto cert_label_unique_ptr = std::make_unique<char[]>(LABEL_BUFFER_SIZE);
   char *p_cert_label         = cert_label_unique_ptr.get();
   std::memset(p_cert_label, 0, LABEL_BUFFER_SIZE);
@@ -338,6 +339,11 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
       reinterpret_cast<unsigned char *>(p_cert_label);
   p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len =
       request.getLabel().length();
+  */
+
+  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len = 32;
+  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_ptr =
+      &p_result_buffer->label_buffer[0];
 
   memset(&p_result_buffer->result_buffer_add_certificate.cddlx_pcert_userid[0],
          ' ', 8);
