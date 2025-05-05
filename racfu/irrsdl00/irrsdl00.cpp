@@ -266,7 +266,15 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
   uint32_t parmlist_version              = 0;
 
   p_arg_area_keyring->args.function_code = 0x08;
-  p_arg_area_keyring->args.attributes    = 0;
+  if (request.getStatus() == "TRUST" || request.getStatus() == "trust") {
+    p_arg_area_keyring->args.attributes = 0x80000000;
+  } else if (request.getStatus() == "HIGHTRUST" ||
+             request.getStatus() == "hightrust") {
+    p_arg_area_keyring->args.attributes = 0x40000000;
+  } else if (request.getStatus() == "NOTRUST" ||
+             request.getStatus() == "notrust") {
+    p_arg_area_keyring->args.attributes = 0x20000000;
+  }
 
   auto result_unique_ptr =
       std::make_unique<char[]>(sizeof(certificate_add_parms_results_t));
@@ -286,10 +294,11 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
   cddlx_put_cert_t *p_parm_put_cert =
       &p_result_buffer->result_buffer_add_certificate;
 
-  if (request.getUsage() == "personal") {
+  if (request.getUsage() == "PERSONAL" || request.getUsage() == "personal") {
     *(reinterpret_cast<uint32_t *>(&p_parm_put_cert->cddlx_pcert_usage)) =
         0x00000008;
-  } else if (request.getUsage() == "certauth") {
+  } else if (request.getUsage() == "CERTAUTH" ||
+             request.getUsage() == "certauth") {
     *(reinterpret_cast<uint32_t *>(&p_parm_put_cert->cddlx_pcert_usage)) =
         0x00000002;
   }
@@ -369,7 +378,11 @@ void IRRSDL00::deleteCertificate(
   uint32_t parmlist_version              = 0;
 
   p_arg_area_keyring->args.function_code = 0x09;
-  p_arg_area_keyring->args.attributes    = 0;
+  if (request.getRemoveFromKeyringOnly() != "yes") {
+    p_arg_area_keyring->args.attributes = 0x80000000;
+  } else {
+    p_arg_area_keyring->args.attributes = 0;
+  }
 
   auto result_unique_ptr =
       std::make_unique<char[]>(sizeof(certificate_delete_parms_results_t));

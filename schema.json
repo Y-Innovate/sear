@@ -683,8 +683,11 @@
         },
         "usage": {
           "enum": [
+            "PERSONAL",
             "personal",
+            "SITE",
             "site",
+            "CERTAUTH",
             "certauth"
           ]
         },
@@ -697,8 +700,11 @@
         "status": {
           "enum": [
             "TRUST",
+            "trust",
             "HIGHTRUST",
-            "NOTRUST"
+            "hightrust",
+            "NOTRUST",
+            "notrust"
           ]
         }
       },
@@ -732,6 +738,12 @@
         },
         "label": {
           "$ref": "#/$defs/thirtytwoCharacterString"
+        },
+        "remove_from_keyring_only": {
+          "enum": [
+            "yes",
+            "no"
+          ]
         }
       },
       "required": [

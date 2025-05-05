@@ -82,6 +82,10 @@ const std::string& SecurityRequest::getUsage() const { return usage_; }
 
 const std::string& SecurityRequest::getStatus() const { return status_; }
 
+const std::string& SecurityRequest::getRemoveFromKeyringOnly() const {
+  return remove_from_keyring_only_;
+}
+
 const char* SecurityRequest::getSurrogateUserID() const {
   return surrogate_userid_;
 }
@@ -244,6 +248,11 @@ void SecurityRequest::load(const nlohmann::json& request) {
       }
       if (request.contains("default")) {
         default_ = request["default"].get<std::string>();
+      }
+    } else if (operation_ == "delete") {
+      if (request.contains("remove_from_keyring_only")) {
+        remove_from_keyring_only_ =
+            request["remove_from_keyring_only"].get<std::string>();
       }
     }
   }
