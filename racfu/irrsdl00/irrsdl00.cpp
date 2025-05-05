@@ -283,18 +283,19 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
   certificate_add_parms_results_t *p_result_buffer =
       p_arg_area_keyring->p_result_buffer;
 
+  cddlx_put_cert_t *p_parm_put_cert =
+      &p_result_buffer->result_buffer_add_certificate;
+
   if (request.getUsage() == "personal") {
-    *(reinterpret_cast<uint32_t *>(
-        &p_result_buffer->result_buffer_add_certificate.cddlx_pcert_usage)) =
+    *(reinterpret_cast<uint32_t *>(&p_parm_put_cert->cddlx_pcert_usage)) =
         0x00000008;
   } else if (request.getUsage() == "certauth") {
-    *(reinterpret_cast<uint32_t *>(
-        &p_result_buffer->result_buffer_add_certificate.cddlx_pcert_usage)) =
+    *(reinterpret_cast<uint32_t *>(&p_parm_put_cert->cddlx_pcert_usage)) =
         0x00000002;
   }
 
   if (request.getDefault() == "yes") {
-    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_default = 1;
+    p_parm_put_cert->cddlx_pcert_default = 1;
   }
 
   std::string cert_file = request.getCertificateFile();
@@ -324,36 +325,39 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
     fread(p_cert_data, cert_length, 1, fp);
     fclose(fp);
 
-    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_ptr =
-        p_cert_data;
-    p_result_buffer->result_buffer_add_certificate.cddlx_pcert_len =
-        cert_length;
+    p_parm_put_cert->cddlx_pcert_ptr = p_cert_data;
+    p_parm_put_cert->cddlx_pcert_len = cert_length;
   }
 
-  /*
   auto cert_label_unique_ptr = std::make_unique<char[]>(LABEL_BUFFER_SIZE);
   char *p_cert_label         = cert_label_unique_ptr.get();
   std::memset(p_cert_label, 0, LABEL_BUFFER_SIZE);
-  std::strncpy(p_cert_label, request.getLabel().c_str(), LABEL_BUFFER_SIZE - 1);
-  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_ptr =
-      reinterpret_cast<unsigned char *>(p_cert_label);
   p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len =
       request.getLabel().length();
-  */
-
-  p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len = 32;
+  if (p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len > 32)
+    p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len = 32;
+  std::memcpy(p_cert_label, request.getLabel().c_str(),
+              p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len);
+  __a2e_l(p_cert_label,
+          p_result_buffer->result_buffer_add_certificate.cddlx_plabel_len);
   p_result_buffer->result_buffer_add_certificate.cddlx_plabel_ptr =
-      &p_result_buffer->label_buffer[0];
+      reinterpret_cast<unsigned char *>(p_cert_label);
 
-  memset(&p_result_buffer->result_buffer_add_certificate.cddlx_pcert_userid[0],
-         ' ', 8);
-  strncpy(
+  p_result_buffer->result_buffer_add_certificate.cddlx_pcert_userid[0] =
+      request.getOwner().length();
+  std::memcpy(
+      &p_result_buffer->result_buffer_add_certificate.cddlx_pcert_userid[1],
+      request.getOwner().c_str(), request.getOwner().length());
+  __a2e_l(
       reinterpret_cast<char *>(&p_result_buffer->result_buffer_add_certificate
-                                    .cddlx_pcert_userid[0]),
-      request.getOwner().c_str(), 8);
+                                    .cddlx_pcert_userid[1]),
+      request.getOwner().length());
+
+  Logger::getInstance().hexDump(reinterpret_cast<char *>(p_parm_put_cert),
+                                sizeof(cddlx_put_cert_t));
 
   IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version,
-                         p_arg_area_keyring);
+                         p_parm_put_cert);
 
   if (p_arg_area_keyring->args.SAF_rc <= 4 &&
       p_arg_area_keyring->args.RACF_rc <= 4 &&
