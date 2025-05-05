@@ -676,7 +676,7 @@
           "$ref": "#/$defs/eightCharacterString"
         },
         "label": {
-          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+          "$ref": "#/$defs/thirtytwoCharacterString"
         },
         "certificate_file": {
           "type": "string"
@@ -712,6 +712,36 @@
         "usage",
         "status"
       ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "delete"
+        },
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/thirtytwoCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label"
+      ]
     }
   ],
   "$defs": {
@@ -719,6 +749,11 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 8
+    },
+    "thirtytwoCharacterString": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32
     },
     "twohundredthirtysevenCharacterString": {
       "type": "string",

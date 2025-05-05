@@ -26,10 +26,11 @@
 /*************************************************************************/
 /* Function Codes                                                        */
 /*************************************************************************/
-const uint8_t KEYRING_EXTRACT_FUNCTION_CODE = 0x25;
-const uint8_t KEYRING_ADD_FUNCTION_CODE     = 0x28;
-const uint8_t KEYRING_DELETE_FUNCTION_CODE  = 0x2B;
-const uint8_t CERTIFICATE_ADD_FUNCTION_CODE = 0x2E;
+const uint8_t KEYRING_EXTRACT_FUNCTION_CODE    = 0x25;
+const uint8_t KEYRING_ADD_FUNCTION_CODE        = 0x28;
+const uint8_t KEYRING_DELETE_FUNCTION_CODE     = 0x2B;
+const uint8_t CERTIFICATE_ADD_FUNCTION_CODE    = 0x2E;
+const uint8_t CERTIFICATE_DELETE_FUNCTION_CODE = 0x30;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -197,6 +198,23 @@ typedef struct { /* FSPL for DataPut function              */
   unsigned char irrpcomx_dummy_23[3];  /* Reserved space                      */
 } cddlx_put_cert_t;
 
+typedef struct {             /* FSPL for DataRemove function@L3A       */
+  uint32_t cddlx_rlabel_len; /* A 4 byte input value contains the length
+                             of the label of the certificate to be
+                             removed pointed to by CDDLX_RLABEL_PTR    */
+  int32_t irrpcomx_dummy_24; /* reserved for alignment                 */
+  void *cddlx_rlabel_ptr;    /* An input value contains the address of
+                               the label of the certificate to be removed
+                                                                         */
+  unsigned char cddlx_rcert_userid[9]; /* A 9 byte input value indicates the
+                                   owner of the certificate to be removed, in
+                                   the format of a 1 byte length followed by
+                                   the user ID. The 1 byte length must be 8 and
+                                   the user ID must be left-justified and
+                                   padded with blanks.                       */
+  unsigned char irrpcomx_dummy_25[3];  /* Reserved space                      */
+} cddlx_remove_cert_t;
+
 typedef struct {
   cddlx_get_cert_t result_buffer_get_cert;
   uint32_t filler_01;
@@ -229,6 +247,12 @@ typedef struct {
   cddlx_put_cert_t result_buffer_add_certificate;
   uint8_t label_buffer[32];
 } certificate_add_parms_results_t;
+
+typedef struct {
+  uint32_t result_buffer_length;
+  cddlx_remove_cert_t result_buffer_delete_certificate;
+  uint8_t label_buffer[32];
+} certificate_delete_parms_results_t;
 
 typedef struct {
   char RACF_work_area[1024];
@@ -265,6 +289,11 @@ typedef struct {
   keyring_args_t args;
   certificate_add_parms_results_t *p_result_buffer;
 } certificate_add_arg_area_t;
+
+typedef struct {
+  keyring_args_t args;
+  certificate_delete_parms_results_t *p_result_buffer;
+} certificate_delete_arg_area_t;
 
 #pragma pack(pop)  // Restore default structure packing options.
 
@@ -307,6 +336,9 @@ class IRRSDL00 {
                                  keyring_modify_arg_area_t *p_arg_area_keyring);
   static void addCertificate(SecurityRequest &request,
                              certificate_add_arg_area_t *p_arg_area_keyring);
+  static void deleteCertificate(
+      SecurityRequest &request,
+      certificate_delete_arg_area_t *p_arg_area_keyring);
 };
 }  // namespace RACFu
 

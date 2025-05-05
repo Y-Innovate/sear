@@ -229,18 +229,22 @@ void SecurityRequest::load(const nlohmann::json& request) {
   } else if (admin_type_ == "certificate") {
     if (operation_ == "add") {
       function_code_ = CERTIFICATE_ADD_FUNCTION_CODE;
+    } else if (operation_ == "delete") {
+      function_code_ = CERTIFICATE_DELETE_FUNCTION_CODE;
     }
     owner_         = request["owner"].get<std::string>();
     keyring_       = request["keyring"].get<std::string>();
     keyring_owner_ = request["keyring_owner"].get<std::string>();
     label_         = request["label"].get<std::string>();
-    usage_         = request["usage"].get<std::string>();
-    status_        = request["status"].get<std::string>();
-    if (request.contains("certificate_file")) {
-      certificate_file_ = request["certificate_file"].get<std::string>();
-    }
-    if (request.contains("default")) {
-      default_ = request["default"].get<std::string>();
+    if (operation_ == "add") {
+      usage_  = request["usage"].get<std::string>();
+      status_ = request["status"].get<std::string>();
+      if (request.contains("certificate_file")) {
+        certificate_file_ = request["certificate_file"].get<std::string>();
+      }
+      if (request.contains("default")) {
+        default_ = request["default"].get<std::string>();
+      }
     }
   }
 

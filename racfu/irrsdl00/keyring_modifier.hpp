@@ -14,12 +14,16 @@ class KeyringModifier {
   static void buildCertificateAddRequest(certificate_add_arg_area_t *p_arg_area,
                                          std::string &keyring_owner,
                                          const std::string &keyring);
+  static void buildCertificateDeleteRequest(
+      certificate_delete_arg_area_t *p_arg_area, std::string &keyring_owner,
+      const std::string &keyring);
   static char *preserveRawRequest(const char *p_arg_area,
                                   const int &raw_request_length);
 
  public:
   void addOrDeleteKeyring(SecurityRequest &request);
   void addCertificate(SecurityRequest &request);
+  void deleteCertificate(SecurityRequest &request);
 };
 }  // namespace RACFu
 

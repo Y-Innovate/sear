@@ -71,7 +71,11 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
         if (request_.getAdminType() == "keyring") {
           SecurityAdmin::doAddAlterDeleteKeyring(keyring_modifier);
         } else {
-          SecurityAdmin::doAddCertificate(keyring_modifier);
+          if (request_.getOperation() == "add") {
+            SecurityAdmin::doAddCertificate(keyring_modifier);
+          } else if (request_.getOperation() == "delete") {
+            SecurityAdmin::doDeleteCertificate(keyring_modifier);
+          }
         }
       } else {
         Logger::getInstance().debug("Entering IRRSMO00 path");
@@ -180,6 +184,13 @@ void SecurityAdmin::doAddCertificate(KeyringModifier &modifier) {
   modifier.addCertificate(request_);
 
   Logger::getInstance().debug("Add certificate result has been post-processed");
+}
+
+void SecurityAdmin::doDeleteCertificate(KeyringModifier &modifier) {
+  modifier.deleteCertificate(request_);
+
+  Logger::getInstance().debug(
+      "Delete certificate result has been post-processed");
 }
 
 }  // namespace RACFu

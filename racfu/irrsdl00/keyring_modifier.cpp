@@ -135,7 +135,7 @@ void KeyringModifier::addCertificate(SecurityRequest &request) {
     request.setRACFuReturnCode(4);
     // Raise Exception if Modify Failed.
     const std::string &admin_type = request.getAdminType();
-    throw RACFuError("unable to modify '" + admin_type + "'");
+    throw RACFuError("unable to add '" + admin_type + "'");
   }
 
   request.setRACFuReturnCode(0);
@@ -144,10 +144,10 @@ void KeyringModifier::addCertificate(SecurityRequest &request) {
 void KeyringModifier::buildCertificateAddRequest(
     certificate_add_arg_area_t *p_arg_area, std::string &keyring_owner,
     const std::string &keyring) {
-  std::memset(p_arg_area, 0, sizeof(keyring_modify_arg_area_t));
+  std::memset(p_arg_area, 0, sizeof(certificate_add_arg_area_t));
 
   /***************************************************************************/
-  /* Set Modify Arguments                                                    */
+  /* Set Add Arguments                                                       */
   /***************************************************************************/
   p_arg_area->args.ALET_SAF_rc   = ALET;
   p_arg_area->args.ALET_RACF_rc  = ALET;
@@ -175,4 +175,80 @@ void KeyringModifier::buildCertificateAddRequest(
   __a2e_l(&p_arg_area->args.ring_name[1], keyring.length());
 }
 
+void KeyringModifier::deleteCertificate(SecurityRequest &request) {
+  uint8_t function_code = request.getFunctionCode();
+
+  /*************************************************************************/
+  /* Delete certificate                                                    */
+  /*************************************************************************/
+  if (function_code == CERTIFICATE_DELETE_FUNCTION_CODE) {
+    std::string keyring_owner = request.getKeyringOwner();
+    std::string keyring       = request.getKeyring();
+
+    auto unique_ptr =
+        std::make_unique<char[]>(sizeof(certificate_delete_arg_area_t));
+    certificate_delete_arg_area_t *p_arg_area =
+        reinterpret_cast<certificate_delete_arg_area_t *>(unique_ptr.get());
+
+    KeyringModifier::buildCertificateDeleteRequest(p_arg_area, keyring_owner,
+                                                   keyring);
+
+    request.setRawRequestLength((int)sizeof(certificate_delete_arg_area_t));
+    Logger::getInstance().debug("Certificate delete request buffer:");
+    Logger::getInstance().hexDump(reinterpret_cast<char *>(p_arg_area),
+                                  request.getRawRequestLength());
+    request.setRawRequestPointer(KeyringModifier::preserveRawRequest(
+        reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
+
+    Logger::getInstance().debug("Calling IRRSDL00 ...");
+    IRRSDL00::deleteCertificate(request, p_arg_area);
+    Logger::getInstance().debug("Done");
+  }
+
+  // Check Return Codes
+  if (request.getSAFReturnCode() != 0 or request.getRACFReturnCode() != 0 or
+      request.getRACFReasonCode() != 0 or
+      request.getRawResultPointer() == nullptr) {
+    request.setRACFuReturnCode(4);
+    // Raise Exception if Modify Failed.
+    const std::string &admin_type = request.getAdminType();
+    throw RACFuError("unable to delete '" + admin_type + "'");
+  }
+
+  request.setRACFuReturnCode(0);
+}
+
+void KeyringModifier::buildCertificateDeleteRequest(
+    certificate_delete_arg_area_t *p_arg_area, std::string &keyring_owner,
+    const std::string &keyring) {
+  std::memset(p_arg_area, 0, sizeof(certificate_delete_arg_area_t));
+
+  /***************************************************************************/
+  /* Set Delete Arguments                                                    */
+  /***************************************************************************/
+  p_arg_area->args.ALET_SAF_rc   = ALET;
+  p_arg_area->args.ALET_RACF_rc  = ALET;
+  p_arg_area->args.ALET_RACF_rsn = ALET;
+
+  // Automatically convert lowercase userid to uppercase.
+  std::transform(keyring_owner.begin(), keyring_owner.end(),
+                 keyring_owner.begin(),
+                 [](unsigned char c) { return std::toupper(c); });
+
+  // Copy userid
+  std::memset(&p_arg_area->args.RACF_user_id[0], 0, 10);
+  p_arg_area->args.RACF_user_id[0] = keyring_owner.length();
+  std::memcpy(&p_arg_area->args.RACF_user_id[1], keyring_owner.c_str(),
+              keyring_owner.length());
+  // Encode userid as IBM-1047.
+  __a2e_l(&p_arg_area->args.RACF_user_id[1], keyring_owner.length());
+
+  // Copy keyring
+  std::memset(&p_arg_area->args.ring_name[0], 0, 239);
+  p_arg_area->args.ring_name[0] = keyring.length();
+  std::memcpy(&p_arg_area->args.ring_name[1], keyring.c_str(),
+              keyring.length());
+  // Encode keyring as IBM-1047.
+  __a2e_l(&p_arg_area->args.ring_name[1], keyring.length());
+}
 }  // namespace RACFu
