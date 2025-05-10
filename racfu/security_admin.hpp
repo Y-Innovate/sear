@@ -25,6 +25,7 @@ class SecurityAdmin {
   void doAddAlterDeleteKeyring(KeyringModifier &modifier);
   void doAddCertificate(KeyringModifier &modifier);
   void doDeleteCertificate(KeyringModifier &modifier);
+  void doRemoveCertificate(KeyringModifier &modifier);
 
  public:
   SecurityAdmin(racfu_result_t *p_result, bool debug);

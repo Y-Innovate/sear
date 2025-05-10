@@ -31,6 +31,7 @@ const uint8_t KEYRING_ADD_FUNCTION_CODE        = 0x28;
 const uint8_t KEYRING_DELETE_FUNCTION_CODE     = 0x2B;
 const uint8_t CERTIFICATE_ADD_FUNCTION_CODE    = 0x2E;
 const uint8_t CERTIFICATE_DELETE_FUNCTION_CODE = 0x30;
+const uint8_t CERTIFICATE_REMOVE_FUNCTION_CODE = 0X33;
 
 #pragma pack(push, 1)  // Don't byte align structure members.
 
@@ -338,7 +339,8 @@ class IRRSDL00 {
                              certificate_add_arg_area_t *p_arg_area_keyring);
   static void deleteCertificate(
       SecurityRequest &request,
-      certificate_delete_arg_area_t *p_arg_area_keyring);
+      certificate_delete_arg_area_t *p_arg_area_keyring,
+      bool delete_from_keyring_only);
 };
 }  // namespace RACFu
 

@@ -373,12 +373,12 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
 }
 
 void IRRSDL00::deleteCertificate(
-    SecurityRequest &request,
-    certificate_delete_arg_area_t *p_arg_area_keyring) {
+    SecurityRequest &request, certificate_delete_arg_area_t *p_arg_area_keyring,
+    bool delete_from_keyring_only) {
   uint32_t parmlist_version              = 0;
 
   p_arg_area_keyring->args.function_code = 0x09;
-  if (request.getRemoveFromKeyringOnly() != "yes") {
+  if (!delete_from_keyring_only) {
     p_arg_area_keyring->args.attributes = 0x80000000;
   } else {
     p_arg_area_keyring->args.attributes = 0;

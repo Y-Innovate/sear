@@ -75,6 +75,8 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
             SecurityAdmin::doAddCertificate(keyring_modifier);
           } else if (request_.getOperation() == "delete") {
             SecurityAdmin::doDeleteCertificate(keyring_modifier);
+          } else if (request_.getOperation() == "remove") {
+            SecurityAdmin::doRemoveCertificate(keyring_modifier);
           }
         }
       } else {
@@ -187,10 +189,16 @@ void SecurityAdmin::doAddCertificate(KeyringModifier &modifier) {
 }
 
 void SecurityAdmin::doDeleteCertificate(KeyringModifier &modifier) {
-  modifier.deleteCertificate(request_);
+  modifier.deleteOrRemoveCertificate(request_);
 
   Logger::getInstance().debug(
       "Delete certificate result has been post-processed");
 }
 
+void SecurityAdmin::doRemoveCertificate(KeyringModifier &modifier) {
+  modifier.deleteOrRemoveCertificate(request_);
+
+  Logger::getInstance().debug(
+      "Remove certificate result has been post-processed");
+}
 }  // namespace RACFu

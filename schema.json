@@ -738,12 +738,36 @@
         },
         "label": {
           "$ref": "#/$defs/thirtytwoCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "owner",
+        "keyring",
+        "keyring_owner",
+        "label"
+      ]
+    },
+    {
+      "properties": {
+        "operation": {
+          "const": "remove"
         },
-        "remove_from_keyring_only": {
-          "enum": [
-            "yes",
-            "no"
-          ]
+        "admin_type": {
+          "const": "certificate"
+        },
+        "owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "keyring": {
+          "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "keyring_owner": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "label": {
+          "$ref": "#/$defs/thirtytwoCharacterString"
         }
       },
       "required": [
