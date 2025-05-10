@@ -12,9 +12,6 @@ void KeyringModifier::addOrDeleteKeyring(SecurityRequest &request) {
   /*************************************************************************/
   if (function_code == KEYRING_ADD_FUNCTION_CODE ||
       function_code == KEYRING_DELETE_FUNCTION_CODE) {
-    std::string owner   = request.getOwner();
-    std::string keyring = request.getKeyring();
-
     auto unique_ptr =
         std::make_unique<char[]>(sizeof(keyring_modify_arg_area_t));
     keyring_modify_arg_area_t *p_arg_area =
@@ -54,9 +51,6 @@ void KeyringModifier::addCertificate(SecurityRequest &request) {
   /* Add certificate                                                       */
   /*************************************************************************/
   if (function_code == CERTIFICATE_ADD_FUNCTION_CODE) {
-    std::string keyring_owner = request.getKeyringOwner();
-    std::string keyring       = request.getKeyring();
-
     auto unique_ptr =
         std::make_unique<char[]>(sizeof(certificate_add_arg_area_t));
     certificate_add_arg_area_t *p_arg_area =
@@ -97,9 +91,6 @@ void KeyringModifier::deleteOrRemoveCertificate(SecurityRequest &request) {
   /*************************************************************************/
   if (function_code == CERTIFICATE_DELETE_FUNCTION_CODE ||
       function_code == CERTIFICATE_REMOVE_FUNCTION_CODE) {
-    std::string keyring_owner = request.getKeyringOwner();
-    std::string keyring       = request.getKeyring();
-
     auto unique_ptr =
         std::make_unique<char[]>(sizeof(certificate_delete_arg_area_t));
     certificate_delete_arg_area_t *p_arg_area =
@@ -136,7 +127,7 @@ void KeyringModifier::deleteOrRemoveCertificate(SecurityRequest &request) {
 }
 
 void KeyringModifier::buildKeyringArgs(keyring_args_t *p_args,
-                                       SecurityRequest &request) {
+                                       const SecurityRequest &request) {
   /***************************************************************************/
   /* Set Modify Arguments                                                    */
   /***************************************************************************/
