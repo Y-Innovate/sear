@@ -18,7 +18,7 @@ void KeyringModifier::addOrDeleteKeyring(SecurityRequest &request) {
         reinterpret_cast<keyring_modify_arg_area_t *>(unique_ptr.get());
     std::memset(p_arg_area, 0, sizeof(keyring_modify_arg_area_t));
 
-    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request);
+    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request, false);
 
     request.setRawRequestLength((int)sizeof(keyring_modify_arg_area_t));
     Logger::getInstance().debug("Keyring modify request buffer:");
@@ -57,7 +57,7 @@ void KeyringModifier::addCertificate(SecurityRequest &request) {
         reinterpret_cast<certificate_add_arg_area_t *>(unique_ptr.get());
     std::memset(p_arg_area, 0, sizeof(certificate_add_arg_area_t));
 
-    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request);
+    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request, true);
 
     request.setRawRequestLength((int)sizeof(certificate_add_arg_area_t));
     Logger::getInstance().debug("Certificate add request buffer:");
@@ -97,7 +97,7 @@ void KeyringModifier::deleteOrRemoveCertificate(SecurityRequest &request) {
         reinterpret_cast<certificate_delete_arg_area_t *>(unique_ptr.get());
     std::memset(p_arg_area, 0, sizeof(certificate_delete_arg_area_t));
 
-    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request);
+    KeyringModifier::buildKeyringArgs(&p_arg_area->args, request, true);
 
     request.setRawRequestLength((int)sizeof(certificate_delete_arg_area_t));
     Logger::getInstance().debug("Certificate delete request buffer:");
@@ -127,7 +127,8 @@ void KeyringModifier::deleteOrRemoveCertificate(SecurityRequest &request) {
 }
 
 void KeyringModifier::buildKeyringArgs(keyring_args_t *p_args,
-                                       const SecurityRequest &request) {
+                                       const SecurityRequest &request,
+                                       bool use_keyring_owner) {
   /***************************************************************************/
   /* Set Modify Arguments                                                    */
   /***************************************************************************/
@@ -135,8 +136,12 @@ void KeyringModifier::buildKeyringArgs(keyring_args_t *p_args,
   p_args->ALET_RACF_rc  = ALET;
   p_args->ALET_RACF_rsn = ALET;
 
-  std::string owner     = request.getOwner();
-  std::string keyring   = request.getKeyring();
+  std::string owner;
+  if (use_keyring_owner)
+    owner = request.getKeyringOwner();
+  else
+    owner = request.getOwner();
+  std::string keyring = request.getKeyring();
 
   // Automatically convert lowercase userid to uppercase.
   std::transform(owner.begin(), owner.end(), owner.begin(),

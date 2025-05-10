@@ -8,7 +8,8 @@ namespace RACFu {
 class KeyringModifier {
  private:
   static void buildKeyringArgs(keyring_args_t *p_args,
-                               const SecurityRequest &request);
+                               const SecurityRequest &request,
+                               bool use_keyring_owner);
   static char *preserveRawRequest(const char *p_arg_area,
                                   const int &raw_request_length);
 
