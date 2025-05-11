@@ -251,11 +251,6 @@ void IRRSDL00::addOrDeleteKeyring(
 
   IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version, nullptr);
 
-  if (p_arg_area_keyring->args.SAF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rsn == 0) {
-  }
-
   request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
   request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
   request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
@@ -309,33 +304,14 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
 
   std::string cert_file = request.getCertificateFile();
   if (cert_file != "") {
-    unsigned char *p_cert_data = nullptr;
-    int cert_length;
+    readFile(cert_file, &p_parm_put_cert->cddlx_pcert_ptr,
+             &p_parm_put_cert->cddlx_pcert_len);
+  }
 
-    // open file
-    FILE *fp = fopen(cert_file.c_str(), "r");
-    if (fp == nullptr) {
-      throw RACFuError(
-          std::string("Unable to open certificate file for reading."));
-    }
-    // get size of file
-    fseek(fp, 0L, SEEK_END);
-    cert_length = ftell(fp);
-    rewind(fp);
-    // allocate space to read in data from file
-    p_cert_data = reinterpret_cast<unsigned char *>(
-        calloc(cert_length + 1, sizeof(char)));
-    if (p_cert_data == nullptr) {
-      fclose(fp);
-      throw RACFuError(
-          std::string("Unable to allocate space for certificate data."));
-    }
-    // read file data
-    fread(p_cert_data, cert_length, 1, fp);
-    fclose(fp);
-
-    p_parm_put_cert->cddlx_pcert_ptr = p_cert_data;
-    p_parm_put_cert->cddlx_pcert_len = cert_length;
+  std::string privkey_file = request.getPrivateKeyFile();
+  if (privkey_file != "") {
+    readFile(privkey_file, &p_parm_put_cert->cddlx_pkey_ptr,
+             &p_parm_put_cert->cddlx_pkey_len);
   }
 
   auto cert_label_unique_ptr = std::make_unique<char[]>(LABEL_BUFFER_SIZE);
@@ -350,22 +326,22 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
   p_parm_put_cert->cddlx_plabel_ptr =
       reinterpret_cast<unsigned char *>(p_cert_label);
 
-  p_parm_put_cert->cddlx_pcert_userid[0] = request.getOwner().length();
-  std::memcpy(&p_parm_put_cert->cddlx_pcert_userid[1],
-              request.getOwner().c_str(), request.getOwner().length());
+  std::string owner = request.getOwner();
+  // Automatically convert lowercase userid to uppercase.
+  std::transform(owner.begin(), owner.end(), owner.begin(),
+                 [](unsigned char c) { return std::toupper(c); });
+
+  p_parm_put_cert->cddlx_pcert_userid[0] = owner.length();
+  std::memcpy(&p_parm_put_cert->cddlx_pcert_userid[1], owner.c_str(),
+              owner.length());
   __a2e_l(reinterpret_cast<char *>(&p_parm_put_cert->cddlx_pcert_userid[1]),
-          request.getOwner().length());
+          owner.length());
 
   Logger::getInstance().hexDump(reinterpret_cast<char *>(p_parm_put_cert),
                                 sizeof(cddlx_put_cert_t));
 
   IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version,
                          p_parm_put_cert);
-
-  if (p_arg_area_keyring->args.SAF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rsn == 0) {
-  }
 
   request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
   request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
@@ -426,13 +402,38 @@ void IRRSDL00::deleteCertificate(
   IRRSDL00::callIRRSDL00(&p_arg_area_keyring->args, &parmlist_version,
                          p_parm_remove_cert);
 
-  if (p_arg_area_keyring->args.SAF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rc <= 4 &&
-      p_arg_area_keyring->args.RACF_rsn == 0) {
-  }
-
   request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
   request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
   request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
+}
+
+void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
+                        uint32_t *p_len) {
+  unsigned char *p_data = nullptr;
+  int data_length;
+
+  // open file
+  FILE *fp = fopen(filename.c_str(), "r");
+  if (fp == nullptr) {
+    throw RACFuError(
+        std::string("Unable to open file '" + filename + "' for reading."));
+  }
+  // get size of file
+  fseek(fp, 0L, SEEK_END);
+  data_length = ftell(fp);
+  rewind(fp);
+  // allocate space to read in data from file
+  p_data =
+      reinterpret_cast<unsigned char *>(calloc(data_length + 1, sizeof(char)));
+  if (p_data == nullptr) {
+    fclose(fp);
+    throw RACFuError(std::string("Unable to allocate space for data in file."));
+  }
+  // read file data
+  fread(p_data, data_length, 1, fp);
+  fclose(fp);
+
+  *p_p_data = p_data;
+  *p_len    = data_length;
 }
 }  // namespace RACFu

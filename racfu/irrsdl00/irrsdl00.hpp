@@ -329,6 +329,8 @@ class IRRSDL00 {
                           keyring_extract_arg_area_t *p_arg_area_keyring,
                           get_cert_buffer_t *p_get_cert_buffer,
                           unsigned char *p_owner, unsigned char *p_label);
+  static void readFile(const std::string &filename, void **p_p_data,
+                       uint32_t *p_len);
 
  public:
   static void extractKeyring(SecurityRequest &request,

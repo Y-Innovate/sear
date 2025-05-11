@@ -681,6 +681,9 @@
         "certificate_file": {
           "type": "string"
         },
+        "private_key_file": {
+          "type": "string"
+        },
         "usage": {
           "enum": [
             "PERSONAL",

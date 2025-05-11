@@ -24,6 +24,7 @@ class SecurityRequest {
   std::string keyring_owner_;
   std::string label_;
   std::string certificate_file_;
+  std::string private_key_file_;
   std::string default_;
   std::string usage_;
   std::string status_;
@@ -53,6 +54,7 @@ class SecurityRequest {
   const std::string& getKeyringOwner() const;
   const std::string& getLabel() const;
   const std::string& getCertificateFile() const;
+  const std::string& getPrivateKeyFile() const;
   const std::string& getDefault() const;
   const std::string& getUsage() const;
   const std::string& getStatus() const;

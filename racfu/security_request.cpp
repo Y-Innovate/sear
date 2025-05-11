@@ -76,6 +76,10 @@ const std::string& SecurityRequest::getCertificateFile() const {
   return certificate_file_;
 }
 
+const std::string& SecurityRequest::getPrivateKeyFile() const {
+  return private_key_file_;
+}
+
 const std::string& SecurityRequest::getDefault() const { return default_; }
 
 const std::string& SecurityRequest::getUsage() const { return usage_; }
@@ -231,6 +235,8 @@ void SecurityRequest::load(const nlohmann::json& request) {
       function_code_ = CERTIFICATE_ADD_FUNCTION_CODE;
     } else if (operation_ == "delete") {
       function_code_ = CERTIFICATE_DELETE_FUNCTION_CODE;
+    } else if (operation_ == "remove") {
+      function_code_ = CERTIFICATE_REMOVE_FUNCTION_CODE;
     }
     owner_         = request["owner"].get<std::string>();
     keyring_       = request["keyring"].get<std::string>();
@@ -241,6 +247,9 @@ void SecurityRequest::load(const nlohmann::json& request) {
       status_ = request["status"].get<std::string>();
       if (request.contains("certificate_file")) {
         certificate_file_ = request["certificate_file"].get<std::string>();
+      }
+      if (request.contains("private_key_file")) {
+        private_key_file_ = request["private_key_file"].get<std::string>();
       }
       if (request.contains("default")) {
         default_ = request["default"].get<std::string>();
