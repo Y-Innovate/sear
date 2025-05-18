@@ -185,7 +185,7 @@ void ProfileExtractor::buildGenericExtractRequest(
     std::memcpy(profile_extract_parms->class_name, class_name.c_str(),
                 class_name.length());
     // Encode class name as IBM-1047.
-    __a2e_l(profile_extract_parms->class_name, class_name.length());
+    __a2e_l(profile_extract_parms->class_name, 8);
   }
   profile_extract_parms->profile_name_length = htonl(profile_name.length());
 
