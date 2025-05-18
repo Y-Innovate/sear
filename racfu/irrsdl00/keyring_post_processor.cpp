@@ -6,7 +6,6 @@ void KeyringPostProcessor::postProcessExtractKeyring(SecurityRequest &request) {
 
   union {
     char RACF_user_id[9];
-    char ring_name[238];
     char label[256];
     char datestr[128];
   } union_work;
