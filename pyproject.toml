@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
     version="1.0a1"
     requires-python = ">= 3.12"
     authors = [
-        { name = "Emma Skovgård" },
+        { name = "Emma Skovgard" },
         { name = "Bobby Tjassens Keiser", email = "bobby.tjassens.keiser@y-innovate-it.com" },
         { name = "Leonard J. Carcaramo Jr", email = "lcarcaramo@ibm.com" },
         { name = "Elijah Swift", email = "elijah.swift@ibm.com" },
@@ -15,7 +15,7 @@ build-backend = "setuptools.build_meta"
         { name = "Joe Bostian", email = "jbostian@ibm.com" },
     ]
     maintainers = [
-        { name = "Emma Skovgård" },
+        { name = "Emma Skovgard" },
         { name = "Bobby Tjassens Keiser", email = "bobby.tjassens.keiser@y-innovate-it.com" }
     ]
     description="A unified and standardized interface to RACF callable services."
