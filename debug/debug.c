@@ -12,9 +12,9 @@ typedef struct {
   char *raw_result;
   int raw_result_length;
   char *result_json;
-} racfu_result_t;
+} sear_result_t;
 
-typedef racfu_result_t *(*racfu_t)(const char *, int, bool);
+typedef sear_result_t *(*sear_t)(const char *, int, bool);
 
 int main(int argc, char **argv) {
   // Parameter Validation
@@ -25,17 +25,17 @@ int main(int argc, char **argv) {
 
   // DLL Processing
   void *lib_handle;
-  racfu_t racfu;
+  sear_t sear;
 
-  lib_handle = dlopen("racfu.so", RTLD_NOW);
+  lib_handle = dlopen("sear.so", RTLD_NOW);
   if (lib_handle == NULL) {
-    perror("Unable to load 'racfu.so'.");
+    perror("Unable to load 'sear.so'.");
     return 2;
   }
 
-  racfu = (racfu_t)dlsym(lib_handle, "racfu");
-  if (racfu == NULL) {
-    perror("Unable to resolve symbol 'racfu()'.");
+  sear = (sear_t)dlsym(lib_handle, "sear");
+  if (sear == NULL) {
+    perror("Unable to resolve symbol 'sear()'.");
     return 3;
   }
 
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   fclose(fp);
 
   // Make Request;
-  racfu_result_t *racfu_result = racfu(request_json, size, true);
+  sear_result_t *sear_result = sear(request_json, size, true);
   dlclose(lib_handle);
 
   // Write Raw Request
@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
     printf("Unable to open '%s' for writing.\n", raw_request_file);
     return 5;
   }
-  fwrite(racfu_result->raw_request, racfu_result->raw_request_length, 1, fp);
+  fwrite(sear_result->raw_request, sear_result->raw_request_length, 1, fp);
   fclose(fp);
 
   // Write Raw Result
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     printf("Unable to open '%s' for writing.\n", raw_result_file);
     return 6;
   }
-  fwrite(racfu_result->raw_result, racfu_result->raw_result_length, 1, fp);
+  fwrite(sear_result->raw_result, sear_result->raw_result_length, 1, fp);
   fclose(fp);
 
   // Write Result JSON
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     printf("Unable to open '%s' for writing.\n", "result_json_file");
     return 7;
   }
-  fwrite(racfu_result->result_json, strlen(racfu_result->result_json), 1, fp);
+  fwrite(sear_result->result_json, strlen(sear_result->result_json), 1, fp);
   fclose(fp);
 
   return 0;

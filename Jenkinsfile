@@ -4,7 +4,7 @@ def python_executables_and_wheels_map
 pipeline {
   agent {
     node {
-      label 'zOS_pyRACF_RACFu'
+      label 'zOS_SEAR'
     }
   }
 
@@ -179,7 +179,7 @@ def create_python_executables_and_wheels_map(python_versions) {
     returnStdout: true, 
     script: "uname -m"
   ).trim()
-  def racfu_version = sh(
+  def sear_version = sh(
     returnStdout: true, 
     script: "cat pyproject.toml | grep version | cut -d'=' -f2 | cut -d'\"' -f2"
   ).trim()
@@ -189,10 +189,10 @@ def create_python_executables_and_wheels_map(python_versions) {
   for (version in python_versions) {
     python_executables_and_wheels_map["python3.${version}"] = [
       "wheelDefault": (
-        "racfu-${racfu_version}-cp3${version}-cp3${version}-${os}_${zos_release}_${processor}.whl"
+        "sear-${sear_version}-cp3${version}-cp3${version}-${os}_${zos_release}_${processor}.whl"
       ),
-      "wheelPublish": "racfu-${racfu_version}-cp3${version}-none-any.whl",
-      "tarPublish": "racfu-${racfu_version}.tar.gz"
+      "wheelPublish": "sear-${sear_version}-cp3${version}-none-any.whl",
+      "tarPublish": "sear-${sear_version}.tar.gz"
     ]
   }
 
@@ -224,7 +224,7 @@ def publish(
   withCredentials(
     [
       usernamePassword(
-        credentialsId: 'pyracf-racfu-github-access-token',
+        credentialsId: 'sear-github-access-token',
         usernameVariable: 'github_user',
         passwordVariable: 'github_access_token'
       )
@@ -252,7 +252,7 @@ def publish(
         + '-H "Accept: application/vnd.github+json" '
         + '-H "Authorization: Bearer ${github_access_token}" '
         + '-H "X-GitHub-Api-Version: 2022-11-28" '
-        + "https://api.github.com/repos/ambitus/racfu/releases "
+        + "https://api.github.com/repos/Mainframe-Renewal-Project/sear/releases "
         + "-d '{"
         + "     \"tag_name\": \"${release}\","
         + "     \"target_commitish\": \"${git_branch}\","
@@ -324,7 +324,7 @@ def upload_asset(release_id, release_asset) {
     + '-H "Authorization: Bearer ${github_access_token}" '
     + '-H "X-GitHub-Api-Version: 2022-11-28" '
     + '-H "Content-Type: application/octet-stream" '
-    + "\"https://uploads.github.com/repos/ambitus/racfu/releases/${release_id}/assets?name=${release_asset}\" "
+    + "\"https://uploads.github.com/repos/Mainframe-Renewal-Project/sear/releases/${release_id}/assets?name=${release_asset}\" "
     + "--data-binary \"@dist/${release_asset}\""
   )
 }
@@ -338,7 +338,7 @@ def build_description(python_executables_and_wheels_map, release, milestone) {
     def python_label = python.replace("python", "Python ")
     description += (
       "Install From **${python_label} Wheel Distribution** *(pre-built)*:\\n"
-      + "```\\ncurl -O -L https://github.com/ambitus/racfu/releases/download/${release}/${wheel} "
+      + "```\\ncurl -O -L https://github.com/Mainframe-Renewal-Project/sear/releases/download/${release}/${wheel} "
       + "&& ${python_executable} -m pip install ${wheel}\\n```\\n"
     )
   }
@@ -348,7 +348,7 @@ def build_description(python_executables_and_wheels_map, release, milestone) {
   description += (
     "Install From **Source Distribution** *(build on install)*:\\n"
     + "> :warning: _Requires z/OS Open XL C/C++ 2.1 compiler._\\n"
-    + "```\\ncurl -O -L https://github.com/ambitus/racfu/releases/download/${release}/${tar} "
+    + "```\\ncurl -O -L https://github.com/Mainframe-Renewal-Project/sear/releases/download/${release}/${tar} "
     + "&& python3 -m pip install ${tar}\\n```\\n"
   )
 

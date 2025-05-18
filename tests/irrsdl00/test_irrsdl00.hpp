@@ -1,5 +1,5 @@
-#ifndef __RACFU_TEST_IRRSDL00_H_
-#define __RACFU_TEST_IRRSDL00_H_
+#ifndef __SEAR_TEST_IRRSDL00_H_
+#define __SEAR_TEST_IRRSDL00_H_
 
 #define IRRSDL00_REQUEST_SAMPLES "./tests/irrsdl00/request_samples/"
 #define IRRSDL00_RESULT_SAMPLES "./tests/irrsdl00/result_samples/"

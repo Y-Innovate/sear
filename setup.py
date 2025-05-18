@@ -35,19 +35,19 @@ def assemble(asm_file: str, asm_directory: Path) -> None:
 
 
 def generate_json_schema_header() -> None:
-    """Generate RACFu JSON schema header."""
+    """Generate SEAR JSON schema header."""
     schema_absolute_path = Path.cwd() / "schema.json"
     with open(schema_absolute_path) as f:
         schema = json.dumps(json.load(f), separators=(",", ":"))
-    schema_header_absolute_path = Path.cwd() / "racfu" / "racfu_schema.hpp"
+    schema_header_absolute_path = Path.cwd() / "sear" / "sear_schema.hpp"
     with open(schema_header_absolute_path, "w") as f:
         f.write(
             "\n".join(
                 [
-                    "#ifndef __RACFU_SCHEMA_H_",
-                    "#define __RACFU_SCHEMA_H_",
+                    "#ifndef __SEAR_SCHEMA_H_",
+                    "#define __SEAR_SCHEMA_H_",
                     "",
-                    f'#define RACFU_SCHEMA R"({schema})"_json',
+                    f'#define SEAR_SCHEMA R"({schema})"_json',
                     "",
                     "#endif",
                 ],
@@ -63,8 +63,8 @@ class BuildExtensionWithAssemblerAndC(build_ext):
         os.environ["CFLAGS"] = "-std=c99"
         os.environ["CXX"] = "ibm-clang++64"
         os.environ["CXXFLAGS"] = "-std=c++14"
-        racfu_source_path = Path("racfu")
-        assemble("irrseq00.s", racfu_source_path / "irrseq00")
+        sear_source_path = Path("sear")
+        assemble("irrseq00.s", sear_source_path / "irrseq00")
         super().run()
 
 
@@ -86,17 +86,17 @@ def main():
     setup_args = {
         "ext_modules": [
             Extension(
-                "racfu._C",
+                "sear._C",
                 sources=(
-                    glob("racfu/**/*.cpp")
-                    + glob("racfu/*.cpp")
+                    glob("sear/**/*.cpp")
+                    + glob("sear/*.cpp")
                     + glob("externals/json-schema-validator/*.cpp")
-                    + ["racfu/python/_racfu.c"]
+                    + ["sear/python/_sear.c"]
                 ),
                 include_dirs=(
-                    glob("racfu/**/")
+                    glob("sear/**/")
                     + [
-                        "racfu",
+                        "sear",
                         "externals/json",
                         "externals/json-schema-validator",
                         os.environ["ZOPEN_ROOTFS"] + "/usr/local/include",

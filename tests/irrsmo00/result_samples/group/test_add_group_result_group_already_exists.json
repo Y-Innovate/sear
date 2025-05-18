@@ -1,11 +1,11 @@
 {
   "errors": [
-    "racfu: unable to add 'TESTGRP0' because a 'group' profile already exists with that name"
-   ],
+    "sear: unable to add 'TESTGRP0' because a 'group' profile already exists with that name"
+  ],
   "return_codes": {
     "racf_reason_code": 0,
     "racf_return_code": 0,
-    "racfu_return_code": 4,
-    "saf_return_code": 0
+    "saf_return_code": 0,
+    "sear_return_code": 4
   }
 }

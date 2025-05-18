@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-#include "racfu/racfu.h"
+#include "sear/sear.h"
 #include "tests/mock/irrsmo64.hpp"
 #include "tests/unit_test_utilities.hpp"
 #include "tests/unity/unity.h"
@@ -75,8 +75,8 @@ void test_parse_add_user_no_xml_data_error() {
   irrsmo64_racf_rc_mock     = 200;
   irrsmo64_racf_reason_mock = 16;
 
-  racfu_result_t *result =
-      racfu(request_json.c_str(), request_json.length(), false);
+  sear_result_t *result =
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
@@ -95,8 +95,8 @@ void test_parse_alter_user_no_xml_data_error() {
   irrsmo64_racf_rc_mock     = 4;
   irrsmo64_racf_reason_mock = 0;
 
-  racfu_result_t *result =
-      racfu(request_json.c_str(), request_json.length(), false);
+  sear_result_t *result =
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
@@ -123,8 +123,8 @@ void test_parse_irrsmo00_errors_result() {
   irrsmo64_racf_rc_mock     = 2000;
   irrsmo64_racf_reason_mock = 68;
 
-  racfu_result_t *result =
-      racfu(request_json.c_str(), request_json.length(), false);
+  sear_result_t *result =
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
