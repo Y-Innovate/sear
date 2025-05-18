@@ -32,7 +32,7 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 
 ### Installation
 
-> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/ambitus/racfu/releases)_
+> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/Mainframe-Renewal-Project/sear/releases)_
 
 ```shell
 python3 -m pip install racfu
