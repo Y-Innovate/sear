@@ -3,7 +3,7 @@
     {
       "certificates": [
         {
-          "DN": "/CN=RACFU TEST CERT",
+          "DN": "/CN=SEAR TEST CERT",
           "default": "yes",
           "extensions": [
             {
@@ -14,7 +14,7 @@
             {
               "altnames": [
                 {
-                  "name": "RACFU DOMAIN",
+                  "name": "SEAR DOMAIN",
                   "type": "DNS"
                 },
                 {
@@ -59,7 +59,7 @@
           ],
           "issuer": "/CN=YIN CA 2024C",
           "keySize": 4096,
-          "label": "RACFUTESTCERT",
+          "label": "SEARTESTCERT",
           "notAfter": "2026-04-21 21:59:59",
           "notBefore": "2025-04-20 22:00:00",
           "owner": "YBTKS",
@@ -74,14 +74,14 @@
           "version": 3
         }
       ],
-      "ring_name": "RACFUTESTRING",
+      "ring_name": "SEARTESTRING",
       "ring_owner": "YBTKS"
     }
   ],
   "return_codes": {
     "racf_reason_code": 0,
     "racf_return_code": 0,
-    "racfu_return_code": 0,
-    "saf_return_code": 0
+    "saf_return_code": 0,
+    "sear_return_code": 0
   }
 }

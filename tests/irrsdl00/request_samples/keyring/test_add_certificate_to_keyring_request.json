@@ -2,7 +2,7 @@
   "operation": "add",
   "admin_type": "certificate",
   "owner": "YBTKS",
-  "keyring": "RACFUTESTRING",
+  "keyring": "SEARTESTRING",
   "keyring_owner": "YBTKS",
   "label": "NewTrustedCert",
   "certificate_file": "/tmp/newtrustedcert.pem",

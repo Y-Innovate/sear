@@ -1,5 +1,5 @@
-#ifndef __RACFU_UNIT_TEST_UTILITIES_
-#define __RACFU_UNIT_TEST_UTILITIES_
+#ifndef __SEAR_UNIT_TEST_UTILITIES_
+#define __SEAR_UNIT_TEST_UTILITIES_
 
 #include <iostream>
 

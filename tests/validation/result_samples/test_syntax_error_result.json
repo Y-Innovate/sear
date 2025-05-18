@@ -1,11 +1,11 @@
 {
   "errors": [
-    "racfu: Syntax error in request JSON at byte 112"
+    "sear: Syntax error in request JSON at byte 112"
   ],
   "return_codes": {
     "racf_reason_code": null,
     "racf_return_code": null,
-    "racfu_return_code": 8,
-    "saf_return_code": null
+    "saf_return_code": null,
+    "sear_return_code": 8
   }
 }
