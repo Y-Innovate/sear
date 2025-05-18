@@ -14,6 +14,7 @@ While there are a number of languages that can be used to manage RACF, _(from lo
 ## Minimum z/OS & Language Versions
 
 All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are fully supported by IBM are supported by _SEAR_.
+
 * [z/OS Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search/?q=5655-ZOS,%205650-ZOS)
 * [IBM Open Enterprise SDK for Python Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search?q=5655-PYT)
 
