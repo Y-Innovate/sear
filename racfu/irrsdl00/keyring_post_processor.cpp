@@ -3,6 +3,7 @@
 namespace RACFu {
 void KeyringPostProcessor::postProcessExtractKeyring(SecurityRequest &request) {
   nlohmann::json keyring;
+  keyring["keyring"] = nlohmann::json::object();
 
   union {
     char RACF_user_id[9];
@@ -238,7 +239,7 @@ void KeyringPostProcessor::postProcessExtractKeyring(SecurityRequest &request) {
       cert_index++;
     }
 
-    keyring["certificates"] = repeat_group_certs;
+    keyring["keyring"]["certificates"] = repeat_group_certs;
     repeat_group_certs.clear();
   }
 
