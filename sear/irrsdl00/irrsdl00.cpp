@@ -449,15 +449,40 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
     unique_p_data.release();
   } else {
     BIO *bio_PEM = BIO_new(BIO_s_mem());
-    BIO_write(bio_PEM, p_data, *p_len);
-    X509 *someX509 = PEM_read_bio_X509(bio_PEM, nullptr, nullptr, nullptr);
-
-    if (!someX509) {
-      throw SEARError(std::string("Unable ro read X509 string"));
-    }
-
     BIO *bio_DER = BIO_new(BIO_s_mem());
-    i2d_X509_bio(bio_DER, someX509);
+    BIO_write(bio_PEM, p_data, *p_len);
+
+    if (*p_len > 27 && std::strncmp(reinterpret_cast<char *>(p_data),
+                                    "-----BEGIN CERTIFICATE-----", 27)) {
+      X509 *someX509 = PEM_read_bio_X509(bio_PEM, nullptr, nullptr, nullptr);
+
+      if (!someX509) {
+        throw SEARError(std::string("Unable ro read X509 certificate"));
+      }
+
+      i2d_X509_bio(bio_DER, someX509);
+
+      OPENSSL_free(someX509);
+    } else if (*p_len > 27 && std::strncmp(reinterpret_cast<char *>(p_data),
+                                           "-----BEGIN PRIVATE KEY-----", 27)) {
+      EVP_PKEY *somePrivKey =
+          PEM_read_bio_PrivateKey(bio_PEM, nullptr, nullptr, nullptr);
+
+      if (!somePrivKey) {
+        throw SEARError(std::string("Unable to read private key"));
+      }
+
+      PKCS8_PRIV_KEY_INFO *somePrivKeyInfo = EVP_PKEY2PKCS8(somePrivKey);
+
+      if (!somePrivKeyInfo) {
+        throw SEARError(std::string("Unable to convert private key to PKCS8"));
+      }
+
+      i2d_PKCS8_PRIV_KEY_INFO_bio(bio_DER, somePrivKeyInfo);
+
+      PKCS8_PRIV_KEY_INFO_free(somePrivKeyInfo);
+      EVP_PKEY_free(somePrivKey);
+    }
     BUF_MEM *bptr;
     BIO_get_mem_ptr(bio_DER, &bptr);
     BIO_set_close(bio_DER, BIO_NOCLOSE);
@@ -472,7 +497,6 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
 
     BIO_free_all(bio_PEM);
     BIO_free_all(bio_DER);
-    OPENSSL_free(someX509);
 
     unique_p_data2.release();
   }
