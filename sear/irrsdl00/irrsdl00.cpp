@@ -346,6 +346,14 @@ void IRRSDL00::addCertificate(SecurityRequest &request,
   request.setSAFReturnCode(p_arg_area_keyring->args.SAF_rc);
   request.setRACFReturnCode(p_arg_area_keyring->args.RACF_rc);
   request.setRACFReasonCode(p_arg_area_keyring->args.RACF_rsn);
+
+  if (p_parm_put_cert->cddlx_pkey_ptr != nullptr) {
+    std::free(p_parm_put_cert->cddlx_pkey_ptr);
+  }
+
+  if (p_parm_put_cert->cddlx_pcert_ptr != nullptr) {
+    std::free(p_parm_put_cert->cddlx_pcert_ptr);
+  }
 }
 
 void IRRSDL00::deleteCertificate(
@@ -436,8 +444,10 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
   *p_p_data = p_data;
   *p_len    = data_length;
 
-  if (*p_len > 5 &&
-      !std::strncmp(reinterpret_cast<char *>(p_data), "-----", 5)) {
+  if (*p_len < 5 ||
+      std::strncmp(reinterpret_cast<char *>(p_data), "-----", 5)) {
+    unique_p_data.release();
+  } else {
     BIO *bio_PEM = BIO_new(BIO_s_mem());
     BIO_write(bio_PEM, p_data, *p_len);
     X509 *someX509 = PEM_read_bio_X509(bio_PEM, nullptr, nullptr, nullptr);
@@ -463,6 +473,8 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
     BIO_free_all(bio_PEM);
     BIO_free_all(bio_DER);
     OPENSSL_free(someX509);
+
+    unique_p_data2.release();
   }
 }
 }  // namespace SEAR
