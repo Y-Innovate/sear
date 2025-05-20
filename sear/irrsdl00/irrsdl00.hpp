@@ -1,6 +1,11 @@
 #ifndef __IRRSDL00_H_
 #define __IRRSDL00_H_
 
+#include <openssl/evp.h>
+#include <openssl/pem.h>
+#include <openssl/x509.h>
+#include <openssl/x509v3.h>
+
 #include "extractor.hpp"
 #include "sear_error.hpp"
 

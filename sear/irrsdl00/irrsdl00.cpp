@@ -423,8 +423,8 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
   data_length = ftell(fp);
   rewind(fp);
   // allocate space to read in data from file
-  p_data =
-      reinterpret_cast<unsigned char *>(calloc(data_length + 1, sizeof(char)));
+  auto unique_p_data = std::make_unique<char[]>(data_length + 1);
+  p_data             = reinterpret_cast<unsigned char *>(unique_p_data.get());
   if (p_data == nullptr) {
     fclose(fp);
     throw SEARError(std::string("Unable to allocate space for data in file."));
@@ -435,5 +435,34 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
 
   *p_p_data = p_data;
   *p_len    = data_length;
+
+  if (*p_len > 5 &&
+      !std::strncmp(reinterpret_cast<char *>(p_data), "-----", 5)) {
+    BIO *bio_PEM = BIO_new(BIO_s_mem());
+    BIO_write(bio_PEM, p_data, *p_len);
+    X509 *someX509 = PEM_read_bio_X509(bio_PEM, nullptr, nullptr, nullptr);
+
+    if (!someX509) {
+      throw SEARError(std::string("Unable ro read X509 string"));
+    }
+
+    BIO *bio_DER = BIO_new(BIO_s_mem());
+    i2d_X509_bio(bio_DER, someX509);
+    BUF_MEM *bptr;
+    BIO_get_mem_ptr(bio_DER, &bptr);
+    BIO_set_close(bio_DER, BIO_NOCLOSE);
+
+    auto unique_p_data2 = std::make_unique<char[]>(bptr->length);
+    unsigned char *p_data2 =
+        reinterpret_cast<unsigned char *>(unique_p_data2.get());
+    std::memcpy(p_data2, bptr->data, bptr->length);
+    p_data    = nullptr;
+    *p_p_data = p_data2;
+    *p_len    = bptr->length;
+
+    BIO_free_all(bio_PEM);
+    BIO_free_all(bio_DER);
+    OPENSSL_free(someX509);
+  }
 }
 }  // namespace SEAR
