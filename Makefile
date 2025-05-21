@@ -4,12 +4,12 @@ ARTIFACTS		= ${PWD}/artifacts
 DIST			= ${PWD}/dist
 
 # Directory Paths
-SRC				= ${PWD}/racfu
-IRRSMO00_SRC	= ${PWD}/racfu/irrsmo00
-IRRSEQ00_SRC	= ${PWD}/racfu/irrseq00
-IRRSDL00_SRC	= ${PWD}/racfu/irrsdl00
-KEY_MAP			= ${PWD}/racfu/key_map
-VALIDATION		= ${PWD}/racfu/validation
+SRC				= ${PWD}/sear
+IRRSMO00_SRC	= ${PWD}/sear/irrsmo00
+IRRSEQ00_SRC	= ${PWD}/sear/irrseq00
+IRRSDL00_SRC	= ${PWD}/sear/irrsdl00
+KEY_MAP			= ${PWD}/sear/key_map
+VALIDATION		= ${PWD}/sear/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
 JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
@@ -30,7 +30,7 @@ COMMON_INC		= \
 				-I $(JSON_SCHEMA)
 
 # JSON Schemas
-RACFU_SCHEMA	= $(shell cat ${PWD}/schema.json | jq -c)
+SEAR_SCHEMA	= $(shell cat ${PWD}/schema.json | jq -c)
 
 ifeq ($(UNAME), Linux)
 	CLANG_FORMAT	= clang-format-19
@@ -109,19 +109,19 @@ FUZZFLGS	= \
 
 RM				= rm -rf
 
-all: racfu
+all: sear
 
 mkdirs:
 	mkdir $(ARTIFACTS)
 	mkdir $(DIST)
 
 schema:
-	@echo "#ifndef __RACFU_SCHEMA_H_\n"\
-	"#define __RACFU_SCHEMA_H_\n\n"\
-	"#define RACFU_SCHEMA" 'R"($(RACFU_SCHEMA))"_json'\
-	"\n\n#endif" > $(SRC)/racfu_schema.hpp
+	@echo "#ifndef __SEAR_SCHEMA_H_\n"\
+	"#define __SEAR_SCHEMA_H_\n\n"\
+	"#define SEAR_SCHEMA" 'R"($(SEAR_SCHEMA))"_json'\
+	"\n\n#endif" > $(SRC)/sear_schema.hpp
 
-racfu: clean mkdirs schema
+sear: clean mkdirs schema
 	$(AS) $(ASFLAGS) -o $(ARTIFACTS)/irrseq00.o $(IRRSEQ00_SRC)/irrseq00.s
 	cd $(ARTIFACTS) \
 		&& $(CXX) -g -c $(CFLAGS) \
@@ -132,7 +132,7 @@ racfu: clean mkdirs schema
 			$(KEY_MAP)/*.cpp \
 			$(VALIDATION)/*.cpp \
 			$(JSON_SCHEMA)/*.cpp
-	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o racfu.so
+	cd $(DIST) && $(CXX) $(LDFLAGS) $(ARTIFACTS)/*.o -o sear.so
 
 test: clean mkdirs schema
 	cd $(ARTIFACTS) \
@@ -208,4 +208,4 @@ lint:
 	$(CLANG_FORMAT) --Werror --dry-run -i ./**/*.cpp ./**/*.c ./**/*.hpp ./**/*.h
 
 clean:
-	$(RM) $(ARTIFACTS) $(DIST) $(SRC)/racfu_schema.hpp
+	$(RM) $(ARTIFACTS) $(DIST) $(SRC)/sear_schema.hpp

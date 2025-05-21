@@ -1,6 +1,6 @@
-# Contributing to RACFu
+# Contributing to SEAR
 
-Thank you for taking the time to contribute to RACFu!
+Thank you for taking the time to contribute to SEAR!
 The following are a set of guidelines to help you contribute.
 
 **Table Of Contents**
@@ -61,22 +61,22 @@ If you want to continube new functionality, open a GitHub pull request against t
 
 ### Testing
 
-The main way to test RACFu is to write **unit tests** in the [`tests`](tests) directory, which contains **mocks** that mock the real **IRRSMO00** and **IRRSEQ00** RACF callable services to enable **request generation** and **response parsing** logic to be validated in a **fast** and **automated** way. The unit test suite can be run by just running `make test` in the root directory of this repository. It is also recommended to do manual testing on a **z/OS system** for **new functionality** and **bug fixes** to test the real calls to **IRRSMO00** and **IRRSEQ00**.
+The main way to test SEAR is to write **unit tests** in the [`tests`](tests) directory, which contains **mocks** that mock the real **IRRSMO00** and **IRRSEQ00** RACF callable services to enable **request generation** and **response parsing** logic to be validated in a **fast** and **automated** way. The unit test suite can be run by just running `make test` in the root directory of this repository. It is also recommended to do manual testing on a **z/OS system** for **new functionality** and **bug fixes** to test the real calls to **IRRSMO00** and **IRRSEQ00**.
 
 * **Unit Tests**
 
   > :bulb: _See the [Unity Unit Testing For C](https://www.throwtheswitch.org/unity) documentation for more details on writing test cases._
 
-  > :white_check_mark: _In order to facilitate development and unit testing, the real **API calls** to **IRRSMO00** and **IRRSEQ00** have been mocked in [`tests/mock`](tests/mock). Additionally, implementations of some **z/OS specific C/C++ Runtime Library functions** are provided in [`tests/zoslib`](tests/zoslib) to enable the RACFu unit test suite to more or less be run on any 64-bit POSIX system where the `clang` compiler is installed. This ensures that development and testing can be done when contributors do not have access to a z/OS system, and also enables faster iteration since contributors can just run `make test` on their workstation without needing to copy the files to a z/OS system to run the unit tests._
+  > :white_check_mark: _In order to facilitate development and unit testing, the real **API calls** to **IRRSMO00** and **IRRSEQ00** have been mocked in [`tests/mock`](tests/mock). Additionally, implementations of some **z/OS specific C/C++ Runtime Library functions** are provided in [`tests/zoslib`](tests/zoslib) to enable the SEAR unit test suite to more or less be run on any 64-bit POSIX system where the `clang` compiler is installed. This ensures that development and testing can be done when contributors do not have access to a z/OS system, and also enables faster iteration since contributors can just run `make test` on their workstation without needing to copy the files to a z/OS system to run the unit tests._
 
-  * Unit tests should be placed in the **subdirectory** corresponding to the **RACF callable service** you are creating a test for. The main focus of these tests is to validate the **generation of requests** to and **parsing of responses** from the **IRRSMO00** and **IRRSEQ00** callable services, and more genenerally testing various other code paths in the RACFu code. There are directories called `request_samples` and `response_samples` in the [`tests/irrseq00`](tests/irrseq00) and [`tests/irrsmo00`](tests/irrseq00) test folders to put request and response samples. All **raw request samples** and **raw response samples** for a given callable service should end with the `.bin` file extension. `get_raw_sample()` and `get_json_sample()` are defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) to facilitate the loading of request and response samples in test cases. Other categories of test cases and test utilities must follow the same conventions described here.
+  * Unit tests should be placed in the **subdirectory** corresponding to the **RACF callable service** you are creating a test for. The main focus of these tests is to validate the **generation of requests** to and **parsing of responses** from the **IRRSMO00** and **IRRSEQ00** callable services, and more genenerally testing various other code paths in the SEAR code. There are directories called `request_samples` and `response_samples` in the [`tests/irrseq00`](tests/irrseq00) and [`tests/irrsmo00`](tests/irrseq00) test folders to put request and response samples. All **raw request samples** and **raw response samples** for a given callable service should end with the `.bin` file extension. `get_raw_sample()` and `get_json_sample()` are defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) to facilitate the loading of request and response samples in test cases. Other categories of test cases and test utilities must follow the same conventions described here.
 
-    > _**Example:** A test case for verifying that RACFu can parse the result of an **extract user request** should be placed in the [`test_irrseq00.cpp`](tests/irrseq00/test_irrseq00.cpp) unit test module within the [`irrseq00`](tests/irrseq00) subdirectory. A **JSON request** sample containing the parameters for a **profile extract request** should be created in the [`irrseq00/request_samples/user`](tests/irrseq00/request_samples/user) directory. A **raw response** sample that contains the **mocked** result of the profile extract request and the corresponding expected **post-processed JSON response** should be created in the [`irrseq00/result_samples/user`](tests/irrseq00/result_samples/user) directory. Request/response samples should be loaded in the unit test case using the `get_raw_sample()` and `get_json_sample()` functions defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp). [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) also provides various other utility functions for facilitating the creation of test cases that should be used when applicable. [`irrseq00.hpp`](tests/mock/irrseq00.hpp) and [`irrsmo64.hpp`](tests/mock/irrsmo64.hpp) provide all of the necessary **global varibales** for mocking the result of requests made to `callRadmin()` and `IRRSMO64()` respectively._
+    > _**Example:** A test case for verifying that SEAR can parse the result of an **extract user request** should be placed in the [`test_irrseq00.cpp`](tests/irrseq00/test_irrseq00.cpp) unit test module within the [`irrseq00`](tests/irrseq00) subdirectory. A **JSON request** sample containing the parameters for a **profile extract request** should be created in the [`irrseq00/request_samples/user`](tests/irrseq00/request_samples/user) directory. A **raw response** sample that contains the **mocked** result of the profile extract request and the corresponding expected **post-processed JSON response** should be created in the [`irrseq00/result_samples/user`](tests/irrseq00/result_samples/user) directory. Request/response samples should be loaded in the unit test case using the `get_raw_sample()` and `get_json_sample()` functions defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp). [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) also provides various other utility functions for facilitating the creation of test cases that should be used when applicable. [`irrseq00.hpp`](tests/mock/irrseq00.hpp) and [`irrsmo64.hpp`](tests/mock/irrsmo64.hpp) provide all of the necessary **global varibales** for mocking the result of requests made to `callRadmin()` and `IRRSMO64()` respectively._
 
 * **Functional Verification Tests**
-  > :warning: _Ensure that the `RACFU_FVT_USERID` environment variable is set to a z/OS userid that doesn't exist on the system where the functional verifification tests are being run prior to running `make fvt`._
+  > :warning: _Ensure that the `SEAR_FVT_USERID` environment variable is set to a z/OS userid that doesn't exist on the system where the functional verifification tests are being run prior to running `make fvt`._
 
-  * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of RACFu from your branch/fork on a z/OS system and run `make fvt`. 
+  * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of SEAR from your branch/fork on a z/OS system and run `make fvt`. 
 
 ### Fixing Bugs
 
@@ -84,7 +84,7 @@ If you fix a bug, open a GitHub pull request against the `dev` branch with the f
 
 ### Adding or Fixing Documentation
 
-If any updates need to be made to the RACFu documentation, open a GitHub pull request against the `gh-pages-dev` branch with your changes. This may include updates to document new functionality or updates to correct errors or mistakes in the existing documentation.
+If any updates need to be made to the SEAR documentation, open a GitHub pull request against the `gh-pages-dev` branch with your changes. This may include updates to document new functionality or updates to correct errors or mistakes in the existing documentation.
 
 ### Branch Naming Conventions
 
@@ -130,7 +130,7 @@ The following code style conventions should be followed:
 
 ## Contribution checklist
 
-When contributing to RACFu, think about the following:
+When contributing to SEAR, think about the following:
 
 * Make any necessary updates to `pyproject.toml`.
 * Make any necessary updates to `README.md`.

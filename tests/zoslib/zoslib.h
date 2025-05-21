@@ -1,5 +1,5 @@
-#ifndef __RACFU_ZOSLIB_H_
-#define __RACFU_ZOSLIB_H_
+#ifndef __SEAR_ZOSLIB_H_
+#define __SEAR_ZOSLIB_H_
 
 #include <stdio.h>
 #include <stdlib.h>

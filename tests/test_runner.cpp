@@ -163,5 +163,9 @@ int main() {
   RUN_TEST(test_parse_extract_keyring_result_keyring_not_found);
   RUN_TEST(test_parse_extract_keyring_result_required_parameter_missing);
 
+  RUN_TEST(test_generate_add_keyring_request);
+
+  RUN_TEST(test_generate_delete_keyring_request);
+
   return UNITY_END();
 }
