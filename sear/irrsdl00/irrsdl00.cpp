@@ -448,55 +448,38 @@ void IRRSDL00::readFile(const std::string &filename, void **p_p_data,
       std::strncmp(reinterpret_cast<char *>(p_data), "-----", 5)) {
     unique_p_data.release();
   } else {
-    BIO *bio_PEM = BIO_new(BIO_s_mem());
-    BIO *bio_DER = BIO_new(BIO_s_mem());
-    BIO_write(bio_PEM, p_data, *p_len);
+    auto unique_p_b64 = std::make_unique<char[]>(data_length + 1);
+    unsigned char *p_b64 =
+        reinterpret_cast<unsigned char *>(unique_p_b64.get());
 
-    if (*p_len > 27 && std::strncmp(reinterpret_cast<char *>(p_data),
-                                    "-----BEGIN CERTIFICATE-----", 27)) {
-      X509 *someX509 = PEM_read_bio_X509(bio_PEM, nullptr, nullptr, nullptr);
+    unsigned char *p_data_work = p_data;
+    unsigned char *p_b64_work  = p_b64;
+    int idx_data_work          = 0;
+    int len_b64_work           = 0;
 
-      if (!someX509) {
-        throw SEARError(std::string("Unable ro read X509 certificate"));
-      }
-
-      i2d_X509_bio(bio_DER, someX509);
-
-      OPENSSL_free(someX509);
-    } else if (*p_len > 27 && std::strncmp(reinterpret_cast<char *>(p_data),
-                                           "-----BEGIN PRIVATE KEY-----", 27)) {
-      EVP_PKEY *somePrivKey =
-          PEM_read_bio_PrivateKey(bio_PEM, nullptr, nullptr, nullptr);
-
-      if (!somePrivKey) {
-        throw SEARError(std::string("Unable to read private key"));
-      }
-
-      PKCS8_PRIV_KEY_INFO *somePrivKeyInfo = EVP_PKEY2PKCS8(somePrivKey);
-
-      if (!somePrivKeyInfo) {
-        throw SEARError(std::string("Unable to convert private key to PKCS8"));
-      }
-
-      i2d_PKCS8_PRIV_KEY_INFO_bio(bio_DER, somePrivKeyInfo);
-
-      PKCS8_PRIV_KEY_INFO_free(somePrivKeyInfo);
-      EVP_PKEY_free(somePrivKey);
+    for (idx_data_work = 0;
+         idx_data_work < *p_len && *p_data_work != 0x0D && *p_data_work != 0x0A;
+         idx_data_work++) {
+      p_data_work++;
     }
-    BUF_MEM *bptr;
-    BIO_get_mem_ptr(bio_DER, &bptr);
-    BIO_set_close(bio_DER, BIO_NOCLOSE);
 
-    auto unique_p_data2 = std::make_unique<char[]>(bptr->length);
+    for (; idx_data_work < *p_len && *p_data_work != '-'; idx_data_work++) {
+      if (*p_data_work != 0x0A && *p_data_work != 0x0D) {
+        *p_b64_work = *p_data_work;
+        p_b64_work++;
+        len_b64_work++;
+      }
+      p_data_work++;
+    }
+
+    *p_b64_work         = 0;
+
+    auto unique_p_data2 = std::make_unique<char[]>(len_b64_work);
     unsigned char *p_data2 =
         reinterpret_cast<unsigned char *>(unique_p_data2.get());
-    std::memcpy(p_data2, bptr->data, bptr->length);
+    *p_len    = EVP_DecodeBlock(p_b64, p_data2, len_b64_work);
     p_data    = nullptr;
     *p_p_data = p_data2;
-    *p_len    = bptr->length;
-
-    BIO_free_all(bio_PEM);
-    BIO_free_all(bio_DER);
 
     unique_p_data2.release();
   }
