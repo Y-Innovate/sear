@@ -52,9 +52,6 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# Visual Studio Code
-.vscode
-
 # OSX Cache/Folder Data
 *.DS_Store
 
