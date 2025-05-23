@@ -1,0 +1,57 @@
+cmake_minimum_required(VERSION 3.24)
+
+project(sear C CXX ASM)
+set(CXX_STANDARD 14)
+
+option(SEAR_ENABLE_PYTHON "Enables building the Python language module." ON)
+
+add_subdirectory(externals)
+
+find_package(OpenSSL REQUIRED)
+
+add_library(
+    sear
+
+    sear/irrsdl00/irrsdl00.cpp
+    sear/irrsdl00/keyring_extractor.cpp
+    sear/irrsdl00/keyring_modifier.cpp
+    sear/irrsdl00/keyring_post_processor.cpp
+
+    sear/irrseq00/irrseq00.s
+    sear/irrseq00/profile_extractor.cpp
+    sear/irrseq00/profile_post_processor.cpp
+
+    sear/irrsmo00/irrsmo00_error.cpp
+    sear/irrsmo00/irrsmo00.cpp
+    sear/irrsmo00/xml_generator.cpp
+    sear/irrsmo00/xml_parser.cpp
+
+    sear/key_map/key_map.cpp
+    sear/validation/trait_validation.cpp
+    sear/logger.cpp
+    sear/sear_error.cpp
+    sear/sear.cpp
+    sear/security_admin.cpp
+    sear/security_request.cpp
+)
+target_include_directories(
+    sear PUBLIC
+    sear
+    sear/irrsdl00
+    sear/irrseq00
+    sear/irrsmo00
+    sear/key_map
+    sear/validation
+    # add generated header to include path
+    "${CMAKE_CURRENT_BINARY_DIR}/sear"
+)
+
+# embed json schema into sear_schema.hpp
+file(READ schema.json SEAR_SCHEMA)
+configure_file(sear/sear_schema.hpp.in sear/sear_schema.hpp)
+
+target_link_libraries(sear PRIVATE nlohmann_json::nlohmann_json nlohmann_json_schema_validator OpenSSL::SSL)
+
+if (SEAR_ENABLE_PYTHON)
+    add_library(pysear SHARED sear/python/_sear.c)
+endif()

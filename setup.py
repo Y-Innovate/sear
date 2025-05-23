@@ -10,6 +10,8 @@ from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
 
 
+# https://stackoverflow.com/questions/42585210/extending-setuptools-extension-to-use-cmake-in-setup-py
+
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
     obj_file = asm_file.split(".")[0] + ".o"
