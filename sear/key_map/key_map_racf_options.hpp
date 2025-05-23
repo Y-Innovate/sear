@@ -295,7 +295,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:log_commands_issuesd_by_special_users",   "saudit",
+     "base:log_commands_issued_by_special_users",   "saudit",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {

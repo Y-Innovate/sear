@@ -495,7 +495,7 @@ valid_segment_traits["s_admin"] = {
                 "base:password_rule_8": "racf:rule8",
                 "base:rvary_switch_password": "racf:rvarswpw",
                 "base:rvary_status_password": "racf:rvarstpw",
-                "base:log_commands_issuesd_by_special_users": "racf:saudit",
+                "base:log_commands_issued_by_special_users": "racf:saudit",
                 "base:security_label_control": "racf:seclabct",
                 "base:secondary_language": "racf:seclang",
                 "base:max_session_key_interval": "racf:sessint",
