@@ -3,7 +3,7 @@
 import json
 from typing import Any
 
-from sear._C import call_sear
+from ._C import call_sear
 
 
 class SecurityResult:
