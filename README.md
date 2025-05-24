@@ -34,6 +34,24 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 python3 -m pip install sear
 ```
 
+### Build from source
+
+Alternatively to installing from Pip, _SEAR_ can be built from source on a z/OS system. _SEAR_ uses a CMake build system, and can be built via a two-step process.
+
+First, configure the build environment:
+
+```shell
+cmake -S . -B build --toolchain cmake/ibm-clang.cmake
+```
+
+This will generate the build environment in a directory named `build`. Then the project can be built:
+
+```shell
+cmake --build build
+```
+
+Build artifacts are located within the build directory.
+
 ## Help
 
 * [GitHub Discussions](https://github.com/ambitus/SEAR/discussions)
