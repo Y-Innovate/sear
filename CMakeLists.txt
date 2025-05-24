@@ -53,5 +53,8 @@ configure_file(sear/sear_schema.hpp.in sear/sear_schema.hpp)
 target_link_libraries(sear PRIVATE nlohmann_json::nlohmann_json nlohmann_json_schema_validator OpenSSL::SSL)
 
 if (SEAR_ENABLE_PYTHON)
+    find_package(Python REQUIRED COMPONENTS Development)
+
     add_library(pysear SHARED sear/python/_sear.c)
+    target_link_libraries(pysear PRIVATE sear Python::Python)
 endif()
