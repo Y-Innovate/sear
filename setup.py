@@ -2,7 +2,8 @@
 from pathlib import Path
 
 from setuptools import setup, Extension
-from setuptools.command.build_ext import build_ext as build_ext_orig
+from setuptools.command.build_ext import build_ext as _build_ext
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 
 class CMakeExtension(Extension):
@@ -11,7 +12,15 @@ class CMakeExtension(Extension):
         super().__init__(name, sources=[])
 
 
-class build_ext(build_ext_orig):
+class bdist_wheel(_bdist_wheel):
+    def finalize_options(self):
+        super().finalize_options()
+
+        # marks built wheels as 'none-any' to allow installation on non-z/OS systems
+        self.root_is_pure = True
+
+
+class build_ext(_build_ext):
     def build_extension(self, ext) -> None:
         self.build_cmake(ext)
 
@@ -62,5 +71,6 @@ setup(
     ext_modules=[CMakeExtension('sear._C')],
     cmdclass={
         'build_ext': build_ext,
+        "bdist_wheel": bdist_wheel,
     }
 )
