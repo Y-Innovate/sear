@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from setuptools import setup, Extension
+from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext as _build_ext
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
