@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 project(sear C CXX ASM)
 set(CXX_STANDARD 14)
 
-option(SEAR_ENABLE_PYTHON "Enables building the Python language module." ON)
+option(SEAR_ENABLE_PYTHON "Enables building the Python language module." OFF)
 
 add_subdirectory(externals)
 

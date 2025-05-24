@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from setuptools import setup, Extension
@@ -44,8 +43,9 @@ class build_ext(_build_ext):
 
         cmake_args = [
             "-DCMAKE_BUILD_TYPE=" + config,
+            "-DSEAR_ENABLE_PYTHON=on",
             "-DSEAR_PYTHON_EXTENSION_PATH=" + str(relative),
-            "--toolchain=cmake/ibm-clang.cmake"
+            "--toolchain=cmake/ibm-clang.cmake",
         ]
 
         build_args = [
