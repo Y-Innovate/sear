@@ -50,11 +50,11 @@ class build_ext(_build_ext):
 
         build_args = [
             '--config', config,
-            '--', '-j4'
+            '--', '-j4',
         ]
 
         install_args = [
-            "--prefix=" + str(build_lib.absolute())
+            "--prefix=" + str(build_lib.absolute()),
         ]
 
         # configure cmake build directory
@@ -72,5 +72,5 @@ setup(
     cmdclass={
         'build_ext': build_ext,
         "bdist_wheel": bdist_wheel,
-    }
+    },
 )
