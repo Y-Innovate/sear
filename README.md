@@ -31,7 +31,7 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 > :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/ambitus/sear/releases)_
 
 ```shell
-python3 -m pip install sear
+python3 -m pip install pysear
 ```
 
 ### Build from source

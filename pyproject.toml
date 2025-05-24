@@ -3,7 +3,7 @@ requires = ["setuptools >= 78.1.0", "setuptools-scm >= 8.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sear"
+name = "pysear"
 requires-python = ">= 3.12"
 authors = [
     { name = "Bobby Tjassens Keiser", email = "bobby.tjassens.keiser@y-innovate-it.com" },

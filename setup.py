@@ -67,7 +67,7 @@ class build_ext(_build_ext):
 
 
 setup(
-    name='sear',
+    name='pysear',
     ext_modules=[CMakeExtension('sear._C')],
     cmdclass={
         'build_ext': build_ext,
