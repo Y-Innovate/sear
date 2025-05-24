@@ -11,7 +11,7 @@ class CMakeExtension(Extension):
         super().__init__(name, sources=[])
 
 
-class bdist_wheel(_bdist_wheel):
+class bdist_wheel(_bdist_wheel): # noqa: N801
     def finalize_options(self):
         super().finalize_options()
 
@@ -19,7 +19,7 @@ class bdist_wheel(_bdist_wheel):
         self.root_is_pure = True
 
 
-class build_ext(_build_ext):
+class build_ext(_build_ext): # noqa: N801
     def build_extension(self, ext) -> None:
         self.build_cmake(ext)
 
