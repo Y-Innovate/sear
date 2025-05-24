@@ -1,6 +1,5 @@
-import os
-import pathlib
-from time import sleep
+
+from pathlib import Path
 
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext as build_ext_orig
@@ -17,18 +16,18 @@ class build_ext(build_ext_orig):
         self.build_cmake(ext)
 
     def build_cmake(self, ext):
-        cwd = pathlib.Path().absolute()
+        cwd = Path().absolute()
 
-        build_temp = pathlib.Path(self.build_temp)
+        build_temp = Path(self.build_temp)
         # ensure temporary build directory exists
         build_temp.mkdir(parents=True, exist_ok=True)
 
-        extdir = pathlib.Path(self.get_ext_fullpath(ext.name))
+        extdir = Path(self.get_ext_fullpath(ext.name))
         # ensure output directory exists
         # probably not necessary, as cmake will create the directory during install
         extdir.parent.mkdir(parents=True, exist_ok=True)
 
-        build_lib = pathlib.Path(self.build_lib)
+        build_lib = Path(self.build_lib)
         relative = extdir.relative_to(build_lib)
 
         config = 'Debug' if self.debug else 'Release'
