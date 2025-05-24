@@ -14,10 +14,6 @@
 *.map
 *.exp
 
-# Precompiled Headers
-*.gch
-*.pch
-
 # Libraries
 *.lib
 *.a
@@ -43,20 +39,11 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
 # OSX Cache/Folder Data
 *.DS_Store
 
-# Build Artifacts
-artifacts/
+# Build directories
+cmake-build
 
 ## Python related ignore statements
 
