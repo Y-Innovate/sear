@@ -1,5 +1,5 @@
-#ifndef __RACFU_TEST_EXTRACT_H_
-#define __RACFU_TEST_EXTRACT_H_
+#ifndef __SEAR_TEST_EXTRACT_H_
+#define __SEAR_TEST_EXTRACT_H_
 
 #define IRRSEQ00_REQUEST_SAMPLES "./tests/irrseq00/request_samples/"
 #define IRRSEQ00_RESULT_SAMPLES "./tests/irrseq00/result_samples/"

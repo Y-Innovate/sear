@@ -14,10 +14,6 @@
 *.map
 *.exp
 
-# Precompiled Headers
-*.gch
-*.pch
-
 # Libraries
 *.lib
 *.a
@@ -43,23 +39,11 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# Visual Studio Code
-.vscode
-
 # OSX Cache/Folder Data
 *.DS_Store
 
-# Build Artifacts
-artifacts/
+# Build directories
+cmake-build
 
 ## Python related ignore statements
 
@@ -231,4 +215,4 @@ Gemfile.lock
 _site/
 
 # This header is generated at build time and should not be pushed to git.
-racfu_schema.hpp
+sear_schema.hpp

@@ -2,12 +2,12 @@ import getpass
 import json
 import os
 
-from racfu import racfu
+from sear import sear
 
 # This user shouldn't exist
-if "RACFU_FVT_USERID" not in os.environ:
+if "SEAR_FVT_USERID" not in os.environ:
   print(
-    "The 'RACFU_FVT_USERID' environment variable must be set "
+    "The 'SEAR_FVT_USERID' environment variable must be set "
     + "to a z/OS userid that does NOT exist on the system.")
   exit(1)
 
@@ -16,7 +16,7 @@ if "RACFU_FVT_USERID" not in os.environ:
 extract_request = {
   "admin_type": "user",
   "operation": "extract",
-  "userid": getpass.getuser()
+  "userid": getpass.getuser(),
 }
 
 # This request will fail, but it demonstrates that
@@ -24,17 +24,17 @@ extract_request = {
 delete_request = {
   "admin_type": "user",
   "operation": "delete",
-  "userid": os.environ["RACFU_FVT_USERID"],
+  "userid": os.environ["SEAR_FVT_USERID"],
 }
 
 print("Extract Test (IRRSEQ00):")
-result = racfu(extract_request)
+result = sear(extract_request)
 print(json.dumps(result.result, indent=2))
 
 print("Delete Test (IRRSMO00):")
-result = racfu(delete_request)
+result = sear(delete_request)
 print(json.dumps(result.result, indent=2))
 
 print("Debug Test (IRRSMO00):")
-result = racfu(delete_request, debug=True)
+result = sear(delete_request, debug=True)
 print(json.dumps(result.result, indent=2))

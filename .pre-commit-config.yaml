@@ -4,7 +4,6 @@ repos:
     hooks:
       - id: clang-format
         files: \.(cpp|hpp|c|h)
-        exclude: ^externals/|^tests/unity/
   - repo: local
     hooks:
       - id: cppcheck

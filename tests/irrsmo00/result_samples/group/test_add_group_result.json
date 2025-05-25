@@ -2,17 +2,17 @@
   "commands": [
     {
       "command": "ADDGROUP TESTGRP0 ",
-      "messages": []
+      "messages": [ ]
     },
     {
       "command": "ALTGROUP TESTGRP0  OMVS     (GID         (6667))",
-      "messages": []
+      "messages": [ ]
     }
   ],
   "return_codes": {
     "racf_reason_code": 0,
     "racf_return_code": 0,
-    "racfu_return_code": 0,
-    "saf_return_code": 0
+    "saf_return_code": 0,
+    "sear_return_code": 0
   }
 }

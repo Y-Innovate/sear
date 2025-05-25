@@ -1,104 +1,76 @@
-"""Build Python extension."""
-
-import json
-import os
-import subprocess
-from glob import glob
 from pathlib import Path
 
 from setuptools import Extension, setup
-from setuptools.command.build_ext import build_ext
+from setuptools.command.build_ext import build_ext as _build_ext
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 
-def assemble(asm_file: str, asm_directory: Path) -> None:
-    """Python extension assembling underlying objects."""
-    obj_file = asm_file.split(".")[0]+".o"
-    cwd = Path.cwd()
-    source_file = cwd / asm_directory / asm_file
-    obj_file = cwd / "artifacts" / obj_file
+class CMakeExtension(Extension):
+    def __init__(self, name):
+        # don't invoke the original build_ext for this special extension
+        super().__init__(name, sources=[])
 
-    if obj_file.exists():
-        return
 
-    print(f"assembling {source_file}")
+class bdist_wheel(_bdist_wheel): # noqa: N801
+    def finalize_options(self):
+        super().finalize_options()
 
-    if not obj_file.parents[0].is_dir():
-        mkdir_command = f"mkdir {obj_file.parents[0]}"
-        print(mkdir_command)
-        subprocess.run(mkdir_command, shell=True, check=True)
+        # marks built wheels as 'none-any' to allow installation on non-z/OS systems
+        self.root_is_pure = True
 
-    assemble_command = f"as -mGOFF -I{source_file.parents[0]} -o {obj_file} {source_file}"
-    print(assemble_command)
-    subprocess.run(assemble_command, shell=True, check=True)
-    
-def build_json_schema_header() -> None:
-    schema_absolute_path = Path.cwd() / "schema.json"
-    with open(schema_absolute_path, "r") as f:
-        schema = json.dumps(json.load(f), separators=(",", ":"))
-    schema_header_absolute_path = Path.cwd() / "racfu" / "racfu_schema.hpp"
-    with open(schema_header_absolute_path, "w") as f:
-        f.write(
-            "\n".join(
-                [
-                    "#ifndef __RACFU_SCHEMA_H_",
-	                "#define __RACFU_SCHEMA_H_",
-                    "",
-	                f"#define RACFU_SCHEMA R\"({schema})\"_json",
-                    "",
-	                "#endif"
-                ]
-            )
-        )
 
-class build_with_asm_ext(build_ext):
-    def run(self):
-        os.environ["CC"] = "ibm-clang64"
-        os.environ["CFLAGS"] = "-std=c99"
-        os.environ["CXX"] = "ibm-clang++64"
-        os.environ["CXXFLAGS"] = "-std=c++14"
-        racfu_source_path = Path("racfu")
-        assemble("irrseq00.s", racfu_source_path / "irrseq00")
-        super().run()
+class build_ext(_build_ext): # noqa: N801
+    def build_extension(self, ext) -> None:
+        self.build_cmake(ext)
 
-def main():
-    """Python extension build entrypoint."""
-    cwd = Path.cwd()
-    assembled_object_path = cwd / "artifacts" / "irrseq00.o"
-    build_json_schema_header()
-    setup_args = {
-        "ext_modules": [
-                Extension(
-                    "racfu._C",
-                    sources=(
-                        glob("racfu/**/*.cpp")
-                        + glob("racfu/*.cpp")
-                        + glob("externals/json-schema-validator/*.cpp")
-                        + ["racfu/python/_racfu.c"]
-                    ),
-                    include_dirs=(
-                        glob("racfu/**/")
-                        + [
-                            "racfu", 
-                            "externals/json", 
-                            "externals/json-schema-validator",
-                            os.environ["ZOPEN_ROOTFS"] + "/usr/local/include"
-                        ]
-                    ),
-                    extra_link_args = [
-                        "-m64",
-                        "-Wl,-b,edit=no",
-                        "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libcrypto.a",
-                        "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libssl.a",
-                        "-Wl," + os.environ["ZOPEN_ROOTFS"] + "/usr/local/lib/libzoslib.a"
-                    ],
-                    extra_objects = [
-                        f"{assembled_object_path}"
-                    ]
-                )
-            ],
-            "cmdclass": {"build_ext": build_with_asm_ext}
-    }
-    setup(**setup_args)
+    def build_cmake(self, ext):
+        cwd = Path().absolute()
 
-if __name__ == "__main__":
-    main()
+        build_temp = Path(self.build_temp)
+        # ensure temporary build directory exists
+        build_temp.mkdir(parents=True, exist_ok=True)
+
+        extdir = Path(self.get_ext_fullpath(ext.name))
+        # ensure output directory exists
+        # probably not necessary, as cmake will create the directory during install
+        extdir.parent.mkdir(parents=True, exist_ok=True)
+
+        build_lib = Path(self.build_lib)
+        relative = extdir.relative_to(build_lib)
+
+        config = 'Debug' if self.debug else 'Release'
+        cmake_build_dir = "cmake-build"
+
+        cmake_args = [
+            "-DCMAKE_BUILD_TYPE=" + config,
+            "-DSEAR_ENABLE_PYTHON=on",
+            "-DSEAR_PYTHON_EXTENSION_PATH=" + str(relative),
+            "--toolchain=cmake/ibm-clang.cmake",
+        ]
+
+        build_args = [
+            '--config', config,
+            '--', '-j4',
+        ]
+
+        install_args = [
+            "--prefix=" + str(build_lib.absolute()),
+        ]
+
+        # configure cmake build directory
+        self.spawn(['cmake', str(cwd), "-B", cmake_build_dir] + cmake_args)
+        if not self.dry_run:
+            # first run
+            self.spawn(['cmake', '--build', cmake_build_dir] + build_args)
+            # then install built extension module
+            self.spawn(["cmake", "--install", cmake_build_dir] + install_args)
+
+
+setup(
+    name='pysear',
+    ext_modules=[CMakeExtension('sear._C')],
+    cmdclass={
+        'build_ext': build_ext,
+        "bdist_wheel": bdist_wheel,
+    },
+)
