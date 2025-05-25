@@ -5,7 +5,7 @@
   "return_codes": {
     "racf_reason_code": 68,
     "racf_return_code": 2000,
-    "racfu_return_code": 4,
-    "saf_return_code": 8
+    "saf_return_code": 8,
+    "sear_return_code": 4
   }
 }

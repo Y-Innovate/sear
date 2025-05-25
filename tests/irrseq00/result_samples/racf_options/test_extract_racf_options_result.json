@@ -733,7 +733,7 @@
       "base:jes_undefined_user": "++++++++",
       "base:kerberos_encryption_level": 0,
       "base:list_of_groups_access_checking": true,
-      "base:log_commands_issuesd_by_special_users": true,
+      "base:log_commands_issued_by_special_users": true,
       "base:log_operator_actions": false,
       "base:log_racf_command_violations": true,
       "base:log_real_data_set_name": false,
@@ -816,7 +816,7 @@
   "return_codes": {
     "racf_reason_code": 0,
     "racf_return_code": 0,
-    "racfu_return_code": 0,
-    "saf_return_code": 0
+    "saf_return_code": 0,
+    "sear_return_code": 0
   }
 }

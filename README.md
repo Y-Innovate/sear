@@ -6,15 +6,11 @@ A standardized JSON interface for RACF that enables seemless exploitation by pro
 
 As automation becomes more and more prevalent, the need to manage the security environment programmaticaly increases. On z/OS that means managing a security product like the IBM **Resource Access Control Facility** _(RACF)_. RACF is the primary facility for managing identity, authority, and access control for z/OS. There are more than 50 callable services with assembler interfaces that are part of the RACF API. The complete set of interfaces can be found [here](http://publibz.boulder.ibm.com/epubs/pdf/ich2d112.pdf).
 
-While there are a number of languages that can be used to manage RACF, _(from low level lnaguages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing indurstry standard programming languages and even programming languages that don't exist yet is paramount. The _SEAR_ project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the forseeable future.
+While there are a number of languages that can be used to manage RACF, _(from low level lnaguages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing indurstry standard programming languages and even programming languages that don't exist yet is paramount. The SEAR project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the forseeable future.
 
-## Getting Started
-
-
-## Minimum z/OS & Language Versions
+### Minimum z/OS & Language Versions
 
 All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are fully supported by IBM are supported by _SEAR_.
-
 * [z/OS Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search/?q=5655-ZOS,%205650-ZOS)
 * [IBM Open Enterprise SDK for Python Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search?q=5655-PYT)
 
@@ -32,17 +28,35 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 
 ### Installation
 
-> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/Mainframe-Renewal-Project/sear/releases)_
+> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/ambitus/sear/releases)_
 
 ```shell
-python3 -m pip install racfu
+python3 -m pip install pysear
 ```
+
+### Build from source
+
+Alternatively to installing from Pip, _SEAR_ can be built from source on a z/OS system. _SEAR_ uses a CMake build system, and can be built via a two-step process.
+
+First, configure the build environment:
+
+```shell
+cmake -S . -B build --toolchain cmake/ibm-clang.cmake
+```
+
+This will generate the build environment in a directory named `build`. Then the project can be built:
+
+```shell
+cmake --build build
+```
+
+Build artifacts are located within the build directory.
 
 ## Help
 
 * [GitHub Discussions](https://github.com/ambitus/SEAR/discussions)
 
-## Authors
+## Maintainers
 
 * Bobby Tjassens Keiser
 * Emma Skovgård

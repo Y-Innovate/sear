@@ -495,7 +495,7 @@ valid_segment_traits["s_admin"] = {
                 "base:password_rule_8": "racf:rule8",
                 "base:rvary_switch_password": "racf:rvarswpw",
                 "base:rvary_status_password": "racf:rvarstpw",
-                "base:log_commands_issuesd_by_special_users": "racf:saudit",
+                "base:log_commands_issued_by_special_users": "racf:saudit",
                 "base:security_label_control": "racf:seclabct",
                 "base:secondary_language": "racf:seclang",
                 "base:max_session_key_interval": "racf:sessint",
@@ -595,13 +595,13 @@ def generate_header_file(admin_type: str ):
             racf_name = valid_segment_traits[admin_type][segment][trait]
             if ':' in racf_name:
                 racf_name = racf_name.split(':')[1]
-            print(f"racf_name: {racf_name}, racfu_name: {trait}")
+            print(f"racf_name: {racf_name}, sear_name: {trait}")
             if f"{segment}:{racf_name}" in map[segment].keys():
-                map[segment][f"{segment}:{racf_name}"]["racfu_name"] = trait
+                map[segment][f"{segment}:{racf_name}"]["sear_name"] = trait
     
     #print(map)
 
-    header = f"#ifndef __RACFU_KEY_MAP_{true_admin_type}_H_\n#define __RACFU_KEY_MAP_{true_admin_type}_H_\n\n#include <stdbool.h>\n\n#include \"key_map_structs.hpp\"\n\n"
+    header = f"#ifndef __SEAR_KEY_MAP_{true_admin_type}_H_\n#define __SEAR_KEY_MAP_{true_admin_type}_H_\n\n#include <stdbool.h>\n\n#include \"key_map_structs.hpp\"\n\n"
 
     for segment in map:
         if segment == "base":
@@ -609,10 +609,10 @@ def generate_header_file(admin_type: str ):
         else:
             header += f"const trait_key_mapping_t {true_admin_type}_{segment.upper()}_KEY_MAP[]{{\n"
         for trait in map[segment]:
-            if "racfu_name" in map[segment][trait]:
-                racfu_name = map[segment][trait]["racfu_name"]
+            if "sear_name" in map[segment][trait]:
+                sear_name = map[segment][trait]["sear_name"]
             else:
-                racfu_name = "GIVEMEARACFUNAME"
+                sear_name = "GIVEMEASEARNAME"
             racf_name = map[segment][trait]["racf_name"]
             trait_type = map[segment][trait]["data_type"].upper()
             if trait_type == "BOOL":
@@ -621,7 +621,7 @@ def generate_header_file(admin_type: str ):
             del_allowed = "true" if "del" in map[segment][trait]["operators"] else "false"
             add_allowed = "true" if "add" in map[segment][trait]["operators"] else "false"
             rem_allowed = "true" if "remove" in map[segment][trait]["operators"] else "false"
-            header += f"    {{\n    \"{racfu_name}\", \"{racf_name}\",\n    TRAIT_TYPE_{trait_type}, "+"{"+f"{set_allowed}, {add_allowed}, {rem_allowed}, {del_allowed}"+"},\n    },\n"
+            header += f"    {{\n    \"{sear_name}\", \"{racf_name}\",\n    TRAIT_TYPE_{trait_type}, "+"{"+f"{set_allowed}, {add_allowed}, {rem_allowed}, {del_allowed}"+"},\n    },\n"
         header += "};\n\n\n"
     
     header += f"const segment_key_mapping_t {true_admin_type}_SEGMENT_KEY_MAP[] = {{\n"

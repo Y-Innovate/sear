@@ -1,7 +1,7 @@
 #include "irrseq00.hpp"
+#include "tests/irrsdl00/test_irrsdl00.hpp"
 #include "tests/irrseq00/test_irrseq00.hpp"
 #include "tests/irrsmo00/test_irrsmo00.hpp"
-#include "tests/irrsdl00/test_irrsdl00.hpp"
 #include "tests/unity/unity.h"
 #include "tests/validation/test_parameter_validation.hpp"
 
@@ -162,6 +162,10 @@ int main() {
   RUN_TEST(test_parse_extract_keyring_result);
   RUN_TEST(test_parse_extract_keyring_result_keyring_not_found);
   RUN_TEST(test_parse_extract_keyring_result_required_parameter_missing);
+
+  RUN_TEST(test_generate_add_keyring_request);
+
+  RUN_TEST(test_generate_delete_keyring_request);
 
   return UNITY_END();
 }
