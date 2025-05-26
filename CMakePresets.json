@@ -21,6 +21,7 @@
         {
             "name": "zos-pysear",
             "inherits": "zos",
+            "binaryDir": "${sourceDir}/build/zos-pysear",
             "cacheVariables": {
                 "SEAR_ENABLE_PYTHON": "on"
             }
