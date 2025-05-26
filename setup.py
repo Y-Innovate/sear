@@ -24,8 +24,6 @@ class build_ext(_build_ext): # noqa: N801
         self.build_cmake(ext)
 
     def build_cmake(self, ext):
-        cwd = Path().absolute()
-
         build_temp = Path(self.build_temp)
         # ensure temporary build directory exists
         build_temp.mkdir(parents=True, exist_ok=True)
@@ -53,7 +51,8 @@ class build_ext(_build_ext): # noqa: N801
         ]
 
         install_args = [
-            # cmake --install does not work with --preset (yet), so build directory must be specified manually
+            # cmake --install does not work with --preset (yet)
+            # so build directory must be specified manually
             "build/zos-pysear",
             "--prefix=" + str(build_lib.absolute()),
         ]
