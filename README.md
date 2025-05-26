@@ -36,21 +36,26 @@ python3 -m pip install pysear
 
 ### Build from source
 
-Alternatively to installing from Pip, _SEAR_ can be built from source on a z/OS system. _SEAR_ uses a CMake build system, and can be built via a two-step process.
-
-First, configure the build environment:
+Alternatively to installing from Pip, _SEAR_ can be built from source on a z/OS system. _SEAR_ uses a CMake build system, and can be built via a two-step process:
 
 ```shell
-cmake -S . -B build --toolchain cmake/ibm-clang.cmake
+cmake --preset <preset>
+cmake --build --preset <preset> --target <sear,pysear>
 ```
 
-This will generate the build environment in a directory named `build`. Then the project can be built:
+The first command will configure the build environment and generate build scripts in a directory named `build/<preset>`, then the second command builds the given target.
 
-```shell
-cmake --build build
-```
+A complete list of available CMake presets can be found in [CMakePresets.json](CMakePresets.json), but the most useful are:
+
+* `default` - Does not apply any special platform handling, and should work on most platforms.
+
+* `zos` - Applies the `cmake/ibm-clang.cmake` toolchain to the build process. This compiles the project using the IBM-Clang compiler, and works only on z/OS systems.
+
+* `zos-pysear` - Inherits from the `zos` preset. Used internally as part of the Python package build process, and not generally used by hand.
 
 Build artifacts are located within the build directory.
+
+The CMake build process builds static libraries by default. If you instead wish to build shared libraries, append `-DBUILD_SHARED_LIBS=on` to the CMake configure step command (the first of the two) shown above.
 
 ## Help
 
