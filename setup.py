@@ -24,8 +24,6 @@ class build_ext(_build_ext): # noqa: N801
         self.build_cmake(ext)
 
     def build_cmake(self, ext):
-        cwd = Path().absolute()
-
         build_temp = Path(self.build_temp)
         # ensure temporary build directory exists
         build_temp.mkdir(parents=True, exist_ok=True)
@@ -39,31 +37,33 @@ class build_ext(_build_ext): # noqa: N801
         relative = extdir.relative_to(build_lib)
 
         config = 'Debug' if self.debug else 'Release'
-        cmake_build_dir = "cmake-build"
 
         cmake_args = [
-            "-DCMAKE_BUILD_TYPE=" + config,
-            "-DSEAR_ENABLE_PYTHON=on",
+            "--preset", "zos-pysear",
             "-DSEAR_PYTHON_EXTENSION_PATH=" + str(relative),
-            "--toolchain=cmake/ibm-clang.cmake",
+            "-DCMAKE_BUILD_TYPE=" + config,
         ]
 
         build_args = [
+            "--preset", "zos-pysear",
             '--config', config,
             '--', '-j4',
         ]
 
         install_args = [
+            # cmake --install does not work with --preset (yet)
+            # so build directory must be specified manually
+            "build/zos-pysear",
             "--prefix=" + str(build_lib.absolute()),
         ]
 
         # configure cmake build directory
-        self.spawn(['cmake', str(cwd), "-B", cmake_build_dir] + cmake_args)
+        self.spawn(['cmake'] + cmake_args)
         if not self.dry_run:
             # first run
-            self.spawn(['cmake', '--build', cmake_build_dir] + build_args)
+            self.spawn(['cmake', '--build'] + build_args)
             # then install built extension module
-            self.spawn(["cmake", "--install", cmake_build_dir] + install_args)
+            self.spawn(["cmake", "--install"] + install_args)
 
 
 setup(
