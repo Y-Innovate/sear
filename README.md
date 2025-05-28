@@ -11,6 +11,7 @@ While there are a number of languages that can be used to manage RACF, _(from lo
 ### Minimum z/OS & Language Versions
 
 All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are fully supported by IBM are supported by _SEAR_.
+
 * [z/OS Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search/?q=5655-ZOS,%205650-ZOS)
 * [IBM Open Enterprise SDK for Python Product Lifecycle](https://www.ibm.com/support/pages/lifecycle/search?q=5655-PYT)
 
@@ -25,10 +26,9 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 * **z/OS Language Environment Runtime Support**: _SEAR_ is compiled using the **IBM Open XL C/C++ 2.1** compiler, which is still fairly new and requires **z/OS Language Environment** service updates for runtime support.
   * More information can be found in section **5.2.2.2 Operational Requisites** on page **9** in the [Program Directory for IBM Open XL C/C++ 2.1 for z/OS](https://publibfp.dhe.ibm.com/epubs/pdf/i1357012.pdf).
 
-
 ### Installation
 
-> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/ambitus/sear/releases)_
+> :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/Mainframe-Renewal-Project/sear/releases)_
 
 ```shell
 python3 -m pip install pysear
@@ -59,7 +59,7 @@ The CMake build process builds static libraries by default. If you instead wish 
 
 ## Help
 
-* [GitHub Discussions](https://github.com/ambitus/SEAR/discussions)
+* [GitHub Discussions](https://github.com/Mainframe-Renewal-Project/sear/discussions)
 
 ## Maintainers
 
@@ -70,7 +70,7 @@ The CMake build process builds static libraries by default. If you instead wish 
 
 This is a fork of RACFu
 
-* Leonard Carcaramo: lcarcaramo@ibm.com
-* Elijah Swift: Elijah.Swift@ibm.com
-* Frank De Gilio: degilio@us.ibm.com
-* Joe Bostian: jbostian@ibm.com
+* Leonard Carcaramo: <lcarcaramo@ibm.com>
+* Elijah Swift: <Elijah.Swift@ibm.com>
+* Frank De Gilio: <degilio@us.ibm.com>
+* Joe Bostian: <jbostian@ibm.com>
