@@ -7,3 +7,7 @@ build:
     - any-glob-to-any-file: 'CMakeLists.txt'
     - any-glob-to-any-file: 'CMakePresets.json'
     - any-glob-to-any-file: 'Makefile'
+
+python:
+  - changed-files:
+    - any-glob-to-any-file: 'python/**.py'
