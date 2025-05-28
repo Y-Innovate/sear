@@ -5,4 +5,5 @@ build:
     - any-glob-to-any-file: .github/**
     - any-glob-to-any-file: '**.cmake'
     - any-glob-to-any-file: 'CMakeLists.txt'
+    - any-glob-to-any-file: 'CMakePresets.json'
     - any-glob-to-any-file: 'Makefile'
