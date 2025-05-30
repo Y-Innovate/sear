@@ -130,43 +130,40 @@ if (SEAR_ENABLE_PYTHON)
     endif()
 endif()
 
-# If we're building on Linux for unit testing
-if (SEAR_UNIT_TEST)
-    # The test_runner executable
-    add_executable(
-        test_runner
-        tests/test_runner.cpp
-        tests/unit_test_utilities.cpp
-        tests/irrsdl00/test_irrsdl00.cpp
-        tests/irrseq00/test_irrseq00.cpp
-        tests/irrsmo00/test_irrsmo00.cpp
-        tests/mock/irrsdl64.cpp
-        tests/mock/irrseq00.cpp
-        tests/mock/irrsmo64.cpp
-        tests/unity/unity.c
-        tests/validation/test_parameter_validation.cpp
-        tests/zoslib/zoslib.cpp
-    )
-    # test_runner's include directories
-    target_include_directories(
-        test_runner PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        sear
-        sear/irrsdl00
-        sear/irrseq00
-        sear/irrsmo00
-        sear/key_map
-        sear/validation
-        externals/json
-        externals/json-schema-validator
-        tests/irrsdl00
-        tests/zoslib
-    )
-    # Extra defines for compiling test_runner
-    target_compile_definitions(test_runner PUBLIC UNIT_TEST UNITY_OUTPUT_COLOR)
-    # Create the test_runner target
-    target_link_libraries(test_runner PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/libsear.so")
-endif()
+# The test_runner executable
+add_executable(
+    test_runner
+    tests/test_runner.cpp
+    tests/unit_test_utilities.cpp
+    tests/irrsdl00/test_irrsdl00.cpp
+    tests/irrseq00/test_irrseq00.cpp
+    tests/irrsmo00/test_irrsmo00.cpp
+    tests/mock/irrsdl64.cpp
+    tests/mock/irrseq00.cpp
+    tests/mock/irrsmo64.cpp
+    tests/unity/unity.c
+    tests/validation/test_parameter_validation.cpp
+    tests/zoslib/zoslib.cpp
+)
+# test_runner's include directories
+target_include_directories(
+    test_runner PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    sear
+    sear/irrsdl00
+    sear/irrseq00
+    sear/irrsmo00
+    sear/key_map
+    sear/validation
+    externals/json
+    externals/json-schema-validator
+    tests/irrsdl00
+    tests/zoslib
+)
+# Extra defines for compiling test_runner
+target_compile_definitions(test_runner PUBLIC UNIT_TEST UNITY_OUTPUT_COLOR)
+# Create the test_runner target
+target_link_libraries(test_runner PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/libsear.so")
 
 # The debug executable
 add_executable(
