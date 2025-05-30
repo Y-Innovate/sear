@@ -60,6 +60,7 @@ The CMake build process builds static libraries by default. If you instead wish 
 ## Help
 
 * [GitHub Discussions](https://github.com/Mainframe-Renewal-Project/sear/discussions)
+* [System Z Enthusiasts discord](https://discord.gg/sze)
 
 ## Maintainers
 
