@@ -8,6 +8,7 @@ option(SEAR_ENABLE_PYTHON "Enables building the Python language module." OFF)
 add_subdirectory(externals)
 
 find_package(OpenSSL REQUIRED)
+find_library(ZOSLIB libzoslib.a REQUIRED)
 
 add_library(
     sear
@@ -50,14 +51,13 @@ target_include_directories(
 file(READ schema.json SEAR_SCHEMA)
 configure_file(sear/sear_schema.hpp.in sear/sear_schema.hpp)
 
-target_link_libraries(sear PRIVATE nlohmann_json::nlohmann_json nlohmann_json_schema_validator OpenSSL::SSL)
+target_link_libraries(sear PRIVATE nlohmann_json::nlohmann_json nlohmann_json_schema_validator OpenSSL::SSL "${ZOSLIB}")
 
 if (SEAR_ENABLE_PYTHON)
     find_package(Python3 REQUIRED COMPONENTS Development Development.SABIModule)
-    find_library(ZOSLIB zoslib REQUIRED)
 
     Python3_add_library(pysear MODULE USE_SABI 3.12 sear/python/_sear.c)
-    target_link_libraries(pysear PRIVATE sear "${ZOSLIB}" Python3::Python)
+    target_link_libraries(pysear PRIVATE sear Python3::Python)
 
     if (DEFINED SEAR_PYTHON_EXTENSION_PATH)
         message(STATUS "Installing Python module to: ${SEAR_PYTHON_EXTENSION_PATH}")
