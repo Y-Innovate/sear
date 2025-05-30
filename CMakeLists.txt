@@ -112,8 +112,15 @@ target_compile_definitions(sear PUBLIC _POSIX_C_SOURCE=200112L)
 file(READ schema.json SEAR_SCHEMA)
 configure_file(sear/sear_schema.hpp.in sear/sear_schema.hpp)
 
+# Ugly hack to get shared library to work on Z
+set(STRT "")
+
+if (BUILD_SHARED_LIBS AND NOT SEAR_UNIT_TEST)
+    set(STRT "-Wl,-e,CELQSTRT")
+endif()
+
 # Create the sear target
-target_link_libraries(sear PRIVATE OpenSSL::SSL "${ZOSLIB}")
+target_link_libraries(sear PRIVATE "${STRT}" OpenSSL::SSL "${ZOSLIB}")
 
 # If we're building the Python wheel
 if (SEAR_ENABLE_PYTHON)
