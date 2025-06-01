@@ -1,0 +1,76 @@
+name: Publish pysear
+on: [release]
+
+permissions:
+  contents: read
+
+jobs:
+    build-package:
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: "build package"
+            run: |
+                echo ${{ secrets.BUILD_USER_PRIVATE_KEY }} > private_key
+                ssh ${{ secrets.BUILD_SSH_CONNECTION }} -i private_key
+          - name: "download package"
+            run: |
+                scp "${{ secrets.BUILD_SCP_CONNECTION }}:files.txt" .
+                mkdir dist
+                while IFS= read -r file; do
+                    scp "${{ secrets.BUILD_SCP_CONNECTION }}:$file" dist/
+                done < files.txt
+          - name: Upload artifacts
+            uses: actions/upload-artifact@v4
+            with:
+                name: release-dists
+                path: dist/
+    
+    github-release:
+        #github release requires write access, unlike the other steps
+        permissions:
+            contents: write
+
+        runs-on: ubuntu-latest
+
+        steps:
+          - name: Retrieve release distributions
+            uses: actions/download-artifact@v4
+            with:
+                name: release-dists
+                path: dist/
+
+          - name: "release to github"
+            run: |
+                gh release upload ${{ github.ref_name }} dists/*
+
+    publish-package-pypi:
+        runs-on: ubuntu-latest
+        needs:
+          - build-package
+        permissions:
+            # IMPORTANT: this permission is mandatory for trusted publishing
+            id-token: write
+
+        # Dedicated environments with protections for publishing are strongly recommended.
+        # For more information, see: https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment#deployment-protection-rules
+        environment:
+            name: production
+            # OPTIONAL: uncomment and update to include your PyPI project URL in the deployment status:
+            url: ${{ vars.PYPI_URL }}
+            #
+            # ALTERNATIVE: if your GitHub Release name is the PyPI project version string
+            # ALTERNATIVE: exactly, uncomment the following line instead:
+            # url: https://pypi.org/project/YOURPROJECT/${{ github.event.release.name }}
+
+        steps:
+          - name: Retrieve release distributions
+            uses: actions/download-artifact@v4
+            with:
+                name: release-dists
+                path: dist/
+
+          - name: Publish release distributions to PyPI
+            uses: pypa/gh-action-pypi-publish@release/v1
+            with:
+                packages-dir: dist/
