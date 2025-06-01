@@ -28,6 +28,7 @@ jobs:
             run: |
                 mkdir dist
                 while IFS= read -r file; do
+                    echo "Downloading file: $file"
                     scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" dist/
                 done < files.txt
           - name: Upload artifacts
