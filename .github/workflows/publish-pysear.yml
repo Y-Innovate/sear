@@ -24,6 +24,7 @@ jobs:
           - name: Download manifest
             run: |
                 scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
+                cat files.txt
           - name: Make dist folder
             run: |
                 mkdir ~/dist
