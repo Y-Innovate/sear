@@ -26,19 +26,18 @@ jobs:
                 scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
           - name: Make dist folder
             run: |
-                mkdir dist
+                mkdir ~dist
           - name: Download package
             run: |
                 while IFS= read -r file; do
                     echo "Downloading file: $file"
-                    scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" .dist/
+                    scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" ~dist/
                 done < files.txt
           - name: Upload artifacts
             uses: actions/upload-artifact@v4
             with:
                 name: release-dists
-                path: |
-                    .dist/*
+                path: ~dist/*
                 if-no-files-found: error
     
     github-release:
