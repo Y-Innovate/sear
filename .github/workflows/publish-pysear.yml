@@ -8,6 +8,9 @@ jobs:
     build-package:
         runs-on: ubuntu-latest
 
+        environment:
+            name: production
+
         steps:
           - name: "build package"
             run: |
@@ -32,6 +35,9 @@ jobs:
             contents: write
 
         runs-on: ubuntu-latest
+
+        environment:
+            name: production
 
         steps:
           - name: Retrieve release distributions
