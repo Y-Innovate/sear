@@ -14,14 +14,14 @@ jobs:
             name: production
 
         steps:
-          - name: "build package"
+          - name: Build package
             run: |
                 mkdir ~/.ssh
                 echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
                 echo "${{ secrets.BUILD_USER_PRIVATE_KEY }}" > private_key
                 chmod 500 private_key
                 ssh ${{ secrets.BUILD_SSH_CONNECTION }} -i private_key
-          - name: "download package"
+          - name: Download package
             run: |
                 scp -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
                 mkdir dist
@@ -53,7 +53,7 @@ jobs:
                 name: release-dists
                 path: dist/
 
-          - name: "release to github"
+          - name: Release to GitHub
             run: |
                 gh release upload ${{ github.ref_name }} dists/*
 
