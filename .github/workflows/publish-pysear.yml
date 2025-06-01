@@ -24,21 +24,20 @@ jobs:
           - name: Download manifest
             run: |
                 scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
-                cat files.txt
-          - name: Make dist folder
-            run: |
-                mkdir ~/dist
+                echo "Found build artifacts:"
+                cat files.txt         
           - name: Download package
             run: |
+                mkdir dist
                 while IFS= read -r file; do
                     echo "Downloading file: $file"
-                    scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" ~/dist/
+                    scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" dist/
                 done < files.txt
           - name: Upload artifacts
             uses: actions/upload-artifact@v4
             with:
                 name: release-dists
-                path: ~/dist/*
+                path: dist/*
                 if-no-files-found: error
     
     github-release:
@@ -52,17 +51,19 @@ jobs:
 
         environment:
             name: production
-
+        env:
+            GH_TOKEN: ${{ github.token }}
+            
         steps:
           - name: Retrieve release distributions
             uses: actions/download-artifact@v4
             with:
                 name: release-dists
-                path: ~/dist/
+                path: dist/
 
           - name: Release to GitHub
             run: |
-                gh release upload ${{ github.ref_name }} ~/dists/*
+                gh release upload ${{ github.ref_name }} dists/*
 
     publish-package-pypi:
         runs-on: ubuntu-latest
@@ -88,9 +89,9 @@ jobs:
             uses: actions/download-artifact@v4
             with:
                 name: release-dists
-                path: ~/dist/
+                path: dist/
 
           - name: Publish release distributions to PyPI
             uses: pypa/gh-action-pypi-publish@release/v1
             with:
-                packages-dir: ~/dist/
+                packages-dir: dist/
