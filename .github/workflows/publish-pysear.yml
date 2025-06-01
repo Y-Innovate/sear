@@ -24,9 +24,11 @@ jobs:
           - name: Download manifest
             run: |
                 scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
-          - name: Download package
+          - name: Make dist folder
             run: |
                 mkdir dist
+          - name: Download package
+            run: |
                 while IFS= read -r file; do
                     echo "Downloading file: $file"
                     scp -B -q -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" dist/
