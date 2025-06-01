@@ -21,9 +21,11 @@ jobs:
                 echo "${{ secrets.BUILD_USER_PRIVATE_KEY }}" > private_key
                 chmod 500 private_key
                 ssh ${{ secrets.BUILD_SSH_CONNECTION }} -i private_key
-          - name: Download package
+          - name: Download Manifest
             run: |
                 scp -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"files.txt" .
+          - name: Download package
+            run: |
                 mkdir dist
                 while IFS= read -r file; do
                     scp -i private_key ${{ secrets.BUILD_SCP_CONNECTION }}:"$file" dist/
