@@ -38,8 +38,7 @@ jobs:
             with:
                 name: release-dists
                 path: |
-                    dist/*.whl
-                    dist/*.tar.gz
+                    .dist/*
                 if-no-files-found: error
     
     github-release:
