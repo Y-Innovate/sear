@@ -16,6 +16,8 @@ jobs:
         steps:
           - name: "build package"
             run: |
+                mkdir ~/.ssh
+                echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
                 echo "${{ secrets.BUILD_USER_PRIVATE_KEY }}" > private_key
                 ssh ${{ secrets.BUILD_SSH_CONNECTION }} -i private_key
           - name: "download package"
