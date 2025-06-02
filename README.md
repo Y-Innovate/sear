@@ -1,5 +1,7 @@
 ![SEAR Logo](https://github.com/Mainframe-Renewal-Project/sear/blob/main/logo.svg)
 
+# Security API for RACF (SEAR)
+
 A standardized JSON interface for RACF that enables seamless exploitation by programming languages that have a foreign language interface for C/C++ and native JSON support.
 
 ## Description
