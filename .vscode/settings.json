@@ -9,6 +9,9 @@
     "python.analysis.typeCheckingMode": "standard",
     "cSpell.words": [
         "adsp",
+        "cics",
+        "omvs",
+        "rvary",
         "uacc"
     ]
 }
