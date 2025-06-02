@@ -67,7 +67,6 @@ The main way to test SEAR is to write **unit tests** in the [`tests`](tests) dir
 * **Unit Tests**
 
   > :bulb: _See the [Unity Unit Testing For C](https://www.throwtheswitch.org/unity) documentation for more details on writing test cases._
-
   > :white_check_mark: _In order to facilitate development and unit testing, the real **API calls** to **IRRSMO00** and **IRRSEQ00** have been mocked in [`tests/mock`](tests/mock). Additionally, implementations of some **z/OS specific C/C++ Runtime Library functions** are provided in [`tests/zoslib`](tests/zoslib) to enable the SEAR unit test suite to more or less be run on any 64-bit POSIX system where the `clang` compiler is installed. This ensures that development and testing can be done when contributors do not have access to a z/OS system, and also enables faster iteration since contributors can just run `make test` on their workstation without needing to copy the files to a z/OS system to run the unit tests._
 
   * Unit tests should be placed in the **subdirectory** corresponding to the **RACF callable service** you are creating a test for. The main focus of these tests is to validate the **generation of requests** to and **parsing of responses** from the **IRRSMO00** and **IRRSEQ00** callable services, and more generally testing various other code paths in the SEAR code. There are directories called `request_samples` and `response_samples` in the [`tests/irrseq00`](tests/irrseq00) and [`tests/irrsmo00`](tests/irrseq00) test folders to put request and response samples. All **raw request samples** and **raw response samples** for a given callable service should end with the `.bin` file extension. `get_raw_sample()` and `get_json_sample()` are defined in [`tests/unit_test_utilities.hpp`](tests/unit_test_utilities.hpp) to facilitate the loading of request and response samples in test cases. Other categories of test cases and test utilities must follow the same conventions described here.
@@ -77,7 +76,7 @@ The main way to test SEAR is to write **unit tests** in the [`tests`](tests) dir
 * **Functional Verification Tests**
   > :warning: _Ensure that the `SEAR_FVT_USERID` environment variable is set to a z/OS userid that doesn't exist on the system where the functional verifification tests are being run prior to running `make fvt`._
 
-  * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of SEAR from your branch/fork on a z/OS system and run `make fvt`. 
+  * In order to ensure that the real API calls to **IRRSEQ00** and **IRRSMO00** are working, build and install the Python distribution of SEAR from your branch/fork on a z/OS system and run `make fvt`.
 
 ### Fixing Bugs
 
@@ -91,10 +90,10 @@ If any updates need to be made to the SEAR documentation, open a GitHub pull req
 
 Code branches should use the following naming conventions:
 
-* `wip/name` *(Work in progress branch that likely won't be finished soon)*
-* `feat/name` *(Branch where new functionality or enhancements are being developed)*
-* `bug/name` *(Branch where one or more bugs are being fixed)*
-* `junk/name` *(Throwaway branch created for experimentation)*
+* `wip/name` _(Work in progress branch that likely won't be finished soon)_
+* `feat/name` _(Branch where new functionality or enhancements are being developed)_
+* `bug/name` _(Branch where one or more bugs are being fixed)_
+* `junk/name` _(Throwaway branch created for experimentation)_
 
 ## Style Guidelines
 
@@ -104,11 +103,11 @@ The use of the `clang-format` code formatter is required.
 
 The following code style conventions should be followed:
 
-* Variable names should use snake case *(i.e., `my_variable`)*.
-* Pointer variables should start with `p_` *(i.e., `p_my_pointer`)*.
-* Class variables should end with an `_` to help differentiate between class variables and local function variables *(i.e., `my_class_variable_`)*.
-* Class name should use pascal case *(i.e., `MyClass`)*.
-* Function names should use camel case *(i.e., `myFunction()`)*.
+* Variable names should use snake case _(i.e., `my_variable`)_.
+* Pointer variables should start with `p_` _(i.e., `p_my_pointer`)_.
+* Class variables should end with an `_` to help differentiate between class variables and local function variables _(i.e., `my_class_variable_`)_.
+* Class name should use pascal case _(i.e., `MyClass`)_.
+* Function names should use camel case _(i.e., `myFunction()`)_.
 * When calling a class function within the same class that function is a member of, the following syntax should be used to make it clear that a function within the same class is being called.
 
   ```cpp
