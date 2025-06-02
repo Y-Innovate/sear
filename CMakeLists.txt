@@ -46,6 +46,7 @@ target_include_directories(
     # add generated header to include path
     "${CMAKE_CURRENT_BINARY_DIR}/sear"
 )
+target_compile_definitions(sear PRIVATE _POSIX_C_SOURCE=200112L)
 
 # embed json schema into sear_schema.hpp
 file(READ schema.json SEAR_SCHEMA)
