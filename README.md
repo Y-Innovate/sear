@@ -1,4 +1,4 @@
-![SEAR Logo](https://github.com/Mainframe-Renewal-Project/sear/blob/main/logo.svg)
+![SEAR Logo](https://raw.githubusercontent.com/Mainframe-Renewal-Project/sear/refs/heads/main/logo.svg)
 
 # Security API for RACF (SEAR)
 
