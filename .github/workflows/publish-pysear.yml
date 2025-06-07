@@ -42,7 +42,38 @@ jobs:
                 name: release-dists
                 path: dist/*
                 if-no-files-found: error
-    
+  
+    test-package:
+        runs-on: ubuntu-latest
+        needs:
+          - build-package
+
+        environment:
+            name: test
+
+        steps:
+          - name: Retrieve test distributions
+            uses: actions/download-artifact@v4
+            with:
+                name: release-dists
+                path: dist/
+          - name: Upload package
+            run: |
+                mkdir ~/.ssh
+                echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+                echo "${{ secrets.TEST_USER_PRIVATE_KEY }}" > private_key
+                chmod 500 private_key
+                scp -B -q -i private_key dist/* ${{ secrets.TEST_SCP_CONNECTION }}:artifacts/
+
+          - name: Run test
+            run: |
+                ssh ${{ secrets.TEST_SSH_CONNECTION }} -i private_key
+
+          - name: Download report
+            if: always()
+            run: |
+                scp -B -q -i private_key ${{ secrets.TEST_SCP_CONNECTION }}:"report.md" $GITHUB_STEP_SUMMARY
+
     github-release:
         #github release requires write access, unlike the other steps
         permissions:
@@ -50,7 +81,7 @@ jobs:
 
         runs-on: ubuntu-latest
         needs:
-          - build-package
+          - test-package
 
         environment:
             name: production
@@ -73,7 +104,7 @@ jobs:
     publish-package-pypi:
         runs-on: ubuntu-latest
         needs:
-          - build-package
+          - test-package
         permissions:
             # IMPORTANT: this permission is mandatory for trusted publishing
             id-token: write
