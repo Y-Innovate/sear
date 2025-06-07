@@ -63,7 +63,7 @@ jobs:
                 echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
                 echo "${{ secrets.TEST_USER_PRIVATE_KEY }}" > private_key
                 chmod 500 private_key
-                scp -B -q -i private_key dist/* ${{ secrets.TEST_SCP_CONNECTION }}:artifacts/
+                scp -B -q -i private_key ${{ secrets.TEST_SCP_ARGS }} dist/*.whl ${{ secrets.TEST_SCP_CONNECTION }}:artifacts/
 
           - name: Run test
             run: |
@@ -72,7 +72,7 @@ jobs:
           - name: Download report
             if: always()
             run: |
-                scp -B -q -i private_key ${{ secrets.TEST_SCP_CONNECTION }}:"report.md" $GITHUB_STEP_SUMMARY
+                scp -B -q -i private_key ${{ secrets.TEST_SCP_ARGS }} ${{ secrets.TEST_SCP_CONNECTION }}:"report.md" $GITHUB_STEP_SUMMARY
 
     github-release:
         #github release requires write access, unlike the other steps
