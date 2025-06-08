@@ -27,7 +27,7 @@ const trait_key_mapping_t GROUP_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:data_set_model",    "model",
+     "base:dataset_model",    "model",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {

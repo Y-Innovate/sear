@@ -4,15 +4,15 @@
       "base:audit_logging": false,
       "base:audit_responsibility": false,
       "base:auditor": false,
-      "base:automatic_data_set_protection": false,
+      "base:automatic_dataset_protection": false,
       "base:create_date": "03/10/25",
       "base:default_group": "SYS1",
       "base:group_connections": [
         {
           "base:group_connection_auditor": false,
-          "base:group_connection_automatic_data_set_protection": false,
+          "base:group_connection_automatic_dataset_protection": false,
           "base:group_connection_create_date": "03/10/25",
-          "base:group_connection_data_set_access": false,
+          "base:group_connection_dataset_access": false,
           "base:group_connection_group": "SYS1",
           "base:group_connection_last_connect_date": null,
           "base:group_connection_last_connect_time": null,
@@ -26,7 +26,7 @@
           "base:group_connection_used_count": 0
         }
       ],
-      "base:group_data_set_access": false,
+      "base:group_dataset_access": false,
       "base:has_passphrase": false,
       "base:has_password": false,
       "base:logon_allowed_days": [

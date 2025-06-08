@@ -1,7 +1,7 @@
 {
   "operation": "add",
   "admin_type": "dataset",
-  "data_set": "ESWIFT.TEST.**",
+  "dataset": "ESWIFT.TEST.**",
   "generic": true,
   "traits": {
     "base:universal_access": "None",

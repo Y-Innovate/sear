@@ -11,7 +11,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:automatic_data_set_protection",     "adsp",
+     "base:automatic_dataset_protection",     "adsp",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
@@ -23,7 +23,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_REPEAT,   {false, true, true, false},
      },
     {
-     "base:uncataloged_data_set_access",  "catdsns",
+     "base:uncataloged_dataset_access",  "catdsns",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -47,15 +47,15 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:erase_data_sets_on_delete",    "erase",
+     "base:erase_datasets_on_delete",    "erase",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:erase_data_sets_on_delete_all", "eraseall",
+     "base:erase_datasets_on_delete_all", "eraseall",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
-     "base:erase_data_sets_on_delete_security_level", "erasesec",
+     "base:erase_datasets_on_delete_security_level", "erasesec",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -203,7 +203,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_UINT,  {true, false, false, false},
      },
     {
-     "base:data_set_single_level_name_prefix_protection",   "prefix",
+     "base:dataset_single_level_name_prefix_protection",   "prefix",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -211,7 +211,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:protect_all_data_sets",  "protall",
+     "base:protect_all_datasets",  "protall",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -227,7 +227,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_REPEAT,   {false, true, true, false},
      },
     {
-     "base:log_real_data_set_name",  "realdsn",
+     "base:log_real_dataset_name",  "realdsn",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
@@ -235,7 +235,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN,  {true, false, false, false},
      },
     {
-     "base:tape_data_set_security_retention_period",    "retpd",
+     "base:tape_dataset_security_retention_period",    "retpd",
      TRAIT_TYPE_UINT,  {true, false, false, false},
      },
     {
@@ -323,7 +323,7 @@ const trait_key_mapping_t RACF_OPTIONS_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:tape_data_set_protection",  "tapedsn",
+     "base:tape_dataset_protection",  "tapedsn",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {

@@ -63,16 +63,16 @@
   "test_extract_racf_options_request_extraneous_parameter_provided.json"
 
 // Data Set
-#define TEST_EXTRACT_DATA_SET_REQUEST_JSON \
-  IRRSEQ00_REQUEST_SAMPLES "data_set/test_extract_data_set_request.json"
-#define TEST_EXTRACT_DATA_SET_REQUEST_RAW \
-  IRRSEQ00_REQUEST_SAMPLES "data_set/test_extract_data_set_request.bin"
-#define TEST_EXTRACT_DATA_SET_REQUEST_REQUIRED_PARAMETER_MISSING_JSON \
+#define TEST_EXTRACT_DATASET_REQUEST_JSON \
+  IRRSEQ00_REQUEST_SAMPLES "dataset/test_extract_dataset_request.json"
+#define TEST_EXTRACT_DATASET_REQUEST_RAW \
+  IRRSEQ00_REQUEST_SAMPLES "dataset/test_extract_dataset_request.bin"
+#define TEST_EXTRACT_DATASET_REQUEST_REQUIRED_PARAMETER_MISSING_JSON \
   IRRSEQ00_REQUEST_SAMPLES                                            \
-  "data_set/test_extract_data_set_request_required_parameter_missing.json"
-#define TEST_EXTRACT_DATA_SET_REQUEST_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
+  "dataset/test_extract_dataset_request_required_parameter_missing.json"
+#define TEST_EXTRACT_DATASET_REQUEST_EXTRANEOUS_PARAMETER_PROVIDED_JSON \
   IRRSEQ00_REQUEST_SAMPLES                                               \
-  "data_set/test_extract_data_set_request_extraneous_parameter_provided.json"
+  "dataset/test_extract_dataset_request_extraneous_parameter_provided.json"
 
 // Resource
 #define TEST_EXTRACT_RESOURCE_REQUEST_JSON \
@@ -145,17 +145,17 @@
   "racf_options/test_extract_racf_options_result_racf_options_not_found.json"
 
 // Data Set
-#define TEST_EXTRACT_DATA_SET_RESULT_JSON \
-  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result.json"
-#define TEST_EXTRACT_DATA_SET_RESULT_RAW \
-  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result.bin"
-#define TEST_EXTRACT_DATA_SET_RESULT_CSDATA_JSON \
-  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result_csdata.json"
-#define TEST_EXTRACT_DATA_SET_RESULT_CSDATA_RAW \
-  IRRSEQ00_RESULT_SAMPLES "data_set/test_extract_data_set_result_csdata.bin"
-#define TEST_EXTRACT_DATA_SET_RESULT_DATA_SET_NOT_FOUND_JSON \
+#define TEST_EXTRACT_DATASET_RESULT_JSON \
+  IRRSEQ00_RESULT_SAMPLES "dataset/test_extract_dataset_result.json"
+#define TEST_EXTRACT_DATASET_RESULT_RAW \
+  IRRSEQ00_RESULT_SAMPLES "dataset/test_extract_dataset_result.bin"
+#define TEST_EXTRACT_DATASET_RESULT_CSDATA_JSON \
+  IRRSEQ00_RESULT_SAMPLES "dataset/test_extract_dataset_result_csdata.json"
+#define TEST_EXTRACT_DATASET_RESULT_CSDATA_RAW \
+  IRRSEQ00_RESULT_SAMPLES "dataset/test_extract_dataset_result_csdata.bin"
+#define TEST_EXTRACT_DATASET_RESULT_DATASET_NOT_FOUND_JSON \
   IRRSEQ00_RESULT_SAMPLES                                    \
-  "data_set/test_extract_data_set_result_data_set_not_found.json"
+  "dataset/test_extract_dataset_result_dataset_not_found.json"
 
 // Resource
 #define TEST_EXTRACT_RESOURCE_RESULT_JSON \
@@ -205,12 +205,12 @@ void test_parse_extract_racf_options_result_racf_options_not_found();
 void test_parse_extract_racf_options_result_extraneous_parameter_provided();
 
 // Data Set
-void test_generate_extract_data_set_request();
-void test_parse_extract_data_set_result();
-void test_parse_extract_data_set_result_csdata();
-void test_parse_extract_data_set_result_data_set_not_found();
-void test_parse_extract_data_set_result_required_parameter_missing();
-void test_parse_extract_data_set_result_extraneous_parameter_provided();
+void test_generate_extract_dataset_request();
+void test_parse_extract_dataset_result();
+void test_parse_extract_dataset_result_csdata();
+void test_parse_extract_dataset_result_dataset_not_found();
+void test_parse_extract_dataset_result_required_parameter_missing();
+void test_parse_extract_dataset_result_extraneous_parameter_provided();
 
 // Resource
 void test_generate_extract_resource_request();
