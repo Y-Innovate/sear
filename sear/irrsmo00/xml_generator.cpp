@@ -329,9 +329,6 @@ std::string XMLGenerator::convertAdminType(const std::string& admin_type) {
   if (admin_type == "racf-options") {
     return "systemsettings";
   }
-  if (admin_type == "dataset") {
-    return "dataset";
-  }
   return admin_type;
 }
 
