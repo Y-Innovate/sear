@@ -95,7 +95,7 @@
   IRRSMO00_REQUEST_SAMPLES                                \
   "racf_options/test_alter_racf_options_trait_errors_request.json"
 
-// Data-Set
+// Dataset
 #define TEST_ADD_DATA_SET_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES "data_set/test_add_data_set_request.json"
 #define TEST_ADD_DATA_SET_REQUEST_XML \
@@ -384,7 +384,7 @@ void test_parse_alter_racf_options_result();
 void test_parse_alter_racf_options_parameter_errors();
 void test_parse_alter_racf_options_trait_errors();
 
-// Data-Set
+// Dataset
 void test_generate_add_data_set_request();
 void test_generate_alter_data_set_request();
 void test_generate_alter_data_set_csdata_request();

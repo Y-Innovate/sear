@@ -321,7 +321,7 @@ std::string XMLGenerator::convertOperator(const std::string& trait_operator) {
 std::string XMLGenerator::convertAdminType(const std::string& admin_type) {
   // Converts the admin type between sear's definitions and IRRSMO00's
   // definitions. group-connection to groupconnection, racf-options to
-  // systemsettings and data-set to dataset. All other admin types should be
+  // systemsettings. All other admin types should be
   // unchanged
   if (admin_type == "group-connection") {
     return "groupconnection";
@@ -329,7 +329,7 @@ std::string XMLGenerator::convertAdminType(const std::string& admin_type) {
   if (admin_type == "racf-options") {
     return "systemsettings";
   }
-  if (admin_type == "data-set") {
+  if (admin_type == "dataset") {
     return "dataset";
   }
   return admin_type;

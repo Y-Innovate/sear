@@ -310,7 +310,7 @@
           "const": "extract"
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"
@@ -332,7 +332,7 @@
           ]
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"
@@ -364,7 +364,7 @@
           "const": "delete"
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
         "data_set": {
           "$ref": "#/$defs/dataSetName"

@@ -16,7 +16,7 @@
 // clang-format off
 const key_mapping_t KEY_MAP[] = {
     { 
-     "data-set",
+     "dataset",
      segment_count(DATA_SET_SEGMENT_KEY_MAP),
      DATA_SET_SEGMENT_KEY_MAP
      },

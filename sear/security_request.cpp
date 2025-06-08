@@ -202,7 +202,7 @@ void SecurityRequest::load(const nlohmann::json& request) {
     function_code_ = RESOURCE_EXTRACT_FUNCTION_CODE;
     profile_name_  = request["resource"].get<std::string>();
     class_name_    = request["class"].get<std::string>();
-  } else if (admin_type_ == "data-set") {
+  } else if (admin_type_ == "dataset") {
     function_code_ = DATA_SET_EXTRACT_FUNCTION_CODE;
     profile_name_  = request["data_set"].get<std::string>();
   } else if (admin_type_ == "racf-options") {
