@@ -6,6 +6,24 @@
     {
       "properties": {
         "operation": {
+          "const": "search"
+        },
+        "admin_type": {
+          "const": "user"
+        },
+        "userid_filter": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
           "const": "extract"
         },
         "admin_type": {

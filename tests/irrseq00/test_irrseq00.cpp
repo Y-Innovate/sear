@@ -57,6 +57,18 @@ void test_parse_extract_user_result_pseudo_boolean() {
                             TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_RAW, false);
 }
 
+void test_generate_extract_next_user_request() {
+  test_extract_request_generation(TEST_EXTRACT_NEXT_USER_REQUEST_JSON,
+                                  TEST_EXTRACT_NEXT_USER_REQUEST_RAW, false,
+                                  false);
+}
+
+void test_parse_extract_next_user_result() {
+  test_parse_extract_result(TEST_EXTRACT_NEXT_USER_REQUEST_JSON,
+                            TEST_EXTRACT_NEXT_USER_RESULT_JSON,
+                            TEST_EXTRACT_NEXT_USER_RESULT_RAW, true);
+}
+
 /*************************************************************************/
 /* Group                                                                 */
 /*************************************************************************/

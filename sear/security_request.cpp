@@ -184,8 +184,13 @@ void SecurityRequest::load(const nlohmann::json& request) {
   }
 
   if (admin_type_ == "user") {
-    function_code_ = USER_EXTRACT_FUNCTION_CODE;
-    profile_name_  = request["userid"].get<std::string>();
+    if (operation_ == "search") {
+      function_code_ = USER_EXTRACT_NEXT_FUNCTION_CODE;
+      profile_name_  = request["userid_filter"].get<std::string>();
+    } else {
+      function_code_ = USER_EXTRACT_FUNCTION_CODE;
+      profile_name_  = request["userid"].get<std::string>();
+    }
   } else if (admin_type_ == "group") {
     function_code_ = GROUP_EXTRACT_FUNCTION_CODE;
     profile_name_  = request["group"].get<std::string>();

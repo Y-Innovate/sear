@@ -22,6 +22,11 @@
   IRRSEQ00_REQUEST_SAMPLES                                           \
   "user/test_extract_user_request_extraneous_parameter_provided.json"
 
+#define TEST_EXTRACT_NEXT_USER_REQUEST_JSON \
+  IRRSEQ00_REQUEST_SAMPLES "user/test_extract_next_user_request.json"
+#define TEST_EXTRACT_NEXT_USER_REQUEST_RAW \
+  IRRSEQ00_REQUEST_SAMPLES "user/test_extract_next_user_request.bin"
+
 // Group
 #define TEST_EXTRACT_GROUP_REQUEST_JSON \
   IRRSEQ00_REQUEST_SAMPLES "group/test_extract_group_request.json"
@@ -110,6 +115,11 @@
 #define TEST_EXTRACT_USER_RESULT_PSEUDO_BOOLEAN_RAW \
   IRRSEQ00_RESULT_SAMPLES "user/test_extract_user_result_pseudo_boolean.bin"
 
+#define TEST_EXTRACT_NEXT_USER_RESULT_JSON \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_next_user_result.json"
+#define TEST_EXTRACT_NEXT_USER_RESULT_RAW \
+  IRRSEQ00_RESULT_SAMPLES "user/test_extract_next_user_result.bin"
+
 // Group
 #define TEST_EXTRACT_GROUP_RESULT_JSON \
   IRRSEQ00_RESULT_SAMPLES "group/test_extract_group_result.json"
@@ -182,6 +192,9 @@ void test_parse_extract_user_result_user_not_found();
 void test_parse_extract_user_result_required_parameter_missing();
 void test_parse_extract_user_result_extraneous_parameter_provided();
 void test_parse_extract_user_result_pseudo_boolean();
+
+void test_generate_extract_next_user_request();
+void test_parse_extract_next_user_result();
 
 // Group
 void test_generate_extract_group_request();

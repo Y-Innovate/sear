@@ -60,10 +60,12 @@ if (SEAR_UNIT_TEST)
     set(ZOSLIB "")
     set(ZOSLIB_INCLUDE "tests/zoslib")
     set(IRRSEQ00 "")
+    set(DEBUGFLAG "-g")
 else()
     find_library(ZOSLIB libzoslib.a REQUIRED)
     set(ZOSLIB_INCLUDE "")
     set(IRRSEQ00 "sear/irrseq00/irrseq00.s")
+    set(DEBUGFLAG "")
 endif()
 
 # The library for SEAR
@@ -119,6 +121,8 @@ target_include_directories(
 )
 # Extra defines for compiling SEAR
 target_compile_definitions(sear PUBLIC _POSIX_C_SOURCE=200112L)
+# Compile with debug, only on linux
+target_compile_options(sear PUBLIC "${DEBUGFLAG}")
 
 # Embed json schema into sear_schema.hpp
 file(READ schema.json SEAR_SCHEMA)
@@ -181,6 +185,8 @@ target_include_directories(
 )
 # Extra defines for compiling test_runner
 target_compile_definitions(test_runner PUBLIC UNIT_TEST UNITY_OUTPUT_COLOR)
+# Compile with debug, only on linux
+target_compile_options(test_runner PUBLIC "${DEBUGFLAG}")
 # Create the test_runner target
 target_link_libraries(test_runner PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/libsear.so")
 

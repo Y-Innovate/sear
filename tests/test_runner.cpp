@@ -115,6 +115,10 @@ int main() {
   RUN_TEST(test_parse_extract_user_result_required_parameter_missing);
   RUN_TEST(test_parse_extract_user_result_extraneous_parameter_provided);
   RUN_TEST(test_parse_extract_user_result_pseudo_boolean);
+
+  RUN_TEST(test_generate_extract_next_user_request);
+  RUN_TEST(test_parse_extract_next_user_result);
+
   // Group
   RUN_TEST(test_generate_extract_group_request);
   RUN_TEST(test_parse_extract_group_result);

@@ -53,7 +53,8 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
     request_.load(request_json);
 
     // Make Request To Corresponding Callable Service
-    if (request_.getOperation() == "extract") {
+    if (request_.getOperation() == "extract" ||
+        request_.getOperation() == "search") {
       if (request_.getAdminType() != "keyring") {
         Logger::getInstance().debug("Entering IRRSEQ00 path");
         ProfileExtractor profile_extractor;
