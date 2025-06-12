@@ -75,6 +75,11 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     ProfileExtractor::buildGenericExtractRequest(
         p_arg_area, request.getProfileName(), request.getClassName(),
         function_code);
+    uint32_t profile_name_copy_length =
+        p_arg_area->args.profile_extract_parms.profile_name_length;
+    char profile_name_copy[PROFILE_NAME_MAX_LENGTH + 1];
+    std::memcpy(profile_name_copy, p_arg_area->args.profile_name,
+                PROFILE_NAME_MAX_LENGTH + 1);
     // Preserve the raw request data
     request.setRawRequestLength(
         (int)sizeof(generic_extract_underbar_arg_area_t));
@@ -89,6 +94,38 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
     Logger::getInstance().debug("Done");
+
+    while (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE &&
+           p_arg_area->args.SAF_rc == 0) {
+      p_arg_area->arg_pointers.p_profile_extract_parms =
+          reinterpret_cast<generic_extract_parms_results_t *>(
+              *p_arg_area->arg_pointers.p_p_result_buffer);
+
+      p_arg_area->arg_pointers.p_profile_extract_parms->flags =
+          htonl(0x4000000);
+
+      // Call R_Admin
+      Logger::getInstance().debug("Calling IRRSEQ00 ...");
+      rc = callRadmin(
+          reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
+      Logger::getInstance().debug("Done");
+
+      std::free(p_arg_area->arg_pointers.p_profile_extract_parms);
+
+      generic_extract_parms_results_t *p_generic_result =
+          reinterpret_cast<generic_extract_parms_results_t *>(
+              *p_arg_area->arg_pointers.p_p_result_buffer);
+
+      if (p_generic_result->profile_name_length >= profile_name_copy_length &&
+          !std::memcmp(p_arg_area->args.profile_name, profile_name_copy,
+                       profile_name_copy_length)) {
+        Logger::getInstance().hexDump(
+            p_arg_area->args.profile_name,
+            p_arg_area->args.profile_extract_parms.profile_name_length);
+      } else {
+        break;
+      }
+    }
 
     request.setRawResultPointer(p_arg_area->args.p_result_buffer);
     // Preserve Return & Reason Codes
@@ -188,6 +225,10 @@ void ProfileExtractor::buildGenericExtractRequest(
     __a2e_l(profile_extract_parms->class_name, 8);
   }
   profile_extract_parms->profile_name_length = htonl(profile_name.length());
+
+  if (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE) {
+    profile_extract_parms->flags = htonl(0x4000000);
+  }
 
   /***************************************************************************/
   /* Set Extract Argument Pointers                                           */
