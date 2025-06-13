@@ -75,11 +75,6 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     ProfileExtractor::buildGenericExtractRequest(
         p_arg_area, request.getProfileName(), request.getClassName(),
         function_code);
-    uint32_t profile_name_copy_length =
-        p_arg_area->args.profile_extract_parms.profile_name_length;
-    char profile_name_copy[PROFILE_NAME_MAX_LENGTH + 1];
-    std::memcpy(profile_name_copy, p_arg_area->args.profile_name,
-                PROFILE_NAME_MAX_LENGTH + 1);
     // Preserve the raw request data
     request.setRawRequestLength(
         (int)sizeof(generic_extract_underbar_arg_area_t));
@@ -95,36 +90,44 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
     Logger::getInstance().debug("Done");
 
-    while (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE &&
-           p_arg_area->args.SAF_rc == 0) {
-      p_arg_area->arg_pointers.p_profile_extract_parms =
-          reinterpret_cast<generic_extract_parms_results_t *>(
-              *p_arg_area->arg_pointers.p_p_result_buffer);
+    if (p_arg_area->args.SAF_rc == 0 &&
+        (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE ||
+         function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
+         function_code == DATA_SET_EXTRACT_NEXT_FUNCTION_CODE ||
+         function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE)) {
+      do {
+        generic_extract_parms_results_t *p_generic_result =
+            reinterpret_cast<generic_extract_parms_results_t *>(
+                *p_arg_area->arg_pointers.p_p_result_buffer);
+        char *p_profile_name = *p_arg_area->arg_pointers.p_p_result_buffer +
+                               sizeof(generic_extract_parms_results_t);
 
-      p_arg_area->arg_pointers.p_profile_extract_parms->flags =
-          htonl(0x4000000);
+        if (p_generic_result->profile_name_length >=
+                p_arg_area->args.profile_extract_parms.profile_name_length &&
+            !std::memcmp(
+                p_profile_name, p_arg_area->args.profile_name,
+                p_arg_area->args.profile_extract_parms.profile_name_length)) {
+          Logger::getInstance().hexDump(p_profile_name,
+                                        p_generic_result->profile_name_length);
+        } else {
+          break;
+        }
 
-      // Call R_Admin
-      Logger::getInstance().debug("Calling IRRSEQ00 ...");
-      rc = callRadmin(
-          reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
-      Logger::getInstance().debug("Done");
+        p_arg_area->arg_pointers.p_profile_extract_parms =
+            reinterpret_cast<generic_extract_parms_results_t *>(
+                *p_arg_area->arg_pointers.p_p_result_buffer);
 
-      std::free(p_arg_area->arg_pointers.p_profile_extract_parms);
+        p_arg_area->arg_pointers.p_profile_extract_parms->flags =
+            htonl(0x4000000);
 
-      generic_extract_parms_results_t *p_generic_result =
-          reinterpret_cast<generic_extract_parms_results_t *>(
-              *p_arg_area->arg_pointers.p_p_result_buffer);
+        // Call R_Admin
+        Logger::getInstance().debug("Calling IRRSEQ00 ...");
+        rc = callRadmin(
+            reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
+        Logger::getInstance().debug("Done");
 
-      if (p_generic_result->profile_name_length >= profile_name_copy_length &&
-          !std::memcmp(p_arg_area->args.profile_name, profile_name_copy,
-                       profile_name_copy_length)) {
-        Logger::getInstance().hexDump(
-            p_arg_area->args.profile_name,
-            p_arg_area->args.profile_extract_parms.profile_name_length);
-      } else {
-        break;
-      }
+        std::free(p_arg_area->arg_pointers.p_profile_extract_parms);
+      } while (p_arg_area->args.SAF_rc == 0);
     }
 
     request.setRawResultPointer(p_arg_area->args.p_result_buffer);
@@ -194,7 +197,7 @@ void ProfileExtractor::buildGenericExtractRequest(
       &args->profile_extract_parms;
 
   /***************************************************************************/
-  /* Set Extract Arguments                                                   */
+  /* Set Extract Arguments */
   /***************************************************************************/
   args->ALET_SAF_rc           = ALET;
   args->ALET_RACF_rc          = ALET;
@@ -226,14 +229,17 @@ void ProfileExtractor::buildGenericExtractRequest(
   }
   profile_extract_parms->profile_name_length = htonl(profile_name.length());
 
-  if (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE) {
+  if (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == DATA_SET_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
     profile_extract_parms->flags = htonl(0x4000000);
   }
 
   /***************************************************************************/
-  /* Set Extract Argument Pointers                                           */
+  /* Set Extract Argument Pointers */
   /*                                                                         */
-  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK.                  */
+  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK. */
   /***************************************************************************/
   arg_pointers->p_work_area =
       reinterpret_cast<char *__ptr32>(&args->RACF_work_area);
@@ -269,7 +275,7 @@ void ProfileExtractor::buildRACFOptionsExtractRequest(
       &args->racf_options_extract_parms;
 
   /***************************************************************************/
-  /* Set Extract Arguments                                                   */
+  /* Set Extract Arguments */
   /***************************************************************************/
   args->ALET_SAF_rc           = ALET;
   args->ALET_RACF_rc          = ALET;
@@ -279,9 +285,9 @@ void ProfileExtractor::buildRACFOptionsExtractRequest(
   args->function_code         = RACF_OPTIONS_EXTRACT_FUNCTION_CODE;
 
   /***************************************************************************/
-  /* Set Extract Argument Pointers                                           */
+  /* Set Extract Argument Pointers */
   /*                                                                         */
-  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK.                  */
+  /* Enable transition from 64-bit XPLINK to 31-bit OSLINK. */
   /***************************************************************************/
   arg_pointers->p_work_area =
       reinterpret_cast<char *__ptr32>(&args->RACF_work_area);
