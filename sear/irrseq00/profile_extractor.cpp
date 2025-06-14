@@ -134,7 +134,13 @@ void ProfileExtractor::extract(SecurityRequest &request) {
          function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
          function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
          function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE)) {
+      generic_extract_parms_results_t *p_save_generic_result;
+
       do {
+        p_save_generic_result =
+            reinterpret_cast<generic_extract_parms_results_t *>(
+                *p_arg_area->arg_pointers.p_p_result_buffer);
+
         const generic_extract_parms_results_t *p_generic_result =
             reinterpret_cast<generic_extract_parms_results_t *>(
                 *p_arg_area->arg_pointers.p_p_result_buffer);
@@ -173,8 +179,12 @@ void ProfileExtractor::extract(SecurityRequest &request) {
             reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
         Logger::getInstance().debug("Done");
 
-        std::free(p_arg_area->arg_pointers.p_profile_extract_parms);
+        if (p_arg_area->args.SAF_rc == 0)
+          std::free(p_arg_area->arg_pointers.p_profile_extract_parms);
       } while (p_arg_area->args.SAF_rc == 0);
+
+      *p_arg_area->arg_pointers.p_p_result_buffer =
+          reinterpret_cast<char *>(p_save_generic_result);
     }
 
     request.setRawResultPointer(p_arg_area->args.p_result_buffer);
