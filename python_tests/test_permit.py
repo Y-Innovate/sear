@@ -11,7 +11,7 @@ def test_add_dataset_permit(create_user, create_dataset):
             {
             "operation": "alter", 
             "admin_type": "permission", 
-            "data_set": create_dataset,
+            "dataset": create_dataset,
             "userid": create_user,
             "generic": True,
             "traits": {
@@ -27,7 +27,7 @@ def test_add_dataset_permit_missing_admin_type(create_user, create_dataset):
     add_result = sear(
             {
             "operation": "alter", 
-            "data_set": create_dataset,
+            "dataset": create_dataset,
             "userid": create_user,
             "generic": True,
             "traits": {
@@ -44,7 +44,7 @@ def test_add_dataset_permit_missing_userid(create_dataset):
             {
             "operation": "alter", 
             "admin_type": "permission", 
-            "data_set": create_dataset,
+            "dataset": create_dataset,
             "generic": True,
             "traits": {
                 "base:access": "READ",
