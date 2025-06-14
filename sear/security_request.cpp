@@ -163,11 +163,11 @@ void SecurityRequest::setErrors(const std::vector<std::string>& errors) {
   errors_ = errors;
 }
 
-void SecurityRequest::addFoundProfile(std::string& profile) {
+void SecurityRequest::addFoundProfile(char* profile) {
   found_profiles_.push_back(profile);
 }
 
-std::vector<std::string> SecurityRequest::getFoundProfiles() const {
+std::vector<char*> SecurityRequest::getFoundProfiles() const {
   return found_profiles_;
 }
 

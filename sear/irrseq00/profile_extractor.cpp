@@ -138,8 +138,9 @@ void ProfileExtractor::extract(SecurityRequest &request) {
         const generic_extract_parms_results_t *p_generic_result =
             reinterpret_cast<generic_extract_parms_results_t *>(
                 *p_arg_area->arg_pointers.p_p_result_buffer);
-        char *p_profile_name = *p_arg_area->arg_pointers.p_p_result_buffer +
-                               sizeof(generic_extract_parms_results_t);
+        const char *p_profile_name =
+            *p_arg_area->arg_pointers.p_p_result_buffer +
+            sizeof(generic_extract_parms_results_t);
 
         if (p_generic_result->profile_name_length >=
                 p_arg_area->args.profile_extract_parms.profile_name_length &&
@@ -149,14 +150,11 @@ void ProfileExtractor::extract(SecurityRequest &request) {
           Logger::getInstance().hexDump(p_profile_name,
                                         p_generic_result->profile_name_length);
 
-          char conv_profile[PROFILE_NAME_MAX_LENGTH + 1];
-          std::memcpy(&conv_profile[0], p_profile_name,
-                      PROFILE_NAME_MAX_LENGTH + 1);
-          __e2a_l(&conv_profile[0], p_generic_result->profile_name_length);
-          std::string str_profile;
-          str_profile.assign(&conv_profile[0],
-                             p_generic_result->profile_name_length);
-          request.addFoundProfile(str_profile);
+          auto unique_profile_name =
+              std::make_unique<char[]>(p_generic_result->profile_name_length);
+          char *profile_name = unique_profile_name.get();
+          request.addFoundProfile(profile_name);
+          unique_profile_name.release();
         } else {
           break;
         }
