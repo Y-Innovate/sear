@@ -85,10 +85,41 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     request.setRawRequestPointer(ProfileExtractor::cloneBuffer(
         reinterpret_cast<char *>(p_arg_area), request.getRawRequestLength()));
 
+    // For search functions first try regular extract in case an existing name
+    // was given as filter
+    uint8_t save_function_code = function_code;
+    switch (function_code) {
+      case USER_EXTRACT_NEXT_FUNCTION_CODE:
+        function_code = USER_EXTRACT_FUNCTION_CODE;
+        break;
+      case GROUP_EXTRACT_NEXT_FUNCTION_CODE:
+        function_code = GROUP_EXTRACT_FUNCTION_CODE;
+        break;
+      case DATA_SET_EXTRACT_NEXT_FUNCTION_CODE:
+        function_code = DATA_SET_EXTRACT_FUNCTION_CODE;
+        break;
+      case RESOURCE_EXTRACT_NEXT_FUNCTION_CODE:
+        function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
+        break;
+    }
+
     // Call R_Admin
     Logger::getInstance().debug("Calling IRRSEQ00 ...");
     rc = callRadmin(reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
     Logger::getInstance().debug("Done");
+
+    // In case of search and the exact filter doesn't exist as a profile,
+    // retry with original function_code
+    if (p_arg_area->args.SAF_rc == 4 && p_arg_area->args.RACF_rc == 4 &&
+        p_arg_area->args.RACF_rsn == 4 && function_code != save_function_code) {
+      function_code == save_function_code;
+
+      // Call R_Admin
+      Logger::getInstance().debug("Calling IRRSEQ00 ...");
+      rc = callRadmin(
+          reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
+      Logger::getInstance().debug("Done");
+    }
 
     if (p_arg_area->args.SAF_rc == 0 &&
         (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE ||
@@ -216,7 +247,8 @@ void ProfileExtractor::buildGenericExtractRequest(
   std::memcpy(args->profile_name, profile_name.c_str(), profile_name.length());
   // Encode profile name as IBM-1047.
   __a2e_l(args->profile_name, profile_name.length());
-  if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE) {
+  if (function_code == RESOURCE_EXTRACT_FUNCTION_CODE ||
+      function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
     // Automatically convert lowercase class names to uppercase.
     std::transform(class_name.begin(), class_name.end(), class_name.begin(),
                    [](unsigned char c) { return std::toupper(c); });
