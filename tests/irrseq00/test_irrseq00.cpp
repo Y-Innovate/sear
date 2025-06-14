@@ -64,9 +64,9 @@ void test_generate_extract_next_user_request() {
 }
 
 void test_parse_extract_next_user_result() {
-  test_parse_extract_result(TEST_EXTRACT_NEXT_USER_REQUEST_JSON,
-                            TEST_EXTRACT_NEXT_USER_RESULT_JSON,
-                            TEST_EXTRACT_NEXT_USER_RESULT_RAW, true);
+  test_parse_extract_next_result(TEST_EXTRACT_NEXT_USER_REQUEST_JSON,
+                                 TEST_EXTRACT_NEXT_USER_RESULT_JSON,
+                                 TEST_EXTRACT_NEXT_USER_RESULT_RAW, false);
 }
 
 /*************************************************************************/

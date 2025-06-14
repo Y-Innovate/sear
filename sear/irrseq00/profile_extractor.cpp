@@ -114,8 +114,10 @@ void ProfileExtractor::extract(SecurityRequest &request) {
 
     // In case of search and the exact filter doesn't exist as a profile,
     // retry with original function_code
-    if (p_arg_area->args.SAF_rc == 4 && p_arg_area->args.RACF_rc == 4 &&
-        p_arg_area->args.RACF_rsn == 4 && function_code != save_function_code) {
+    if (ntohl(p_arg_area->args.SAF_rc) == 4 &&
+        ntohl(p_arg_area->args.RACF_rc) == 4 &&
+        ntohl(p_arg_area->args.RACF_rsn) == 4 &&
+        function_code != save_function_code) {
       function_code                  = save_function_code;
       p_arg_area->args.function_code = function_code;
 
@@ -130,6 +132,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     }
 
     if (p_arg_area->args.SAF_rc == 0 &&
+        p_arg_area->args.p_result_buffer != nullptr &&
         (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE ||
          function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
          function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
@@ -200,7 +203,8 @@ void ProfileExtractor::extract(SecurityRequest &request) {
       function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
       function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
     if (request.getSAFReturnCode() > 4 or request.getRACFReturnCode() > 4 or
-        request.getRACFReasonCode() > 4) {
+        request.getRACFReasonCode() > 4 or rc != 0 or
+        request.getRawResultPointer() == nullptr) {
       request.setSEARReturnCode(4);
       // Raise Exception if Search Failed.
       const std::string &admin_type = request.getAdminType();
