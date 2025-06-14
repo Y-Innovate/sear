@@ -142,19 +142,18 @@ void ProfileExtractor::extract(SecurityRequest &request) {
             *p_arg_area->arg_pointers.p_p_result_buffer +
             sizeof(generic_extract_parms_results_t);
 
-        if (p_generic_result->profile_name_length >=
-                p_arg_area->args.profile_extract_parms.profile_name_length &&
-            !std::memcmp(
-                p_profile_name, p_arg_area->args.profile_name,
-                p_arg_area->args.profile_extract_parms.profile_name_length)) {
-          Logger::getInstance().hexDump(p_profile_name,
-                                        p_generic_result->profile_name_length);
+        uint32_t filter_len =
+            ntohl(p_arg_area->args.profile_extract_parms.profile_name_length);
+        uint32_t profile_len = ntohl(p_generic_result->profile_name_length);
+        if (profile_len >= filter_len &&
+            !std::memcmp(p_profile_name, p_arg_area->args.profile_name,
+                         filter_len)) {
+          Logger::getInstance().hexDump(p_profile_name, profile_len);
 
-          auto unique_profile_name =
-              std::make_unique<char[]>(p_generic_result->profile_name_length);
-          char *profile_name = unique_profile_name.get();
-          std::memcpy(profile_name, p_profile_name,
-                      p_generic_result->profile_name_length + 1);
+          auto unique_profile_name = std::make_unique<char[]>(profile_len);
+          char *profile_name       = unique_profile_name.get();
+          std::memcpy(profile_name, p_profile_name, profile_len);
+          profile_name[profile_len] = 0;
           request.addFoundProfile(profile_name);
           unique_profile_name.release();
         } else {
