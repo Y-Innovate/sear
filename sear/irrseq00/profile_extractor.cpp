@@ -149,9 +149,12 @@ void ProfileExtractor::extract(SecurityRequest &request) {
           Logger::getInstance().hexDump(p_profile_name,
                                         p_generic_result->profile_name_length);
 
-          __e2a_l(p_profile_name, p_generic_result->profile_name_length);
+          char conv_profile[PROFILE_NAME_MAX_LENGTH + 1];
+          std::memcpy(&conv_profile[0], p_profile_name,
+                      PROFILE_NAME_MAX_LENGTH + 1);
+          __e2a_l(&conv_profile[0], p_generic_result->profile_name_length);
           std::string str_profile;
-          str_profile.assign(p_profile_name,
+          str_profile.assign(&conv_profile[0],
                              p_generic_result->profile_name_length);
           request.addFoundProfile(str_profile);
         } else {
