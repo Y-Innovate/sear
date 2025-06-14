@@ -153,6 +153,8 @@ void ProfileExtractor::extract(SecurityRequest &request) {
           auto unique_profile_name =
               std::make_unique<char[]>(p_generic_result->profile_name_length);
           char *profile_name = unique_profile_name.get();
+          std::memcpy(profile_name, p_profile_name,
+                      p_generic_result->profile_name_length + 1);
           request.addFoundProfile(profile_name);
           unique_profile_name.release();
         } else {
@@ -184,17 +186,31 @@ void ProfileExtractor::extract(SecurityRequest &request) {
   }
 
   // Check Return Codes
-  if (request.getSAFReturnCode() != 0 or request.getRACFReturnCode() != 0 or
-      request.getRACFReasonCode() != 0 or rc != 0 or
-      request.getRawResultPointer() == nullptr) {
-    request.setSEARReturnCode(4);
-    // Raise Exception if Extract Failed.
-    const std::string &admin_type = request.getAdminType();
-    if (admin_type != "racf-options") {
-      throw SEARError("unable to extract '" + admin_type + "' profile '" +
+  if (function_code == USER_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
+      function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
+    if (request.getSAFReturnCode() > 4 or request.getRACFReturnCode() > 4 or
+        request.getRACFReasonCode() > 4) {
+      request.setSEARReturnCode(4);
+      // Raise Exception if Search Failed.
+      const std::string &admin_type = request.getAdminType();
+      throw SEARError("unable to search '" + admin_type + "' profile '" +
                       request.getProfileName() + "'");
-    } else {
-      throw SEARError("unable to extract '" + admin_type + "'");
+    }
+  } else {
+    if (request.getSAFReturnCode() != 0 or request.getRACFReturnCode() != 0 or
+        request.getRACFReasonCode() != 0 or rc != 0 or
+        request.getRawResultPointer() == nullptr) {
+      request.setSEARReturnCode(4);
+      // Raise Exception if Extract Failed.
+      const std::string &admin_type = request.getAdminType();
+      if (admin_type != "racf-options") {
+        throw SEARError("unable to extract '" + admin_type + "' profile '" +
+                        request.getProfileName() + "'");
+      } else {
+        throw SEARError("unable to extract '" + admin_type + "'");
+      }
     }
   }
 
