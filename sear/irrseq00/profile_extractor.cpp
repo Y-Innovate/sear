@@ -138,9 +138,8 @@ void ProfileExtractor::extract(SecurityRequest &request) {
         const generic_extract_parms_results_t *p_generic_result =
             reinterpret_cast<generic_extract_parms_results_t *>(
                 *p_arg_area->arg_pointers.p_p_result_buffer);
-        const char *p_profile_name =
-            *p_arg_area->arg_pointers.p_p_result_buffer +
-            sizeof(generic_extract_parms_results_t);
+        char *p_profile_name = *p_arg_area->arg_pointers.p_p_result_buffer +
+                               sizeof(generic_extract_parms_results_t);
 
         if (p_generic_result->profile_name_length >=
                 p_arg_area->args.profile_extract_parms.profile_name_length &&
@@ -149,6 +148,8 @@ void ProfileExtractor::extract(SecurityRequest &request) {
                 p_arg_area->args.profile_extract_parms.profile_name_length)) {
           Logger::getInstance().hexDump(p_profile_name,
                                         p_generic_result->profile_name_length);
+
+          __e2a_l(p_profile_name, p_generic_result->profile_name_length);
           std::string str_profile;
           str_profile.assign(p_profile_name,
                              p_generic_result->profile_name_length);
