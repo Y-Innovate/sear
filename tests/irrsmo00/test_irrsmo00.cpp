@@ -275,57 +275,57 @@ void test_parse_alter_racf_options_trait_errors() {
 /*************************************************************************/
 /* Data Set                                                              */
 /*************************************************************************/
-void test_generate_add_data_set_request() {
+void test_generate_add_dataset_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ADD_DATA_SET_REQUEST_JSON, TEST_ADD_DATA_SET_REQUEST_XML,
+      TEST_ADD_DATASET_REQUEST_JSON, TEST_ADD_DATASET_REQUEST_XML,
       TEST_IRRSMO00_PRECHECK_ON, false);
 }
 
-void test_generate_alter_data_set_request() {
+void test_generate_alter_dataset_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ALTER_DATA_SET_REQUEST_JSON, TEST_ALTER_DATA_SET_REQUEST_XML,
+      TEST_ALTER_DATASET_REQUEST_JSON, TEST_ALTER_DATASET_REQUEST_XML,
       TEST_IRRSMO00_PRECHECK_ON, false);
 }
 
-void test_generate_alter_data_set_csdata_request() {
+void test_generate_alter_dataset_csdata_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ALTER_DATA_SET_CSDATA_REQUEST_JSON,
-      TEST_ALTER_DATA_SET_CSDATA_REQUEST_XML, TEST_IRRSMO00_PRECHECK_ON, false);
+      TEST_ALTER_DATASET_CSDATA_REQUEST_JSON,
+      TEST_ALTER_DATASET_CSDATA_REQUEST_XML, TEST_IRRSMO00_PRECHECK_ON, false);
 }
 
-void test_generate_delete_data_set_request() {
+void test_generate_delete_dataset_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_DELETE_DATA_SET_REQUEST_JSON, TEST_DELETE_DATA_SET_REQUEST_XML,
+      TEST_DELETE_DATASET_REQUEST_JSON, TEST_DELETE_DATASET_REQUEST_XML,
       TEST_IRRSMO00_PRECHECK_OFF, false);
 }
 
-void test_parse_add_data_set_result() {
-  test_parse_add_alter_delete_result(TEST_ADD_DATA_SET_REQUEST_JSON,
-                                     TEST_ADD_DATA_SET_RESULT_JSON,
-                                     TEST_ADD_DATA_SET_RESULT_XML, false);
+void test_parse_add_dataset_result() {
+  test_parse_add_alter_delete_result(TEST_ADD_DATASET_REQUEST_JSON,
+                                     TEST_ADD_DATASET_RESULT_JSON,
+                                     TEST_ADD_DATASET_RESULT_XML, false);
 }
 
-void test_parse_delete_data_set_result() {
-  test_parse_add_alter_delete_result(TEST_DELETE_DATA_SET_REQUEST_JSON,
-                                     TEST_DELETE_DATA_SET_RESULT_JSON,
-                                     TEST_DELETE_DATA_SET_RESULT_XML, false);
+void test_parse_delete_dataset_result() {
+  test_parse_add_alter_delete_result(TEST_DELETE_DATASET_REQUEST_JSON,
+                                     TEST_DELETE_DATASET_RESULT_JSON,
+                                     TEST_DELETE_DATASET_RESULT_XML, false);
 }
 
-void test_parse_add_data_set_result_data_set_already_exists() {
+void test_parse_add_dataset_result_dataset_already_exists() {
   test_parse_add_alter_delete_result(
-      TEST_ADD_DATA_SET_REQUEST_JSON,
-      TEST_ADD_DATA_SET_RESULT_DATA_SET_ALREADY_EXISTS_JSON,
-      TEST_ADD_DATA_SET_RESULT_DATA_SET_ALREADY_EXISTS_XML, false);
+      TEST_ADD_DATASET_REQUEST_JSON,
+      TEST_ADD_DATASET_RESULT_DATASET_ALREADY_EXISTS_JSON,
+      TEST_ADD_DATASET_RESULT_DATASET_ALREADY_EXISTS_XML, false);
 }
 
-void test_parse_add_data_set_parameter_errors() {
-  test_validation_errors(TEST_ADD_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON,
+void test_parse_add_dataset_parameter_errors() {
+  test_validation_errors(TEST_ADD_DATASET_PARAMETER_ERRORS_REQUEST_JSON,
                          TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
-void test_parse_add_data_set_trait_errors() {
-  test_validation_errors(TEST_ADD_DATA_SET_TRAIT_ERRORS_REQUEST_JSON,
-                         TEST_ADD_DATA_SET_TRAIT_ERRORS_RESULT_JSON, false);
+void test_parse_add_dataset_trait_errors() {
+  test_validation_errors(TEST_ADD_DATASET_TRAIT_ERRORS_REQUEST_JSON,
+                         TEST_ADD_DATASET_TRAIT_ERRORS_RESULT_JSON, false);
 }
 
 /*************************************************************************/
@@ -387,10 +387,10 @@ void test_parse_add_resource_trait_errors() {
 /*************************************************************************/
 /* Permission                                                            */
 /*************************************************************************/
-void test_generate_alter_permission_data_set_request() {
+void test_generate_alter_permission_dataset_request() {
   test_generate_add_alter_delete_request_generation(
-      TEST_ALTER_PERMISSION_DATA_SET_REQUEST_JSON,
-      TEST_ALTER_PERMISSION_DATA_SET_REQUEST_XML, TEST_IRRSMO00_PRECHECK_OFF,
+      TEST_ALTER_PERMISSION_DATASET_REQUEST_JSON,
+      TEST_ALTER_PERMISSION_DATASET_REQUEST_XML, TEST_IRRSMO00_PRECHECK_OFF,
       false);
 }
 
@@ -408,11 +408,11 @@ void test_generate_delete_permission_resource_request() {
       false);
 }
 
-void test_parse_alter_permission_data_set_result() {
+void test_parse_alter_permission_dataset_result() {
   test_parse_add_alter_delete_result(
-      TEST_ALTER_PERMISSION_DATA_SET_REQUEST_JSON,
-      TEST_ALTER_PERMISSION_DATA_SET_RESULT_JSON,
-      TEST_ALTER_PERMISSION_DATA_SET_RESULT_XML, false);
+      TEST_ALTER_PERMISSION_DATASET_REQUEST_JSON,
+      TEST_ALTER_PERMISSION_DATASET_RESULT_JSON,
+      TEST_ALTER_PERMISSION_DATASET_RESULT_XML, false);
 }
 
 void test_parse_alter_permission_resource_result() {
@@ -429,15 +429,15 @@ void test_parse_delete_permission_resource_result() {
       TEST_DELETE_PERMISSION_RESOURCE_RESULT_XML, false);
 }
 
-void test_parse_alter_permission_data_set_parameter_errors() {
+void test_parse_alter_permission_dataset_parameter_errors() {
   test_validation_errors(
-      TEST_ALTER_PERMISSION_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON,
+      TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
-void test_parse_alter_permission_data_set_with_class_parameter_error() {
+void test_parse_alter_permission_dataset_with_class_parameter_error() {
   test_validation_errors(
-      TEST_ALTER_PERMISSION_DATA_SET_WITH_CLASS_PARAMETER_ERROR_REQUEST_JSON,
+      TEST_ALTER_PERMISSION_DATASET_WITH_CLASS_PARAMETER_ERROR_REQUEST_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
@@ -447,13 +447,13 @@ void test_parse_alter_permission_resource_parameter_errors() {
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
-void test_parse_alter_permission_resource_class_set_to_data_set_lowercase_parameter_error() {
+void test_parse_alter_permission_resource_class_set_to_dataset_lowercase_parameter_error() {
   test_validation_errors(
       TEST_ALTER_PERMISSION_RESOURCE_CLASS_SET_TO_DATASET_LOWERCASE_PARAMETER_ERROR_REQUEST_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
-void test_parse_alter_permission_resource_class_set_to_data_set_uppercase_parameter_error() {
+void test_parse_alter_permission_resource_class_set_to_dataset_uppercase_parameter_error() {
   test_validation_errors(
       TEST_ALTER_PERMISSION_RESOURCE_CLASS_SET_TO_DATASET_UPPERCASE_PARAMETER_ERROR_REQUEST_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);

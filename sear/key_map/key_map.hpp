@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <nlohmann/json.hpp>
 
-#include "key_map_data_set.hpp"
+#include "key_map_dataset.hpp"
 #include "key_map_group.hpp"
 #include "key_map_group_connection.hpp"
 #include "key_map_permission.hpp"
@@ -16,9 +16,9 @@
 // clang-format off
 const key_mapping_t KEY_MAP[] = {
     { 
-     "data-set",
-     segment_count(DATA_SET_SEGMENT_KEY_MAP),
-     DATA_SET_SEGMENT_KEY_MAP
+     "dataset",
+     segment_count(DATASET_SEGMENT_KEY_MAP),
+     DATASET_SEGMENT_KEY_MAP
      },
     { 
      "group", 

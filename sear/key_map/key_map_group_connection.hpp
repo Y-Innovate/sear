@@ -7,7 +7,7 @@
 
 const trait_key_mapping_t GROUP_CONNECTION_BASE_SEGMENT_MAP[]{
     {
-     "base:automatic_data_set_protection",     "adsp",
+     "base:automatic_dataset_protection",     "adsp",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {

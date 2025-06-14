@@ -173,39 +173,39 @@ void test_parse_extract_racf_options_result_extraneous_parameter_provided() {
 /*************************************************************************/
 /* Data Set                                                              */
 /*************************************************************************/
-void test_generate_extract_data_set_request() {
-  test_extract_request_generation(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
-                                  TEST_EXTRACT_DATA_SET_REQUEST_RAW, false,
+void test_generate_extract_dataset_request() {
+  test_extract_request_generation(TEST_EXTRACT_DATASET_REQUEST_JSON,
+                                  TEST_EXTRACT_DATASET_REQUEST_RAW, false,
                                   false);
 }
 
-void test_parse_extract_data_set_result() {
-  test_parse_extract_result(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
-                            TEST_EXTRACT_DATA_SET_RESULT_JSON,
-                            TEST_EXTRACT_DATA_SET_RESULT_RAW, false);
+void test_parse_extract_dataset_result() {
+  test_parse_extract_result(TEST_EXTRACT_DATASET_REQUEST_JSON,
+                            TEST_EXTRACT_DATASET_RESULT_JSON,
+                            TEST_EXTRACT_DATASET_RESULT_RAW, false);
 }
 
-void test_parse_extract_data_set_result_csdata() {
-  test_parse_extract_result(TEST_EXTRACT_DATA_SET_REQUEST_JSON,
-                            TEST_EXTRACT_DATA_SET_RESULT_CSDATA_JSON,
-                            TEST_EXTRACT_DATA_SET_RESULT_CSDATA_RAW, false);
+void test_parse_extract_dataset_result_csdata() {
+  test_parse_extract_result(TEST_EXTRACT_DATASET_REQUEST_JSON,
+                            TEST_EXTRACT_DATASET_RESULT_CSDATA_JSON,
+                            TEST_EXTRACT_DATASET_RESULT_CSDATA_RAW, false);
 }
 
-void test_parse_extract_data_set_result_data_set_not_found() {
+void test_parse_extract_dataset_result_dataset_not_found() {
   test_parse_extract_result_profile_not_found(
-      TEST_EXTRACT_DATA_SET_REQUEST_JSON,
-      TEST_EXTRACT_DATA_SET_RESULT_DATA_SET_NOT_FOUND_JSON, false);
+      TEST_EXTRACT_DATASET_REQUEST_JSON,
+      TEST_EXTRACT_DATASET_RESULT_DATASET_NOT_FOUND_JSON, false);
 }
 
-void test_parse_extract_data_set_result_required_parameter_missing() {
+void test_parse_extract_dataset_result_required_parameter_missing() {
   test_validation_errors(
-      TEST_EXTRACT_DATA_SET_REQUEST_REQUIRED_PARAMETER_MISSING_JSON,
+      TEST_EXTRACT_DATASET_REQUEST_REQUIRED_PARAMETER_MISSING_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 
-void test_parse_extract_data_set_result_extraneous_parameter_provided() {
+void test_parse_extract_dataset_result_extraneous_parameter_provided() {
   test_validation_errors(
-      TEST_EXTRACT_DATA_SET_REQUEST_EXTRANEOUS_PARAMETER_PROVIDED_JSON,
+      TEST_EXTRACT_DATASET_REQUEST_EXTRANEOUS_PARAMETER_PROVIDED_JSON,
       TEST_PARAMETER_VALIDATION_ERROR_RESULT_JSON, false);
 }
 

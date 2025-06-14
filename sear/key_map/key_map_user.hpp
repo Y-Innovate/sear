@@ -7,7 +7,7 @@
 
 const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
     {
-     "base:automatic_data_set_protection",     "adsp",
+     "base:automatic_dataset_protection",     "adsp",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
@@ -39,7 +39,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "base:group_connection_automatic_data_set_protection",    "cadsp",
+     "base:group_connection_automatic_dataset_protection",    "cadsp",
      TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
@@ -55,7 +55,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:group_connection_data_set_access",  "cgrpacc",
+     "base:group_connection_dataset_access",  "cgrpacc",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
@@ -135,7 +135,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:group_data_set_access",   "grpacc",
+     "base:group_dataset_access",   "grpacc",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
@@ -167,7 +167,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "base:model_data_set",    "model",
+     "base:model_dataset",    "model",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -723,7 +723,7 @@ const trait_key_mapping_t USER_TSO_KEY_MAP[]{
      TRAIT_TYPE_STRING, {true, false, false, true},
      },
     {
-     "tso:data_set_allocation_unit",     "unit",
+     "tso:dataset_allocation_unit",     "unit",
      TRAIT_TYPE_STRING, {true, false, false, true},
      },
     {

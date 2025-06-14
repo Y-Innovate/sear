@@ -95,29 +95,29 @@
   IRRSMO00_REQUEST_SAMPLES                                \
   "racf_options/test_alter_racf_options_trait_errors_request.json"
 
-// Data-Set
-#define TEST_ADD_DATA_SET_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_add_data_set_request.json"
-#define TEST_ADD_DATA_SET_REQUEST_XML \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_add_data_set_request.xml"
-#define TEST_ALTER_DATA_SET_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_request.json"
-#define TEST_ALTER_DATA_SET_REQUEST_XML \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_request.xml"
-#define TEST_ALTER_DATA_SET_CSDATA_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_csdata_request.json"
-#define TEST_ALTER_DATA_SET_CSDATA_REQUEST_XML \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_alter_data_set_csdata_request.xml"
-#define TEST_ADD_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON \
+// Dataset
+#define TEST_ADD_DATASET_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_add_dataset_request.json"
+#define TEST_ADD_DATASET_REQUEST_XML \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_add_dataset_request.xml"
+#define TEST_ALTER_DATASET_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_alter_dataset_request.json"
+#define TEST_ALTER_DATASET_REQUEST_XML \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_alter_dataset_request.xml"
+#define TEST_ALTER_DATASET_CSDATA_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_alter_dataset_csdata_request.json"
+#define TEST_ALTER_DATASET_CSDATA_REQUEST_XML \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_alter_dataset_csdata_request.xml"
+#define TEST_ADD_DATASET_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                              \
-  "data_set/test_add_data_set_parameter_errors_request.json"
-#define TEST_ADD_DATA_SET_TRAIT_ERRORS_REQUEST_JSON \
+  "dataset/test_add_dataset_parameter_errors_request.json"
+#define TEST_ADD_DATASET_TRAIT_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                          \
-  "data_set/test_add_data_set_trait_errors_request.json"
-#define TEST_DELETE_DATA_SET_REQUEST_JSON \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_delete_data_set_request.json"
-#define TEST_DELETE_DATA_SET_REQUEST_XML \
-  IRRSMO00_REQUEST_SAMPLES "data_set/test_delete_data_set_request.xml"
+  "dataset/test_add_dataset_trait_errors_request.json"
+#define TEST_DELETE_DATASET_REQUEST_JSON \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_delete_dataset_request.json"
+#define TEST_DELETE_DATASET_REQUEST_XML \
+  IRRSMO00_REQUEST_SAMPLES "dataset/test_delete_dataset_request.xml"
 
 // Resource
 #define TEST_ADD_RESOURCE_REQUEST_JSON \
@@ -144,30 +144,30 @@
   IRRSMO00_REQUEST_SAMPLES "resource/test_delete_resource_request.xml"
 
 // Permission
-#define TEST_ALTER_PERMISSION_DATA_SET_REQUEST_JSON \
+#define TEST_ALTER_PERMISSION_DATASET_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                          \
-  "permission/test_alter_permission_data_set_request.json"
-#define TEST_ALTER_PERMISSION_DATA_SET_REQUEST_XML \
+  "permission/test_alter_permission_dataset_request.json"
+#define TEST_ALTER_PERMISSION_DATASET_REQUEST_XML \
   IRRSMO00_REQUEST_SAMPLES                         \
-  "permission/test_alter_permission_data_set_request.xml"
-#define TEST_ALTER_PERMISSION_DATA_SET_WITH_CLASS_PARAMETER_ERROR_REQEST_JSON \
+  "permission/test_alter_permission_dataset_request.xml"
+#define TEST_ALTER_PERMISSION_DATASET_WITH_CLASS_PARAMETER_ERROR_REQEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                                                    \
   "permission/"                                                               \
-  "test_alter_permission_data_set_with_class_parameter_error_request.json"
+  "test_alter_permission_dataset_with_class_parameter_error_request.json"
 #define TEST_ALTER_PERMISSION_RESOURCE_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                          \
   "permission/test_alter_permission_resource_request.json"
 #define TEST_ALTER_PERMISSION_RESOURCE_REQUEST_XML \
   IRRSMO00_REQUEST_SAMPLES                         \
   "permission/test_alter_permission_resource_request.xml"
-#define TEST_ALTER_PERMISSION_DATA_SET_PARAMETER_ERRORS_REQUEST_JSON    \
+#define TEST_ALTER_PERMISSION_DATASET_PARAMETER_ERRORS_REQUEST_JSON    \
   IRRSMO00_REQUEST_SAMPLES                                              \
-  "permission/test_alter_permission_data_set_parameter_errors_request." \
+  "permission/test_alter_permission_dataset_parameter_errors_request." \
   "json"
-#define TEST_ALTER_PERMISSION_DATA_SET_WITH_CLASS_PARAMETER_ERROR_REQUEST_JSON \
+#define TEST_ALTER_PERMISSION_DATASET_WITH_CLASS_PARAMETER_ERROR_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                                                     \
   "permission/"                                                                \
-  "test_alter_permission_data_set_with_class_parameter_error_request."         \
+  "test_alter_permission_dataset_with_class_parameter_error_request."         \
   "json"
 #define TEST_ALTER_PERMISSION_RESOURCE_PARAMETER_ERRORS_REQUEST_JSON \
   IRRSMO00_REQUEST_SAMPLES                                           \
@@ -271,24 +271,24 @@
   "racf_options/test_alter_racf_options_trait_errors_result.json"
 
 // Data Set
-#define TEST_ADD_DATA_SET_RESULT_JSON \
-  IRRSMO00_RESULT_SAMPLES "data_set/test_add_data_set_result.json"
-#define TEST_ADD_DATA_SET_RESULT_XML \
-  IRRSMO00_RESULT_SAMPLES "data_set/test_add_data_set_result.xml"
-#define TEST_DELETE_DATA_SET_RESULT_JSON \
-  IRRSMO00_RESULT_SAMPLES "data_set/test_delete_data_set_result.json"
-#define TEST_DELETE_DATA_SET_RESULT_XML \
-  IRRSMO00_RESULT_SAMPLES "data_set/test_delete_data_set_result.xml"
-#define TEST_ADD_DATA_SET_RESULT_DATA_SET_ALREADY_EXISTS_JSON \
+#define TEST_ADD_DATASET_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES "dataset/test_add_dataset_result.json"
+#define TEST_ADD_DATASET_RESULT_XML \
+  IRRSMO00_RESULT_SAMPLES "dataset/test_add_dataset_result.xml"
+#define TEST_DELETE_DATASET_RESULT_JSON \
+  IRRSMO00_RESULT_SAMPLES "dataset/test_delete_dataset_result.json"
+#define TEST_DELETE_DATASET_RESULT_XML \
+  IRRSMO00_RESULT_SAMPLES "dataset/test_delete_dataset_result.xml"
+#define TEST_ADD_DATASET_RESULT_DATASET_ALREADY_EXISTS_JSON \
   IRRSMO00_RESULT_SAMPLES                                     \
-  "data_set/test_add_data_set_result_data_set_already_exists.json"
-#define TEST_ADD_DATA_SET_RESULT_DATA_SET_ALREADY_EXISTS_XML \
+  "dataset/test_add_dataset_result_dataset_already_exists.json"
+#define TEST_ADD_DATASET_RESULT_DATASET_ALREADY_EXISTS_XML \
   IRRSMO00_RESULT_SAMPLES                                    \
-  "data_set/test_add_data_set_result_data_set_already_exists.xml"
-#define TEST_ADD_DATA_SET_TRAIT_ERRORS_RESULT_JSON \
+  "dataset/test_add_dataset_result_dataset_already_exists.xml"
+#define TEST_ADD_DATASET_TRAIT_ERRORS_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES                          \
-  "data_set/"                                      \
-  "test_add_data_set_trait_errors_result.json"
+  "dataset/"                                      \
+  "test_add_dataset_trait_errors_result.json"
 
 // Resource
 #define TEST_ADD_RESOURCE_RESULT_JSON \
@@ -311,12 +311,12 @@
   "test_add_resource_trait_errors_result.json"
 
 // Permission
-#define TEST_ALTER_PERMISSION_DATA_SET_RESULT_JSON \
+#define TEST_ALTER_PERMISSION_DATASET_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES                          \
-  "permission/test_alter_permission_data_set_result.json"
-#define TEST_ALTER_PERMISSION_DATA_SET_RESULT_XML \
+  "permission/test_alter_permission_dataset_result.json"
+#define TEST_ALTER_PERMISSION_DATASET_RESULT_XML \
   IRRSMO00_RESULT_SAMPLES                         \
-  "permission/test_alter_permission_data_set_result.xml"
+  "permission/test_alter_permission_dataset_result.xml"
 #define TEST_ALTER_PERMISSION_RESOURCE_RESULT_JSON \
   IRRSMO00_RESULT_SAMPLES                          \
   "permission/test_alter_permission_resource_result.json"
@@ -384,16 +384,16 @@ void test_parse_alter_racf_options_result();
 void test_parse_alter_racf_options_parameter_errors();
 void test_parse_alter_racf_options_trait_errors();
 
-// Data-Set
-void test_generate_add_data_set_request();
-void test_generate_alter_data_set_request();
-void test_generate_alter_data_set_csdata_request();
-void test_generate_delete_data_set_request();
-void test_parse_add_data_set_result();
-void test_parse_delete_data_set_result();
-void test_parse_add_data_set_result_data_set_already_exists();
-void test_parse_add_data_set_parameter_errors();
-void test_parse_add_data_set_trait_errors();
+// Dataset
+void test_generate_add_dataset_request();
+void test_generate_alter_dataset_request();
+void test_generate_alter_dataset_csdata_request();
+void test_generate_delete_dataset_request();
+void test_parse_add_dataset_result();
+void test_parse_delete_dataset_result();
+void test_parse_add_dataset_result_dataset_already_exists();
+void test_parse_add_dataset_parameter_errors();
+void test_parse_add_dataset_trait_errors();
 
 // Resource
 void test_generate_add_resource_request();
@@ -407,17 +407,17 @@ void test_parse_add_resource_parameter_errors();
 void test_parse_add_resource_trait_errors();
 
 // Permission
-void test_generate_alter_permission_data_set_request();
+void test_generate_alter_permission_dataset_request();
 void test_generate_alter_permission_resource_request();
 void test_generate_delete_permission_resource_request();
-void test_parse_alter_permission_data_set_result();
+void test_parse_alter_permission_dataset_result();
 void test_parse_alter_permission_resource_result();
 void test_parse_delete_permission_resource_result();
-void test_parse_alter_permission_data_set_parameter_errors();
-void test_parse_alter_permission_data_set_with_class_parameter_error();
+void test_parse_alter_permission_dataset_parameter_errors();
+void test_parse_alter_permission_dataset_with_class_parameter_error();
 void test_parse_alter_permission_resource_parameter_errors();
-void test_parse_alter_permission_resource_class_set_to_data_set_lowercase_parameter_error();
-void test_parse_alter_permission_resource_class_set_to_data_set_uppercase_parameter_error();
+void test_parse_alter_permission_resource_class_set_to_dataset_lowercase_parameter_error();
+void test_parse_alter_permission_resource_class_set_to_dataset_uppercase_parameter_error();
 void test_parse_alter_permission_resource_with_volume_parameter_error();
 void test_parse_alter_permission_trait_errors();
 

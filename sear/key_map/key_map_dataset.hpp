@@ -1,11 +1,11 @@
-#ifndef __SEAR_KEY_MAP_DATA_SET_H_
-#define __SEAR_KEY_MAP_DATA_SET_H_
+#ifndef __SEAR_KEY_MAP_DATASET_H_
+#define __SEAR_KEY_MAP_DATASET_H_
 
 #include <stdbool.h>
 
 #include "key_map_structs.hpp"
 
-const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
+const trait_key_mapping_t DATASET_BASE_SEGMENT_MAP[]{
     {
      "base:access_list",   "aclcnt",
      TRAIT_TYPE_REPEAT, {false, false, false, false},
@@ -103,11 +103,11 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:data_set_type",   "dstype",
+     "base:dataset_type",   "dstype",
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:erase_data_sets_on_delete",    "erase",
+     "base:erase_datasets_on_delete",    "erase",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
@@ -119,7 +119,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:tape_data_set_file_sequence_number",  "fileseq",
+     "base:tape_dataset_file_sequence_number",  "fileseq",
      TRAIT_TYPE_UINT,  {true, false, false, false},
      },
     {
@@ -171,7 +171,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING, {false, false, false, false},
      },
     {
-     "base:data_set_model_profile",    "model",
+     "base:dataset_model_profile",    "model",
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
@@ -187,7 +187,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_REPEAT, {false, false, false, false},
      },
     {
-     "base:tape_data_set_security_retention_period",    "retpd",
+     "base:tape_dataset_security_retention_period",    "retpd",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -211,7 +211,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,  {true, false, false, false},
      },
     {
-     "base:use_tape_data_set_profile",     "tape",
+     "base:use_tape_dataset_profile",     "tape",
      TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
@@ -219,7 +219,7 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:data_set_allocation_unit",     "unit",
+     "base:dataset_allocation_unit",     "unit",
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
@@ -240,14 +240,14 @@ const trait_key_mapping_t DATA_SET_BASE_SEGMENT_MAP[]{
      }
 };
 
-const trait_key_mapping_t DATA_SET_CSDATA_KEY_MAP[]{
+const trait_key_mapping_t DATASET_CSDATA_KEY_MAP[]{
     {
      "csdata:*", "*",
      TRAIT_TYPE_STRING, {true, false, false, true},
      }
 };
 
-const trait_key_mapping_t DATA_SET_DFP_KEY_MAP[]{
+const trait_key_mapping_t DATASET_DFP_KEY_MAP[]{
     {
      "dfp:owner", "resowner",
      TRAIT_TYPE_STRING, {false, false, false, false},
@@ -258,18 +258,18 @@ const trait_key_mapping_t DATA_SET_DFP_KEY_MAP[]{
      }
 };
 
-const trait_key_mapping_t DATA_SET_TME_KEY_MAP[]{
+const trait_key_mapping_t DATASET_TME_KEY_MAP[]{
     {
      "tme:roles", "roles",
      TRAIT_TYPE_STRING, {false, false, false, false},
      }
 };
 
-const segment_key_mapping_t DATA_SET_SEGMENT_KEY_MAP[] = {
-    {  "base", field_count(DATA_SET_BASE_SEGMENT_MAP), DATA_SET_BASE_SEGMENT_MAP},
-    {"csdata",   field_count(DATA_SET_CSDATA_KEY_MAP),   DATA_SET_CSDATA_KEY_MAP},
-    {   "dfp",      field_count(DATA_SET_DFP_KEY_MAP),      DATA_SET_DFP_KEY_MAP},
-    {   "tme",      field_count(DATA_SET_TME_KEY_MAP),      DATA_SET_TME_KEY_MAP}
+const segment_key_mapping_t DATASET_SEGMENT_KEY_MAP[] = {
+    {  "base", field_count(DATASET_BASE_SEGMENT_MAP), DATASET_BASE_SEGMENT_MAP},
+    {"csdata",   field_count(DATASET_CSDATA_KEY_MAP),   DATASET_CSDATA_KEY_MAP},
+    {   "dfp",      field_count(DATASET_DFP_KEY_MAP),      DATASET_DFP_KEY_MAP},
+    {   "tme",      field_count(DATASET_TME_KEY_MAP),      DATASET_TME_KEY_MAP}
 };
 
 #endif

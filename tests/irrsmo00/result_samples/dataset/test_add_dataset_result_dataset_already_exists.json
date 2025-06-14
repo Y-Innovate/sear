@@ -1,6 +1,6 @@
 {
   "errors": [
-    "sear: unable to add 'ESWIFT.TEST.**' because a 'data-set' profile already exists with that name"
+    "sear: unable to add 'ESWIFT.TEST.**' because a 'dataset' profile already exists with that name"
   ],
   "return_codes": {
     "racf_reason_code": 0,
