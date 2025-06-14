@@ -112,7 +112,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     // retry with original function_code
     if (p_arg_area->args.SAF_rc == 4 && p_arg_area->args.RACF_rc == 4 &&
         p_arg_area->args.RACF_rsn == 4 && function_code != save_function_code) {
-      function_code == save_function_code;
+      function_code = save_function_code;
 
       // Call R_Admin
       Logger::getInstance().debug("Calling IRRSEQ00 ...");
