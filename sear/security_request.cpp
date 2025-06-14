@@ -163,6 +163,14 @@ void SecurityRequest::setErrors(const std::vector<std::string>& errors) {
   errors_ = errors;
 }
 
+void SecurityRequest::addFoundProfile(std::string& profile) {
+  found_profiles_.push_back(profile);
+}
+
+std::vector<std::string> SecurityRequest::getFoundProfiles() const {
+  return found_profiles_;
+}
+
 void SecurityRequest::setIntermediateResultJSON(
     nlohmann::json intermediate_result_json) {
   intermediate_result_json_ = intermediate_result_json;

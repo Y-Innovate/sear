@@ -105,8 +105,13 @@ void SecurityAdmin::doExtract(Extractor &extractor) {
       // Post Process RACF Options Extract Result
       post_processor.postProcessRACFOptions(request_);
     } else {
-      // Post Process Generic Extract Result
-      post_processor.postProcessGeneric(request_);
+      if (request_.getOperation() == "search") {
+        // Post Process Generic Search Result
+        post_processor.postProcessSearchGeneric(request_);
+      } else {
+        // Post Process Generic Extract Result
+        post_processor.postProcessGeneric(request_);
+      }
     }
   } else {
     KeyringPostProcessor post_processor;

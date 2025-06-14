@@ -90,16 +90,20 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     uint8_t save_function_code = function_code;
     switch (function_code) {
       case USER_EXTRACT_NEXT_FUNCTION_CODE:
-        function_code = USER_EXTRACT_FUNCTION_CODE;
+        function_code                  = USER_EXTRACT_FUNCTION_CODE;
+        p_arg_area->args.function_code = function_code;
         break;
       case GROUP_EXTRACT_NEXT_FUNCTION_CODE:
-        function_code = GROUP_EXTRACT_FUNCTION_CODE;
+        function_code                  = GROUP_EXTRACT_FUNCTION_CODE;
+        p_arg_area->args.function_code = function_code;
         break;
       case DATASET_EXTRACT_NEXT_FUNCTION_CODE:
-        function_code = DATASET_EXTRACT_FUNCTION_CODE;
+        function_code                  = DATASET_EXTRACT_FUNCTION_CODE;
+        p_arg_area->args.function_code = function_code;
         break;
       case RESOURCE_EXTRACT_NEXT_FUNCTION_CODE:
-        function_code = RESOURCE_EXTRACT_FUNCTION_CODE;
+        function_code                  = RESOURCE_EXTRACT_FUNCTION_CODE;
+        p_arg_area->args.function_code = function_code;
         break;
     }
 
@@ -112,13 +116,17 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     // retry with original function_code
     if (p_arg_area->args.SAF_rc == 4 && p_arg_area->args.RACF_rc == 4 &&
         p_arg_area->args.RACF_rsn == 4 && function_code != save_function_code) {
-      function_code = save_function_code;
+      function_code                  = save_function_code;
+      p_arg_area->args.function_code = function_code;
 
       // Call R_Admin
       Logger::getInstance().debug("Calling IRRSEQ00 ...");
       rc = callRadmin(
           reinterpret_cast<char *__ptr32>(&p_arg_area->arg_pointers));
       Logger::getInstance().debug("Done");
+    } else {
+      function_code                  = save_function_code;
+      p_arg_area->args.function_code = function_code;
     }
 
     if (p_arg_area->args.SAF_rc == 0 &&
@@ -141,6 +149,10 @@ void ProfileExtractor::extract(SecurityRequest &request) {
                 p_arg_area->args.profile_extract_parms.profile_name_length)) {
           Logger::getInstance().hexDump(p_profile_name,
                                         p_generic_result->profile_name_length);
+          std::string str_profile;
+          str_profile.assign(p_profile_name,
+                             p_generic_result->profile_name_length);
+          request.addFoundProfile(str_profile);
         } else {
           break;
         }

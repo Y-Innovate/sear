@@ -104,6 +104,13 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   request.setIntermediateResultJSON(profile);
 }
 
+void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request) {
+  nlohmann::json profiles;
+  profiles["profiles"] = request.getFoundProfiles();
+
+  request.setIntermediateResultJSON(profiles);
+}
+
 void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
