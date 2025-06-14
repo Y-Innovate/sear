@@ -310,16 +310,16 @@
           "const": "extract"
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
-        "data_set": {
+        "dataset": {
           "$ref": "#/$defs/dataSetName"
         }
       },
       "required": [
         "operation",
         "admin_type",
-        "data_set"
+        "dataset"
       ],
       "additionalProperties": false
     },
@@ -332,9 +332,9 @@
           ]
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
-        "data_set": {
+        "dataset": {
           "$ref": "#/$defs/dataSetName"
         },
         "volume": {
@@ -353,7 +353,7 @@
       "required": [
         "operation",
         "admin_type",
-        "data_set",
+        "dataset",
         "traits"
       ],
       "additionalProperties": false
@@ -364,9 +364,9 @@
           "const": "delete"
         },
         "admin_type": {
-          "const": "data-set"
+          "const": "dataset"
         },
-        "data_set": {
+        "dataset": {
           "$ref": "#/$defs/dataSetName"
         },
         "volume": {
@@ -382,7 +382,7 @@
       "required": [
         "operation",
         "admin_type",
-        "data_set"
+        "dataset"
       ],
       "additionalProperties": false
     },
@@ -479,7 +479,7 @@
         "admin_type": {
           "const": "permission"
         },
-        "data_set": {
+        "dataset": {
           "$ref": "#/$defs/dataSetName"
         },
         "userid": {
@@ -504,7 +504,7 @@
       "required": [
         "operation",
         "admin_type",
-        "data_set",
+        "dataset",
         "traits"
       ],
       "oneOf": [
@@ -573,7 +573,7 @@
         "admin_type": {
           "const": "permission"
         },
-        "data_set": {
+        "dataset": {
           "$ref": "#/$defs/dataSetName"
         },
         "userid": {
@@ -595,7 +595,7 @@
       "required": [
         "operation",
         "admin_type",
-        "data_set"
+        "dataset"
       ],
       "oneOf": [
         {

@@ -1,6 +1,6 @@
 {
   "errors": [
-    "sear: unable to extract 'data-set' profile 'LEONARD.TEST.*'"
+    "sear: unable to extract 'dataset' profile 'LEONARD.TEST.*'"
   ],
   "return_codes": {
     "racf_reason_code": 4,

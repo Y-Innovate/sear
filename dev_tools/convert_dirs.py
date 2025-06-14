@@ -26,7 +26,7 @@ def convert_file(file_name, CCSID_1="ascii", CCSID_2="ascii", output_file_name =
 def convert_directory(directory_name, CCSID_1="ascii", CCSID_2="ascii", output_directory_name="", remove_newline=False):
     if output_directory_name == "":
         output_directory_name = f'{directory_name}_decoded'
-    admin_types = ["group_connection", "racf_options", "data_set", "group", "user", "resource", "permission"]
+    admin_types = ["group_connection", "racf_options", "dataset", "group", "user", "resource", "permission"]
     for filename in os.listdir(directory_name):
         admin_dir = ""
         for admin_type in admin_types:

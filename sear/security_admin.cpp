@@ -125,7 +125,7 @@ void SecurityAdmin::doAddAlterDelete() {
   const std::string &class_name   = request_.getClassName();
   if ((operation == "alter") and
       ((admin_type == "group") or (admin_type == "user") or
-       (admin_type == "data-set") or (admin_type == "resource"))) {
+       (admin_type == "dataset") or (admin_type == "resource"))) {
     Logger::getInstance().debug("Verifying that profile existis for alter ...");
     if (!irrsmo00.does_profile_exist(request_)) {
       request_.setSEARReturnCode(8);

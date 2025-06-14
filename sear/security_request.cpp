@@ -202,14 +202,14 @@ void SecurityRequest::load(const nlohmann::json& request) {
     function_code_ = RESOURCE_EXTRACT_FUNCTION_CODE;
     profile_name_  = request["resource"].get<std::string>();
     class_name_    = request["class"].get<std::string>();
-  } else if (admin_type_ == "data-set") {
-    function_code_ = DATA_SET_EXTRACT_FUNCTION_CODE;
-    profile_name_  = request["data_set"].get<std::string>();
+  } else if (admin_type_ == "dataset") {
+    function_code_ = DATASET_EXTRACT_FUNCTION_CODE;
+    profile_name_  = request["dataset"].get<std::string>();
   } else if (admin_type_ == "racf-options") {
     function_code_ = RACF_OPTIONS_EXTRACT_FUNCTION_CODE;
   } else if (admin_type_ == "permission") {
-    if (request.contains("data_set")) {
-      profile_name_ = request["data_set"].get<std::string>();
+    if (request.contains("dataset")) {
+      profile_name_ = request["dataset"].get<std::string>();
       class_name_   = "DATASET";
     } else {
       profile_name_ = request["resource"].get<std::string>();

@@ -67,15 +67,15 @@ int main() {
   RUN_TEST(test_parse_alter_racf_options_parameter_errors);
   RUN_TEST(test_parse_alter_racf_options_trait_errors);
   // Data Set
-  RUN_TEST(test_generate_add_data_set_request);
-  RUN_TEST(test_generate_alter_data_set_request);
-  RUN_TEST(test_generate_alter_data_set_csdata_request);
-  RUN_TEST(test_generate_delete_data_set_request);
-  RUN_TEST(test_parse_add_data_set_result);
-  RUN_TEST(test_parse_delete_data_set_result);
-  RUN_TEST(test_parse_add_data_set_result_data_set_already_exists);
-  RUN_TEST(test_parse_add_data_set_parameter_errors);
-  RUN_TEST(test_parse_add_data_set_trait_errors);
+  RUN_TEST(test_generate_add_dataset_request);
+  RUN_TEST(test_generate_alter_dataset_request);
+  RUN_TEST(test_generate_alter_dataset_csdata_request);
+  RUN_TEST(test_generate_delete_dataset_request);
+  RUN_TEST(test_parse_add_dataset_result);
+  RUN_TEST(test_parse_delete_dataset_result);
+  RUN_TEST(test_parse_add_dataset_result_dataset_already_exists);
+  RUN_TEST(test_parse_add_dataset_parameter_errors);
+  RUN_TEST(test_parse_add_dataset_trait_errors);
   // Resource
   RUN_TEST(test_generate_add_resource_request);
   RUN_TEST(test_generate_alter_resource_request);
@@ -87,19 +87,19 @@ int main() {
   RUN_TEST(test_parse_add_resource_parameter_errors);
   RUN_TEST(test_parse_add_resource_trait_errors);
   // Permission
-  RUN_TEST(test_generate_alter_permission_data_set_request);
+  RUN_TEST(test_generate_alter_permission_dataset_request);
   RUN_TEST(test_generate_alter_permission_resource_request);
   RUN_TEST(test_generate_delete_permission_resource_request);
-  RUN_TEST(test_parse_alter_permission_data_set_result);
+  RUN_TEST(test_parse_alter_permission_dataset_result);
   RUN_TEST(test_parse_alter_permission_resource_result);
   RUN_TEST(test_parse_delete_permission_resource_result);
-  RUN_TEST(test_parse_alter_permission_data_set_parameter_errors);
-  RUN_TEST(test_parse_alter_permission_data_set_with_class_parameter_error);
+  RUN_TEST(test_parse_alter_permission_dataset_parameter_errors);
+  RUN_TEST(test_parse_alter_permission_dataset_with_class_parameter_error);
   RUN_TEST(test_parse_alter_permission_resource_parameter_errors);
   RUN_TEST(
-      test_parse_alter_permission_resource_class_set_to_data_set_lowercase_parameter_error);
+      test_parse_alter_permission_resource_class_set_to_dataset_lowercase_parameter_error);
   RUN_TEST(
-      test_parse_alter_permission_resource_class_set_to_data_set_uppercase_parameter_error);
+      test_parse_alter_permission_resource_class_set_to_dataset_uppercase_parameter_error);
   RUN_TEST(test_parse_alter_permission_resource_with_volume_parameter_error);
   RUN_TEST(test_parse_alter_permission_trait_errors);
 
@@ -138,12 +138,12 @@ int main() {
   RUN_TEST(
       test_parse_extract_racf_options_result_extraneous_parameter_provided);
   // Data Set
-  RUN_TEST(test_generate_extract_data_set_request);
-  RUN_TEST(test_parse_extract_data_set_result);
-  RUN_TEST(test_parse_extract_data_set_result_csdata);
-  RUN_TEST(test_parse_extract_data_set_result_data_set_not_found);
-  RUN_TEST(test_parse_extract_data_set_result_required_parameter_missing);
-  RUN_TEST(test_parse_extract_data_set_result_extraneous_parameter_provided);
+  RUN_TEST(test_generate_extract_dataset_request);
+  RUN_TEST(test_parse_extract_dataset_result);
+  RUN_TEST(test_parse_extract_dataset_result_csdata);
+  RUN_TEST(test_parse_extract_dataset_result_dataset_not_found);
+  RUN_TEST(test_parse_extract_dataset_result_required_parameter_missing);
+  RUN_TEST(test_parse_extract_dataset_result_extraneous_parameter_provided);
   // Resource
   RUN_TEST(test_generate_extract_resource_request);
   RUN_TEST(

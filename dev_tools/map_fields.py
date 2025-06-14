@@ -4,7 +4,7 @@ valid_segment_traits = {}
 
 valid_segment_traits["u_admin"] = {
             "base": {
-                "base:automatic_data_set_protection": "adsp",
+                "base:automatic_dataset_protection": "adsp",
                 "base:auditor": "auditor",
                 "base:default_group_authority": "auth",
                 "base:security_categories": "category",
@@ -13,8 +13,8 @@ valid_segment_traits["u_admin"] = {
                 "base:default_group": "defgroup",
                 "base:password_expired": "expired",
                 "base:group": "group",
-                "base:group_data_set_access": "grpacc",
-                "base:model_data_set": "model",
+                "base:group_dataset_access": "grpacc",
+                "base:model_dataset": "model",
                 "base:name": "name",
                 "base:require_operator_id_card": "oidcard",
                 "base:operations": "oper",
@@ -142,7 +142,7 @@ valid_segment_traits["u_admin"] = {
                 "tso:security_label": "seclabel",
                 "tso:default_region_size": "size",
                 "tso:sysout_class": "sysclass",
-                "tso:data_set_allocation_unit": "unit",
+                "tso:dataset_allocation_unit": "unit",
                 "tso:user_data": "userdata",
             },
             "workattr": {
@@ -185,7 +185,7 @@ valid_segment_traits["perm_admin"] = {
 
 valid_segment_traits["gc_admin"] = {
             "base": {
-                "base:automatic_data_set_protection": "racf:adsp",
+                "base:automatic_dataset_protection": "racf:adsp",
                 "base:auditor": "racf:auditor",
                 "base:group_authority": "racf:auth",
                 "base:group": "racf:group",
@@ -209,10 +209,10 @@ valid_segment_traits["d_admin"] = {
                 "base:audit_update": "racf:audupdt",
                 "base:security_categories": "racf:category",
                 "base:installation_data": "racf:data",
-                "base:erase_data_sets_on_delete": "racf:erase",
+                "base:erase_datasets_on_delete": "racf:erase",
                 "base:model_profile_class": "racf:fclass",
                 "base:model_profile_generic": "racf:fgeneric",
-                "base:tape_data_set_file_sequence_number": "racf:fileseq",
+                "base:tape_dataset_file_sequence_number": "racf:fileseq",
                 "base:model_profile": "racf:from",
                 "base:model_profile_volume": "racf:fvolume",
                 "base:global_audit_alter": "racf:gaudaltr",
@@ -221,17 +221,17 @@ valid_segment_traits["d_admin"] = {
                 "base:global_audit_read": "racf:gaudread",
                 "base:global_audit_update": "racf:gaudupdt",
                 "base:level": "racf:level",
-                "base:data_set_model_profile": "racf:model",
+                "base:dataset_model_profile": "racf:model",
                 "base:notify_userid": "racf:notify",
                 "base:owner": "racf:owner",
-                "base:tape_data_set_security_retention_period": "racf:retpd",
+                "base:tape_dataset_security_retention_period": "racf:retpd",
                 "base:security_label": "racf:seclabel",
                 "base:security_level": "racf:seclevel",
                 "base:generic_not_allowed": "racf:set",
                 "base:generic_allowed": "racf:setonly",
-                "base:use_tape_data_set_profile": "racf:tape",
+                "base:use_tape_dataset_profile": "racf:tape",
                 "base:universal_access": "racf:uacc",
-                "base:data_set_allocation_unit": "racf:unit",
+                "base:dataset_allocation_unit": "racf:unit",
                 "base:volumes": "racf:volume",
                 "base:warn_on_insufficient_access": "racf:warning",
             },
@@ -242,7 +242,7 @@ valid_segment_traits["d_admin"] = {
 valid_segment_traits["g_admin"] = {
             "base": {
                 "base:installation_data": "racf:data",
-                "base:data_set_model": "racf:model",
+                "base:dataset_model": "racf:model",
                 "base:owner": "racf:owner",
                 "base:superior_group": "racf:supgroup",
                 "base:terminal_universal_access": "racf:termuacc",
@@ -288,7 +288,7 @@ valid_segment_traits["p_admin"] = {
                 "base:owner": "racf:owner",
                 "base:security_label": "racf:seclabel",
                 "base:security_level": "racf:seclevel",
-                "base:single_data_set_tape_volume": "racf:singldsn",
+                "base:single_dataset_tape_volume": "racf:singldsn",
                 "base:time_zone": "racf:timezone",
                 "base:tape_vtoc": "racf:tvtoc",
                 "base:universal_access": "racf:uacc",
@@ -427,16 +427,16 @@ valid_segment_traits["s_admin"] = {
             "base": {
                 "base:active_classes": "racf:classact",
                 "base:add_creator": "racf:addcreat",
-                "base:automatic_data_set_protection": "racf:adsp",
+                "base:automatic_dataset_protection": "racf:adsp",
                 "base:application_logon_auditing": "racf:applaudt",
                 "base:audit_classes": "racf:audit",
-                "base:uncataloged_data_set_access": "racf:catdsns",
+                "base:uncataloged_dataset_access": "racf:catdsns",
                 "base:log_racf_command_violations": "racf:cmdviol",
                 "base:security_label_compatibility_mode": "racf:compmode",
                 "base:enhanced_generic_naming": "racf:egn",
-                "base:erase_data_sets_on_delete": "racf:erase",
-                "base:erase_data_sets_on_delete_all": "racf:eraseall",
-                "base:erase_data_sets_on_delete_security_level": "racf:erasesec",
+                "base:erase_datasets_on_delete": "racf:erase",
+                "base:erase_datasets_on_delete_all": "racf:eraseall",
+                "base:erase_datasets_on_delete_security_level": "racf:erasesec",
                 "base:generic_command_classes": "racf:gencmd",
                 "base:generic_profile_checking_classes": "racf:generic",
                 "base:generic_profile_sharing_classes": "racf:genlist",
@@ -474,15 +474,15 @@ valid_segment_traits["s_admin"] = {
                 "base:profile_modelling_user": "racf:moduser",
                 "base:log_operator_actions": "racf:operaudt",
                 "base:passphrase_change_interval": "racf:phrint",
-                "base:data_set_single_level_name_prefix_protection": "racf:prefix",
+                "base:dataset_single_level_name_prefix_protection": "racf:prefix",
                 "base:primary_language": "racf:primlang",
-                "base:protect_all_data_sets": "racf:protall",
+                "base:protect_all_datasets": "racf:protall",
                 "base:password_encryption_algorithm": "racf:pwdalg",
                 "base:special_character_password_support": "racf:pwdspec",
                 "base:raclist": "racf:raclist",
-                "base:log_real_data_set_name": "racf:realdsn",
+                "base:log_real_dataset_name": "racf:realdsn",
                 "base:refresh": "racf:refresh",
-                "base:tape_data_set_security_retention_period": "racf:retpd",
+                "base:tape_dataset_security_retention_period": "racf:retpd",
                 "base:max_incorrect_password_attempts": "racf:revoke",
                 "base:password_rules": "racf:rules",
                 "base:password_rule_1": "racf:rule1",
@@ -503,7 +503,7 @@ valid_segment_traits["s_admin"] = {
                 "base:security_label_system": "racf:slbysys",
                 "base:security_level_auditing": "racf:slevaudt",
                 "base:statistics_classes": "racf:classtat",
-                "base:tape_data_set_protection": "racf:tapedsn",
+                "base:tape_dataset_protection": "racf:tapedsn",
                 "base:terminal_universal_access": "racf:terminal",
                 "base:password_expiration_warning": "racf:warning",
                 "base:program_control": "racf:whenprog",
@@ -573,7 +573,7 @@ def map_admin_type(admin_key: str):
     if admin_key == "g":
         return "group"
     if admin_key == "d":
-        return "data_set"
+        return "dataset"
     if admin_key == "p":
         return "resource"
     if admin_key == "perm":

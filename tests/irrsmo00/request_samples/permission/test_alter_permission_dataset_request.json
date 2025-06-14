@@ -1,8 +1,9 @@
 {
   "operation": "alter",
   "admin_type": "permission",
-  "data_set": "SQUIDWRD.*",
-  "class": "XFACILIT",
+  "dataset": "SQUIDWRD.*",
+  "volume": "MYVOL",
+  "generic": true,
   "userid": "SQUIDWRD",
   "traits": {
     "base:access": "READ"

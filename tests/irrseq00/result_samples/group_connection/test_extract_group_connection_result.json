@@ -3,7 +3,7 @@
     "base": {
       "base:auditor": false,
       "base:authority": "USE",
-      "base:automatic_data_set_protection": false,
+      "base:automatic_dataset_protection": false,
       "base:connection_create_date": "10/11/23",
       "base:connection_used_count": 0,
       "base:group_access": false,

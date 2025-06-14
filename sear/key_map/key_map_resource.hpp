@@ -187,7 +187,7 @@ const trait_key_mapping_t RESOURCE_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_STRING,   {true, false, false, true},
      },
     {
-     "base:single_data_set_tape_volume", "singldsn",
+     "base:single_dataset_tape_volume", "singldsn",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {
