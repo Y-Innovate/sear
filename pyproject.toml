@@ -42,6 +42,12 @@ classifiers = [
 ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4.0",
+  "pytest-md>=0.2.0",
+]
+
 [project.urls]
 Homepage = "https://github.com/Mainframe-Renewal-Project/sear"
 Documentation = "https://mainframe-renewal-project.github.io/sear-docs/interfaces/python/"
@@ -55,13 +61,12 @@ include = ["sear"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
-exclude = [".git", ".github", "externals", "sear", "debug", "dev_tools"]
+exclude = [".git", ".github", "externals", "sear", "debug", "dev_tools", "python_tests"]
 
 [tool.ruff.lint]
 # Ruff by default is not very aggressive, only enforcing a few rulesets like E and F.
 # To ensure well organized code a bunch more rulesets have been enabled
 select = [
-    "ERA", #Checks for commented out code
     "E",
     "F",
     "B",
