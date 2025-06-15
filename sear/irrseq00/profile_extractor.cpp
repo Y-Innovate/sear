@@ -155,8 +155,9 @@ void ProfileExtractor::extract(SecurityRequest &request) {
             ntohl(p_arg_area->args.profile_extract_parms.profile_name_length);
         uint32_t profile_len = ntohl(p_generic_result->profile_name_length);
         if (profile_len >= filter_len &&
-            !std::memcmp(p_profile_name, p_arg_area->args.profile_name,
-                         filter_len)) {
+            ((filter_len == 1 && *p_arg_area->args.profile_name == 0x40) ||
+             !std::memcmp(p_profile_name, p_arg_area->args.profile_name,
+                          filter_len))) {
           Logger::getInstance().hexDump(p_profile_name, profile_len);
 
           auto unique_profile_name = std::make_unique<char[]>(profile_len);

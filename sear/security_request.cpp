@@ -196,6 +196,8 @@ void SecurityRequest::load(const nlohmann::json& request) {
       function_code_ = USER_EXTRACT_NEXT_FUNCTION_CODE;
       if (request.contains("userid_filter")) {
         profile_name_ = request["userid_filter"].get<std::string>();
+      } else {
+        profile_name_ = std::string(" ");
       }
     } else {
       function_code_ = USER_EXTRACT_FUNCTION_CODE;
@@ -206,6 +208,8 @@ void SecurityRequest::load(const nlohmann::json& request) {
       function_code_ = GROUP_EXTRACT_NEXT_FUNCTION_CODE;
       if (request.contains("group_filter")) {
         profile_name_ = request["group_filter"].get<std::string>();
+      } else {
+        profile_name_ = std::string(" ");
       }
     } else {
       function_code_ = GROUP_EXTRACT_FUNCTION_CODE;
@@ -225,6 +229,8 @@ void SecurityRequest::load(const nlohmann::json& request) {
       function_code_ = RESOURCE_EXTRACT_NEXT_FUNCTION_CODE;
       if (request.contains("resource_filter")) {
         profile_name_ = request["resource_filter"].get<std::string>();
+      } else {
+        profile_name_ = std::string(" ");
       }
       class_name_ = request["class"].get<std::string>();
     } else {
@@ -237,6 +243,8 @@ void SecurityRequest::load(const nlohmann::json& request) {
       function_code_ = DATASET_EXTRACT_NEXT_FUNCTION_CODE;
       if (request.contains("dataset_filter")) {
         profile_name_ = request["dataset_filter"].get<std::string>();
+      } else {
+        profile_name_ = std::string(" ");
       }
     } else {
       function_code_ = DATASET_EXTRACT_FUNCTION_CODE;
