@@ -174,7 +174,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
                 *p_arg_area->arg_pointers.p_p_result_buffer);
 
         p_arg_area->arg_pointers.p_profile_extract_parms->flags =
-            htonl(0x4000000);
+            htonl(0x14000000);
 
         // Call R_Admin
         Logger::getInstance().debug("Calling IRRSEQ00 ...");
@@ -309,7 +309,7 @@ void ProfileExtractor::buildGenericExtractRequest(
       function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
       function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
       function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
-    profile_extract_parms->flags = htonl(0x4000000);
+    profile_extract_parms->flags = htonl(0x14000000);
   }
 
   /***************************************************************************/
