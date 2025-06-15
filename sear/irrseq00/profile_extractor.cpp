@@ -74,7 +74,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     generic_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
     ProfileExtractor::buildGenericExtractRequest(
         p_arg_area, request.getProfileName(), request.getClassName(),
-        request.getGeneric(), function_code);
+        function_code);
     // Preserve the raw request data
     request.setRawRequestLength(
         (int)sizeof(generic_extract_underbar_arg_area_t));
@@ -166,8 +166,6 @@ void ProfileExtractor::extract(SecurityRequest &request) {
           profile_name[profile_len] = 0;
           request.addFoundProfile(profile_name);
           unique_profile_name.release();
-        } else {
-          break;
         }
 
         p_arg_area->arg_pointers.p_profile_extract_parms =
@@ -263,7 +261,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
 
 void ProfileExtractor::buildGenericExtractRequest(
     generic_extract_underbar_arg_area_t *arg_area, std::string profile_name,
-    std::string class_name, std::string generic, uint8_t function_code) {
+    std::string class_name, uint8_t function_code) {
   // Make sure buffer is clear.
   std::memset(arg_area, 0, sizeof(generic_extract_underbar_arg_area_t));
 
