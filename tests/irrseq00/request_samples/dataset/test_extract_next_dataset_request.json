@@ -1,5 +1,6 @@
 {
   "operation": "search",
   "admin_type": "dataset",
-  "dataset_filter": "Z23I.**"
+  "dataset_filter": "Z23I.**",
+  "generic": true
 }

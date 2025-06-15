@@ -74,7 +74,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
     generic_extract_underbar_arg_area_t *p_arg_area = unique_ptr.get();
     ProfileExtractor::buildGenericExtractRequest(
         p_arg_area, request.getProfileName(), request.getClassName(),
-        function_code);
+        request.getGeneric(), function_code);
     // Preserve the raw request data
     request.setRawRequestLength(
         (int)sizeof(generic_extract_underbar_arg_area_t));
@@ -174,8 +174,13 @@ void ProfileExtractor::extract(SecurityRequest &request) {
             reinterpret_cast<generic_extract_parms_results_t *>(
                 *p_arg_area->arg_pointers.p_p_result_buffer);
 
-        p_arg_area->arg_pointers.p_profile_extract_parms->flags =
-            htonl(0x14000000);
+        if (request.getGeneric() == "yes") {
+          p_arg_area->arg_pointers.p_profile_extract_parms->flags =
+              htonl(0x14000000);
+        } else {
+          p_arg_area->arg_pointers.p_profile_extract_parms->flags =
+              htonl(0x4000000);
+        }
 
         // Call R_Admin
         Logger::getInstance().debug("Calling IRRSEQ00 ...");
@@ -263,7 +268,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
 
 void ProfileExtractor::buildGenericExtractRequest(
     generic_extract_underbar_arg_area_t *arg_area, std::string profile_name,
-    std::string class_name, uint8_t function_code) {
+    std::string class_name, std::string generic, uint8_t function_code) {
   // Make sure buffer is clear.
   std::memset(arg_area, 0, sizeof(generic_extract_underbar_arg_area_t));
 
@@ -310,7 +315,11 @@ void ProfileExtractor::buildGenericExtractRequest(
       function_code == GROUP_EXTRACT_NEXT_FUNCTION_CODE ||
       function_code == DATASET_EXTRACT_NEXT_FUNCTION_CODE ||
       function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE) {
-    profile_extract_parms->flags = htonl(0x14000000);
+    if (generic == "yes") {
+      profile_extract_parms->flags = htonl(0x14000000);
+    } else {
+      profile_extract_parms->flags = htonl(0x4000000);
+    }
   }
 
   /***************************************************************************/

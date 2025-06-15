@@ -271,12 +271,16 @@
         },
         "class": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "generic": {
+          "type": "boolean"
         }
       },
       "required": [
         "operation",
         "admin_type",
-        "class"
+        "class",
+        "generic"
       ],
       "additionalProperties": false
     },
@@ -372,11 +376,15 @@
         },
         "dataset_filter": {
           "$ref": "#/$defs/dataSetName"
+        },
+        "generic": {
+          "type": "boolean"
         }
       },
       "required": [
         "operation",
-        "admin_type"
+        "admin_type",
+        "generic"
       ],
       "additionalProperties": false
     },

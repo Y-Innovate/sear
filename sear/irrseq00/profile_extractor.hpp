@@ -16,7 +16,7 @@ class ProfileExtractor : public Extractor {
  private:
   static void buildGenericExtractRequest(
       generic_extract_underbar_arg_area_t *arg_area, std::string profile_name,
-      std::string class_name, uint8_t function_code);
+      std::string class_name, std::string generic, uint8_t function_code);
   static void buildRACFOptionsExtractRequest(
       racf_options_extract_underbar_arg_area_t *arg_area);
   static char *cloneBuffer(const char *p_buffer, const int &length);
