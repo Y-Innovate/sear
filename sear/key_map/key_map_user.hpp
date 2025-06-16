@@ -239,7 +239,7 @@ const trait_key_mapping_t USER_BASE_SEGMENT_MAP[]{
      TRAIT_TYPE_BOOLEAN, {false, false, false, false},
      },
     {
-     "base:audit_responsibility",  "roaudit",
+     "base:read_only_auditor",  "roaudit",
      TRAIT_TYPE_BOOLEAN,   {true, false, false, true},
      },
     {

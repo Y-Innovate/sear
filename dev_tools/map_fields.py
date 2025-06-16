@@ -24,7 +24,7 @@ valid_segment_traits["u_admin"] = {
                 "base:restrict_global_access_checking": "rest",
                 "base:resume_date": "resumedate",
                 "base:revoke_date": "revokedate",
-                "base:audit_responsibility": "roaudit",
+                "base:read_only_auditor": "roaudit",
                 "base:security_label": "seclabel",
                 "base:security_level": "seclevel",
                 "base:special": "special",
