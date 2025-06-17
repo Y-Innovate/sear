@@ -1,0 +1,10 @@
+{
+  "operation": "alter",
+  "admin_type": "permission",
+  "dataset": "SQUIDWRD.*",
+  "class": "XFACILIT",
+  "userid": "SQUIDWRD",
+  "traits": {
+    "base:access": "READ"
+  }
+}

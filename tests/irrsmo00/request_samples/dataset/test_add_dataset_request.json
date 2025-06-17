@@ -1,0 +1,10 @@
+{
+  "operation": "add",
+  "admin_type": "dataset",
+  "dataset": "ESWIFT.TEST.**",
+  "generic": true,
+  "traits": {
+    "base:universal_access": "None",
+    "base:owner": "eswift"
+  }
+}

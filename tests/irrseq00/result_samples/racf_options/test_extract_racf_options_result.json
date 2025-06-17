@@ -479,9 +479,9 @@
         "ZMFCLOUD",
         "ZOWE"
       ],
-      "base:automatic_data_set_protection": false,
+      "base:automatic_dataset_protection": false,
       "base:enhanced_generic_naming": true,
-      "base:erase_data_sets_on_delete": false,
+      "base:erase_datasets_on_delete": false,
       "base:generic_command_classes": [
         "DATASET",
         "ACCTNUM",
@@ -736,7 +736,7 @@
       "base:log_commands_issued_by_special_users": true,
       "base:log_operator_actions": false,
       "base:log_racf_command_violations": true,
-      "base:log_real_data_set_name": false,
+      "base:log_real_dataset_name": false,
       "base:max_password_change_interval": 186,
       "base:max_session_key_interval": 30,
       "base:min_password_change_interval": 0,
@@ -808,8 +808,8 @@
       "base:security_label_control": false,
       "base:security_label_system": false,
       "base:special_character_password_support": false,
-      "base:tape_data_set_protection": true,
-      "base:tape_data_set_security_retention_period": 0,
+      "base:tape_dataset_protection": true,
+      "base:tape_dataset_security_retention_period": 0,
       "base:terminal_universal_access": "READ"
     }
   },

@@ -1,9 +1,0 @@
-{
-  "operation": "alter",
-  "admin_type": "permission",
-  "data_set": "SQUIDWRD.*",
-  "volume": "MYVOL",
-  "traits": {
-    "base:access": "READ"
-  }
-}
