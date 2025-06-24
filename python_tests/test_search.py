@@ -5,7 +5,7 @@ from helper import successful_return_codes
 from sear import sear
 
 
-def test_search_resource_profiles_class_missing(create_dataset):
+def test_search_resource_profiles_class_missing():
     """This test is supposed to fail"""
     add_result = sear(
             {
