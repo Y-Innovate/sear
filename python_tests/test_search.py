@@ -15,3 +15,13 @@ def test_search_resource_profiles_class_missing():
         )
     assert "errors" in str(search_result.result)
     assert search_result.result["return_codes"] != successful_return_codes
+
+def test_search_admin_type_missing():
+    """This test is supposed to fail"""
+    search_result = sear(
+            {
+            "operation": "search", 
+            },
+        )
+    assert "errors" in str(search_result.result)
+    assert search_result.result["return_codes"] != successful_return_codes
