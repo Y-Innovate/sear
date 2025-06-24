@@ -7,11 +7,11 @@ from sear import sear
 
 def test_search_resource_profiles_class_missing():
     """This test is supposed to fail"""
-    add_result = sear(
+    search_result = sear(
             {
             "operation": "search", 
             "admin_type": "resource", 
             },
         )
-    assert "errors" in str(add_result.result)
-    assert add_result.result["return_codes"] != successful_return_codes
+    assert "errors" in str(search_result.result)
+    assert search_result.result["return_codes"] != successful_return_codes
