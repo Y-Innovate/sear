@@ -42,6 +42,30 @@ def test_extract_keyring_missing_operation():
     assert "errors" in str(not_found_result.result)
     assert not_found_result.result["return_codes"] != keyring_not_found_return_codes
 
+def test_extract_keyring_missing_owner():
+    """This test is supposed to fail"""
+    not_found_result = sear(
+        {
+        "operation": "extract", 
+        "admin_type": "keyring", 
+        "keyring": "SEARNOTFOUND",
+        },
+    )
+    assert "errors" in str(not_found_result.result)
+    assert not_found_result.result["return_codes"] != keyring_not_found_return_codes
+
+def test_extract_keyring_missing_keyring():
+    """This test is supposed to fail"""
+    not_found_result = sear(
+        {
+        "operation": "extract", 
+        "admin_type": "keyring", 
+        "owner": "IBMUSER",
+        },
+    )
+    assert "errors" in str(not_found_result.result)
+    assert not_found_result.result["return_codes"] != keyring_not_found_return_codes
+
 def test_extract_keyring(create_keyring):
     """This test is supposed to succeed"""
     keyring, owner = create_keyring
