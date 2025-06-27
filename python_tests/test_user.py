@@ -31,7 +31,6 @@ def test_add_user_base_traits(delete_user):
                 "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
                 "base:name": "TEST USER",
                 "base:restrict_global_access_checking": True,
-                "base:revoked": True,
                 "base:automatic_dataset_protection": True,
             },
             },
@@ -53,7 +52,7 @@ def test_add_user_tso_traits(delete_user):
                 "tso:hold_class": "B",
                 "tso:job_class": "B",
                 "tso:sysout_class": "B",
-                "tso:account_number": 2348234,
+                "tso:account_number": "2348234",
             },
             },
         )
@@ -72,7 +71,7 @@ def test_add_user_omvs_traits(delete_user):
                 "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
                 "omvs:home_directory": f"/u/{delete_user}",
                 "omvs:default_shell": "/bin/sh",
-                "omvs:max_cpu_time": 0,
+                "omvs:max_cpu_time": 1,
                 "omvs:max_files_per_process": 20,
                 "omvs:max_threads": 4,
                 "omvs:auto_uid": True,
