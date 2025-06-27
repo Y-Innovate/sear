@@ -52,7 +52,7 @@ def test_add_user_tso_traits(delete_user):
                 "tso:hold_class": "B",
                 "tso:job_class": "B",
                 "tso:sysout_class": "B",
-                "tso:account_number": 2348234,
+                "tso:account_number": "2348234",
             },
             },
         )
