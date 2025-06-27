@@ -680,7 +680,7 @@ const trait_key_mapping_t USER_PROXY_KEY_MAP[]{
 const trait_key_mapping_t USER_TSO_KEY_MAP[]{
     {
      "tso:account_number",  "acctnum",
-     TRAIT_TYPE_STRING, {true, false, false, true},
+     TRAIT_TYPE_UINT, {true, false, false, true},
      },
     {
      "tso:logon_command",  "command",
