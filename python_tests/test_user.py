@@ -71,7 +71,7 @@ def test_add_user_omvs_traits(delete_user):
                 "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
                 "omvs:home_directory": f"/u/{delete_user}",
                 "omvs:default_shell": "/bin/sh",
-                "omvs:max_cpu_time": 0,
+                "omvs:max_cpu_time": 1,
                 "omvs:max_files_per_process": 20,
                 "omvs:max_threads": 4,
                 "omvs:auto_uid": True,
