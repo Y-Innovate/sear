@@ -31,7 +31,6 @@ def test_add_user_base_traits(delete_user):
                 "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
                 "base:name": "TEST USER",
                 "base:restrict_global_access_checking": True,
-                "base:revoked": True,
                 "base:automatic_dataset_protection": True,
             },
             },
