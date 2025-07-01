@@ -120,18 +120,12 @@ def main():
                 extra_objects=[f"{assembled_object_path}"],
             ),
         ],
-        "cmdclass": {"build_ext": BuildExtensionWithAssemblerAndC},
+        "cmdclass": {
+            "build_ext": BuildExtensionWithAssemblerAndC,
+            "bdist_wheel": bdist_wheel,
+            },
     }
     setup(**setup_args)
-
-    setup(
-        name='pysear',
-        cmdclass={
-            'build_ext': main,
-            "bdist_wheel": bdist_wheel,
-        },
-    )
-
 
 if __name__ == "__main__":
     main()
