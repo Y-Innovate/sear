@@ -124,6 +124,14 @@ def main():
     }
     setup(**setup_args)
 
+    setup(
+        name='pysear',
+        cmdclass={
+            'build_ext': main,
+            "bdist_wheel": bdist_wheel,
+        },
+    )
+
 
 if __name__ == "__main__":
     main()
