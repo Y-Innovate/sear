@@ -11,6 +11,11 @@ from setuptools.command.build_ext import build_ext
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
 
+class CExtension(Extension):
+    def __init__(self, name):
+        # don't invoke the original build_ext for this special extension
+        super().__init__(name, sources=[])
+
 class bdist_wheel(_bdist_wheel): # noqa: N801
     def finalize_options(self):
         super().finalize_options()
@@ -124,6 +129,7 @@ def main():
     }
     setup(
     name='pysear',
+    ext_modules=[CExtension('sear._C')],
     cmdclass={
         'build_ext': build_ext,
         "bdist_wheel": bdist_wheel,
