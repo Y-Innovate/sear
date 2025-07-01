@@ -8,7 +8,15 @@ from pathlib import Path
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
+
+class bdist_wheel(_bdist_wheel): # noqa: N801
+    def finalize_options(self):
+        super().finalize_options()
+
+        # marks built wheels as 'none-any' to allow installation on non-z/OS systems
+        self.root_is_pure = True
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
@@ -114,8 +122,13 @@ def main():
         ],
         "cmdclass": {"build_ext": BuildExtensionWithAssemblerAndC},
     }
-    setup(**setup_args)
-
+    setup(
+    name='pysear',
+    cmdclass={
+        'build_ext': build_ext,
+        "bdist_wheel": bdist_wheel,
+    },
+)
 
 if __name__ == "__main__":
     main()
