@@ -35,6 +35,19 @@ def test_extract_resource_profile(create_resource):
     assert "errors" not in str(extract_result.result)
     assert extract_result.result["return_codes"] == successful_return_codes
 
+def test_extract_resource_profile_missing_class(create_resource):
+    """This test is supposed to fail"""
+    profile_name, class_name = create_resource
+    extract_result = sear(
+            {
+            "operation": "extract", 
+            "admin_type": "resource", 
+            "resource": profile_name,
+            },
+        )
+    assert "errors" in str(extract_result.result)
+    assert extract_result.result["return_codes"] != successful_return_codes
+
 def test_resource_profile_not_found():
     """This test is supposed to fail"""
     not_found_result = sear(
