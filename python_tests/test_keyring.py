@@ -1,5 +1,5 @@
 
-from helper import keyring_not_found_return_codes, successful_return_codes
+from helper import keyring_not_found_return_codes, successful_return_codes, successful_return_codes_cert
 
 # Import SEAR
 from sear import sear
@@ -111,26 +111,26 @@ def test_delete_keyring(create_keyring):
     assert "errors" not in str(delete_result.result)
     assert delete_result.result["return_codes"] == successful_return_codes
 
-# def test_add_certificate_to_keyring(create_keyring, create_certificate):
-#     """This test is supposed to succeed"""
-#     keyring, owner = create_keyring
-#     cert_file = create_certificate
+def test_add_certificate_to_keyring(create_keyring, create_certificate):
+    """This test is supposed to succeed"""
+    keyring, owner = create_keyring
+    cert_file = create_certificate
 
-#     delete_result = sear(
-#         {
-#         "operation": "add",
-#         "admin_type": "certificate",
-#         "owner": owner,
-#         "keyring": keyring,
-#         "keyring_owner": owner,
-#         "label": "NewTrustedCert",
-#         "certificate_file": cert_file,
-#         "usage": "personal",
-#         "status": "TRUST"
-#         }
-#     )
-#     assert "errors" not in str(delete_result.result)
-#     assert delete_result.result["return_codes"] == successful_return_codes
+    delete_result = sear(
+        {
+        "operation": "add",
+        "admin_type": "certificate",
+        "owner": owner,
+        "keyring": keyring,
+        "keyring_owner": owner,
+        "label": "NewTrustedCert",
+        "certificate_file": cert_file,
+        "usage": "personal",
+        "status": "NOTRUST"
+        }
+    )
+    assert "errors" not in str(delete_result.result)
+    assert delete_result.result["return_codes"] == successful_return_codes_cert
 
 def test_add_certificate_to_keyring_missing_certificate(create_keyring):
     """This test is supposed to fail"""

@@ -123,8 +123,6 @@ def create_certificate(delete_certificate):
     )
 
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, "DK"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, "Sillicon Valley, Ballerup, Copenhagen"),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Mainframe Renewal Project"),
         x509.NameAttribute(NameOID.COMMON_NAME, "SEAR"),
     ])
@@ -147,7 +145,7 @@ def create_certificate(delete_certificate):
         critical=False,
     # Sign our certificate with our private key
     ).sign(key, hashes.SHA256())
-
+    
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
     yield certificate_filename
