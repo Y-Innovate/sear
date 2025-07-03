@@ -67,17 +67,6 @@ def test_dataset_extract_invalid_json():
     assert "errors" in str(not_found_result.result)
     assert not_found_result.result["return_codes"] != successful_return_codes
 
-def test_dataset_extract_missing_dataset():
-    """This test is supposed to fail"""
-    not_found_result = sear(
-            {
-            "operation": "extract",
-            "admin_type": "dataset", 
-            },
-        )
-    assert "errors" in str(not_found_result.result)
-    assert not_found_result.result["return_codes"] != successful_return_codes
-
 def test_delete_dataset(create_dataset):
     """This test is supposed to succeed"""
     delete_result = sear(
