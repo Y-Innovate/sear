@@ -90,3 +90,14 @@ def test_delete_dataset_invalid_json(create_dataset):
         )
     assert "errors" in str(delete_result.result)
     assert delete_result.result["return_codes"] != successful_return_codes
+
+def test_delete_dataset_missing_dataset():
+    """This test is supposed to fail"""
+    delete_result = sear(
+            {
+            "operation": "delete",
+            "admin_type": "dataset", 
+            },
+        )
+    assert "errors" in str(delete_result.result)
+    assert delete_result.result["return_codes"] != successful_return_codes
