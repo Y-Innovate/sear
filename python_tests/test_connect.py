@@ -50,3 +50,18 @@ def test_create_connect_missing_group(create_user):
         )
     assert "errors" in str(connect_result.result)
     assert connect_result.result["return_codes"] != successful_return_codes
+
+def test_create_connect_missing_operation(create_user, create_group):
+    """This test is supposed to fail"""
+    connect_result = sear(
+            {
+            "admin_type": "group-connection", 
+            "userid": create_user,
+            "group": create_group,
+            "traits": {
+                "base:owner": "SYS1",
+            },
+            },
+        )
+    assert "errors" in str(connect_result.result)
+    assert connect_result.result["return_codes"] != successful_return_codes
