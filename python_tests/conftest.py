@@ -23,6 +23,15 @@ def run_tso_command(command: str):
         capture_output=True,
         )
 
+def run_shell_command(command: str):
+    subprocess.run(
+        command, 
+        text=False, 
+        shell=True, 
+        check=True, 
+        capture_output=True,
+        )
+
 @pytest.fixture
 def delete_user():
     userid=f"SEAR{secrets.token_hex(2)}".upper()
@@ -145,7 +154,11 @@ def create_certificate(delete_certificate):
         critical=False,
     # Sign our certificate with our private key
     ).sign(key, hashes.SHA256())
-    
+
+    certificate_file.touch()
+
+    run_shell_command(f"chtag -tc ISO8859-1 {certificate_filename}")
+
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
     yield certificate_filename
