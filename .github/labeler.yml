@@ -12,6 +12,11 @@ build:
     - any-glob-to-any-file: 'CMakePresets.json'
     - any-glob-to-any-file: 'Makefile'
 
+tests:
+  - changed-files:
+    - any-glob-to-any-file: 'tests/**'
+    - any-glob-to-any-file: 'python_tests/**'
+
 python:
   - changed-files:
     - any-glob-to-any-file: 'python/**.py'
