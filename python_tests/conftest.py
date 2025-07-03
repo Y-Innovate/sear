@@ -99,7 +99,7 @@ def delete_keyring():
 def create_keyring(delete_keyring):
     ring_name, owner = delete_keyring
     run_tso_command(f"RACDCERT ADDRING({ring_name}) ID({owner})")  # noqa: E501
-    run_tso_command("SETROPTS RACLIST(DIGTRING) REFRESH")
+    run_tso_command("SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH")
     yield ring_name, owner
 
 @pytest.fixture
