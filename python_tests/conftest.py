@@ -23,6 +23,15 @@ def run_tso_command(command: str):
         capture_output=True,
         )
 
+def run_shell_command(command: str):
+    subprocess.run(
+        command, 
+        text=False, 
+        shell=True, 
+        check=True, 
+        capture_output=True,
+        )
+
 @pytest.fixture
 def delete_user():
     userid=f"SEAR{secrets.token_hex(2)}".upper()
@@ -99,7 +108,7 @@ def delete_keyring():
 def create_keyring(delete_keyring):
     ring_name, owner = delete_keyring
     run_tso_command(f"RACDCERT ADDRING({ring_name}) ID({owner})")  # noqa: E501
-    run_tso_command("SETROPTS RACLIST(DIGTRING) REFRESH")
+    run_tso_command("SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH")
     yield ring_name, owner
 
 @pytest.fixture
@@ -123,8 +132,6 @@ def create_certificate(delete_certificate):
     )
 
     subject = issuer = x509.Name([
-        x509.NameAttribute(NameOID.COUNTRY_NAME, "DK"),
-        x509.NameAttribute(NameOID.LOCALITY_NAME, "Sillicon Valley, Ballerup, Copenhagen"),
         x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Mainframe Renewal Project"),
         x509.NameAttribute(NameOID.COMMON_NAME, "SEAR"),
     ])
@@ -147,6 +154,10 @@ def create_certificate(delete_certificate):
         critical=False,
     # Sign our certificate with our private key
     ).sign(key, hashes.SHA256())
+
+    certificate_file.touch()
+
+    run_shell_command(f"chtag -tc ISO8859-1 {certificate_filename}")
 
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
