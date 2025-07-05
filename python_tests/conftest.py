@@ -155,7 +155,7 @@ def create_certificate(delete_certificate):
     # Sign our certificate with our private key
     ).sign(key, hashes.SHA256())
 
-    certificate_file.touch()
+    certificate_file.touch(mode=0o700)
 
     run_shell_command(f"chtag -tc ISO8859-1 {certificate_filename}")
 
