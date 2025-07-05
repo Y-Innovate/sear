@@ -34,6 +34,20 @@ def test_add_user_missing_userid():
     assert "errors" in str(add_result.result)
     assert add_result.result["return_codes"] != successful_return_codes
 
+def test_add_user_userid_too_long():
+    """This test is supposed to fail"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "userid": "ThisIsTooLong",
+            "traits": {
+                "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
+            },
+            },
+        )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
 
 def test_add_user_base_traits(delete_user):
     """This test is supposed to succeed"""
