@@ -126,7 +126,7 @@ def test_delete_keyring(create_keyring):
     assert delete_result.result["return_codes"] == successful_return_codes
 
 def test_delete_keyring_missing_owner(create_keyring):
-    """This test is supposed to succeed"""
+    """This test is supposed to fail"""
     keyring, owner = create_keyring
 
     delete_result = sear(
