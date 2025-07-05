@@ -15,6 +15,7 @@ import datetime
 from pathlib import Path
 
 def run_tso_command(command: str):
+    """Runs a supplied TSO command"""
     subprocess.run(
         f'tsocmd "{command}"', 
         text=False, 
@@ -24,6 +25,7 @@ def run_tso_command(command: str):
         )
 
 def run_shell_command(command: str):
+    """Runs a supplied shell command"""
     subprocess.run(
         command, 
         text=False, 
@@ -43,6 +45,7 @@ def delete_user():
 
 @pytest.fixture
 def create_user(delete_user):
+    """Create a new RACF user for a test"""
     run_tso_command(f"ADDUSER {delete_user} DATA('USER GENERATED DURING SEAR TESTING, NOT IMPORTANT')")  # noqa: E501
     yield delete_user
 
@@ -57,6 +60,7 @@ def delete_group():
 
 @pytest.fixture
 def create_group(delete_group):
+    """Create a RACF group for a test"""
     run_tso_command(f"ADDGROUP {delete_group} DATA('GROUP GENERATED DURING SEAR TESTING, NOT IMPORTANT')")  # noqa: E501
     yield delete_group
 
@@ -71,6 +75,7 @@ def delete_dataset():
 
 @pytest.fixture
 def create_dataset(delete_dataset):
+    """Create a new RACF dataset profile for a test"""
     run_tso_command(f"ADDSD ('{delete_dataset}') DATA('DATASET PROFILE GENERATED DURING SEAR TESTING, NOT IMPORTANT') OWNER(SYS1)")  # noqa: E501
     run_tso_command("SETROPTS GENERIC(DATASET) REFRESH")
     yield delete_dataset
@@ -87,6 +92,7 @@ def delete_resource():
 
 @pytest.fixture
 def create_resource(delete_resource):
+    """Create a new resource profile for a test"""
     profile_name, class_name = delete_resource
     run_tso_command(f"RDEFINE {class_name} {profile_name} DATA('RESOURCE PROFILE GENERATED DURING SEAR TESTING, NOT IMPORTANT') OWNER(SYS1) FGENERIC")  # noqa: E501
     run_tso_command(f"SETROPTS GENERIC({class_name}) REFRESH")
@@ -106,6 +112,7 @@ def delete_keyring():
 
 @pytest.fixture
 def create_keyring(delete_keyring):
+    """Create a new RACF keyring for a test"""
     ring_name, owner = delete_keyring
     run_tso_command(f"RACDCERT ADDRING({ring_name}) ID({owner})")  # noqa: E501
     run_tso_command("SETROPTS RACLIST(DIGTCERT, DIGTRING) REFRESH")
