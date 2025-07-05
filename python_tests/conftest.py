@@ -162,3 +162,45 @@ def create_certificate_pem(delete_certificate):
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
     yield certificate_filename
+
+@pytest.fixture
+def create_certificate_der(delete_certificate):
+    """creates an x509 certificate in DER format"""
+    certificate_filename, certificate_file = delete_certificate
+    # Generate our key
+    key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+    )
+
+    subject = issuer = x509.Name([
+        x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Mainframe Renewal Project"),
+        x509.NameAttribute(NameOID.COMMON_NAME, "SEAR"),
+    ])
+
+    cert = x509.CertificateBuilder().subject_name(
+        subject
+    ).issuer_name(
+        issuer
+    ).public_key(
+        key.public_key()
+    ).serial_number(
+        x509.random_serial_number()
+    ).not_valid_before(
+        datetime.datetime.now(datetime.timezone.utc)
+    ).not_valid_after(
+        # Our certificate will be valid for 2 days
+        datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)
+    ).add_extension(
+        x509.SubjectAlternativeName([x509.DNSName("localhost")]),
+        critical=False,
+    # Sign our certificate with our private key
+    ).sign(key, hashes.SHA256())
+
+    # Make sure the file that the certificate will be written to has the right encoding
+    certificate_file.touch(mode=0o700)
+    run_shell_command(f"chtag -tc ISO8859-1 {certificate_filename}")
+
+    certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.DER))
+
+    yield certificate_filename
