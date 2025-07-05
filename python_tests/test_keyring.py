@@ -111,10 +111,10 @@ def test_delete_keyring(create_keyring):
     assert "errors" not in str(delete_result.result)
     assert delete_result.result["return_codes"] == successful_return_codes
 
-def test_add_certificate_to_keyring(create_keyring, create_certificate):
+def test_add_certificate_to_keyring(create_keyring, create_certificate_pem):
     """This test is supposed to succeed"""
     keyring, owner = create_keyring
-    cert_file = create_certificate
+    cert_file = create_certificate_pem
 
     delete_result = sear(
         {

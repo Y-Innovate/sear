@@ -122,7 +122,7 @@ def delete_certificate():
         pass
 
 @pytest.fixture
-def create_certificate(delete_certificate):
+def create_certificate_pem(delete_certificate):
     """creates an x509 certificate in PEM format"""
     certificate_filename, certificate_file = delete_certificate
     # Generate our key
