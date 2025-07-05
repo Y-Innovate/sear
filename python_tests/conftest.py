@@ -155,8 +155,8 @@ def create_certificate(delete_certificate):
     # Sign our certificate with our private key
     ).sign(key, hashes.SHA256())
 
+    # Make sure the file that the certificate will be written to has the right encoding
     certificate_file.touch(mode=0o700)
-
     run_shell_command(f"chtag -tc ISO8859-1 {certificate_filename}")
 
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
