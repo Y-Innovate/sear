@@ -20,6 +20,20 @@ def test_add_dataset(delete_dataset):
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_dataset_missing_dataset():
+    """This test is supposed to fail"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "dataset", 
+            "traits": {
+                "base:installation_data": "DATASET PROFILE GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
+            },
+            },
+        )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
+
 def test_extract_dataset(create_dataset):
     """This test is supposed to succeed"""
     extract_result = sear(
