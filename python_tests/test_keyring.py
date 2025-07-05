@@ -110,6 +110,20 @@ def test_add_keyring_missing_owner(delete_keyring):
     assert "errors" in str(add_result.result)
     assert add_result.result["return_codes"] != successful_return_codes
 
+def test_add_keyring_missing_keyring(delete_keyring):
+    """This test is supposed to fail"""
+    keyring, owner = delete_keyring
+
+    add_result = sear(
+        {
+        "operation": "add", 
+        "admin_type": "keyring", 
+        "owner": owner,
+        },
+    )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
+
 def test_delete_keyring(create_keyring):
     """This test is supposed to succeed"""
     keyring, owner = create_keyring
