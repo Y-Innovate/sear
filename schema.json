@@ -132,7 +132,33 @@
       "properties": {
         "operation": {
           "enum": [
-            "add",
+            "add"
+          ]
+        },
+        "admin_type": {
+          "const": "group"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "group"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
             "alter"
           ]
         },
