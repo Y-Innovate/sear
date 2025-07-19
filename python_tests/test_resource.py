@@ -21,6 +21,19 @@ def test_add_resource_profile(delete_resource):
         )
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_resource_profile_no_traits(delete_resource):
+    """This test is supposed to succeed"""
+    profile_name, class_name = delete_resource
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "resource", 
+            "resource": profile_name,
+            "class": class_name,
+            },
+        )
+    assert add_result.result["return_codes"] == successful_return_codes
+
 def test_extract_resource_profile(create_resource):
     """This test is supposed to succeed"""
     profile_name, class_name = create_resource
