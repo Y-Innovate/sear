@@ -1,3 +1,6 @@
+
+[![Build](https://img.shields.io/github/actions/workflow/status/Mainframe-Renewal-Project/sear/.github%2Fworkflows%2Fpublish-pysear.yml?label=Build)](https://github.com/Mainframe-Renewal-Project/sear/actions/workflows/publish-pysear.yml)
+
 ![SEAR Logo](https://raw.githubusercontent.com/Mainframe-Renewal-Project/sear/refs/heads/main/logo.svg)
 
 # Security API for RACF (SEAR)
@@ -6,7 +9,7 @@ A standardized JSON interface for RACF that enables seamless exploitation by pro
 
 ## Description
 
-As automation becomes more and more prevalent, the need to manage the security environment programmatically increases. On z/OS that means managing a security product like the IBM **Resource Access Control Facility** _(RACF)_. RACF is the primary facility for managing identity, authority, and access control for z/OS. There are more than 50 callable services with assembler interfaces that are part of the RACF API. The complete set of interfaces can be found [here](http://publibz.boulder.ibm.com/epubs/pdf/ich2d112.pdf).
+As automation becomes more and more prevalent, the need to manage the security environment programmatically increases. On z/OS that means managing a security product like the IBM **Resource Access Control Facility** _(RACF)_. RACF is the primary facility for managing identity, authority, and access control for z/OS. There are more than 50 callable services with assembler interfaces that are part of the RACF API. The complete set of interfaces can be found [in the IBM documentation](http://publibz.boulder.ibm.com/epubs/pdf/ich2d112.pdf).
 
 While there are a number of languages that can be used to manage RACF, _(from low level languages like Assembler to higher level languages like REXX)_, the need to be able to easily exploit RACF management functions using existing industry standard programming languages and even programming languages that don't exist yet is paramount. The SEAR project is focused on making RACF management functions available to all programming languages that have native JSON support and a foreign language interface for C/C++. This will make it easier to pivot to new tools and programming languages as technology, skills, and business needs continue to evolve in the foreseeable future.
 
@@ -33,7 +36,7 @@ All versions of **z/OS** and the **IBM Open Enterprise SDK for Python** that are
 > :bulb: _Note: You can also [Download & Install SEAR from GitHub](https://github.com/Mainframe-Renewal-Project/sear/releases)_
 
 ```shell
-python3 -m pip install pysear
+pip install pysear
 ```
 
 ### Build from source
