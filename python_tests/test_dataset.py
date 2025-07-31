@@ -20,6 +20,18 @@ def test_add_dataset(delete_dataset):
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_dataset_no_traits(delete_dataset):
+    """This test is supposed to succeed"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "dataset", 
+            "dataset": delete_dataset,
+            },
+        )
+    assert "errors" not in str(add_result.result)
+    assert add_result.result["return_codes"] == successful_return_codes
+    
 def test_add_dataset_incorrect_profile_name():
     """This test is supposed to fail"""
     add_result = sear(

@@ -44,7 +44,33 @@
       "properties": {
         "operation": {
           "enum": [
-            "add",
+            "add"
+          ]
+        },
+        "admin_type": {
+          "const": "user"
+        },
+        "userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "userid"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
             "alter"
           ]
         },
@@ -132,7 +158,33 @@
       "properties": {
         "operation": {
           "enum": [
-            "add",
+            "add"
+          ]
+        },
+        "admin_type": {
+          "const": "group"
+        },
+        "group": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "group"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
             "alter"
           ]
         },
@@ -306,7 +358,37 @@
       "properties": {
         "operation": {
           "enum": [
-            "add",
+            "add"
+          ]
+        },
+        "admin_type": {
+          "const": "resource"
+        },
+        "resource": {
+          "$ref": "#/$defs/resourceName"
+        },
+        "class": {
+          "$ref": "#/$defs/eightCharacterString"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "resource",
+        "class"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
             "alter"
           ]
         },
@@ -402,7 +484,39 @@
       "properties": {
         "operation": {
           "enum": [
-            "add",
+            "add"
+          ]
+        },
+        "admin_type": {
+          "const": "dataset"
+        },
+        "dataset": {
+          "$ref": "#/$defs/dataSetName"
+        },
+        "volume": {
+          "$ref": "#/$defs/volumeSerial"
+        },
+        "generic": {
+          "type": "boolean"
+        },
+        "traits": {
+          "type": "object"
+        },
+        "run_as_userid": {
+          "$ref": "#/$defs/eightCharacterString"
+        }
+      },
+      "required": [
+        "operation",
+        "admin_type",
+        "dataset"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "properties": {
+        "operation": {
+          "enum": [
             "alter"
           ]
         },

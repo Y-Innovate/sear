@@ -20,6 +20,18 @@ def test_add_group(delete_group):
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_group_no_traits(delete_group):
+    """This test is supposed to succeed"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "group", 
+            "group": delete_group,
+            },
+        )
+    assert "errors" not in str(add_result.result)
+    assert add_result.result["return_codes"] == successful_return_codes
+
 def test_extract_group(create_group):
     """This test is supposed to succeed"""
     extract_result = sear(
