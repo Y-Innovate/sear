@@ -20,6 +20,50 @@ def test_add_user(delete_user):
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_user_missing_userid():
+    """This test is supposed to fail"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "traits": {
+                "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
+            },
+            },
+        )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
+
+def test_add_user_userid_too_long():
+    """This test is supposed to fail"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "userid": "ThisIsTooLong",
+            "traits": {
+                "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
+            },
+            },
+        )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
+
+def test_add_user_userid_illegal_characters():
+    """This test is supposed to fail"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "userid": "USER/*_.",
+            "traits": {
+                "base:installation_data": "USER GENERATED DURING SEAR TESTING, NOT IMPORTANT",  # noqa: E501
+            },
+            },
+        )
+    assert "errors" in str(add_result.result)
+    assert add_result.result["return_codes"] != successful_return_codes
+
 def test_add_user_base_traits(delete_user):
     """This test is supposed to succeed"""
     add_result = sear(
@@ -33,6 +77,18 @@ def test_add_user_base_traits(delete_user):
                 "base:restrict_global_access_checking": True,
                 "base:automatic_dataset_protection": True,
             },
+            },
+        )
+    assert "errors" not in str(add_result.result)
+    assert add_result.result["return_codes"] == successful_return_codes
+
+def test_add_user_no_traits(delete_user):
+    """This test is supposed to succeed"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "userid": delete_user,
             },
         )
     assert "errors" not in str(add_result.result)
@@ -58,7 +114,6 @@ def test_add_user_tso_traits(delete_user):
         )
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
-
 
 def test_add_user_omvs_traits(delete_user):
     """This test is supposed to succeed"""
@@ -141,3 +196,14 @@ def test_delete_user(create_user):
         )
     assert "errors" not in str(delete_result.result)
     assert delete_result.result["return_codes"] == successful_return_codes
+
+def test_delete_user_missing_userid():
+    """This test is supposed to fail"""
+    delete_result = sear(
+            {
+            "operation": "delete",
+            "admin_type": "user",
+            },
+        )
+    assert "errors" in str(delete_result.result)
+    assert delete_result.result["return_codes"] != successful_return_codes
