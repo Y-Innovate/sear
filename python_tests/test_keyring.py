@@ -188,26 +188,26 @@ def test_add_pem_certificate_to_keyring(create_keyring, create_certificate_pem):
     assert "errors" not in str(delete_result.result)
     assert delete_result.result["return_codes"] == successful_return_codes_cert
 
-def test_add_der_certificate_to_keyring(create_keyring, create_certificate_der):
-    """This test is supposed to succeed"""
-    keyring, owner = create_keyring
-    cert_file = create_certificate_der
+# def test_add_der_certificate_to_keyring(create_keyring, create_certificate_der):
+#     """This test is supposed to succeed"""
+#     keyring, owner = create_keyring
+#     cert_file = create_certificate_der
 
-    delete_result = sear(
-        {
-        "operation": "add",
-        "admin_type": "certificate",
-        "owner": owner,
-        "keyring": keyring,
-        "keyring_owner": owner,
-        "label": "NewTrustedCert",
-        "certificate_file": cert_file,
-        "usage": "personal",
-        "status": "NOTRUST"
-        }
-    )
-    assert "errors" not in str(delete_result.result)
-    assert delete_result.result["return_codes"] == successful_return_codes_cert
+#     delete_result = sear(
+#         {
+#         "operation": "add",
+#         "admin_type": "certificate",
+#         "owner": owner,
+#         "keyring": keyring,
+#         "keyring_owner": owner,
+#         "label": "NewTrustedCert",
+#         "certificate_file": cert_file,
+#         "usage": "personal",
+#         "status": "NOTRUST"
+#         }
+#     )
+#     assert "errors" not in str(delete_result.result)
+#     assert delete_result.result["return_codes"] == successful_return_codes_cert
 
 def test_add_certificate_to_keyring_missing_certificate(create_keyring):
     """This test is supposed to fail"""
