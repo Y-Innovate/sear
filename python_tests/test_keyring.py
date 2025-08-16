@@ -170,7 +170,7 @@ def test_delete_keyring_missing_keyring(create_keyring):
 def test_add_pem_certificate_to_keyring(create_keyring, create_certificate_pem):
     """This test is supposed to succeed"""
     keyring, owner = create_keyring
-    cert_file = create_certificate_pem
+    cert_file, certificate_label = create_certificate_pem
 
     delete_result = sear(
         {
@@ -179,7 +179,7 @@ def test_add_pem_certificate_to_keyring(create_keyring, create_certificate_pem):
         "owner": owner,
         "keyring": keyring,
         "keyring_owner": owner,
-        "label": "NewTrustedCert",
+        "label": certificate_label,
         "certificate_file": cert_file,
         "usage": "personal",
         "status": "NOTRUST"
@@ -191,7 +191,7 @@ def test_add_pem_certificate_to_keyring(create_keyring, create_certificate_pem):
 # def test_add_der_certificate_to_keyring(create_keyring, create_certificate_der):
 #     """This test is supposed to succeed"""
 #     keyring, owner = create_keyring
-#     cert_file = create_certificate_der
+#     cert_file, certificate_label = create_certificate_der
 
 #     delete_result = sear(
 #         {
@@ -200,7 +200,7 @@ def test_add_pem_certificate_to_keyring(create_keyring, create_certificate_pem):
 #         "owner": owner,
 #         "keyring": keyring,
 #         "keyring_owner": owner,
-#         "label": "NewTrustedCert",
+#         "label": certificate_label,
 #         "certificate_file": cert_file,
 #         "usage": "personal",
 #         "status": "NOTRUST"
@@ -231,7 +231,7 @@ def test_add_certificate_to_keyring_missing_certificate(create_keyring):
 def test_add_certificate_to_keyring_missing_keyring(create_keyring, create_certificate_pem):
     """This test is supposed to fail"""
     keyring, owner = create_keyring
-    cert_file = create_certificate_pem
+    cert_file, certificate_label = create_certificate_pem
 
     delete_result = sear(
         {
@@ -239,7 +239,7 @@ def test_add_certificate_to_keyring_missing_keyring(create_keyring, create_certi
         "admin_type": "certificate",
         "owner": owner,
         "keyring_owner": owner,
-        "label": "NewTrustedCert",
+        "label": certificate_label,
         "certificate_file": cert_file,
         "usage": "personal",
         "status": "TRUST"
