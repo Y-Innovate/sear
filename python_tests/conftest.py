@@ -121,8 +121,9 @@ def create_keyring(delete_keyring):
 @pytest.fixture
 def delete_certificate():
     certificate_name=f"./certificate_{secrets.token_hex(4)}"
+    certificate_label=f"SEARTestCert{secrets.token_hex(8)}"
     certificate_file = Path(certificate_name)
-    yield certificate_name, certificate_file
+    yield certificate_name, certificate_label, certificate_file
     try:  # noqa: SIM105
         certificate_file.unlink()
     except:  # noqa: E722
@@ -131,7 +132,7 @@ def delete_certificate():
 @pytest.fixture
 def create_certificate_pem(delete_certificate):
     """creates an x509 certificate in PEM format"""
-    certificate_filename, certificate_file = delete_certificate
+    certificate_filename, certificate_label, certificate_file = delete_certificate
     # Generate our key
     key = rsa.generate_private_key(
         public_exponent=65537,
@@ -168,12 +169,12 @@ def create_certificate_pem(delete_certificate):
 
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.PEM))
 
-    yield certificate_filename
+    yield certificate_filename, certificate_label
 
 @pytest.fixture
 def create_certificate_der(delete_certificate):
     """creates an x509 certificate in DER format"""
-    certificate_filename, certificate_file = delete_certificate
+    certificate_filename, certificate_label, certificate_file = delete_certificate
     # Generate our key
     key = rsa.generate_private_key(
         public_exponent=65537,
@@ -210,4 +211,4 @@ def create_certificate_der(delete_certificate):
 
     certificate_file.write_bytes(cert.public_bytes(serialization.Encoding.DER))
 
-    yield certificate_filename
+    yield certificate_filename, certificate_label
