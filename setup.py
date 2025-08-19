@@ -8,7 +8,14 @@ from pathlib import Path
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
+
+class bdist_wheel(_bdist_wheel): # noqa: N801
+    def finalize_options(self):
+        super().finalize_options()
+
+        self.plat_name = "os390"
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
@@ -114,6 +121,7 @@ def main():
         ],
         "cmdclass": {
             "build_ext": BuildExtensionWithAssemblerAndC,
+            "bdist_wheel": bdist_wheel,
             },
     }
     setup(**setup_args)
