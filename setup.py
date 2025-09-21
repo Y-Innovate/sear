@@ -15,7 +15,7 @@ class bdist_wheel(_bdist_wheel): # noqa: N801
     def finalize_options(self):
         super().finalize_options()
 
-        self.plat_name = "os390"
+        self.root_is_pure = True
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
