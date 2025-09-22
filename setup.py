@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import sys
 from glob import glob
 from pathlib import Path
 
@@ -16,6 +17,7 @@ class bdist_wheel(_bdist_wheel): # noqa: N801
         super().finalize_options()
 
         self.root_is_pure = True
+        self.python_tag = f"py{sys.version_info.major}{sys.version_info.minor}"
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
