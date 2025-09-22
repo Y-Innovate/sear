@@ -3,12 +3,21 @@
 import json
 import os
 import subprocess
+import sys
 from glob import glob
 from pathlib import Path
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
+from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
 
+
+class bdist_wheel(_bdist_wheel): # noqa: N801
+    def finalize_options(self):
+        super().finalize_options()
+
+        self.root_is_pure = True
+        self.python_tag = f"py{sys.version_info.major}{sys.version_info.minor}"
 
 def assemble(asm_file: str, asm_directory: Path) -> None:
     """Assemble assembler code."""
@@ -114,6 +123,7 @@ def main():
         ],
         "cmdclass": {
             "build_ext": BuildExtensionWithAssemblerAndC,
+            "bdist_wheel": bdist_wheel,
             },
     }
     setup(**setup_args)
