@@ -278,15 +278,14 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   ascii_bytes_unique_ptr.get()[length] = 0;
   // Decode bytes
   std::strncpy(ascii_bytes_unique_ptr.get(), p_ebcdic_bytes, length);
-  __etoa_l(ascii_bytes_unique_ptr.get(), length);
   
-  std::string ascii_string = std::string(ascii_bytes_unique_ptr.get());
+  std::string ebcdic_string = std::string(ascii_bytes_unique_ptr.get());
   std::string utf8_string;
   
   //iconv_t conversion_descriptor = iconv_open ("UTF-8", "ISO-8859-1");
   //iconv(conversion_descriptor, ascii_bytes_unique_ptr.get());
 
-  iconvpp::converter conv("UTF-8","ISO-8859-1",false,2048);
+  iconvpp::converter conv("UTF-8","IBM-1047",false,2048);
 
   conv.convert(ascii_string, utf8_string);
 
