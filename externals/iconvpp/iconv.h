@@ -1,7 +1,8 @@
 
-                   #define __iconv__ 1
-                   #pragma nomargins nosequence
-                   #pragma checkout(suspend)
+#define __iconv__ 1
+#pragma nomargins nosequence
+#pragma checkout(suspend)
+
   /***************************************************************
   * <iconv.h> header file                                        *
   *                                                              *
@@ -165,4 +166,4 @@ Correct your header search path.
   }
   #endif
 
-                   #pragma checkout(resume)
+#pragma checkout(resume)
