@@ -287,7 +287,7 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
 
   iconvpp::converter conv("UTF-8","IBM-1047",false,2048);
 
-  conv.convert(ascii_string, utf8_string);
+  conv.convert(ebcdic_string, utf8_string);
 
   
   // Convert to lowercase
