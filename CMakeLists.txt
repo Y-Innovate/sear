@@ -284,6 +284,7 @@ target_include_directories(
     sear/validation
     externals/json
     externals/json-schema-validator
+    externals/iconv
     tests/irrsdl00
     tests/zoslib
     "${CMAKE_CURRENT_BINARY_DIR}/sear"
