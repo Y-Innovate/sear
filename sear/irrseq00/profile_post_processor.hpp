@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <iconv.hpp>
 
 #include "irrseq00.hpp"
 #include "logger.hpp"
