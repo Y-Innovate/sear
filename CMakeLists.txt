@@ -114,6 +114,7 @@ target_include_directories(
     sear/validation
     externals/json
     externals/json-schema-validator
+    externals/iconvpp
     # tests/zoslib include directory only needed on Linux build
     "${ZOSLIB_INCLUDE}"
     # add generated header to include path
@@ -180,6 +181,7 @@ target_include_directories(
     sear/validation
     externals/json
     externals/json-schema-validator
+    externals/iconvpp
     tests/irrsdl00
     tests/zoslib
 )
