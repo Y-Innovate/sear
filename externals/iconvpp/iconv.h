@@ -1,7 +1,4 @@
-                   ??=ifndef __iconv__
-                   ??=ifdef __COMPILER_VER__
-                     ??=pragma filetag("IBM-1047")
-                   ??=endif
+
                    #define __iconv__ 1
                    #pragma nomargins nosequence
                    #pragma checkout(suspend)
@@ -169,4 +166,3 @@ Correct your header search path.
   #endif
 
                    #pragma checkout(resume)
-                   ??=endif /* __iconv__ */
