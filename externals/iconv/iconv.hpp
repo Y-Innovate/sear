@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 
 #include <errno.h>
-
+#include <iconv>
 #include <stdexcept>
 #include <string>
 #include <vector>
