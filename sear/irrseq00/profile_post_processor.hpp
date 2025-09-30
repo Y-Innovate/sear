@@ -2,7 +2,7 @@
 #define __SEAR_PROFILE_POST_PROCESSOR_H_
 
 #include <nlohmann/json.hpp>
-#include <iconv/iconv.hpp>
+#include <iconv.hpp>
 #include <string>
 
 #include "irrseq00.hpp"

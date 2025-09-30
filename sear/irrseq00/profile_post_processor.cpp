@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
-#include <iconv/iconv.hpp>
+#include <iconv.hpp>
 #include <cstdio>
 #include <cstring>
 #include <memory>
