@@ -281,15 +281,11 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   
   std::string ebcdic_string = std::string(ascii_bytes_unique_ptr.get());
   std::string utf8_string;
-  
-  //iconv_t conversion_descriptor = iconv_open ("UTF-8", "ISO-8859-1");
-  //iconv(conversion_descriptor, ascii_bytes_unique_ptr.get());
 
   iconvpp::converter conv("UTF-8","IBM-1047",false,2048);
 
   conv.convert(ebcdic_string, utf8_string);
 
-  
   // Convert to lowercase
   size_t end = utf8_string.find_last_not_of(" ");
 
