@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iconv.hpp>
 #include <cstdio>
 #include <cstring>
 #include <memory>
@@ -277,13 +278,26 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   ascii_bytes_unique_ptr.get()[length] = 0;
   // Decode bytes
   std::strncpy(ascii_bytes_unique_ptr.get(), p_ebcdic_bytes, length);
-  __e2a_l(ascii_bytes_unique_ptr.get(), length);
+  __etoa_l(ascii_bytes_unique_ptr.get(), length);
+  
   std::string ascii_string = std::string(ascii_bytes_unique_ptr.get());
+  std::string utf8_string;
+  
+  //iconv_t conversion_descriptor = iconv_open ("UTF-8", "ISO-8859-1");
+  //iconv(conversion_descriptor, ascii_bytes_unique_ptr.get());
+
+  iconvpp::converter conv("UTF-8","ISO-8859-1",false,2048)
+
+  conv.convert(ascii_string, utf8_string);
+
+  
   // Convert to lowercase
-  size_t end = ascii_string.find_last_not_of(" ");
+  size_t end = utf8_string.find_last_not_of(" ");
+
   if (end != std::string::npos) {
-    return ascii_string.substr(0, end + 1);
+    return utf8_string.substr(0, end + 1);
   }
-  return ascii_string;
+  return utf8_string;
 }
 }  // namespace SEAR
+
