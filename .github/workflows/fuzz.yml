@@ -11,6 +11,6 @@ jobs:
         run: sudo apt-get install -y clang
       - name: fuzz
         run: |
-          cmake --preset linux-test -DBUILD_SHARED_LIBS=on
+          cmake --preset linux-test
           cmake --build --preset linux-test --target fuzz
           ASAN_OPTIONS=alloc_dealloc_mismatch=1 build/linux/fuzz -runs=65536
