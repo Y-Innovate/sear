@@ -9,8 +9,6 @@ find_program(
     REQUIRED
 )
 
-find_package(Iconv REQUIRED)
-
 # use Clang compiler for C and C++ files
 set(CMAKE_C_COMPILER "${CLANG_C}")
 set(CMAKE_CXX_COMPILER "${CLANG_CXX}")
