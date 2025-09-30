@@ -286,7 +286,7 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   //iconv_t conversion_descriptor = iconv_open ("UTF-8", "ISO-8859-1");
   //iconv(conversion_descriptor, ascii_bytes_unique_ptr.get());
 
-  iconvpp::converter conv("UTF-8","ISO-8859-1",false,2048)
+  iconvpp::converter conv("UTF-8","ISO-8859-1",false,2048);
 
   conv.convert(ascii_string, utf8_string);
 
