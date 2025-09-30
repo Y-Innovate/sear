@@ -20,6 +20,30 @@ def test_add_user(delete_user):
     assert "errors" not in str(add_result.result)
     assert add_result.result["return_codes"] == successful_return_codes
 
+def test_add_user_with_special_characters(delete_user):
+    """This test is supposed to succeed"""
+    add_result = sear(
+            {
+            "operation": "add", 
+            "admin_type": "user", 
+            "userid": delete_user,
+            "traits": {
+                "base:name": "BØLLE MÅNEN ER STÆRK",  # noqa: E501
+            },
+            },
+        )
+    
+    extract_result = sear(
+            {
+            "operation": "extract",
+            "admin_type": "user",
+            "userid": delete_user,
+            },
+        )
+    
+    assert "errors" not in str(add_result.result)
+    assert extract_result.result["return_codes"] == successful_return_codes
+
 def test_add_user_missing_userid():
     """This test is supposed to fail"""
     add_result = sear(
