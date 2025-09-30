@@ -13,7 +13,7 @@ VALIDATION		= ${PWD}/sear/validation
 EXTERNALS		= ${PWD}/externals
 JSON			= $(EXTERNALS)/json
 JSON_SCHEMA		= $(EXTERNALS)/json-schema-validator
-ICONV			= $(EXTERNALS)/iconvpp
+ICONV			= $(EXTERNALS)/iconv
 TESTS			= ${PWD}/tests
 ZOSLIB			= $(TESTS)/zoslib
 
