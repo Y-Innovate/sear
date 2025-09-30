@@ -107,8 +107,8 @@ def main():
                     + [
                         "sear",
                         "externals/json",
-                        "externals/iconvpp",
                         "externals/json-schema-validator",
+                        "externals/iconv",
                         os.environ["ZOPEN_ROOTFS"] + "/usr/local/include",
                     ]
                 ),
