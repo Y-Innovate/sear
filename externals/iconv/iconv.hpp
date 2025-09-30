@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <unistd.h>
+#include <iconv.h>
 
 namespace iconvpp {
 
