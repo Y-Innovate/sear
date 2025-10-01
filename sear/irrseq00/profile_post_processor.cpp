@@ -274,19 +274,12 @@ std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
 
 std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
                                                     int length) {
-  auto ebcdic_bytes_unique_ptr          = std::make_unique<char[]>(length);
-  ebcdic_bytes_unique_ptr.get()[length] = 0;
-  // Decode bytes
-  std::strncpy(ebcdic_bytes_unique_ptr.get(), p_ebcdic_bytes, length);
-  
-  std::string ebcdic_string = std::string(ebcdic_bytes_unique_ptr.get());
   std::string utf8_string;
 
-  iconvpp::converter conv("UTF-8","IBM-1047",false,2048);
+  iconvpp::converter conv("UTF-8","IBM-1047",false);
 
-  conv.convert(ebcdic_string, utf8_string);
+  conv.convert(p_ebcdic_bytes, utf8_string);
 
-  // Convert to lowercase
   size_t end = utf8_string.find_last_not_of(" ");
 
   if (end != std::string::npos) {
