@@ -134,11 +134,10 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
 
   std::string request_str_ebcdic = fromUTF8(request_unique_ptr.get());
 
+  auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 
   Logger::getInstance().debug("EBCDIC encoded request XML:");
-  Logger::getInstance().hexDump(request_unique_ptr_ebcdic.c_str(), xml_string.length());
-
-  auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
+  Logger::getInstance().hexDump(request_unique_ptr_ebcdic.get(), xml_string.length());
 
   Logger::getInstance().debugAllocate(request_unique_ptr_ebcdic.get(), 64,
                                       xml_string.length());
