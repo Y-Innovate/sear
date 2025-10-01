@@ -22,11 +22,12 @@ def test_add_user(delete_user):
 
 def test_add_user_with_special_characters(delete_user):
     """This test is supposed to succeed"""
+    username = delete_user
     add_result = sear(
             {
             "operation": "add", 
             "admin_type": "user", 
-            "userid": delete_user,
+            "userid": username,
             "traits": {
                 "base:name": "BØLLE MÅNEN ER STÆRK",  # noqa: E501
             },
@@ -37,7 +38,7 @@ def test_add_user_with_special_characters(delete_user):
             {
             "operation": "extract",
             "admin_type": "user",
-            "userid": delete_user,
+            "userid": username,
             },
         )
     
