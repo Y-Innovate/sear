@@ -76,8 +76,8 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   Logger::getInstance().debugAllocate(request_unique_ptr_ebcdic.get(), 64,
                                       xml_string_.length());
 
-  std::strncpy(request_unique_ptr_ebcdic.get(), request_unique_ptr_ebcdic.c_str(),
-               request_unique_ptr_ebcdic.length());
+  std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(),
+               request_str_ebcdic.length());
 
   request.setRawRequestPointer(request_unique_ptr_ebcdic.get());
   request_unique_ptr.release();
