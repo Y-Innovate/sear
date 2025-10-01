@@ -64,9 +64,11 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   Logger::getInstance().debug("Request XML:", xml_string_);
 
   // convert our c++ string to a char * buffer
-  auto request_unique_ptr_ebcdic = std::make_unique<char[]>(xml_string_.length());
+  auto request_unique_ptr = std::make_unique<char[]>(xml_string_.length());
 
-  std::string request_str_ebcdic = fromUTF8(request_unique_ptr_ebcdic.get());
+  std::string request_str_ebcdic = fromUTF8(request_unique_ptr.get());
+
+  auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 
   Logger::getInstance().debug("EBCDIC encoded request XML:");
   Logger::getInstance().hexDump(request_unique_ptr_ebcdic.get(), xml_string_.length());
@@ -78,6 +80,7 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
                xml_string_.length());
 
   request.setRawRequestPointer(request_unique_ptr_ebcdic.get());
+  request_unique_ptr.release();
   request_unique_ptr_ebcdic.release();
   request.setRawRequestLength(xml_string_.length());
 }
