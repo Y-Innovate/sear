@@ -2,6 +2,7 @@
 #include <iconv.h>
 #include <stdexcept>
 #include <vector>
+#include "logger.hpp"
 
 std::string convert(std::string input, std::string_view inputCodepage, std::string_view outputCodepage) {
     std::string fromCode{inputCodepage};
