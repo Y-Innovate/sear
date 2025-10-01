@@ -144,7 +144,7 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
 
   std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(), request_str_ebcdic.length());
 
-  request.setRawRequestPointer(request_unique_ptr_ebcdic.c_str());
+  request.setRawRequestPointer(request_unique_ptr_ebcdic.get());
   request_unique_ptr.release();
   request_unique_ptr_ebcdic.release();
   request.setRawRequestLength(xml_string.length());
