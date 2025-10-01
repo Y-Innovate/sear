@@ -48,6 +48,8 @@ std::string convert(std::string input, std::string_view inputCodepage, std::stri
 }
 
 std::string SEAR::toUTF8(std::string input, std::string_view codepage) {
+    std::string fromCode{codepage};
+   Logger::getInstance().debug("Converting from" + fromCode + "to UTF-8");
    return convert(input,codepage,"UTF-8");
 }
 
