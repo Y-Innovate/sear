@@ -2,6 +2,7 @@
 #include <iconv.h>
 #include <stdexcept>
 #include <vector>
+#include "logger.hpp"
 
 std::string convert(std::string input, std::string_view inputCodepage, std::string_view outputCodepage) {
     std::string fromCode{inputCodepage};
@@ -48,10 +49,11 @@ std::string convert(std::string input, std::string_view inputCodepage, std::stri
 }
 
 std::string SEAR::toUTF8(std::string input, std::string_view codepage) {
-    std::string fromCode{codepage};
-    return convert(input,codepage,"UTF-8");
+  std::string fromCode{codepage};
+  return convert(input,codepage,"UTF-8");
 }
 
 std::string SEAR::fromUTF8(std::string input) {
-    return convert(input,"UTF-8","IBM-1047");
+  Logger::getInstance().debug("Converting from UTF-8 to IBM-1047");
+  return convert(input,"UTF-8","IBM-1047");
 }
