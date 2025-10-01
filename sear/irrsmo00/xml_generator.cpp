@@ -9,6 +9,7 @@
 #include "logger.hpp"
 #include "sear_error.hpp"
 #include "trait_validation.hpp"
+#include "../conversion.hpp"
 
 #ifdef __TOS_390__
 #include <unistd.h>
