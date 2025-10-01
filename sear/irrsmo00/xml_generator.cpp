@@ -74,7 +74,7 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   Logger::getInstance().hexDump(request_unique_ptr_ebcdic.get(), request_str_ebcdic.length());
 
   Logger::getInstance().debugAllocate(request_unique_ptr_ebcdic.get(), 64,
-                                      xml_string_.length());
+                                      request_str_ebcdic.length());
 
   std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(),
                request_str_ebcdic.length());
