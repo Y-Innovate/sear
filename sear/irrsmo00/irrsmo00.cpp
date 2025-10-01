@@ -136,13 +136,13 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
 
   auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 
+  std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(), request_str_ebcdic.length());
+
   Logger::getInstance().debug("EBCDIC encoded request XML:");
   Logger::getInstance().hexDump(request_unique_ptr_ebcdic.get(), request_str_ebcdic.length());
 
   Logger::getInstance().debugAllocate(request_unique_ptr_ebcdic.get(), 64,
                                       request_str_ebcdic.length());
-
-  std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(), request_str_ebcdic.length());
 
   request.setRawRequestPointer(request_unique_ptr_ebcdic.get());
   request_unique_ptr.release();
