@@ -147,7 +147,7 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
   request.setRawRequestPointer(request_unique_ptr_ebcdic.get());
   request_unique_ptr.release();
   request_unique_ptr_ebcdic.release();
-  request.setRawRequestLength(xml_string.length());
+  request.setRawRequestLength(request_str_ebcdic.length());
 
   IRRSMO00::call_irrsmo00(request, true);
 
