@@ -48,11 +48,13 @@ std::string convert(std::string input, std::string_view inputCodepage, std::stri
     return dst;
 }
 
+/** Converts string from specified codepage to UTF-8 */
 std::string SEAR::toUTF8(std::string input, std::string_view codepage) {
   std::string fromCode{codepage};
   return convert(input,codepage,"UTF-8");
 }
 
+/** Converts string from UTF-8 to IBM-1047 */
 std::string SEAR::fromUTF8(std::string input) {
   Logger::getInstance().debug("Converting from UTF-8 to IBM-1047");
   return convert(input,"UTF-8","IBM-1047");
