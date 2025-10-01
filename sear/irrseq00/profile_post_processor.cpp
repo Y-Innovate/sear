@@ -2,12 +2,13 @@
 
 #include <algorithm>
 #include <cctype>
-#include <iconv.hpp>
 #include <cstdio>
 #include <cstring>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "../conversion.hpp"
 
 // Use ntohl() to convert 32-bit values from big endian to little endian.
 // use ntohs() to convert 16-bit values from big endian to little endian.
@@ -274,11 +275,7 @@ std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
 
 std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
                                                     int length) {
-  std::string utf8_string;
-
-  iconvpp::converter conv("UTF-8","IBM-1047",false);
-
-  conv.convert(p_ebcdic_bytes, utf8_string);
+  std::string utf8_string = toUTF8(p_ebcdic_bytes);
 
   size_t end = utf8_string.find_last_not_of(" ");
 

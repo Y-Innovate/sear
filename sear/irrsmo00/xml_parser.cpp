@@ -3,8 +3,8 @@
 #include <cstring>
 #include <memory>
 #include <regex>
-#include <iconv.hpp>
 
+#include "../conversion.hpp"
 #include "logger.hpp"
 #include "sear_error.hpp"
 
@@ -35,13 +35,8 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
               raw_result_length);
 
   std::string ebcdic_string = std::string(xml_ascii_result_unique_ptr.get());
-  std::string utf8_string;
 
-  iconvpp::converter conv("UTF-8","IBM-1047",false,2048);
-
-  conv.convert(ebcdic_string, utf8_string);
-
-  xml_buffer = utf8_string;
+  xml_buffer = toUTF8(ebcdic_string);
 
   Logger::getInstance().debug("Decoded result XML:", xml_buffer);
 
