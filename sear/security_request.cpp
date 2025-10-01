@@ -6,6 +6,7 @@
 #include <memory>
 #include <new>
 
+#include "../conversion.hpp"
 #include "irrsdl00.hpp"
 #include "irrseq00.hpp"
 
@@ -331,7 +332,7 @@ void SecurityRequest::load(const nlohmann::json& request) {
     const int userid_length = surrogate_userid_string.length();
     std::strncpy(surrogate_userid_, surrogate_userid_string.c_str(),
                  userid_length);
-    __a2e_l(surrogate_userid_, userid_length);
+    surrogate_userid_string = fromUTF8(surrogate_userid_);
   }
 }
 
