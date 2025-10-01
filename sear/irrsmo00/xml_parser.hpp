@@ -3,6 +3,7 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <iconv.hpp>
 
 #include "logger.hpp"
 #include "security_request.hpp"
