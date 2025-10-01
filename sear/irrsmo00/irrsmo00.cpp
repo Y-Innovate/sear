@@ -131,18 +131,23 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
 
   // convert our c++ string to a char * buffer
   auto request_unique_ptr = std::make_unique<char[]>(xml_string.length());
-  Logger::getInstance().debugAllocate(request_unique_ptr.get(), 64,
-                                      xml_string.length());
-  std::strncpy(request_unique_ptr.get(), xml_string.c_str(),
-               xml_string.length());
 
-  std::string request_unique_ptr_ebcdic = fromUTF8(request_unique_ptr.get());
+  std::string request_str_ebcdic = fromUTF8(request_unique_ptr.get());
+
 
   Logger::getInstance().debug("EBCDIC encoded request XML:");
   Logger::getInstance().hexDump(request_unique_ptr_ebcdic.c_str(), xml_string.length());
 
+  auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
+
+  Logger::getInstance().debugAllocate(request_unique_ptr_ebcdic.get(), 64,
+                                      xml_string.length());
+
+  std::strncpy(request_unique_ptr_ebcdic.get(), request_str_ebcdic.c_str(), request_str_ebcdic.length());
+
   request.setRawRequestPointer(request_unique_ptr_ebcdic.c_str());
   request_unique_ptr.release();
+  request_unique_ptr_ebcdic.release();
   request.setRawRequestLength(xml_string.length());
 
   IRRSMO00::call_irrsmo00(request, true);
