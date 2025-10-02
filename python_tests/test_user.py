@@ -82,7 +82,7 @@ def test_add_user_with_spanish_characters(delete_user):
     """This test is supposed to succeed"""
     username = delete_user
 
-    name = "Diego Velázquez"
+    name = "DIEGO VELÁZQUEZ"
 
     add_result = sear(
             {
