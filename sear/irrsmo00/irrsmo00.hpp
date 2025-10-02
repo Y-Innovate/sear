@@ -6,6 +6,7 @@
 
 #include "sear_result.h"
 #include "security_request.hpp"
+#include "../conversion.hpp"
 
 typedef struct {
   unsigned char running_userid_length;
