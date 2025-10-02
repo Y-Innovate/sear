@@ -112,7 +112,7 @@ void SecurityAdmin::doExtract(Extractor &extractor) {
         post_processor.postProcessSearchGeneric(request_, encoding);
       } else {
         // Post Process Generic Extract Result
-        post_processor.postProcessGeneric(request_, encoding);
+        post_processor.postProcessGeneric(request_);
       }
     }
   } else {
