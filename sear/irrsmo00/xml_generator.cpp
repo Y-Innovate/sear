@@ -26,8 +26,7 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   const nlohmann::json& traits  = request.getTraits();
 
   // Build meta tag
-  XMLGenerator::buildOpenTag("?xml");
-  XMLGenerator::buildAttribute("encoding", encoding);
+  XMLGenerator::buildMetaTag(encoding);
 
   // Build the securityrequest tag (Consistent)
   XMLGenerator::buildOpenTag("securityrequest");
@@ -121,6 +120,11 @@ void XMLGenerator::buildOpenTag(std::string tag) {
   // Ex: "<base:universal_access"
   tag = XMLGenerator::replaceXMLChars(tag);
   xml_string_.append("<" + tag);
+}
+void XMLGenerator::buildMetaTag(const std::string tag) {
+  // Ex: "<base:universal_access"
+  tag = XMLGenerator::replaceXMLChars(tag);
+  xml_string_.append("<?xml encoding=" + "\"" + tag + "\"" + ">");
 }
 void XMLGenerator::buildAttribute(std::string name, std::string value) {
   // Ex: " operation=set"
