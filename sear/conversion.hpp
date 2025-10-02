@@ -6,6 +6,6 @@
 
 namespace SEAR {
     std::string toUTF8(std::string input, std::string_view codepage = "IBM-1047");
-    std::string fromUTF8(std::string input);
+    std::string fromUTF8(std::string input, std::string_view codepage = "IBM-1047");
 }
 #endif

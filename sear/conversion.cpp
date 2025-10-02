@@ -55,7 +55,7 @@ std::string SEAR::toUTF8(std::string input, std::string_view codepage) {
 }
 
 /** Converts string from UTF-8 to IBM-1047 */
-std::string SEAR::fromUTF8(std::string input) {
+std::string SEAR::fromUTF8(std::string input, std::string_view codepage) {
   Logger::getInstance().debug("Converting from UTF-8 to IBM-1047");
-  return convert(input,"UTF-8","IBM-1047");
+  return convert(input,"UTF-8",codepage);
 }
