@@ -95,6 +95,7 @@ add_library(
     sear/sear.cpp
     sear/security_admin.cpp
     sear/security_request.cpp
+    sear/conversion.cpp
 
     externals/json-schema-validator/json-patch.cpp
     externals/json-schema-validator/json-schema-draft7.json.cpp
@@ -264,6 +265,7 @@ add_executable(
     sear/sear.cpp
     sear/security_admin.cpp
     sear/security_request.cpp
+    sear/conversion.cpp
 
     externals/json-schema-validator/json-patch.cpp
     externals/json-schema-validator/json-schema-draft7.json.cpp
