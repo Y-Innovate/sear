@@ -46,7 +46,7 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
   // Regular expression designed to match the header attributes, generic body,
   // and closing tags of the xml
   std::regex full_xml_regex{
-      R"~(<\?xml version="1\.0" encoding=""\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<returncode>.*<\/returncode><reasoncode>.*<\/reasoncode><\/securityresult>)~"};
+      R"~(<\?xml version="1\.0" encoding="IBM-1047"\?><securityresult xmlns="http:\/\/www\.ibm\.com\/systems\/zos\/saf\/IRRSMO00Result1"><([a-z]*) ([^>]*)>(<.+>)<returncode>.*<\/returncode><reasoncode>.*<\/reasoncode><\/securityresult>)~"};
   std::smatch useful_xml_substrings;
 
   nlohmann::json result_json;
