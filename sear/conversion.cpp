@@ -48,11 +48,11 @@ std::string convert(std::string input, std::string_view inputCodepage, std::stri
 }
 
 /** Converts string from specified codepage to UTF-8, defaults to IBM-1047 if nothing is specified */
-std::string SEAR::toUTF8(std::string input, std::string_view codepage) {
+std::string SEAR::toUTF8(const std::string input, std::string_view codepage) {
   return convert(input,codepage,"UTF-8");
 }
 
 /** Converts string from UTF-8 to specified codepage, defaults to IBM-1047 if nothing is specified */
-std::string SEAR::fromUTF8(std::string input, std::string_view codepage) {
+std::string SEAR::fromUTF8(const std::string input, std::string_view codepage) {
   return convert(input,"UTF-8",codepage);
 }
