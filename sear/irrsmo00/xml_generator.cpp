@@ -30,6 +30,8 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
   XMLGenerator::buildAttribute("xmlns", "http://www.ibm.com/systems/zos/saf");
   XMLGenerator::buildAttribute("xmlns:racf",
                                "http://www.ibm.com/systems/zos/racf");
+  XMLGenerator::buildAttribute("encoding",
+                               encoding);
   XMLGenerator::buildEndNestedTag();
 
   std::string true_admin_type = convertAdminType(admin_type);
