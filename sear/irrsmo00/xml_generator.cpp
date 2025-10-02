@@ -121,8 +121,8 @@ void XMLGenerator::buildOpenTag(std::string tag) {
   tag = XMLGenerator::replaceXMLChars(tag);
   xml_string_.append("<" + tag);
 }
-void XMLGenerator::buildMetaTag(const std::string tag) {
-  // Ex: "<base:universal_access"
+void XMLGenerator::buildMetaTag(const std::string& tag) {
+  // Ex: "<?xml encoding="IBM-1047">"
   tag = XMLGenerator::replaceXMLChars(tag);
   xml_string_.append("<?xml encoding=" + "\"" + tag + "\"" + ">");
 }
