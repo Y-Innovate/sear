@@ -55,6 +55,8 @@ const std::string& SecurityRequest::getProfileName() const {
   return profile_name_;
 }
 
+const std::string& SecurityRequest::getEncoding() const { return encoding_; }
+
 const std::string& SecurityRequest::getClassName() const { return class_name_; }
 
 const std::string& SecurityRequest::getGroup() const { return group_; }
@@ -187,6 +189,12 @@ const nlohmann::json& SecurityRequest::getIntermediateResultJSON() const {
 void SecurityRequest::load(const nlohmann::json& request) {
   admin_type_ = request["admin_type"].get<std::string>();
   operation_  = request["operation"].get<std::string>();
+  
+  if (request.contains("encoding")) {
+    encoding_ = request["encoding"].get<std::string>();
+  } else {
+    encoding_ = std::string("IBM-1047");
+  }
 
   if (request.contains("traits")) {
     traits_ = request["traits"].get<nlohmann::json>();

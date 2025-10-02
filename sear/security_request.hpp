@@ -28,6 +28,7 @@ class SecurityRequest {
   std::string default_;
   std::string usage_;
   std::string status_;
+  std::string encoding_;
   char surrogate_userid_[8] = {0};
   nlohmann::json traits_;
   uint8_t function_code_ = 0;
@@ -59,6 +60,7 @@ class SecurityRequest {
   const std::string& getDefault() const;
   const std::string& getUsage() const;
   const std::string& getStatus() const;
+  const std::string& getEncoding() const;
   const char* getSurrogateUserID() const;
   const nlohmann::json& getTraits() const;
   uint8_t getFunctionCode() const;
