@@ -124,7 +124,7 @@ void XMLGenerator::buildOpenTag(std::string tag) {
 void XMLGenerator::buildMetaTag(std::string tag) {
   // Ex: "<?xml encoding="IBM-1047">"
   tag = XMLGenerator::replaceXMLChars(tag);
-  xml_string_.append("<?xml encoding=\"" + tag + "\">");
+  xml_string_.append("<?xml encoding=\"" + tag + "\" ?>");
 }
 void XMLGenerator::buildAttribute(std::string name, std::string value) {
   // Ex: " operation=set"
