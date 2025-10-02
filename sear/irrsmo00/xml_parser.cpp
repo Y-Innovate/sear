@@ -22,6 +22,8 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
   const char* p_raw_result = request.getRawResultPointer();
   int raw_result_length    = request.getRawResultLength();
 
+  const std::string encoding = request.getEncoding();
+
   auto xml_ascii_result_unique_ptr =
       std::make_unique<char[]>(raw_result_length + 1);
   std::memset(xml_ascii_result_unique_ptr.get(), 0, raw_result_length + 1);
@@ -36,7 +38,7 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
 
   std::string ebcdic_string = std::string(xml_ascii_result_unique_ptr.get());
 
-  xml_buffer = toUTF8(ebcdic_string);
+  xml_buffer = toUTF8(ebcdic_string, encoding);
 
   Logger::getInstance().debug("Decoded result XML:", xml_buffer);
 
