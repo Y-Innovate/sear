@@ -68,7 +68,7 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
 
   Logger::getInstance().debug("Request XML:", xml_string_);
 
-  std::string request_str_ebcdic = fromUTF8(xml_string_, encoding);
+  std::string request_str_ebcdic = fromUTF8(xml_string_, "IBM-1047");
 
   auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 
