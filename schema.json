@@ -13,6 +13,9 @@
         },
         "userid_filter": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -31,6 +34,9 @@
         },
         "userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -58,6 +64,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -85,6 +94,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -108,6 +120,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -127,6 +142,9 @@
         },
         "group_filter": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -145,6 +163,9 @@
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -172,6 +193,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -199,6 +223,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -222,6 +249,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -244,6 +274,9 @@
         },
         "group": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -273,6 +306,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -299,6 +335,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -322,6 +361,9 @@
         },
         "class": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -344,6 +386,9 @@
         },
         "class": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -375,6 +420,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -406,6 +454,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -433,6 +484,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -453,6 +507,9 @@
         },
         "dataset_filter": {
           "$ref": "#/$defs/dataSetName"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -471,6 +528,9 @@
         },
         "dataset": {
           "$ref": "#/$defs/dataSetName"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -504,6 +564,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -537,6 +600,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -637,6 +703,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -688,6 +757,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -732,6 +804,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -779,6 +854,9 @@
         },
         "run_as_userid": {
           "$ref": "#/$defs/eightCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -813,6 +891,9 @@
         },
         "keyring": {
           "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -838,6 +919,9 @@
         },
         "keyring": {
           "$ref": "#/$defs/twohundredthirtysevenCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -898,6 +982,9 @@
             "NOTRUST",
             "notrust"
           ]
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -930,6 +1017,9 @@
         },
         "label": {
           "$ref": "#/$defs/thirtytwoCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -960,6 +1050,9 @@
         },
         "label": {
           "$ref": "#/$defs/thirtytwoCharacterString"
+        },
+        "encoding": {
+          "$ref": "#/$defs/encoding"
         }
       },
       "required": [
@@ -1013,6 +1106,11 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 6
+    },
+    "encoding": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 9
     }
   }
 }
