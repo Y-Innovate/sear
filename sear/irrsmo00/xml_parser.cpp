@@ -39,7 +39,7 @@ nlohmann::json XMLParser::buildJSONString(SecurityRequest& request) {
 
   std::string ebcdic_string = std::string(xml_ascii_result_unique_ptr.get());
 
-  xml_buffer = toUTF8(ebcdic_string, encoding);
+  xml_buffer = toUTF8(ebcdic_string, "IBM-1047");
 
   Logger::getInstance().debug("Decoded result XML:", xml_buffer);
 
