@@ -329,10 +329,7 @@ void SecurityRequest::load(const nlohmann::json& request) {
     std::string surrogate_userid_string = request.get<std::string>();
     Logger::getInstance().debug("Running under the authority of user: " +
                                 surrogate_userid_string);
-    const int userid_length = surrogate_userid_string.length();
-    std::strncpy(surrogate_userid_, surrogate_userid_string.c_str(),
-                 userid_length);
-    surrogate_userid_string = fromUTF8(surrogate_userid_);
+    surrogate_userid_string = fromUTF8(surrogate_userid_string);
   }
 }
 
