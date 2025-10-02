@@ -53,7 +53,7 @@ def test_add_user_with_german_characters(delete_user):
     """This test is supposed to succeed"""
     username = delete_user
 
-    name = "ÖSTERREICH IST üBER"
+    name = "ÖSTERREICH IST ÜBER"
 
     add_result = sear(
             {
