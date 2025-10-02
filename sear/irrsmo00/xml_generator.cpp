@@ -22,6 +22,7 @@ namespace SEAR {
 void XMLGenerator::buildXMLString(SecurityRequest& request) {
   // Main body function that builds an xml string
   const std::string& admin_type = request.getAdminType();
+  const std::string& encoding = request.getEncoding();
   const nlohmann::json& traits  = request.getTraits();
 
   // Build the securityrequest tag (Consistent)
@@ -63,7 +64,7 @@ void XMLGenerator::buildXMLString(SecurityRequest& request) {
 
   Logger::getInstance().debug("Request XML:", xml_string_);
 
-  std::string request_str_ebcdic = fromUTF8(xml_string_);
+  std::string request_str_ebcdic = fromUTF8(xml_string_, encoding);
 
   auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 

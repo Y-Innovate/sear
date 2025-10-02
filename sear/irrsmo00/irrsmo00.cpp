@@ -105,6 +105,7 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
   const std::string &admin_type   = request.getAdminType();
   const std::string &profile_name = request.getProfileName();
   const std::string &class_name   = request.getClassName();
+  const std::string &encoding   = request.getEncoding();
 
   std::string xml_string;
 
@@ -129,7 +130,7 @@ bool IRRSMO00::does_profile_exist(SecurityRequest &request) {
 
   Logger::getInstance().debug("Request XML:", xml_string);
 
-  std::string request_str_ebcdic = fromUTF8(xml_string);
+  std::string request_str_ebcdic = fromUTF8(xml_string, encoding);
 
   auto request_unique_ptr_ebcdic = std::make_unique<char[]>(request_str_ebcdic.length());
 
