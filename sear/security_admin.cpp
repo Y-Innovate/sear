@@ -99,15 +99,17 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
 void SecurityAdmin::doExtract(Extractor &extractor) {
   extractor.extract(request_);
 
+  const std::string encoding = request_.getEncoding();
+
   if (request_.getAdminType() != "keyring") {
     ProfilePostProcessor post_processor;
     if (request_.getAdminType() == "racf-options") {
       // Post Process RACF Options Extract Result
-      post_processor.postProcessRACFOptions(request_);
+      post_processor.postProcessRACFOptions(request_, encoding);
     } else {
       if (request_.getOperation() == "search") {
         // Post Process Generic Search Result
-        post_processor.postProcessSearchGeneric(request_);
+        post_processor.postProcessSearchGeneric(request_, encoding);
       } else {
         // Post Process Generic Extract Result
         post_processor.postProcessGeneric(request_);

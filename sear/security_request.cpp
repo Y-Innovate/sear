@@ -6,6 +6,7 @@
 #include <memory>
 #include <new>
 
+#include "../conversion.hpp"
 #include "irrsdl00.hpp"
 #include "irrseq00.hpp"
 
@@ -53,6 +54,8 @@ const std::string& SecurityRequest::getOperation() const { return operation_; }
 const std::string& SecurityRequest::getProfileName() const {
   return profile_name_;
 }
+
+const std::string& SecurityRequest::getEncoding() const { return encoding_; }
 
 const std::string& SecurityRequest::getClassName() const { return class_name_; }
 
@@ -186,6 +189,12 @@ const nlohmann::json& SecurityRequest::getIntermediateResultJSON() const {
 void SecurityRequest::load(const nlohmann::json& request) {
   admin_type_ = request["admin_type"].get<std::string>();
   operation_  = request["operation"].get<std::string>();
+  
+  if (request.contains("encoding")) {
+    encoding_ = request["encoding"].get<std::string>();
+  } else {
+    encoding_ = std::string("IBM-1047");
+  }
 
   if (request.contains("traits")) {
     traits_ = request["traits"].get<nlohmann::json>();
@@ -326,12 +335,9 @@ void SecurityRequest::load(const nlohmann::json& request) {
 
   if (request.contains("run_as_userid")) {
     std::string surrogate_userid_string = request.get<std::string>();
+    surrogate_userid_string = fromUTF8(surrogate_userid_string);
     Logger::getInstance().debug("Running under the authority of user: " +
                                 surrogate_userid_string);
-    const int userid_length = surrogate_userid_string.length();
-    std::strncpy(surrogate_userid_, surrogate_userid_string.c_str(),
-                 userid_length);
-    __a2e_l(surrogate_userid_, userid_length);
   }
 }
 
