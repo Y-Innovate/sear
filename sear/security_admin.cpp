@@ -22,7 +22,7 @@ SecurityAdmin::SecurityAdmin(sear_result_t *p_result, bool debug) {
   request_ = SecurityRequest(p_result);
 }
 
-void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
+void SecurityAdmin::makeRequest(const char *p_request_json_string, int length, const std::string& encoding) {
   nlohmann::json request_json;
 
   try {
@@ -98,8 +98,6 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
 
 void SecurityAdmin::doExtract(Extractor &extractor) {
   extractor.extract(request_);
-
-  const std::string encoding = request_.getEncoding();
 
   if (request_.getAdminType() != "keyring") {
     ProfilePostProcessor post_processor;
