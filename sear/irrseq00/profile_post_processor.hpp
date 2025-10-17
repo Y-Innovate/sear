@@ -12,23 +12,23 @@ namespace SEAR {
 class ProfilePostProcessor {
  public:
   static void postProcessGeneric(SecurityRequest &request);
-  static void postProcessSearchGeneric(SecurityRequest &request, const std::string encoding);
-  static void postProcessRACFOptions(SecurityRequest &request, const std::string encoding);
+  static void postProcessSearchGeneric(SecurityRequest &request, const std::string& encoding);
+  static void postProcessRACFOptions(SecurityRequest &request, const std::string& encoding);
 
  private:
   static void processGenericField(nlohmann::json &json_field,
                                   const generic_field_descriptor_t *p_field,
                                   const char *p_profile,
                                   const char sear_field_type,
-                                  const std::string encoding
+                                  const std::string& encoding
                                 );
   static std::string postProcessFieldKey(const std::string &admin_type,
                                          const std::string &segment,
                                          const char *p_raw_field_key,
-                                         const std::string encoding
+                                         const std::string& encoding
                                         );
-  static std::string postProcessKey(const char *p_source_key, int length, const std::string encoding);
-  static std::string decodeEBCDICBytes(const char *p_ebcdic_bytes, int length, const std::string encoding);
+  static std::string postProcessKey(const char *p_source_key, int length, const std::string& encoding);
+  static std::string decodeEBCDICBytes(const char *p_ebcdic_bytes, int length, const std::string& encoding);
 };
 }  // namespace SEAR
 
