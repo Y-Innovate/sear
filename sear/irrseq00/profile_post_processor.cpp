@@ -209,7 +209,7 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, cons
 
 void ProfilePostProcessor::processGenericField(
     nlohmann::json &json_field, const generic_field_descriptor_t *p_field,
-    const char *p_profile, const char sear_field_type, const std::string encoding) {
+    const char *p_profile, const char sear_field_type, const std::string& encoding) {
   if (ntohs(p_field->type) & t_boolean_field) {
     // Post Process Boolean Fields
     if (ntohl(p_field->flags) & f_boolean_field) {
@@ -275,7 +275,7 @@ std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
 }
 
 std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
-                                                    int length, const std::string encoding) {
+                                                    int length, const std::string& encoding) {
   auto ebcdic_bytes_unique_ptr          = std::make_unique<char[]>(length);
   ebcdic_bytes_unique_ptr.get()[length] = 0;
   // Decode bytes
