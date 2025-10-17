@@ -121,6 +121,9 @@ void ProfileExtractor::extract(SecurityRequest &request) {
       function_code                  = save_function_code;
       p_arg_area->args.function_code = function_code;
 
+      p_arg_area->arg_pointers.p_profile_extract_parms->flags |=
+          htonl(0x14000000);
+
       // Call R_Admin
       Logger::getInstance().debug("Calling IRRSEQ00 ...");
       rc = callRadmin(
@@ -166,6 +169,11 @@ void ProfileExtractor::extract(SecurityRequest &request) {
           profile_name[profile_len] = 0;
           request.addFoundProfile(profile_name);
           unique_profile_name.release();
+        } else {
+          if (std::memcmp(p_profile_name, p_arg_area->args.profile_name,
+                          filter_len) > 0) {
+            break;
+          }
         }
 
         p_arg_area->arg_pointers.p_profile_extract_parms =
@@ -173,7 +181,7 @@ void ProfileExtractor::extract(SecurityRequest &request) {
                 *p_arg_area->arg_pointers.p_p_result_buffer);
 
         p_arg_area->arg_pointers.p_profile_extract_parms->flags |=
-            htonl(0x4000000);
+            htonl(0x14000000);
 
         // Call R_Admin
         Logger::getInstance().debug("Calling IRRSEQ00 ...");
