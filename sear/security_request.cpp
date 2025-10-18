@@ -187,12 +187,6 @@ const nlohmann::json& SecurityRequest::getIntermediateResultJSON() const {
 void SecurityRequest::load(const nlohmann::json& request) {
   admin_type_ = request["admin_type"].get<std::string>();
   operation_  = request["operation"].get<std::string>();
-  
-  if (request.contains("encoding")) {
-    encoding_ = request["encoding"].get<std::string>();
-  } else {
-    encoding_ = std::string("IBM-1047");
-  }
 
   if (request.contains("traits")) {
     traits_ = request["traits"].get<nlohmann::json>();
