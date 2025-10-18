@@ -142,6 +142,9 @@ void ProfileExtractor::extract(SecurityRequest &request) {
          function_code == RESOURCE_EXTRACT_NEXT_FUNCTION_CODE)) {
       generic_extract_parms_results_t *p_save_generic_result;
 
+      p_arg_area->arg_pointers.p_profile_extract_parms->flags |=
+          htonl(0x14000000);
+
       do {
         p_save_generic_result =
             reinterpret_cast<generic_extract_parms_results_t *>(
@@ -179,9 +182,6 @@ void ProfileExtractor::extract(SecurityRequest &request) {
         p_arg_area->arg_pointers.p_profile_extract_parms =
             reinterpret_cast<generic_extract_parms_results_t *>(
                 *p_arg_area->arg_pointers.p_p_result_buffer);
-
-        p_arg_area->arg_pointers.p_profile_extract_parms->flags |=
-            htonl(0x14000000);
 
         // Call R_Admin
         Logger::getInstance().debug("Calling IRRSEQ00 ...");
