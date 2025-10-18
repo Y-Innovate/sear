@@ -32,7 +32,6 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   profile["profile"]            = nlohmann::json::object();
 
   const std::string &admin_type = request.getAdminType();
-  const char * encoding = "IBM-1047";
 
   // Profile Pointers and Information
   const char *p_profile = request.getRawResultPointer();
@@ -62,7 +61,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   // Post Process Segments
   for (int i = 1; i <= ntohl(p_generic_result->segment_count); i++) {
     std::string segment_key =
-        ProfilePostProcessor::postProcessKey(p_segment->name, 8, encoding.c_str());
+        ProfilePostProcessor::postProcessKey(p_segment->name, 8);
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     const generic_field_descriptor_t *p_field =
@@ -109,7 +108,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   request.setIntermediateResultJSON(profile);
 }
 
-void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, const std::string& encoding) {
+void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request) {
   nlohmann::json profiles;
 
   std::vector<std::string> repeat_group_profiles;
@@ -119,7 +118,7 @@ void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, co
   for (int i = 0; i < found_profiles.size(); i++) {
     int len = std::strlen(found_profiles[i]);
     std::string profile_name =
-        ProfilePostProcessor::decodeEBCDICBytes(found_profiles[i], len, encoding);
+        ProfilePostProcessor::decodeEBCDICBytes(found_profiles[i], len);
     repeat_group_profiles.push_back(profile_name);
     free(found_profiles[i]);
   }
@@ -129,7 +128,7 @@ void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, co
   request.setIntermediateResultJSON(profiles);
 }
 
-void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, const std::string& encoding) {
+void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
 
