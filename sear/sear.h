@@ -1,7 +1,6 @@
 #ifndef __SEAR_H_
 #define __SEAR_H_
 
-#include <string>
 #include "sear_result.h"
 
 #ifdef __cplusplus
