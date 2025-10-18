@@ -76,7 +76,7 @@ void test_parse_add_user_no_xml_data_error() {
   irrsmo64_racf_reason_mock = 16;
 
   sear_result_t *result =
-      sear(request_json.c_str(), request_json.length(), "IBM-1047", false);
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
@@ -96,7 +96,7 @@ void test_parse_alter_user_no_xml_data_error() {
   irrsmo64_racf_reason_mock = 0;
 
   sear_result_t *result =
-      sear(request_json.c_str(), request_json.length(), "IBM-1047", false);
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
 
@@ -124,7 +124,7 @@ void test_parse_irrsmo00_errors_result() {
   irrsmo64_racf_reason_mock = 68;
 
   sear_result_t *result =
-      sear(request_json.c_str(), request_json.length(), "IBM-1047", false);
+      sear(request_json.c_str(), request_json.length(), false);
 
   TEST_ASSERT_EQUAL_STRING(result_json_expected.c_str(), result->result_json);
   TEST_ASSERT_EQUAL_INT32(result_json_expected.length(),
