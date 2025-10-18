@@ -55,8 +55,6 @@ const std::string& SecurityRequest::getProfileName() const {
   return profile_name_;
 }
 
-const std::string& SecurityRequest::getEncoding() const { return encoding_; }
-
 const std::string& SecurityRequest::getClassName() const { return class_name_; }
 
 const std::string& SecurityRequest::getGroup() const { return group_; }

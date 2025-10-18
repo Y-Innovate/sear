@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-sear_result_t *sear(const char *request_json, const std::string& encoding, int length, bool debug);
+sear_result_t *sear(const char *request_json, int length, bool debug);
 
 #ifdef __cplusplus
 }

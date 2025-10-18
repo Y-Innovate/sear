@@ -60,7 +60,6 @@ class SecurityRequest {
   const std::string& getDefault() const;
   const std::string& getUsage() const;
   const std::string& getStatus() const;
-  const std::string& getEncoding() const;
   const char* getSurrogateUserID() const;
   const nlohmann::json& getTraits() const;
   uint8_t getFunctionCode() const;

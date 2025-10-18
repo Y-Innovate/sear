@@ -22,11 +22,10 @@ namespace SEAR {
 void XMLGenerator::buildXMLString(SecurityRequest& request) {
   // Main body function that builds an xml string
   const std::string& admin_type = request.getAdminType();
-  const std::string& encoding = request.getEncoding();
   const nlohmann::json& traits  = request.getTraits();
 
   // Build meta tag
-  XMLGenerator::buildMetaTag(encoding);
+  XMLGenerator::buildMetaTag(std::to_string("IBM-1047"));
 
   // Build the securityrequest tag (Consistent)
   XMLGenerator::buildOpenTag("securityrequest");

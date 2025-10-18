@@ -30,7 +30,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   profile["profile"]            = nlohmann::json::object();
 
   const std::string &admin_type = request.getAdminType();
-  const std::string &encoding = request.getEncoding();
+  std::string& encoding = "IBM-1047";
 
   // Profile Pointers and Information
   const char *p_profile = request.getRawResultPointer();

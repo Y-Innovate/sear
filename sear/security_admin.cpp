@@ -96,7 +96,7 @@ void SecurityAdmin::makeRequest(const char *p_request_json_string, int length, c
   request_.buildResult();
 }
 
-void SecurityAdmin::doExtract(Extractor &extractor, const std::string& encoding) {
+void SecurityAdmin::doExtract(Extractor &extractor) {
   extractor.extract(request_);
 
   if (request_.getAdminType() != "keyring") {
