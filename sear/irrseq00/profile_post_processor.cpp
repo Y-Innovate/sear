@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "../conversion.hpp"
 
@@ -31,6 +32,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   profile["profile"]            = nlohmann::json::object();
 
   const std::string &admin_type = request.getAdminType();
+  const char * encoding = "IBM-1047";
 
   // Profile Pointers and Information
   const char *p_profile = request.getRawResultPointer();
@@ -60,7 +62,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   // Post Process Segments
   for (int i = 1; i <= ntohl(p_generic_result->segment_count); i++) {
     std::string segment_key =
-        ProfilePostProcessor::postProcessKey(p_segment->name, 8, "IBM-1047".c_str());
+        ProfilePostProcessor::postProcessKey(p_segment->name, 8, encoding.c_str());
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     const generic_field_descriptor_t *p_field =
