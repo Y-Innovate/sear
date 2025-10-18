@@ -1,7 +1,6 @@
 #include "profile_post_processor.hpp"
 
 #include <algorithm>
-#include <string>
 #include <cctype>
 #include <cstdio>
 #include <cstring>
