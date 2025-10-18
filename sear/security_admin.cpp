@@ -22,7 +22,7 @@ SecurityAdmin::SecurityAdmin(sear_result_t *p_result, bool debug) {
   request_ = SecurityRequest(p_result);
 }
 
-void SecurityAdmin::makeRequest(const char *p_request_json_string, int length, const std::string& encoding) {
+void SecurityAdmin::makeRequest(const char *p_request_json_string, int length) {
   nlohmann::json request_json;
 
   try {
@@ -103,11 +103,11 @@ void SecurityAdmin::doExtract(Extractor &extractor) {
     ProfilePostProcessor post_processor;
     if (request_.getAdminType() == "racf-options") {
       // Post Process RACF Options Extract Result
-      post_processor.postProcessRACFOptions(request_, encoding);
+      post_processor.postProcessRACFOptions(request_);
     } else {
       if (request_.getOperation() == "search") {
         // Post Process Generic Search Result
-        post_processor.postProcessSearchGeneric(request_, encoding);
+        post_processor.postProcessSearchGeneric(request_);
       } else {
         // Post Process Generic Extract Result
         post_processor.postProcessGeneric(request_);
