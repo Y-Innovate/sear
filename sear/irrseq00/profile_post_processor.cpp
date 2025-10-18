@@ -69,13 +69,13 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
             p_profile + ntohl(p_segment->field_descriptor_offset));
     for (int j = 1; j <= ntohl(p_segment->field_count); j++) {
       sear_field_key = ProfilePostProcessor::postProcessFieldKey(
-          admin_type, segment_key, p_field->name, "IBM-1047".c_str());
+          admin_type, segment_key, p_field->name);
       sear_field_type = get_trait_type(admin_type, segment_key, sear_field_key);
       if (!(ntohs(p_field->type) & t_repeat_field_header)) {
         // Post Process Non-Repeat Fields
         ProfilePostProcessor::processGenericField(
             profile["profile"][segment_key][sear_field_key], p_field, p_profile,
-            sear_field_type, "IBM-1047".c_str());
+            sear_field_type);
       } else {
         // Post Process Repeat Fields
         repeat_group_count = ntohl(
@@ -90,12 +90,12 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
           for (int l = 1; l <= repeat_group_element_count; l++) {
             p_field++;
             sear_repeat_field_key = ProfilePostProcessor::postProcessFieldKey(
-                admin_type, segment_key, p_field->name, "IBM-1047".c_str());
+                admin_type, segment_key, p_field->name);
             sear_repeat_field_type =
                 get_trait_type(admin_type, segment_key, sear_repeat_field_key);
             ProfilePostProcessor::processGenericField(
                 repeat_group[k - 1][sear_repeat_field_key], p_field, p_profile,
-                sear_repeat_field_type, "IBM-1047".c_str());
+                sear_repeat_field_type);
           }
         }
         profile["profile"][segment_key][sear_field_key] = repeat_group;
