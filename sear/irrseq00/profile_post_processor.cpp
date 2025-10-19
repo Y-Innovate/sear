@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <cstring>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "../conversion.hpp"
@@ -30,7 +29,6 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   profile["profile"]            = nlohmann::json::object();
 
   const std::string &admin_type = request.getAdminType();
-  const std::string &encoding = request.getEncoding();
 
   // Profile Pointers and Information
   const char *p_profile = request.getRawResultPointer();
@@ -60,7 +58,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   // Post Process Segments
   for (int i = 1; i <= ntohl(p_generic_result->segment_count); i++) {
     std::string segment_key =
-        ProfilePostProcessor::postProcessKey(p_segment->name, 8, encoding);
+        ProfilePostProcessor::postProcessKey(p_segment->name, 8);
     profile["profile"][segment_key] = nlohmann::json::object();
     // Post Process Fields
     const generic_field_descriptor_t *p_field =
@@ -68,13 +66,13 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
             p_profile + ntohl(p_segment->field_descriptor_offset));
     for (int j = 1; j <= ntohl(p_segment->field_count); j++) {
       sear_field_key = ProfilePostProcessor::postProcessFieldKey(
-          admin_type, segment_key, p_field->name, encoding);
+          admin_type, segment_key, p_field->name);
       sear_field_type = get_trait_type(admin_type, segment_key, sear_field_key);
       if (!(ntohs(p_field->type) & t_repeat_field_header)) {
         // Post Process Non-Repeat Fields
         ProfilePostProcessor::processGenericField(
             profile["profile"][segment_key][sear_field_key], p_field, p_profile,
-            sear_field_type, encoding);
+            sear_field_type);
       } else {
         // Post Process Repeat Fields
         repeat_group_count = ntohl(
@@ -89,12 +87,12 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
           for (int l = 1; l <= repeat_group_element_count; l++) {
             p_field++;
             sear_repeat_field_key = ProfilePostProcessor::postProcessFieldKey(
-                admin_type, segment_key, p_field->name, encoding);
+                admin_type, segment_key, p_field->name);
             sear_repeat_field_type =
                 get_trait_type(admin_type, segment_key, sear_repeat_field_key);
             ProfilePostProcessor::processGenericField(
                 repeat_group[k - 1][sear_repeat_field_key], p_field, p_profile,
-                sear_repeat_field_type, encoding);
+                sear_repeat_field_type);
           }
         }
         profile["profile"][segment_key][sear_field_key] = repeat_group;
@@ -107,7 +105,7 @@ void ProfilePostProcessor::postProcessGeneric(SecurityRequest &request) {
   request.setIntermediateResultJSON(profile);
 }
 
-void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, const std::string& encoding) {
+void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request) {
   nlohmann::json profiles;
 
   std::vector<std::string> repeat_group_profiles;
@@ -117,7 +115,7 @@ void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, co
   for (int i = 0; i < found_profiles.size(); i++) {
     int len = std::strlen(found_profiles[i]);
     std::string profile_name =
-        ProfilePostProcessor::decodeEBCDICBytes(found_profiles[i], len, encoding);
+        ProfilePostProcessor::decodeEBCDICBytes(found_profiles[i], len);
     repeat_group_profiles.push_back(profile_name);
     free(found_profiles[i]);
   }
@@ -127,7 +125,7 @@ void ProfilePostProcessor::postProcessSearchGeneric(SecurityRequest &request, co
   request.setIntermediateResultJSON(profiles);
 }
 
-void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, const std::string& encoding) {
+void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request) {
   nlohmann::json profile;
   profile["profile"] = nlohmann::json::object();
 
@@ -152,13 +150,13 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, cons
 
   // Post Process Base Segment
   std::string segment_key =
-      ProfilePostProcessor::postProcessKey(p_segment->name, 8, encoding);
+      ProfilePostProcessor::postProcessKey(p_segment->name, 8);
   profile["profile"][segment_key] = nlohmann::json::object();
 
   // Post Process Fields
   for (int i = 1; i <= ntohs(p_segment->field_count); i++) {
     std::string sear_field_key = ProfilePostProcessor::postProcessFieldKey(
-        "racf-options", segment_key, p_field->name, encoding);
+        "racf-options", segment_key, p_field->name);
     char field_type =
         get_trait_type("racf-options", segment_key, sear_field_key);
     int field_length = ntohs(p_field->field_length);
@@ -169,7 +167,7 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, cons
                             sizeof(racf_options_field_descriptor_t);
         for (int j = 0; j < field_length / 9; j++) {
           list_field_data.push_back(
-              ProfilePostProcessor::decodeEBCDICBytes(p_list_field_data, 8, encoding));
+              ProfilePostProcessor::decodeEBCDICBytes(p_list_field_data, 8));
           p_list_field_data += 9;
         }
         profile["profile"][segment_key][sear_field_key] = list_field_data;
@@ -179,7 +177,7 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, cons
         std::string field_data = ProfilePostProcessor::decodeEBCDICBytes(
             reinterpret_cast<const char *>(p_field) +
                 sizeof(racf_options_field_descriptor_t),
-            field_length, encoding);
+            field_length);
         if (field_type == TRAIT_TYPE_UINT) {
           // Number
           profile["profile"][segment_key][sear_field_key] =
@@ -209,7 +207,7 @@ void ProfilePostProcessor::postProcessRACFOptions(SecurityRequest &request, cons
 
 void ProfilePostProcessor::processGenericField(
     nlohmann::json &json_field, const generic_field_descriptor_t *p_field,
-    const char *p_profile, const char sear_field_type, const std::string& encoding) {
+    const char *p_profile, const char sear_field_type) {
   if (ntohs(p_field->type) & t_boolean_field) {
     // Post Process Boolean Fields
     if (ntohl(p_field->flags) & f_boolean_field) {
@@ -224,7 +222,7 @@ void ProfilePostProcessor::processGenericField(
     std::string field_data = ProfilePostProcessor::decodeEBCDICBytes(
         p_profile + ntohl(p_field->field_data_offset_repeat_group_element_count
                               .field_data_offset),
-        field_length, encoding);
+        field_length);
     if (field_data == "") {
       // Set Empty Fields to 'null'
       json_field = nullptr;
@@ -247,9 +245,9 @@ void ProfilePostProcessor::processGenericField(
 
 std::string ProfilePostProcessor::postProcessFieldKey(
     const std::string &admin_type, const std::string &segment,
-    const char *p_raw_field_key, const std::string& encoding) {
+    const char *p_raw_field_key) {
   std::string field_key =
-      ProfilePostProcessor::postProcessKey(p_raw_field_key, 8, encoding);
+      ProfilePostProcessor::postProcessKey(p_raw_field_key, 8);
   const char *sear_field_key =
       get_sear_key(admin_type.c_str(), segment.c_str(), field_key.c_str());
   if (sear_field_key == nullptr) {
@@ -264,9 +262,9 @@ std::string ProfilePostProcessor::postProcessFieldKey(
 }
 
 std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
-                                                 int length, const std::string& encoding) {
+                                                 int length) {
   std::string post_processed_key =
-      ProfilePostProcessor::decodeEBCDICBytes(p_source_key, length, encoding);
+      ProfilePostProcessor::decodeEBCDICBytes(p_source_key, length);
   // Convert to lowercase
   std::transform(post_processed_key.begin(), post_processed_key.end(),
                  post_processed_key.begin(),
@@ -275,7 +273,7 @@ std::string ProfilePostProcessor::postProcessKey(const char *p_source_key,
 }
 
 std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
-                                                    int length, const std::string& encoding) {
+                                                    int length) {
   auto ebcdic_bytes_unique_ptr          = std::make_unique<char[]>(length);
   ebcdic_bytes_unique_ptr.get()[length] = 0;
   // Decode bytes
@@ -283,7 +281,7 @@ std::string ProfilePostProcessor::decodeEBCDICBytes(const char *p_ebcdic_bytes,
   
   std::string ebcdic_string = std::string(ebcdic_bytes_unique_ptr.get());
 
-  std::string utf8_string = toUTF8(ebcdic_string, encoding);
+  std::string utf8_string = toUTF8(ebcdic_string, "IBM-1047");
 
   size_t end = utf8_string.find_last_not_of(" ");
 
