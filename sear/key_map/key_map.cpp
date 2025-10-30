@@ -94,11 +94,10 @@ static const trait_key_mapping_t *get_key_mapping(
                       .traits[k]
                       .sear_key[functional_sear_key_length - 1] == '*') {
                 functional_sear_key_length--;
-              } else {
-                functional_sear_key_length = strlen(sear_key);
               }
               if (strncmp(sear_key, KEY_MAP[i].segments[j].traits[k].sear_key,
-                          functional_sear_key_length) == 0) {
+                          functional_sear_key_length) == 0 &&
+                  functional_sear_key_length == strlen(sear_key)) {
                 // Check trait type
                 trait_type_good = check_trait_type(
                     trait_type, KEY_MAP[i].segments[j].traits[k].trait_type);
